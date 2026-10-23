@@ -33,7 +33,7 @@ jobs:
           set +e
           apktool if vendor/reference/8052/APK/framework-res.apk -p /tmp/tvsettings-tool > /tmp/apktool-if.log 2>&1
           IF_RC=$?
-          apktool d -f -p /tmp/tvsettings-tool vendor/reference/8052/APK/TvSettingsPlus.apk -o /tmp/tvsettings-baseline/decoded > /tmp/apktool-decode.log 2>&1
+          apktool d -f -r -p /tmp/tvsettings-tool vendor/reference/8052/APK/TvSettingsPlus.apk -o /tmp/tvsettings-baseline/decoded > /tmp/apktool-decode.log 2>&1
           DECODE_RC=$?
           printf "framework_rc=%s\ndecode_rc=%s\n" "$IF_RC" "$DECODE_RC" > /tmp/tvsettings-baseline/status.txt
           tail -n 80 /tmp/apktool-if.log
@@ -63,7 +63,7 @@ jobs:
             echo "# TvSettingsPlus baseline roundtrip test"
             echo
             echo "APK: original OTA 8052, TvSettingsPlus.apk, versionCode 1."
-            echo "No changes, patches, signature or APK installation attempted."
+            echo "No changes, patches, signature or APK installation attempted. OEM resources are preserved in their compiled form using apktool -r."
             echo "The diagnostic success of apktool is a prerequisite to building TvSettingsPlus MOD, not proof of installability."
             echo
             cat research/build-probe-8052/status.txt 2>/dev/null || echo "No stages completed"
