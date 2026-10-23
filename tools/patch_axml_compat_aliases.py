@@ -116,7 +116,7 @@ def startnode(tag,attrs=None,ns=NO):
     entries=attrs or []
     head=struct.pack("<HHIIII",START,16,36+20*len(entries),0,NO,ns)
     ext=struct.pack("<IHHHHHH",tag,20,20,len(entries),0,0,0)
-    return head+ext+b"".join(attrs)
+    return head+ext+b"".join(entries)
 
 def patch_manifest(data):
     b=data
