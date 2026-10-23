@@ -1,0 +1,23 @@
+{
+  "marker": "com.my.settings.bluetooth.MyAutoBluetoothActivity",
+  "occurrences": [
+    {
+      "relative_file": "com/android/server/policy/PhoneWindowManager.java",
+      "method_guess": "interceptKeyBeforeDispatching",
+      "line": 2432,
+      "surrounding_api_symbols": [
+        "Intent"
+      ]
+    },
+    {
+      "relative_file": "com/android/server/policy/PhoneWindowManager.java",
+      "method_guess": "interceptKeyBeforeDispatching",
+      "line": 2496,
+      "surrounding_api_symbols": [
+        "Intent",
+        "startActivity"
+      ]
+    }
+  ],
+  "scope": "JADX static only; dynamic intent behavior must be confirmed"
+}
