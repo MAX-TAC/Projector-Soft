@@ -1,0 +1,543 @@
+{
+  "Factory": {
+    "apk": "Factory.apk",
+    "dex_count": 1,
+    "signals": {
+      "Focus": {
+        "count": 1,
+        "samples": [
+          "com.hysd.screen"
+        ]
+      },
+      "Geometry": {
+        "count": 2,
+        "samples": [
+          "com.rjpj.tcorrection",
+          "com.rjpj.tcorrection.TCorrectionBroadcastReceiver"
+        ]
+      }
+    }
+  },
+  "KeystoneCorrection": {
+    "apk": "KeystoneCorrection.apk",
+    "dex_count": 1,
+    "signals": {
+      "TRD": {
+        "count": 13,
+        "samples": [
+          "Lcom/trd/framework/IProjectorCtrl$Stub$Proxy;",
+          "Lcom/trd/framework/IProjectorCtrl$Stub;",
+          "Lcom/trd/framework/IProjectorCtrl;",
+          "Lcom/trd/framework/ITrdSystemService$Stub$Proxy;",
+          "Lcom/trd/framework/ITrdSystemService$Stub;",
+          "Lcom/trd/framework/ITrdSystemService;",
+          "Lcom/trd/sdk/ProjectorCtrl;",
+          "Lcom/trd/sdk/ReConnectService$1;",
+          "Lcom/trd/sdk/ReConnectService;",
+          "Lcom/trd/sdk/TrdSystemManager;",
+          "Lcom/trd/sdk/impl/ProjectorCtrlImpl;",
+          "com.trd.framework.IProjectorCtrl",
+          "com.trd.framework.ITrdSystemService"
+        ]
+      },
+      "Geometry": {
+        "count": 8,
+        "samples": [
+          "Lcom/rjpj/tcorrection/Constant;",
+          "Lcom/rjpj/tcorrection/DigitalZoomActivity;",
+          "Lcom/rjpj/tcorrection/FourCornerActivity;",
+          "Lcom/rjpj/tcorrection/HVKeystoneActivity;",
+          "Lcom/rjpj/tcorrection/I2CDevice;",
+          "Lcom/rjpj/tcorrection/KeystoneUtil;",
+          "Lcom/rjpj/tcorrection/MainActivity;",
+          "Lcom/rjpj/tcorrection/TCorrectionBroadcastReceiver;"
+        ]
+      }
+    }
+  },
+  "KuSettings": {
+    "apk": "KuSettings.apk",
+    "dex_count": 15,
+    "signals": {
+      "KuSettings": {
+        "count": 469,
+        "samples": [
+          "Lcom/my/service/BootupReceiver;",
+          "Lcom/my/service/MySetTimeService$1;",
+          "Lcom/my/service/MySetTimeService;",
+          "Lcom/my/service/ScreenServices$1;",
+          "Lcom/my/service/ScreenServices$2;",
+          "Lcom/my/service/ScreenServices$3;",
+          "Lcom/my/service/ScreenServices$4$1;",
+          "Lcom/my/service/ScreenServices$4;",
+          "Lcom/my/service/ScreenServices;",
+          "Lcom/my/settings/AirplaneModeEnabler$1;",
+          "Lcom/my/settings/AirplaneModeEnabler$OnAirplaneModeChangedListener;",
+          "Lcom/my/settings/AirplaneModeEnabler;",
+          "Lcom/my/settings/BaseActivity;",
+          "Lcom/my/settings/DialogCreatable;",
+          "Lcom/my/settings/LinkifyUtils$1;",
+          "Lcom/my/settings/LinkifyUtils$OnClickListener;",
+          "Lcom/my/settings/LinkifyUtils;",
+          "Lcom/my/settings/MainActivity;",
+          "Lcom/my/settings/ProxySelector$1;",
+          "Lcom/my/settings/ProxySelector$2;",
+          "Lcom/my/settings/ProxySelector$3;",
+          "Lcom/my/settings/ProxySelector$4;",
+          "Lcom/my/settings/ProxySelector;",
+          "Lcom/my/settings/R$array;",
+          "Lcom/my/settings/R$attr;",
+          "Lcom/my/settings/R$color;",
+          "Lcom/my/settings/R$dimen;",
+          "Lcom/my/settings/R$drawable;",
+          "Lcom/my/settings/R$id;",
+          "Lcom/my/settings/R$layout;",
+          "Lcom/my/settings/R$mipmap;",
+          "Lcom/my/settings/R$string;",
+          "Lcom/my/settings/R$style;",
+          "Lcom/my/settings/R$styleable;",
+          "Lcom/my/settings/R$xml;",
+          "Lcom/my/settings/R;",
+          "Lcom/my/settings/SettingActivity$1;",
+          "Lcom/my/settings/SettingActivity$2;",
+          "Lcom/my/settings/SettingActivity;",
+          "Lcom/my/settings/Utils;"
+        ]
+      },
+      "KuSourceRJ": {
+        "count": 2,
+        "samples": [
+          "com.coolux.source",
+          "com.coolux.source.service.TimeService"
+        ]
+      }
+    }
+  },
+  "KuSetupWizard": {
+    "apk": "KuSetupWizard.apk",
+    "dex_count": 15,
+    "signals": {
+      "KuSettings": {
+        "count": 469,
+        "samples": [
+          "Lcom/my/service/BootupReceiver;",
+          "Lcom/my/service/MySetTimeService$1;",
+          "Lcom/my/service/MySetTimeService;",
+          "Lcom/my/service/ScreenServices$1;",
+          "Lcom/my/service/ScreenServices$2;",
+          "Lcom/my/service/ScreenServices$3;",
+          "Lcom/my/service/ScreenServices$4$1;",
+          "Lcom/my/service/ScreenServices$4;",
+          "Lcom/my/service/ScreenServices;",
+          "Lcom/my/settings/AirplaneModeEnabler$1;",
+          "Lcom/my/settings/AirplaneModeEnabler$OnAirplaneModeChangedListener;",
+          "Lcom/my/settings/AirplaneModeEnabler;",
+          "Lcom/my/settings/BaseActivity;",
+          "Lcom/my/settings/DialogCreatable;",
+          "Lcom/my/settings/LinkifyUtils$1;",
+          "Lcom/my/settings/LinkifyUtils$OnClickListener;",
+          "Lcom/my/settings/LinkifyUtils;",
+          "Lcom/my/settings/MainActivity;",
+          "Lcom/my/settings/ProxySelector$1;",
+          "Lcom/my/settings/ProxySelector$2;",
+          "Lcom/my/settings/ProxySelector$3;",
+          "Lcom/my/settings/ProxySelector$4;",
+          "Lcom/my/settings/ProxySelector;",
+          "Lcom/my/settings/R$array;",
+          "Lcom/my/settings/R$attr;",
+          "Lcom/my/settings/R$color;",
+          "Lcom/my/settings/R$dimen;",
+          "Lcom/my/settings/R$drawable;",
+          "Lcom/my/settings/R$id;",
+          "Lcom/my/settings/R$layout;",
+          "Lcom/my/settings/R$mipmap;",
+          "Lcom/my/settings/R$string;",
+          "Lcom/my/settings/R$style;",
+          "Lcom/my/settings/R$styleable;",
+          "Lcom/my/settings/R$xml;",
+          "Lcom/my/settings/R;",
+          "Lcom/my/settings/SettingActivity$1;",
+          "Lcom/my/settings/SettingActivity$2;",
+          "Lcom/my/settings/SettingActivity;",
+          "Lcom/my/settings/Utils;"
+        ]
+      },
+      "KuSourceRJ": {
+        "count": 2,
+        "samples": [
+          "com.coolux.source",
+          "com.coolux.source.service.TimeService"
+        ]
+      }
+    }
+  },
+  "KuSourceRJ": {
+    "apk": "KuSourceRJ.apk",
+    "dex_count": 1,
+    "signals": {
+      "KuSourceRJ": {
+        "count": 172,
+        "samples": [
+          "Lcom/coolux/source/MainActivity$1;",
+          "Lcom/coolux/source/MainActivity$2;",
+          "Lcom/coolux/source/MainActivity;",
+          "Lcom/coolux/source/R$color;",
+          "Lcom/coolux/source/R$dimen;",
+          "Lcom/coolux/source/R$drawable;",
+          "Lcom/coolux/source/R$id;",
+          "Lcom/coolux/source/R$layout;",
+          "Lcom/coolux/source/R$mipmap;",
+          "Lcom/coolux/source/R$raw;",
+          "Lcom/coolux/source/R$string;",
+          "Lcom/coolux/source/R$style;",
+          "Lcom/coolux/source/R$xml;",
+          "Lcom/coolux/source/R;",
+          "Lcom/coolux/source/activity/AllAppAutoActivity$1;",
+          "Lcom/coolux/source/activity/AllAppAutoActivity$2;",
+          "Lcom/coolux/source/activity/AllAppAutoActivity;",
+          "Lcom/coolux/source/activity/AuthorizationActivity$1;",
+          "Lcom/coolux/source/activity/AuthorizationActivity;",
+          "Lcom/coolux/source/activity/AutomaticAdmissionActivity$1;",
+          "Lcom/coolux/source/activity/AutomaticAdmissionActivity;",
+          "Lcom/coolux/source/activity/BaseActivity;",
+          "Lcom/coolux/source/activity/BootSoureActivity$1;",
+          "Lcom/coolux/source/activity/BootSoureActivity$2;",
+          "Lcom/coolux/source/activity/BootSoureActivity;",
+          "Lcom/coolux/source/activity/BootSoureActivityOld$1;",
+          "Lcom/coolux/source/activity/BootSoureActivityOld$2;",
+          "Lcom/coolux/source/activity/BootSoureActivityOld;",
+          "Lcom/coolux/source/activity/BrightActivity$1;",
+          "Lcom/coolux/source/activity/BrightActivity$2;",
+          "Lcom/coolux/source/activity/BrightActivity;",
+          "Lcom/coolux/source/activity/DustproofActivity;",
+          "Lcom/coolux/source/activity/FanDetectionActivity$1;",
+          "Lcom/coolux/source/activity/FanDetectionActivity;",
+          "Lcom/coolux/source/activity/HighTemperatureActivity$1;",
+          "Lcom/coolux/source/activity/HighTemperatureActivity;",
+          "Lcom/coolux/source/activity/KeystoneActivity$1;",
+          "Lcom/coolux/source/activity/KeystoneActivity$2;",
+          "Lcom/coolux/source/activity/KeystoneActivity;",
+          "Lcom/coolux/source/activity/MyTestActivity;"
+        ]
+      },
+      "TRD": {
+        "count": 73,
+        "samples": [
+          "Lcom/trd/framework/ICommunicationCtrl$Default;",
+          "Lcom/trd/framework/ICommunicationCtrl$Stub$Proxy;",
+          "Lcom/trd/framework/ICommunicationCtrl$Stub;",
+          "Lcom/trd/framework/ICommunicationCtrl;",
+          "Lcom/trd/framework/IMotorCtrl$Default;",
+          "Lcom/trd/framework/IMotorCtrl$Stub$Proxy;",
+          "Lcom/trd/framework/IMotorCtrl$Stub;",
+          "Lcom/trd/framework/IMotorCtrl;",
+          "Lcom/trd/framework/IProjectorCtrl$Default;",
+          "Lcom/trd/framework/IProjectorCtrl$Stub$Proxy;",
+          "Lcom/trd/framework/IProjectorCtrl$Stub;",
+          "Lcom/trd/framework/IProjectorCtrl;",
+          "Lcom/trd/framework/ISensorCtrl$Default;",
+          "Lcom/trd/framework/ISensorCtrl$Stub$Proxy;",
+          "Lcom/trd/framework/ISensorCtrl$Stub;",
+          "Lcom/trd/framework/ISensorCtrl;",
+          "Lcom/trd/framework/ISystemCtrl$Default;",
+          "Lcom/trd/framework/ISystemCtrl$Stub$Proxy;",
+          "Lcom/trd/framework/ISystemCtrl$Stub;",
+          "Lcom/trd/framework/ISystemCtrl;",
+          "Lcom/trd/framework/ISystemCtrlCallback$Default;",
+          "Lcom/trd/framework/ISystemCtrlCallback$Stub$Proxy;",
+          "Lcom/trd/framework/ISystemCtrlCallback$Stub;",
+          "Lcom/trd/framework/ISystemCtrlCallback;",
+          "Lcom/trd/framework/ITemperatureCtrl$Default;",
+          "Lcom/trd/framework/ITemperatureCtrl$Stub$Proxy;",
+          "Lcom/trd/framework/ITemperatureCtrl$Stub;",
+          "Lcom/trd/framework/ITemperatureCtrl;",
+          "Lcom/trd/framework/ITofCtrl$Default;",
+          "Lcom/trd/framework/ITofCtrl$Stub$Proxy;",
+          "Lcom/trd/framework/ITofCtrl$Stub;",
+          "Lcom/trd/framework/ITofCtrl;",
+          "Lcom/trd/framework/ITofDataListener$Default;",
+          "Lcom/trd/framework/ITofDataListener$Stub$Proxy;",
+          "Lcom/trd/framework/ITofDataListener$Stub;",
+          "Lcom/trd/framework/ITofDataListener;",
+          "Lcom/trd/framework/ITrdSystemListener$Default;",
+          "Lcom/trd/framework/ITrdSystemListener$Stub$Proxy;",
+          "Lcom/trd/framework/ITrdSystemListener$Stub;",
+          "Lcom/trd/framework/ITrdSystemListener;"
+        ]
+      },
+      "Focus": {
+        "count": 1,
+        "samples": [
+          "com.hysd.screen"
+        ]
+      }
+    }
+  },
+  "LiveTV": {
+    "apk": "LiveTV.apk",
+    "dex_count": 1,
+    "signals": {}
+  },
+  "RuiAutoFocus": {
+    "apk": "RuiAutoFocus.apk",
+    "dex_count": 7,
+    "signals": {
+      "TRD": {
+        "count": 74,
+        "samples": [
+          "Lcom/trd/framework/ICommunicationCtrl$Default;",
+          "Lcom/trd/framework/ICommunicationCtrl$Stub$Proxy;",
+          "Lcom/trd/framework/ICommunicationCtrl$Stub;",
+          "Lcom/trd/framework/ICommunicationCtrl;",
+          "Lcom/trd/framework/IMotorCtrl$Default;",
+          "Lcom/trd/framework/IMotorCtrl$Stub$Proxy;",
+          "Lcom/trd/framework/IMotorCtrl$Stub;",
+          "Lcom/trd/framework/IMotorCtrl;",
+          "Lcom/trd/framework/IProjectorCtrl$Default;",
+          "Lcom/trd/framework/IProjectorCtrl$Stub$Proxy;",
+          "Lcom/trd/framework/IProjectorCtrl$Stub;",
+          "Lcom/trd/framework/IProjectorCtrl;",
+          "Lcom/trd/framework/ISensorCtrl$Default;",
+          "Lcom/trd/framework/ISensorCtrl$Stub$Proxy;",
+          "Lcom/trd/framework/ISensorCtrl$Stub;",
+          "Lcom/trd/framework/ISensorCtrl;",
+          "Lcom/trd/framework/ISystemCtrl$Default;",
+          "Lcom/trd/framework/ISystemCtrl$Stub$Proxy;",
+          "Lcom/trd/framework/ISystemCtrl$Stub;",
+          "Lcom/trd/framework/ISystemCtrl;",
+          "Lcom/trd/framework/ISystemCtrlCallback$Default;",
+          "Lcom/trd/framework/ISystemCtrlCallback$Stub$Proxy;",
+          "Lcom/trd/framework/ISystemCtrlCallback$Stub;",
+          "Lcom/trd/framework/ISystemCtrlCallback;",
+          "Lcom/trd/framework/ITemperatureCtrl$Default;",
+          "Lcom/trd/framework/ITemperatureCtrl$Stub$Proxy;",
+          "Lcom/trd/framework/ITemperatureCtrl$Stub;",
+          "Lcom/trd/framework/ITemperatureCtrl;",
+          "Lcom/trd/framework/ITofCtrl$Default;",
+          "Lcom/trd/framework/ITofCtrl$Stub$Proxy;",
+          "Lcom/trd/framework/ITofCtrl$Stub;",
+          "Lcom/trd/framework/ITofCtrl;",
+          "Lcom/trd/framework/ITofDataListener$Default;",
+          "Lcom/trd/framework/ITofDataListener$Stub$Proxy;",
+          "Lcom/trd/framework/ITofDataListener$Stub;",
+          "Lcom/trd/framework/ITofDataListener;",
+          "Lcom/trd/framework/ITrdSystemListener$Default;",
+          "Lcom/trd/framework/ITrdSystemListener$Stub$Proxy;",
+          "Lcom/trd/framework/ITrdSystemListener$Stub;",
+          "Lcom/trd/framework/ITrdSystemListener;"
+        ]
+      },
+      "Focus": {
+        "count": 17,
+        "samples": [
+          "Lcom/hysd/screen/BuildConfig;",
+          "Lcom/hysd/screen/R$anim;",
+          "Lcom/hysd/screen/R$attr;",
+          "Lcom/hysd/screen/R$bool;",
+          "Lcom/hysd/screen/R$color;",
+          "Lcom/hysd/screen/R$dimen;",
+          "Lcom/hysd/screen/R$drawable;",
+          "Lcom/hysd/screen/R$id;",
+          "Lcom/hysd/screen/R$integer;",
+          "Lcom/hysd/screen/R$layout;",
+          "Lcom/hysd/screen/R$mipmap;",
+          "Lcom/hysd/screen/R$string;",
+          "Lcom/hysd/screen/R$style;",
+          "Lcom/hysd/screen/R$styleable;",
+          "Lcom/hysd/screen/R$xml;",
+          "Lcom/hysd/screen/R;",
+          "com.hysd.screen"
+        ]
+      },
+      "Geometry": {
+        "count": 2,
+        "samples": [
+          "com.rjpj.tcorrection",
+          "com.rjpj.tcorrection.TCorrectionBroadcastReceiver"
+        ]
+      }
+    }
+  },
+  "RuiYunOta": {
+    "apk": "RuiYunOta.apk",
+    "dex_count": 1,
+    "signals": {}
+  },
+  "TvServices": {
+    "apk": "TvServices.apk",
+    "dex_count": 1,
+    "signals": {}
+  },
+  "TvSettingsPlus": {
+    "apk": "TvSettingsPlus.apk",
+    "dex_count": 16,
+    "signals": {
+      "KuSourceRJ": {
+        "count": 3,
+        "samples": [
+          "com.coolux.source",
+          "com.coolux.source.activity.AutomaticAdmissionActivity",
+          "com.coolux.source.activity.BrightActivity"
+        ]
+      },
+      "Focus": {
+        "count": 1,
+        "samples": [
+          "com.hysd.screen"
+        ]
+      },
+      "Geometry": {
+        "count": 2,
+        "samples": [
+          "com.rjpj.tcorrection",
+          "com.rjpj.tcorrection.TCorrectionBroadcastReceiver"
+        ]
+      }
+    }
+  },
+  "WFDSinkTest": {
+    "apk": "WFDSinkTest.apk",
+    "dex_count": 3,
+    "signals": {
+      "KuSettings": {
+        "count": 1,
+        "samples": [
+          "com.my.settings.bluetooth.MyAutoBluetoothActivity"
+        ]
+      },
+      "KuSourceRJ": {
+        "count": 2,
+        "samples": [
+          "com.coolux.source",
+          "com.coolux.source.MainActivity"
+        ]
+      },
+      "TRD": {
+        "count": 1,
+        "samples": [
+          "com.trd.service"
+        ]
+      },
+      "Focus": {
+        "count": 1,
+        "samples": [
+          "com.hysd.screen"
+        ]
+      }
+    }
+  },
+  "framework-res": {
+    "apk": "framework-res.apk",
+    "dex_count": 0,
+    "signals": {}
+  },
+  "trdmiddle": {
+    "apk": "trdmiddle.apk",
+    "dex_count": 1,
+    "signals": {
+      "TRD": {
+        "count": 52,
+        "samples": [
+          "Lcom/trd/framework/MainActivity;",
+          "Lcom/trd/framework/TrdApplication;",
+          "Lcom/trd/framework/TrdSystemService$a;",
+          "Lcom/trd/framework/TrdSystemService$b;",
+          "Lcom/trd/framework/TrdSystemService$c;",
+          "Lcom/trd/framework/TrdSystemService$d;",
+          "Lcom/trd/framework/TrdSystemService;",
+          "Lcom/trd/framework/a$a;",
+          "Lcom/trd/framework/a;",
+          "Lcom/trd/framework/b$a;",
+          "Lcom/trd/framework/b;",
+          "Lcom/trd/framework/c$a;",
+          "Lcom/trd/framework/c;",
+          "Lcom/trd/framework/d$a;",
+          "Lcom/trd/framework/d;",
+          "Lcom/trd/framework/e$a;",
+          "Lcom/trd/framework/e;",
+          "Lcom/trd/framework/f$a$a;",
+          "Lcom/trd/framework/f$a;",
+          "Lcom/trd/framework/f;",
+          "Lcom/trd/framework/g$a;",
+          "Lcom/trd/framework/g;",
+          "Lcom/trd/framework/h$a$a;",
+          "Lcom/trd/framework/h$a;",
+          "Lcom/trd/framework/h;",
+          "Lcom/trd/framework/i$a$a;",
+          "Lcom/trd/framework/i$a;",
+          "Lcom/trd/framework/i;",
+          "Lcom/trd/framework/j$a$a;",
+          "Lcom/trd/framework/j$a;",
+          "Lcom/trd/framework/j;",
+          "Lcom/trd/framework/k$a;",
+          "Lcom/trd/framework/k;",
+          "Lcom/trd/framework/l;",
+          "Lcom/trd/framework/projector/TrapezoidUtil;",
+          "Lcom/trd/framework/tof/TofController;",
+          "Lcom/trd/framework/tof/TofCtrlService$InerHandler;",
+          "Lcom/trd/framework/tof/TofCtrlService$TofDataListenerRecord;",
+          "Lcom/trd/framework/tof/TofCtrlService;",
+          "Lcom/trd/framework/tof/TofMessage;"
+        ]
+      }
+    }
+  },
+  "trdservice": {
+    "apk": "trdservice.apk",
+    "dex_count": 1,
+    "signals": {
+      "TRD": {
+        "count": 76,
+        "samples": [
+          "Lcom/trd/framework/ISystemCtrl$Stub$Proxy;",
+          "Lcom/trd/framework/ISystemCtrl$Stub;",
+          "Lcom/trd/framework/ISystemCtrl;",
+          "Lcom/trd/framework/ITemperatureCtrl$Stub$Proxy;",
+          "Lcom/trd/framework/ITemperatureCtrl$Stub;",
+          "Lcom/trd/framework/ITemperatureCtrl;",
+          "Lcom/trd/framework/ITrdSystemService$Stub$Proxy;",
+          "Lcom/trd/framework/ITrdSystemService$Stub;",
+          "Lcom/trd/framework/ITrdSystemService;",
+          "Lcom/trd/sdk/ReConnectService$1;",
+          "Lcom/trd/sdk/ReConnectService;",
+          "Lcom/trd/sdk/SystemCtrl;",
+          "Lcom/trd/sdk/TemperatureCtrl;",
+          "Lcom/trd/sdk/TrdSystemManager;",
+          "Lcom/trd/sdk/impl/SystemCtrlImpl;",
+          "Lcom/trd/sdk/impl/TemperatureCtrlImpl;",
+          "Lcom/trd/service/IKeyEventCtrl$Stub;",
+          "Lcom/trd/service/IKeyEventCtrl$_Parcel;",
+          "Lcom/trd/service/IKeyEventCtrl;",
+          "Lcom/trd/service/ITrdService$Stub;",
+          "Lcom/trd/service/ITrdService;",
+          "Lcom/trd/service/MainActivity;",
+          "Lcom/trd/service/TrdApp;",
+          "Lcom/trd/service/TrdMsgHandler$1;",
+          "Lcom/trd/service/TrdMsgHandler;",
+          "Lcom/trd/service/TrdService$$ExternalSyntheticLambda0;",
+          "Lcom/trd/service/TrdService$$ExternalSyntheticLambda1;",
+          "Lcom/trd/service/TrdService$1;",
+          "Lcom/trd/service/TrdService$2;",
+          "Lcom/trd/service/TrdService$3;",
+          "Lcom/trd/service/TrdService$4;",
+          "Lcom/trd/service/TrdService$5;",
+          "Lcom/trd/service/TrdService$6;",
+          "Lcom/trd/service/TrdService$7;",
+          "Lcom/trd/service/TrdService;",
+          "Lcom/trd/service/bootres/BootResManager$Result;",
+          "Lcom/trd/service/bootres/BootResManager;",
+          "Lcom/trd/service/bootres/BootResValidator$Result;",
+          "Lcom/trd/service/bootres/BootResValidator;",
+          "Lcom/trd/service/communication/GlobalKeyEventProcess;"
+        ]
+      },
+      "Geometry": {
+        "count": 2,
+        "samples": [
+          "com.rjpj.tcorrection",
+          "com.rjpj.tcorrection.TCorrectionBroadcastReceiver"
+        ]
+      }
+    }
+  }
+}
