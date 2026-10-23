@@ -1,0 +1,1017 @@
+{
+  "ku_start_service_methods": {
+    "startMyTimeService": [
+      {
+        "line": 236,
+        "literals": [],
+        "calls": [
+          "Intent",
+          "startService"
+        ]
+      }
+    ],
+    "startSourceTimeService": [
+      {
+        "line": 266,
+        "literals": [
+          "com.coolux.source",
+          "com.coolux.source.service.TimeService",
+          "startSourceTimeService"
+        ],
+        "calls": [
+          "Intent",
+          "setComponent",
+          "ComponentName",
+          "startService",
+          "e"
+        ]
+      }
+    ],
+    "isServiceStart": [
+      {
+        "line": 225,
+        "literals": [
+          "activity",
+          "com.my.service.MySetTimeService"
+        ],
+        "calls": [
+          "getSystemService",
+          "getRunningServices",
+          "getClassName"
+        ]
+      }
+    ],
+    "isSourceServiceStart": [
+      {
+        "line": 254,
+        "literals": [
+          "activity",
+          "com.coolux.source.service.TimeService"
+        ],
+        "calls": [
+          "getSystemService",
+          "getRunningServices",
+          "getClassName"
+        ]
+      }
+    ],
+    "startTime": [
+      {
+        "line": 214,
+        "literals": [],
+        "calls": [
+          "Thread",
+          "Runnable",
+          "isServiceStart",
+          "startMyTimeService"
+        ]
+      }
+    ],
+    "startSourceService": [
+      {
+        "line": 241,
+        "literals": [
+          "TimeServiceSourceHasStart"
+        ],
+        "calls": [
+          "Thread",
+          "Runnable",
+          "isSourceServiceStart",
+          "startSourceTimeService",
+          "e"
+        ]
+      }
+    ]
+  },
+  "manifest_filters": {
+    "KuSettings": [
+      {
+        "kind": "activity",
+        "name": "com.my.settings.SettingActivity",
+        "actions": [
+          "android.settings.SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.my.settings.wifi.MyWifiActivity",
+        "actions": [
+          "android.settings.WIFI_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.my.settings.bluetooth.MyBluetoothActivity",
+        "actions": [
+          "android.settings.BLUETOOTH_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.my.settings.bluetooth.MyAutoBluetoothActivity",
+        "actions": [
+          "android.settings.AUTO_BLUETOOTH"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.my.settings.language.LanguageActivity",
+        "actions": [
+          "android.settings.LAUGUAGE_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.my.settings.language.LanguageLocalActivity",
+        "actions": [
+          "android.settings.LAUGUAGE_LOCAL_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.my.settings.time.DateTimeActivity",
+        "actions": [
+          "android.settings.DATETIME_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.my.settings.time.MyZonePicker",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.my.settings.activity.ScreenshotActivity",
+        "actions": [
+          "android.settings.SCREENSHOT_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.my.settings.activity.ProjectionActivity",
+        "actions": [
+          "android.settings.PROJECTABOUT_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.my.settings.activity.AllAppActivity",
+        "actions": [
+          "android.settings.ALLAPPS"
+        ]
+      },
+      {
+        "kind": "receiver",
+        "name": "com.my.service.BootupReceiver",
+        "actions": [
+          "android.intent.action.BOOT_COMPLETED"
+        ]
+      }
+    ],
+    "KuSetupWizard": [
+      {
+        "kind": "activity",
+        "name": "com.my.settings.wifi.ProvisionWifiActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.my.settings.activity.MenuPromptActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.my.settings.activity.WarningActivity",
+        "actions": []
+      }
+    ],
+    "TvSettingsPlus": [
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.partnercustomizer.timer.TimerActivity",
+        "actions": [
+          "android.settings.DATE_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.partnercustomizer.retailmode.RetailModeConfirmActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.partnercustomizer.EnergyCommonActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.partnercustomizer.sound.AudioResetActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.partnercustomizer.picture.PictureResetActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.partnercustomizer.inputs.InputsActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.partnercustomizer.power.PowerActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.partnercustomizer.power.PictureOffActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.partnercustomizer.vendor.channels.ChannelsActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.partnercustomizer.vendor.channels.DiseqcTypeActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.partnercustomizer.vendor.channels.ChannelsTwoPanalActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.partnercustomizer.vendor.channels.ChannelConfirmActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.partnercustomizer.retailmode.RetailModeActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.device.sound.SoundActivity",
+        "actions": [
+          "android.settings.SOUND_SPEAKER_STATUS",
+          "android.settings.oem.SOUND_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.partnercustomizer.picture.PictureActivity",
+        "actions": [
+          "android.settings.DISPLAY_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.partnercustomizer.timer.TimePickerActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.partnercustomizer.multicast.NormalCastActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.partnercustomizer.picture.DisplayModeActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.device.sound.AudioOutputActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.partnercustomizer.utils.ProgressDialogActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.partnercustomizer.picture.PictureConfirmActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.partnercustomizer.vendor.ResetActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.partnercustomizer.timer.TimerSetActivity",
+        "actions": [
+          "android.settings.CAPTIONING_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.partnercustomizer.date.DateTimeActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.partnercustomizer.DisplayAndSoundActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.partnercustomizer.sound.wireless.WirelessAddNoteActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.partnercustomizer.sound.wireless.WirelessNoteCommonActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.partnercustomizer.sound.wireless.SpeakerDevicesBeyondActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.partnercustomizer.sound.wireless.SpeakerDeviceBeyondTipsActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.partnercustomizer.sound.wireless.ResetSpeakerActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.partnercustomizer.sound.wireless.SelectListActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.partnercustomizer.sound.wireless.StatelliteSpeakerLayoutActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.partnercustomizer.sound.wireless.StatelliteSpeakerLayoutChangeTipsActivity",
+        "actions": []
+      },
+      {
+        "kind": "receiver",
+        "name": "com.android.tv.settings.partnercustomizer.network.NetworkSliceBroadcastReceiver",
+        "actions": []
+      },
+      {
+        "kind": "service",
+        "name": "com.android.tv.settings.partnercustomizer.tvsettingservice.BluetoothReconnectService",
+        "actions": []
+      },
+      {
+        "kind": "service",
+        "name": "com.android.tv.settings.partnercustomizer.switchofftimer.SwitchOffTimerService",
+        "actions": []
+      },
+      {
+        "kind": "service",
+        "name": "com.android.tv.settings.partnercustomizer.tvsettingservice.WirelessSpeakerServices",
+        "actions": []
+      },
+      {
+        "kind": "receiver",
+        "name": "com.android.tv.settings.partnercustomizer.utils.SoundEARCReceiver",
+        "actions": [
+          "android.intent.action.BOOT_COMPLETED"
+        ]
+      },
+      {
+        "kind": "receiver",
+        "name": "com.android.tv.settings.partnercustomizer.tvsettingservice.TvBootupReceiver",
+        "actions": [
+          "android.intent.action.BOOT_COMPLETED"
+        ]
+      },
+      {
+        "kind": "receiver",
+        "name": "com.android.tv.settings.partnercustomizer.reeciver.LanguageChangeReceiver",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.uicustom.MainActivity",
+        "actions": [
+          "android.settings.RJ_SETTINGS",
+          "android.settings.PICTURE_SETTINGS",
+          "android.settings.SOUND_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.uicustom.fragment.projector.KeystoneCalibrationActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.uicustom.floatmenu.MenuJumpActivity",
+        "actions": []
+      },
+      {
+        "kind": "service",
+        "name": "com.android.tv.settings.uicustom.floatmenu.FloatMenuService",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.MainSettings",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.connectivity.setup.WifiSetupActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.connectivity.NetworkRequestDialogActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.connectivity.WifiConnectionActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.connectivity.EditProxySettingsActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.connectivity.EditIpSettingsActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.connectivity.AddWifiNetworkActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.accounts.AccountSliceActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.accounts.AccountsActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.accounts.AccountsTrampolineActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity-alias",
+        "name": "com.google.android.tv.settings.AccountActivity",
+        "actions": [
+          "android.settings.USER_SETTINGS",
+          "android.settings.ACCOUNT_SYNC_SETTINGS",
+          "android.settings.SYNC_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.accounts.AccountSyncActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.accounts.ManageUserServicesSliceActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity-alias",
+        "name": "com.google.android.tv.settings.ManageUserServicesActivity",
+        "actions": [
+          "android.settings.MANAGE_USER_SERVICES_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.accounts.RemoveAccountDialog",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.accounts.AddAccountWithTypeActivity",
+        "actions": [
+          "android.settings.ADD_ACCOUNT_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.device.apps.AppsActivity",
+        "actions": [
+          "android.settings.APPLICATION_SETTINGS",
+          "android.settings.MANAGE_APPLICATIONS_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.device.apps.AllAppsActivity",
+        "actions": [
+          "android.settings.APPLICATION_SETTINGS",
+          "android.settings.MANAGE_ALL_APPLICATIONS_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.device.apps.specialaccess.AllFilesAccessActivity",
+        "actions": [
+          "android.settings.MANAGE_APP_ALL_FILES_ACCESS_PERMISSION"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.device.apps.specialaccess.AppUsageAccessActivity",
+        "actions": [
+          "android.settings.USAGE_ACCESS_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.device.apps.specialaccess.PictureInPictureActivity",
+        "actions": [
+          "android.settings.PICTURE_IN_PICTURE_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.device.apps.specialaccess.SystemAlertActivity",
+        "actions": [
+          "android.settings.action.MANAGE_OVERLAY_PERMISSION",
+          "android.settings.action.MANAGE_OVERLAY_PERMISSION"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.device.apps.specialaccess.AlarmsAndRemindersActivity",
+        "actions": [
+          "android.settings.REQUEST_SCHEDULE_EXACT_ALARM",
+          "android.settings.REQUEST_SCHEDULE_EXACT_ALARM"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.device.apps.AppManagementActivity",
+        "actions": [
+          "android.settings.APPLICATION_DETAILS_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.device.StorageResetActivity",
+        "actions": [
+          "android.settings.INTERNAL_STORAGE_SETTINGS",
+          "android.settings.MEMORY_CARD_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.device.storage.ResetActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.connectivity.NetworkActivity",
+        "actions": [
+          "android.settings.LOCATION_SCANNING_SETTINGS",
+          "android.settings.DATA_SAVER_SETTINGS",
+          "android.settings.DATA_ALERT_SETTINGS",
+          "android.settings.panel.action.INTERNET_CONNECTIVITY",
+          "android.settings.panel.action.WIFI",
+          "android.settings.WIFI_ADD_NETWORKS"
+        ]
+      },
+      {
+        "kind": "activity-alias",
+        "name": "com.android.tv.settings.oemlink.NetworkSettingsActivity",
+        "actions": [
+          "android.settings.NETWORK_SETTINGS_TV_OEM_LINK"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.system.SecurityActivity",
+        "actions": [
+          "android.settings.SECURITY_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity-alias",
+        "name": "com.android.tv.settings.users.RestrictedProfileActivityLauncherEntry",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.device.displaysound.DisplaySoundActivity",
+        "actions": [
+          "android.settings.panel.action.VOLUME"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.device.display.ambient.AmbientSliceActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity-alias",
+        "name": "com.google.android.tv.settings.AmbientActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.device.display.daydream.DaydreamActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.device.display.daydream.DaydreamVoiceAction",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.system.CaptionSetupActivity",
+        "actions": [
+          "android.settings.CAPTIONING_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity-alias",
+        "name": "com.android.tv.settings.oemlink.AccessibilityCaptionActivity",
+        "actions": [
+          "android.settings.ACCESSIBILITY_CAPTION_TV_OEM_LINK"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.system.DateTimeActivity",
+        "actions": [
+          "android.settings.DATE_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.system.LocationActivity",
+        "actions": [
+          "android.settings.LOCATION_SOURCE_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.system.TextToSpeechActivity",
+        "actions": [
+          "android.settings.TTS_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.system.development.DevelopmentActivity",
+        "actions": [
+          "android.settings.APPLICATION_DEVELOPMENT_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.system.development.AppPicker",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.inputmethod.KeyboardActivity",
+        "actions": [
+          "android.settings.INPUT_METHOD_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.autofill.AutofillPickerActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.autofill.AutofillPickerTrampolineActivity",
+        "actions": [
+          "android.settings.REQUEST_SET_AUTOFILL_SERVICE"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.system.AppLanguageActivity",
+        "actions": [
+          "android.settings.APP_LOCALE_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.system.LanguageActivity",
+        "actions": [
+          "android.settings.LOCALE_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.system.InputsActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.accessories.BluetoothAccessoryActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.accessories.AddAccessoryActivity",
+        "actions": []
+      },
+      {
+        "kind": "receiver",
+        "name": "com.android.tv.settings.accessories.BluetoothPairingRequest",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.accessories.BluetoothPairingDialog",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.accessories.BluetoothDevicePickerActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.about.AboutActivity",
+        "actions": [
+          "android.settings.DEVICE_INFO_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.about.StatusActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.about.LicenseActivity",
+        "actions": [
+          "android.settings.LICENSE"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.name.DeviceNameSettingsActivity",
+        "actions": [
+          "android.settings.DEVICE_NAME"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.name.DeviceNameSuggestionActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.name.setup.DeviceNameFlowStartActivity",
+        "actions": [
+          "android.settings.START_DEVICE_NAME_FLOW"
+        ]
+      },
+      {
+        "kind": "service",
+        "name": "com.android.tv.settings.users.UserSwitchListenerService",
+        "actions": []
+      },
+      {
+        "kind": "receiver",
+        "name": "com.android.tv.settings.users.UserSwitchListenerService$BootReceiver",
+        "actions": [
+          "android.intent.action.BOOT_COMPLETED"
+        ]
+      },
+      {
+        "kind": "receiver",
+        "name": "com.android.tv.settings.device.storage.DiskReceiver",
+        "actions": []
+      },
+      {
+        "kind": "service",
+        "name": "com.android.tv.settings.users.RestrictedProfilePinService",
+        "actions": []
+      },
+      {
+        "kind": "service",
+        "name": "com.android.tv.settings.device.storage.SettingsStorageService$Impl",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.device.storage.NewStorageActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.device.storage.UnmountActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.device.storage.FormatActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.device.storage.MigrateStorageActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.device.apps.MoveAppActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.accessories.BluetoothRequestPermissionActivity",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.system.FallbackHome",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.inputmethod.InputMethodAndSubtypeEnablerActivity",
+        "actions": [
+          "android.settings.INPUT_METHOD_SUBTYPE_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.device.apps.specialaccess.ExternalSourcesActivity",
+        "actions": [
+          "android.settings.MANAGE_UNKNOWN_APP_SOURCES",
+          "android.settings.MANAGE_UNKNOWN_APP_SOURCES"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.privacy.NotificationAccessActivity",
+        "actions": [
+          "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.privacy.SensorToggleActivity",
+        "actions": [
+          "android.settings.MANAGE_MICROPHONE_PRIVACY",
+          "android.settings.MANAGE_CAMERA_PRIVACY"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.EmptyStubActivity",
+        "actions": [
+          "android.settings.WEBVIEW_SETTINGS",
+          "android.settings.IGNORE_BATTERY_OPTIMIZATION_SETTINGS",
+          "android.settings.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS",
+          "android.settings.IGNORE_BACKGROUND_DATA_RESTRICTIONS_SETTINGS",
+          "android.settings.MANAGE_DEFAULT_APPS_SETTINGS",
+          "android.settings.HOME_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.deviceadmin.ProfileOwnerAdd",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.ActionDisabledByAdminDialog",
+        "actions": [
+          "android.settings.SHOW_ADMIN_SUPPORT_DETAILS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.deviceadmin.DeviceAdminAdd",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.slice.SliceActivity",
+        "actions": [
+          "android.settings.SLICE_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.oemlink.AccessibilitySettingsActivity",
+        "actions": [
+          "android.settings.ACCESSIBILITY_TV_OEM_LINK",
+          "android.settings.ACCESSIBILITY_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.oemlink.AccessibilityServiceActivity",
+        "actions": [
+          "android.settings.ACCESSIBILITY_SHORTCUT_SERVICES_TV_OEM_LINK"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.oemlink.FactoryResetActivity",
+        "actions": [
+          "android.settings.FACTORY_RESET_TV_OEM_LINK"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.vendor.VendorActivity",
+        "actions": []
+      },
+      {
+        "kind": "receiver",
+        "name": "com.android.tv.settings.DeviceSettingBroadcastReceiver",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.accessories.BluetoothActionActivity",
+        "actions": []
+      },
+      {
+        "kind": "service",
+        "name": "com.android.tv.settings.accessories.BluetoothDevicesService",
+        "actions": []
+      },
+      {
+        "kind": "receiver",
+        "name": "com.android.tv.settings.accessories.ConnectedDevicesSliceBroadcastReceiver",
+        "actions": []
+      },
+      {
+        "kind": "receiver",
+        "name": "com.android.tv.settings.BootReceiver",
+        "actions": [
+          "android.intent.action.BOOT_COMPLETED"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.RemoteBugreportActivity",
+        "actions": [
+          "android.settings.SHOW_REMOTE_BUGREPORT_DIALOG"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.enterprise.EnterprisePrivacySettingsActivity",
+        "actions": [
+          "android.settings.ENTERPRISE_PRIVACY_SETTINGS"
+        ]
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.tv.settings.device.apps.ConfirmationActivity",
+        "actions": [
+          "android.settings.ui.CONFIRM"
+        ]
+      },
+      {
+        "kind": "receiver",
+        "name": "com.android.tv.settings.GlobalKeyReceiver",
+        "actions": []
+      },
+      {
+        "kind": "activity",
+        "name": "com.android.settingslib.users.AvatarPickerActivity",
+        "actions": []
+      }
+    ],
+    "WFDSinkTest": [
+      {
+        "kind": "receiver",
+        "name": ".MiracastServiceReceiver",
+        "actions": [
+          "android.intent.action.BOOT_COMPLETED"
+        ]
+      }
+    ]
+  }
+}
