@@ -53,12 +53,12 @@ def patch(root):
         location=refs[0]; original=location.read_text()
         rebuilt=original; changed_count=0
         for method in methods:
-            pattern=re.compile(r"(?ms)^\\.method [^\\n]* "+method+r"\\([^\\n]*\\)[^\\n]*\\n.*?^\\.end method")
+            pattern=re.compile(r"(?ms)^\.method [^\n]* "+method+r"\([^\n]*\)[^\n]*\n.*?^\.end method")
             mm=list(pattern.finditer(rebuilt))
             if not mm:continue
             if len(mm)!=1:raise ValueError("Ambiguous "+method+" in "+cls)
             block=mm[0].group()
-            hook="    invoke-static {p0}, "+visibility_hook+"\\n"
+            hook="    invoke-static {p0}, "+visibility_hook+"\n"
             count=block.count("return-void")
             if count<1:raise ValueError("No return-void in "+cls+" "+method)
             block=block.replace("    return-void",hook+"    return-void")
