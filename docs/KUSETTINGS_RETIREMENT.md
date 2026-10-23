@@ -76,3 +76,12 @@
 6. Проверены откат `adb uninstall com.android.tv.settings` (только удаление обновления системного пакета) и повторное включение `KuSettings`. **Не выполнять эти операции вслепую без теста на устройстве.**
 7. Только после успешного теста — отключение *всего пакета* `com.my.settings` для user 0. Удаление APK из /system в рамках этого проекта не требуется.
 
+
+### Статический разбор двух системных конфигураций
+
+- `system/system/etc/xtzm_setting.txt`, строка 3: `"settingApps": ["com.my.settings"]`. Это потенциальный пакет, выбираемый для открытия настроек **вне** TvSettingsPlus. Не доказано, что именно эта запись активно используется на 8052; требует трассировки потребителя `settingApps`.
+- `system/system/menu_config_xml/whaletv_config.json`, строка 59: в `white_list` находится `com.my.settings` вместе с другими приложениями. Присутствие в white_list само по себе не означает обязательный запуск пакета.
+- `system/framework/services.jar` содержит старый Bluetooth-маркер и `android.settings.AUTO_BLUETOOTH`. Его нельзя исправить простой пересборкой WFDSinkTest; APK-only маршрут — зарегистрировать действие в TvSettingsPlus, что реализовано экспериментально в подписанном v2.
+
+Исходный [отчёт](../research/oem-apps/Full_OTA_KuReferences/inventory.json) и сборка [TvSettingsPlus v2](BUILD_STATUS_8052_v2.md).
+
