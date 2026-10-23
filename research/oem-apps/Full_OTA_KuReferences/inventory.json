@@ -1,0 +1,195 @@
+{
+  "scope": "All extracted 8052 EROFS system, system_ext, vendor, product readable files",
+  "files_scanned": 2054,
+  "apk_scanned": 85,
+  "references": {
+    "system/system/app/FTAirplayWireless/FTAirplayWireless.apk": {
+      "bytes": 105214691,
+      "matches": {
+        "classes.dex": {
+          "ku_activities": 11
+        }
+      }
+    },
+    "system/system/app/KuSettings/KuSettings.apk": {
+      "bytes": 17997485,
+      "matches": {
+        "classes10.dex": {
+          "ku_package": 24
+        },
+        "classes11.dex": {
+          "ku_package": 84,
+          "ku_service": 19,
+          "auto_bt": 1,
+          "screen_services": 14
+        },
+        "classes12.dex": {
+          "ku_package": 584,
+          "ku_service": 1,
+          "screen_services": 1,
+          "ku_activities": 10
+        },
+        "classes13.dex": {
+          "ku_package": 162
+        },
+        "classes14.dex": {
+          "ku_package": 286
+        },
+        "classes2.dex": {
+          "ku_package": 52
+        },
+        "classes3.dex": {
+          "ku_package": 236
+        },
+        "classes4.dex": {
+          "ku_package": 88,
+          "ku_activities": 8
+        },
+        "classes5.dex": {
+          "ku_package": 294,
+          "ku_activities": 27
+        },
+        "classes6.dex": {
+          "ku_package": 64
+        },
+        "classes7.dex": {
+          "ku_package": 158
+        },
+        "classes8.dex": {
+          "ku_package": 4
+        },
+        "classes9.dex": {
+          "ku_package": 56
+        }
+      }
+    },
+    "system/system/app/KuSetupWizard/KuSetupWizard.apk": {
+      "bytes": 17997485,
+      "matches": {
+        "classes10.dex": {
+          "ku_package": 24
+        },
+        "classes11.dex": {
+          "ku_package": 84,
+          "ku_service": 19,
+          "auto_bt": 1,
+          "screen_services": 14
+        },
+        "classes12.dex": {
+          "ku_package": 584,
+          "ku_service": 1,
+          "screen_services": 1,
+          "ku_activities": 10
+        },
+        "classes13.dex": {
+          "ku_package": 162
+        },
+        "classes14.dex": {
+          "ku_package": 286
+        },
+        "classes2.dex": {
+          "ku_package": 52
+        },
+        "classes3.dex": {
+          "ku_package": 236
+        },
+        "classes4.dex": {
+          "ku_package": 88,
+          "ku_activities": 8
+        },
+        "classes5.dex": {
+          "ku_package": 294,
+          "ku_activities": 27
+        },
+        "classes6.dex": {
+          "ku_package": 64
+        },
+        "classes7.dex": {
+          "ku_package": 158
+        },
+        "classes8.dex": {
+          "ku_package": 4
+        },
+        "classes9.dex": {
+          "ku_package": 56
+        }
+      }
+    },
+    "system/system/app/zxlauncher/zxlauncher.apk": {
+      "bytes": 48931945,
+      "matches": {
+        "classes2.dex": {
+          "ku_activities": 3
+        }
+      }
+    },
+    "system/system/app/zxstore/zxstore.apk": {
+      "bytes": 33927620,
+      "matches": {
+        "classes2.dex": {
+          "ku_activities": 3
+        }
+      }
+    },
+    "system/system/etc/xtzm_setting.txt": {
+      "bytes": 306,
+      "matches": {
+        "raw": {
+          "ku_package": 1
+        }
+      }
+    },
+    "system/system/framework/services.jar": {
+      "bytes": 18501624,
+      "matches": {
+        "classes2.dex": {
+          "ku_package": 1,
+          "auto_bt": 1,
+          "ku_activities": 1
+        }
+      }
+    },
+    "system/system/menu_config_xml/whaletv_config.json": {
+      "bytes": 2613,
+      "matches": {
+        "raw": {
+          "ku_package": 1
+        }
+      }
+    },
+    "system_ext/app/WFDSinkTest/WFDSinkTest.apk": {
+      "bytes": 9853537,
+      "matches": {
+        "classes2.dex": {
+          "ku_package": 1,
+          "auto_bt": 1,
+          "ku_activities": 1
+        }
+      }
+    },
+    "system_ext/priv-app/LiveTV/LiveTV.apk": {
+      "bytes": 13974251,
+      "matches": {
+        "classes.dex": {
+          "ku_activities": 11
+        }
+      }
+    },
+    "system_ext/priv-app/MultiMediaPlayer/MultiMediaPlayer.apk": {
+      "bytes": 14001507,
+      "matches": {
+        "classes3.dex": {
+          "ku_activities": 12
+        }
+      }
+    }
+  },
+  "totals": {
+    "ku_activities": 132,
+    "ku_package": 4188,
+    "ku_service": 40,
+    "auto_bt": 4,
+    "screen_services": 30
+  },
+  "caveat": "DEX strings may contain dead code; inaccessible runtime ODEX may escape detection; no hardware execution."
+}
