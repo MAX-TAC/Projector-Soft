@@ -1,0 +1,73 @@
+name: Audit removal of KuSettings 8052
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "tools/audit_kusettings_migration.py"
+      - ".github/workflows/audit-kusettings-migration.yml"
+permissions:
+  contents: write
+jobs:
+  migration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - name: Static audit dependencies
+        run: |
+          set -euo pipefail
+          sudo rm -f /etc/apt/sources.list.d/microsoft-prod.list /etc/apt/sources.list.d/microsoft-prod.sources
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq aapt unzip
+          curl -fsSL --retry 4 \
+            https://github.com/skylot/jadx/releases/download/v1.5.6/jadx-1.5.6.zip \
+            -o /tmp/jadx.zip
+          mkdir -p /tmp/jadx-bin /tmp/migration-jadx
+          unzip -q /tmp/jadx.zip -d /tmp/jadx-bin
+          /tmp/jadx-bin/bin/jadx --version
+          python3 -m py_compile tools/audit_kusettings_migration.py
+      - name: Decompile only core related apps for static inspection
+        run: |
+          set -euo pipefail
+          for name in TvSettingsPlus KuSettings KuSourceRJ; do
+            echo "::group::Static jadx $name"
+            /tmp/jadx-bin/bin/jadx --no-res --no-imports --threads-count 3 --deobf \
+              -d "/tmp/migration-jadx/$name" \
+              "vendor/reference/8052/APK/$name.apk" \
+              > "/tmp/jadx-$name.log" 2>&1 || true
+            tail -n 18 "/tmp/jadx-$name.log"
+            test -d "/tmp/migration-jadx/$name/sources"
+            echo "::endgroup::"
+          done
+      - name: Write API audit without decompiled proprietary sources
+        run: |
+          set -euo pipefail
+          python3 tools/audit_kusettings_migration.py \
+            --jadx-dir /tmp/migration-jadx \
+            --apk-dir vendor/reference/8052/APK \
+            --out research/migration-8052
+          sed -n '1,170p' research/migration-8052/README.md
+          python3 - <<'PY'
+          import json
+          x=json.load(open("research/migration-8052/audit.json"))
+          assert "KuSettings" in x["apps"] and "TvSettingsPlus" in x["apps"]
+          assert x["apps"]["KuSettings"]["java_files"]>0
+          assert x["apps"]["TvSettingsPlus"]["java_files"]>0
+          PY
+      - name: Commit extracted audit metadata only
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research/migration-8052
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Audit KuSettings manifest components and cross-package application calls"
+          git pull --rebase origin main
+          git push origin HEAD:main
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: kusettings-migration-report-8052
+          path: research/migration-8052
+          retention-days: 30
+          if-no-files-found: warn
