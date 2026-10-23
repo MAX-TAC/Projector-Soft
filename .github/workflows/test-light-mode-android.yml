@@ -18,10 +18,18 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - uses: android-actions/setup-android@v3
-      - name: Install Android SDK 33 for compilation
+      - name: Resolve Android 13 SDK on GitHub runner
         run: |
-          sdkmanager "platforms;android-33" "build-tools;33.0.3"
+          set -euo pipefail
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          ls "$ANDROID_HOME/platforms" || true
+          ls "$ANDROID_HOME/build-tools" || true
+          if [ ! -f "$ANDROID_HOME/platforms/android-33/android.jar" ] || [ ! -x "$ANDROID_HOME/build-tools/33.0.3/d8" ]; then
+            SDK_MANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | head -n 1)"
+            yes | "$SDK_MANAGER" "platforms;android-33" "build-tools;33.0.3" || true
+          fi
+          test -f "$ANDROID_HOME/platforms/android-33/android.jar"
+          test -x "$ANDROID_HOME/build-tools/33.0.3/d8"
       - name: Compile actual Android 13 mode adapter and right-panel widget
         run: |
           set -euo pipefail
