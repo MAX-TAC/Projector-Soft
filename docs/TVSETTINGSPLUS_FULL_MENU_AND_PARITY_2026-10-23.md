@@ -79,7 +79,7 @@ TvSettingsPlus 8052 (набор реальных разделов AOSP/MTK; не
 Добавлено НАМИ в v2 (без изменений видимого дерева):
     android.settings.SETTINGS           → TvSettingsPlus [I]
     android.settings.WIFI_SETTINGS      → TvSettingsPlus [I]
-    android.settings.BLUETOOTH_SETTINGS → TvSettingsPlus [I]
+    android.settings.BLUETOOTH_SETTINGS → TvSettingsPlus AddAccessoryActivity [I]
     android.settings.AUTO_BLUETOOTH     → TvSettingsPlus [I]
     android.settings.ALLAPPS           → TvSettingsPlus [I]
     android.settings.DATETIME_SETTINGS → TvSettingsPlus [I]
@@ -230,7 +230,7 @@ TvSettingsPlus 8052 (набор реальных разделов AOSP/MTK; не
 |---|---|---|
 | SettingActivity, android.settings.SETTINGS | MainSettings, legacy alias | [I]; требует теста intent resolution и кнопки пульта |
 | MyWifiActivity | NetworkActivity и штатный Wi-Fi | [A][I] |
-| MyBluetoothActivity | BluetoothAccessoryActivity и штатное сопряжение | [A][I] |
+| MyBluetoothActivity | AddAccessoryActivity (временный маршрут к сопряжению); полный список устройств находится в AccessoriesFragment | [A][I], не полная parity |
 | MyAutoBluetoothActivity | AddAccessoryActivity через AUTO_BLUETOOTH | [I] маршрут; поведение автоподключения НЕ доказано эквивалентным |
 | LanguageActivity | LanguageActivity | [A][I] |
 | LanguageLocalActivity | LanguageActivity | [I], отдельный региональный экран пока не воспроизведён |
