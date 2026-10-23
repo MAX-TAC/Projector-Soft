@@ -13,7 +13,7 @@ RESMAP=0x0180; TYPE_STRING=0x03; TYPE_BOOL=0x12
 ALIASES=[
   ("legacy.SettingsAlias","com.android.tv.settings.MainSettings","android.settings.SETTINGS"),
   ("legacy.WiFiSettingsAlias","com.android.tv.settings.connectivity.NetworkActivity","android.settings.WIFI_SETTINGS"),
-  ("legacy.BluetoothSettingsAlias","com.android.tv.settings.accessories.BluetoothAccessoryActivity","android.settings.BLUETOOTH_SETTINGS"),
+  ("legacy.BluetoothSettingsAlias","com.android.tv.settings.accessories.AddAccessoryActivity","android.settings.BLUETOOTH_SETTINGS"),
   ("legacy.AutoBluetoothAlias","com.android.tv.settings.accessories.AddAccessoryActivity","android.settings.AUTO_BLUETOOTH"),
   ("legacy.AllAppsAlias","com.android.tv.settings.device.apps.AllAppsActivity","android.settings.ALLAPPS"),
   ("legacy.DateTimeAlias","com.android.tv.settings.system.DateTimeActivity","android.settings.DATETIME_SETTINGS"),
