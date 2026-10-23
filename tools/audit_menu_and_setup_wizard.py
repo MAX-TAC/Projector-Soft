@@ -2,7 +2,7 @@
 """Extract exact class definitions, manifest activities and XML preferences from original 8052 APKs.
 Only metadata is published. No decompiled OEM code is committed.
 """
-import argparse, collections, json, re, struct, subprocess, xml.etree.ElementTree as ET, zipfile
+import argparse, collections, hashlib, json, re, struct, subprocess, xml.etree.ElementTree as ET, zipfile
 from pathlib import Path
 ANDROID="{http://schemas.android.com/apk/res/android}"
 APPS=("KuSettings","KuSetupWizard","TvSettingsPlus","KuSourceRJ","WFDSinkTest")
@@ -89,6 +89,11 @@ def main():
   apk=c.apkdir/(app+".apk")
   classes[app]=class_definitions(apk)
   d[app]={"class_count":len(classes[app]),"components":components(apk)}
+  if app=="TvSettingsPlus":
+   d[app]["uicustom_class_descriptors"]=sorted(x for x in classes[app] if x.startswith("Lcom/android/tv/settings/uicustom/") or x.startswith("Lcom/android/p002tv/settings/uicustom/"))
+  if app in ("KuSettings","KuSetupWizard"):
+   with zipfile.ZipFile(apk) as z:
+    d[app]["dex_digests"]={n:hashlib.sha256(z.read(n)).hexdigest() for n in z.namelist() if re.fullmatch(r"classes\d*\.dex",n)}
   if app in ("TvSettingsPlus","KuSettings","KuSetupWizard"):
    d[app]["preferences"]=preferences(apk,c.tmp/app)
   print(app,"defined classes",len(classes[app]),"declared components",len(d[app]["components"]),flush=True)
@@ -98,6 +103,7 @@ def main():
  ku=classes["KuSettings"];setup=classes["KuSetupWizard"]
  d["KuSetupWizard_comparison"]={
    "ku_classes_defined_also_in_setup":len(ku&setup),
+   "identical_dex_file_hashes":{n:val==d["KuSetupWizard"]["dex_digests"].get(n) for n,val in d["KuSettings"]["dex_digests"].items()},
    "ku_total_classes":len(ku),
    "explicitly_own_class_definitions":{name:name in setup for name in check},
    "ku_component_names_inside_setup_manifest":[x for x in d["KuSetupWizard"]["components"] if x["name"].startswith("com.my.service.") or x["name"]=="com.my.settings.SettingActivity"]
