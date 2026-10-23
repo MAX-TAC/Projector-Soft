@@ -3,6 +3,43 @@
   "apps": {
     "TvSettingsPlus": {
       "java_files": 5796,
+      "sample_java_paths": [
+        "okio/GzipSource.java",
+        "okio/source.java",
+        "okio/Okio__JvmOkioKt.java",
+        "okio/Util.java",
+        "okio/Platform.java",
+        "okio/BufferedSource.java",
+        "okio/ForwardingSource.java",
+        "okio/GzipSinkExtensions.java",
+        "okio/InflaterSourceExtensions.java",
+        "okio/Source.java",
+        "okio/DeflaterSink.java",
+        "okio/SegmentPool.java",
+        "okio/PeekSource.java",
+        "okio/AsyncTimeout.java",
+        "okio/Okio.java",
+        "okio/CipherSink.java",
+        "okio/SegmentedByteString.java",
+        "okio/Options.java",
+        "okio/ForwardingTimeout.java",
+        "okio/BufferedSink.java",
+        "okio/DeprecatedUtf8.java",
+        "okio/ExperimentalFileSystem.java",
+        "okio/Utf8.java",
+        "okio/DeprecatedOkio.java",
+        "okio/Pipe.java",
+        "okio/SocketAsyncTimeout.java",
+        "okio/Timeout.java",
+        "okio/sink.java",
+        "okio/DeflaterSinkExtensions.java",
+        "okio/buffer.java",
+        "okio/ForwardingSink.java",
+        "okio/DeprecatedUpgrade.java",
+        "okio/Buffer.java",
+        "okio/InflaterSource.java",
+        "okio/CipherSource.java"
+      ],
       "manifest": {
         "package": "package: name='com.android.tv.settings' versionCode='1' versionName='1.0' platformBuildVersionName='13' platformBuildVersionCode='33' compileSdkVersion='33' compileSdkVersionCodename='13'",
         "components": [
@@ -1035,6 +1072,43 @@
     },
     "KuSettings": {
       "java_files": 3470,
+      "sample_java_paths": [
+        "kotlin/UIntKt.java",
+        "kotlin/DeprecatedSinceKotlin.java",
+        "kotlin/Lazy.java",
+        "kotlin/DeepRecursiveScope.java",
+        "kotlin/ExceptionsKt.java",
+        "kotlin/UByteArray.java",
+        "kotlin/PreconditionsKt__AssertionsJVMKt.java",
+        "kotlin/SuspendKt.java",
+        "kotlin/LazyKt.java",
+        "kotlin/StandardKt__StandardKt.java",
+        "kotlin/BuilderInference.java",
+        "kotlin/Unit.java",
+        "kotlin/UNumbersKt.java",
+        "kotlin/UByteArrayKt.java",
+        "kotlin/DeepRecursiveScopeImpl.java",
+        "kotlin/NotImplementedError.java",
+        "kotlin/WasExperimental.java",
+        "kotlin/SinceKotlin.java",
+        "kotlin/ExperimentalUnsignedTypes.java",
+        "kotlin/SubclassOptInRequired.java",
+        "kotlin/DeepRecursiveKt.java",
+        "kotlin/ULong.java",
+        "kotlin/NumbersKt__BigIntegersKt.java",
+        "kotlin/PropertyReferenceDelegatesKt.java",
+        "kotlin/UIntArray.java",
+        "kotlin/DeepRecursiveFunction.java",
+        "kotlin/StandardKt__SynchronizedKt.java",
+        "kotlin/LazyThreadSafetyMode.java",
+        "kotlin/CharCodeKt.java",
+        "kotlin/TuplesKt.java",
+        "kotlin/NumbersKt__FloorDivModKt.java",
+        "kotlin/ReplaceWith.java",
+        "kotlin/UInt.java",
+        "kotlin/Pair.java",
+        "kotlin/CompareToKt.java"
+      ],
       "manifest": {
         "package": "package: name='com.my.settings' versionCode='1' versionName='1.0' platformBuildVersionName='14' platformBuildVersionCode='34' compileSdkVersion='34' compileSdkVersionCodename='14'",
         "components": [
@@ -5068,6 +5142,43 @@
     },
     "KuSourceRJ": {
       "java_files": 3007,
+      "sample_java_paths": [
+        "kotlin/UIntKt.java",
+        "kotlin/DeprecatedSinceKotlin.java",
+        "kotlin/Lazy.java",
+        "kotlin/DeepRecursiveScope.java",
+        "kotlin/Experimental.java",
+        "kotlin/ExceptionsKt.java",
+        "kotlin/UByteArray.java",
+        "kotlin/PreconditionsKt__AssertionsJVMKt.java",
+        "kotlin/SuspendKt.java",
+        "kotlin/LazyKt.java",
+        "kotlin/UseExperimental.java",
+        "kotlin/StandardKt__StandardKt.java",
+        "kotlin/BuilderInference.java",
+        "kotlin/Unit.java",
+        "kotlin/UNumbersKt.java",
+        "kotlin/UByteArrayKt.java",
+        "kotlin/DeepRecursiveScopeImpl.java",
+        "kotlin/NotImplementedError.java",
+        "kotlin/WasExperimental.java",
+        "kotlin/SinceKotlin.java",
+        "kotlin/ExperimentalUnsignedTypes.java",
+        "kotlin/DeepRecursiveKt.java",
+        "kotlin/ULong.java",
+        "kotlin/NumbersKt__BigIntegersKt.java",
+        "kotlin/PropertyReferenceDelegatesKt.java",
+        "kotlin/UIntArray.java",
+        "kotlin/DeepRecursiveFunction.java",
+        "kotlin/StandardKt__SynchronizedKt.java",
+        "kotlin/LazyThreadSafetyMode.java",
+        "kotlin/CharCodeKt.java",
+        "kotlin/TuplesKt.java",
+        "kotlin/NumbersKt__FloorDivModKt.java",
+        "kotlin/ReplaceWith.java",
+        "kotlin/UInt.java",
+        "kotlin/Pair.java"
+      ],
       "manifest": {
         "package": "package: name='com.coolux.source' versionCode='41' versionName='5.3' platformBuildVersionName='15' platformBuildVersionCode='35' compileSdkVersion='35' compileSdkVersionCodename='15'",
         "components": [
@@ -8068,6 +8179,7 @@
     },
     "RuiAutoFocus": {
       "java_files": 0,
+      "sample_java_paths": [],
       "manifest": {
         "package": "package: name='com.hysd.screen' versionCode='4' versionName='4.2' platformBuildVersionName='9' platformBuildVersionCode='28' compileSdkVersion='28' compileSdkVersionCodename='9'",
         "components": [
@@ -8092,6 +8204,7 @@
     },
     "KeystoneCorrection": {
       "java_files": 0,
+      "sample_java_paths": [],
       "manifest": {
         "package": "package: name='com.rjpj.tcorrection' versionCode='33' versionName='13' platformBuildVersionName='13' platformBuildVersionCode='33' compileSdkVersion='33' compileSdkVersionCodename='13'",
         "components": [
@@ -8144,6 +8257,7 @@
     },
     "trdservice": {
       "java_files": 0,
+      "sample_java_paths": [],
       "manifest": {
         "package": "package: name='com.trd.service' versionCode='33' versionName='13' platformBuildVersionName='13' platformBuildVersionCode='33' compileSdkVersion='33' compileSdkVersionCodename='13'",
         "components": [
@@ -8182,6 +8296,7 @@
     },
     "trdmiddle": {
       "java_files": 0,
+      "sample_java_paths": [],
       "manifest": {
         "package": "package: name='com.trd.framework' versionCode='1' versionName='1.0' platformBuildVersionName='13' platformBuildVersionCode='33' compileSdkVersion='33' compileSdkVersionCodename='13'",
         "components": [
@@ -8206,6 +8321,7 @@
     },
     "RuiYunOta": {
       "java_files": 0,
+      "sample_java_paths": [],
       "manifest": {
         "package": "package: name='com.rjpj.yunota' versionCode='1' versionName='1.0' platformBuildVersionName='13' platformBuildVersionCode='33' compileSdkVersion='33' compileSdkVersionCodename='13'",
         "components": [
