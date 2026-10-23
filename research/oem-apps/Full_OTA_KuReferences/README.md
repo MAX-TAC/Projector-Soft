@@ -12,6 +12,10 @@ This is string/DEX reference inventory, not proof of runtime dependency.
 | system/system/menu_config_xml/whaletv_config.json | 1 | 0 | 0 | 0 |
 | system_ext/app/WFDSinkTest/WFDSinkTest.apk | 1 | 0 | 1 | 0 |
 
+## OEM config usages
+- system/system/etc/xtzm_setting.txt: [{'line': 3, 'near_reference': '    "settingApps": ["com.my.settings"],'}]
+- system/system/menu_config_xml/whaletv_config.json: [{'line': 59, 'near_reference': '  "white_list": ["zeasn.open.technical.tv.store","com.my.settings","com.mediatek.wwtv.mediaplayer","com.mediatek.miracast","com.android.toofifi","com.rjpj.bluetoothspeaker"],'}]
+
 Important: no arbitrary replacements. Android framework PhoneWindowManager may be runtime-loaded from services.jar, not WFDSinkTest.apk; check actual hosting process before patching an APK.
 
 Do not disable KuSettings until all live intents have handlers, HDMI/focus/audio services tested, and a rollback plan exists.

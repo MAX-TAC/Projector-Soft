@@ -191,5 +191,19 @@
     "auto_bt": 4,
     "screen_services": 30
   },
+  "config_reference_locations": {
+    "system/system/etc/xtzm_setting.txt": [
+      {
+        "line": 3,
+        "near_reference": "    \"settingApps\": [\"com.my.settings\"],"
+      }
+    ],
+    "system/system/menu_config_xml/whaletv_config.json": [
+      {
+        "line": 59,
+        "near_reference": "  \"white_list\": [\"zeasn.open.technical.tv.store\",\"com.my.settings\",\"com.mediatek.wwtv.mediaplayer\",\"com.mediatek.miracast\",\"com.android.toofifi\",\"com.rjpj.bluetoothspeaker\"],"
+      }
+    ]
+  },
   "caveat": "DEX strings may contain dead code; inaccessible runtime ODEX may escape detection; no hardware execution."
 }
