@@ -25,15 +25,18 @@ jobs:
       - name: Prepare OEM decode and Android SDK tools
         run: |
           set -euo pipefail
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq apktool aapt apksigner zipalign openssl
           mkdir -p /tmp/tv3 /tmp/tv3/classes /tmp/tv3/dex /tmp/tv3/keys
+          curl -fsSL --retry 3 https://github.com/iBotPeaches/Apktool/releases/download/v2.11.1/apktool_2.11.1.jar -o /tmp/tv3/apktool.jar
+          printf '#!/bin/sh\nexec java -jar /tmp/tv3/apktool.jar "$@"\n' > /tmp/tv3/apktool
+          chmod +x /tmp/tv3/apktool
+          echo "/tmp/tv3" >> "$GITHUB_PATH"
           if [ ! -f "$ANDROID_HOME/platforms/android-33/android.jar" ] || [ ! -x "$ANDROID_HOME/build-tools/33.0.3/d8" ]; then
             SDK_MANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | head -n 1)"
             yes | "$SDK_MANAGER" "platforms;android-33" "build-tools;33.0.3" || true
           fi
           test -f "$ANDROID_HOME/platforms/android-33/android.jar"
           test -x "$ANDROID_HOME/build-tools/33.0.3/d8"
+          echo "$ANDROID_HOME/build-tools/33.0.3" >> "$GITHUB_PATH"
           echo 'e4184a13fbf56fa069effc6a40ea50c0da7e9190321b389f59ba34700a80d0a1  vendor/reference/8052/APK/TvSettingsPlus.apk' | sha256sum -c -
       - name: Compile Android 13 OEM-aware right-pane bridge
         run: |
