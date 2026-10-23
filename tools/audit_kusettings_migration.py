@@ -5,10 +5,12 @@ from pathlib import Path
 
 TARGETS=("TvSettingsPlus","KuSettings","KuSourceRJ","RuiAutoFocus","KeystoneCorrection","trdservice","trdmiddle","RuiYunOta")
 TOKENS={
+"KuSettings activity/services":re.compile(r"\b(?:SettingActivity|ScreenServices|MySetTimeService|BootupReceiver)\b",re.I),
 "KuSettings package":re.compile(r"com[./]my[./](?:settings|service|utils)|com\.my\.settings",re.I),
 "KuSourceRJ package":re.compile(r"com[./]coolux[./]source|com\.coolux\.source",re.I),
 "RuiAutoFocus package":re.compile(r"com[./]hysd[./](?:screen|xymscreen|vafocus)|com\.hysd\.screen",re.I),
 "Keystone package":re.compile(r"com[./]rjpj[./]tcorrection|com\.rjpj\.tcorrection",re.I),
+"TRD SDK call sites":re.compile(r"\b(?:TrdSdk|TrdSystemManager|ProjectorCtrl|SystemCtrlImpl|MotorCtrl)\b",re.I),
 "TRD Binder and SDK":re.compile(r"com[./]trd[./](?:framework|sdk)|ITrdSystemService|IProjectorCtrl|ITrdService",re.I),
 "MTK display / picture":re.compile(r"MtkTvFApi(?:Display|Audio|InputSource|Information|Peripheral)",re.I),
 "OEM focus and geometry":re.compile(r"(?i)(?:autofocus|keystone|fourcorner|motorctrl|tof|zoom)"),
@@ -27,19 +29,30 @@ def manifest(apk):
     data=shell("aapt","dump","xmltree",str(apk),"AndroidManifest.xml")
     out=[]
     curr=None
+    component_attrs=False
+    kinds=("activity-alias","activity","receiver","service","provider")
     for line in data.splitlines():
-        m=re.search(r"\bE:\s*(activity-alias|activity|receiver|service|provider)\b",line)
-        if m:
-            if curr:out.append(curr)
-            curr={"type":m.group(1),"name":"","exported":"","permission":"","enabled":""}
-        if curr:
+        el=re.search(r"\bE:\s*([a-zA-Z0-9_-]+)",line)
+        if el:
+            kind=el.group(1)
+            if kind in kinds:
+                if curr:out.append(curr)
+                curr={"type":kind,"name":"","exported":"","permission":"","enabled":""}
+                component_attrs=True
+            else:
+                component_attrs=False
+            continue
+        if curr and component_attrs:
             m=re.search(r"A:\s+android:(name|exported|permission|enabled)\b[^=]*=\s*(.*)",line)
-            if m:
-                val=m.group(2)
-                hit=re.search(r'Raw:\s*"([^"]*)"',val)
-                if not hit:hit=re.search(r'"([^"]+)"',val)
-                v=hit.group(1) if hit else val.strip()[:90]
-                curr[m.group(1)]=v
+            if not m:continue
+            val=m.group(2)
+            hit=re.search(r'Raw:\s*"([^"]*)"',val)
+            if not hit:hit=re.search(r'"([^"]+)"',val)
+            v=hit.group(1) if hit else val.strip()[:90]
+            if m.group(1) in ("enabled","exported") and not hit:
+                if "0xffffffff" in v:v="true"
+                elif "0x0" in v:v="false"
+            curr[m.group(1)]=v
     if curr:out.append(curr)
     # Extract package/shared user, if available from aapt:
     badging=shell("aapt","dump","badging",str(apk))
@@ -90,7 +103,7 @@ def main():
                       "refs":dict(matches)}
     all_refs=[]
     for label,items in apps.get("TvSettingsPlus",{}).get("refs",{}).items():
-        if label in ("KuSettings package","KuSourceRJ package","TRD Binder and SDK"):
+        if label in ("KuSettings package","KuSettings activity/services","KuSourceRJ package","TRD Binder and SDK","TRD SDK call sites"):
             for it in items:all_refs.append({"caller":"TvSettingsPlus","category":label,**it})
     for label,items in apps.get("KuSourceRJ",{}).get("refs",{}).items():
         if label=="KuSettings package":
