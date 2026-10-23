@@ -1,3 +1,12 @@
+## Подтверждённое различие двух аппаратных режимов (дополнение к аудиту)
+
+**Внимание: исходный TvSettingsPlus уже содержит собственный правопанельный контроллер яркости!** `BrightnessModeSettingsSecondaryController` предлагает Eco (внутренний ID 0), Standard (1), Highlight (2); Auto (3) скрыт. Он использует `MtkUtil.getLightMode()/putLightMode()`. Это **не та же шкала**, что `KuSourceRJ BrightReceiver` (0 Performance, 1 Standard, 2 Quiet, 3 High Altitude).
+
+В `GeneralSubMenuController` есть проверка `Build.A_RJ_CUSTOMER_ID == 0`: при нуле производитель запускает полноэкранный `com.coolux.source.activity.BrightActivity`, а для других профилей использует уже существующую правую панель.
+
+Для Android-модуля v3 разработан совместимый customer-0 hook, который сохраняет OEM `BrightReceiver` и заводской полноэкранный fallback. **Нельзя безусловно подменять `MtkUtil.putLightMode()` вызовом `BrightReceiver`**. Детали: [аудит 24 контроллеров](OEM_MENU_CONTROLLER_AUDIT_2026-10-23.md) и [сравнение методов](../research/oem-apps/Brightness_8052/overlap.json).
+
+
 # Перенос яркости источника света и оформление OEM-настроек
 
 **Платформа:** MT9660, оригинальная OTA 8052. Анализ сделан по APK `KuSourceRJ` и `TvSettingsPlus`, без запуска на оборудовании. Результат исследования: [Brightness_8052/oem_methods.json](../research/oem-apps/Brightness_8052/oem_methods.json).
