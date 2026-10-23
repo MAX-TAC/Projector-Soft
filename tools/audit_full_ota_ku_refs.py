@@ -6,6 +6,9 @@ from pathlib import Path
 import argparse, zipfile, hashlib,json,collections,re
 TOKENS={
 "ku_package":(b"com.my.settings",b"com/my/settings",b"com/p001my/settings",b"Lcom/my/settings",b"Lcom/p001my/settings"),
+"settings_config_consumer":(b"settingApps",b"xtzm_setting"),
+"whaletv_config_consumer":(b"whaletv_config.json",),
+"projector_settings_action":(b"android.settings.PROJECTABOUT_SETTINGS",),
 "ku_service":(b"com.my.service",b"com/my/service",b"com/p001my/service"),
 "auto_bt":(b"android.settings.AUTO_BLUETOOTH",),
 "screen_services":(b"ScreenServices",),
@@ -86,6 +89,13 @@ def main():
                 if isinstance(c,int):counts[k]+=c
         if any(counts.get(k) for k in ("ku_package","ku_service","auto_bt","screen_services")):
             rows.append(f"| {rel} | {counts['ku_package']} | {counts['ku_service']} | {counts['auto_bt']} | {counts['screen_services']} |")
+    rows+=["","## Config consumer candidate locations (string evidence only)"]
+    for rel,entry in hits.items():
+        keys=set()
+        for v in entry["matches"].values():
+            if isinstance(v,dict):keys.update(v.keys())
+        found=keys.intersection({"settings_config_consumer","whaletv_config_consumer","projector_settings_action"})
+        if found:rows.append("- "+rel+": "+", ".join(sorted(found)))
     rows+=["","## OEM config usages"]
     for k,values in config_references.items():
         rows.append("- "+k+": "+str(values[:6]))
