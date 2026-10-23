@@ -1,0 +1,51 @@
+name: Audit every 8052 OTA application and framework for KuSettings dependencies
+on:
+  push:
+    paths:
+      - "tools/audit_full_ota_ku_refs.py"
+      - ".github/workflows/audit-all-8052-ku-dependencies.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install EROFS tools and payload dumper
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq erofs-utils file unzip
+          mkdir -p /tmp/ota /tmp/images /tmp/erofs /tmp/dumper
+          curl -fL --retry 3 https://github.com/ssut/payload-dumper-go/releases/download/2.1.0/payload-dumper-go_2.1.0_linux_amd64.tar.gz -o /tmp/dumper.tar.gz
+          tar -xzf /tmp/dumper.tar.gz -C /tmp/dumper
+      - name: Retrieve SHA256-verified original 8052 OTA
+        run: |
+          curl -fL --retry 5 --retry-delay 3 \
+            https://github.com/MAX-TAC/Everycom-Cinelux-Firmware/releases/download/OTA_Updates/RJMT9660_firmware_8052.zip -o /tmp/ota/8052.zip
+          echo "bedea70fbf3f08d3c18e59d5f91e7d12828c77fac314c30fcc98332c32c88e35  /tmp/ota/8052.zip" | sha256sum -c -
+      - name: Reconstruct Android partitions and inventory all dependencies
+        run: |
+          set -euo pipefail
+          BIN=/tmp/dumper/payload-dumper-go
+          if [ ! -x "$BIN" ]; then BIN="$(find /tmp/dumper -type f -name 'payload-dumper-go*' | head -n 1)"; fi
+          chmod +x "$BIN"
+          "$BIN" -c 3 -o /tmp/images /tmp/ota/8052.zip > /tmp/dumper.log 2>&1 || { tail -n 60 /tmp/dumper.log; exit 1; }
+          for name in system system_ext vendor product; do
+            file="/tmp/images/$name.img"
+            [ -f "$file" ] || continue
+            mkdir -p "/tmp/erofs/$name"
+            fsck.erofs --extract="/tmp/erofs/$name" "$file" > "/tmp/$name-erofs.log" 2>&1 || { tail -n 30 "/tmp/$name-erofs.log"; exit 1; }
+          done
+          python3 tools/audit_full_ota_ku_refs.py /tmp/erofs research/oem-apps/Full_OTA_KuReferences
+      - name: Commit static inventory, not original firmware
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research/oem-apps/Full_OTA_KuReferences/
+          if ! git diff --cached --quiet; then
+            git commit -m "Audit all Android system/vendor applications for KuSettings and Bluetooth legacy intent references"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
