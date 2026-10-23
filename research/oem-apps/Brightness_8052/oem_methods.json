@@ -34,6 +34,54 @@
         "body_lines": 8
       },
       {
+        "name": "init",
+        "line": 40,
+        "called": [
+          [
+            "getInstance",
+            2
+          ],
+          [
+            "init",
+            1
+          ],
+          [
+            "startTime",
+            1
+          ],
+          [
+            "getBrightModel",
+            1
+          ]
+        ],
+        "strings": [],
+        "body_lines": 5
+      },
+      {
+        "name": "findUI",
+        "line": 46,
+        "called": [
+          [
+            "findViewById",
+            5
+          ],
+          [
+            "findUI",
+            1
+          ],
+          [
+            "setOnKeyListener",
+            1
+          ],
+          [
+            "setOnClickListener",
+            1
+          ]
+        ],
+        "strings": [],
+        "body_lines": 9
+      },
+      {
         "name": "initView",
         "line": 91,
         "called": [
@@ -60,6 +108,30 @@
         ],
         "strings": [],
         "body_lines": 21
+      },
+      {
+        "name": "enterClick",
+        "line": 68,
+        "called": [
+          [
+            "enterClick",
+            1
+          ],
+          [
+            "if",
+            1
+          ],
+          [
+            "getId",
+            1
+          ],
+          [
+            "clickScreensaverModel",
+            1
+          ]
+        ],
+        "strings": [],
+        "body_lines": 5
       },
       {
         "name": "onClick",
@@ -277,6 +349,89 @@
       "BrightUtils"
     ]
   },
+  "KuSourceRJ/com/coolux/source/service/BrightReceiver.java": {
+    "methods": [
+      {
+        "name": "onReceive",
+        "line": 10,
+        "called": [
+          [
+            "e",
+            2
+          ],
+          [
+            "onReceive",
+            1
+          ],
+          [
+            "getAction",
+            1
+          ],
+          [
+            "if",
+            1
+          ],
+          [
+            "equals",
+            1
+          ],
+          [
+            "getIntExtra",
+            1
+          ],
+          [
+            "getInstance",
+            1
+          ],
+          [
+            "setBrightModel",
+            1
+          ]
+        ],
+        "strings": [
+          "ScreensaverReceiver-action:",
+          "com.action.brightReceiver",
+          "brightModel",
+          "BrightReceiver-brightModel:"
+        ],
+        "body_lines": 10
+      }
+    ],
+    "filtered_strings": [
+      "BrightReceiver",
+      "BrightReceiver-brightModel:",
+      "brightModel",
+      "com.action.brightReceiver"
+    ]
+  },
+  "KuSourceRJ/com/coolux/source/utils/IntentUtils.java": {
+    "methods": [
+      {
+        "name": "customBright",
+        "line": 148,
+        "called": [
+          [
+            "customBright",
+            1
+          ],
+          [
+            "intentAction",
+            1
+          ]
+        ],
+        "strings": [
+          "android.settings.BRIGHT_Custom_SETTINGS"
+        ],
+        "body_lines": 3
+      }
+    ],
+    "filtered_strings": [
+      "android.settings.Aging.model",
+      "android.settings.BRIGHT_Custom_SETTINGS",
+      "android.settings.BRIGHT_SETTINGS_TEST",
+      "android.settings.PROJECTMODEL_SETTINGS"
+    ]
+  },
   "KuSourceRJ/com/coolux/source/utils/ImageUtils.java": {
     "methods": [
       {
@@ -353,6 +508,106 @@
           ],
           [
             "getGlvalue",
+            1
+          ]
+        ],
+        "strings": [],
+        "body_lines": 3
+      },
+      {
+        "name": "setBacklight",
+        "line": 82,
+        "called": [
+          [
+            "setBacklight",
+            2
+          ],
+          [
+            "if",
+            2
+          ],
+          [
+            "getInstance",
+            2
+          ],
+          [
+            "getSystemCtrl",
+            1
+          ],
+          [
+            "setGlvalue",
+            1
+          ]
+        ],
+        "strings": [],
+        "body_lines": 10
+      },
+      {
+        "name": "setPwmValue",
+        "line": 64,
+        "called": [
+          [
+            "setPwmValue",
+            2
+          ],
+          [
+            "if",
+            2
+          ],
+          [
+            "getInstance",
+            1
+          ],
+          [
+            "getSystemCtrl",
+            1
+          ]
+        ],
+        "strings": [],
+        "body_lines": 9
+      },
+      {
+        "name": "getPerformanceBright",
+        "line": 353,
+        "called": [
+          [
+            "getPerformanceBright",
+            1
+          ],
+          [
+            "getPerformanceDefaultBright",
+            1
+          ]
+        ],
+        "strings": [],
+        "body_lines": 3
+      },
+      {
+        "name": "getStandardBright",
+        "line": 367,
+        "called": [
+          [
+            "getStandardBright",
+            1
+          ],
+          [
+            "getStandardDefaultBright",
+            1
+          ]
+        ],
+        "strings": [],
+        "body_lines": 3
+      },
+      {
+        "name": "getQuietBright",
+        "line": 381,
+        "called": [
+          [
+            "getQuietBright",
+            1
+          ],
+          [
+            "getQuietDefaultBright",
             1
           ]
         ],
@@ -461,6 +716,138 @@
         ],
         "strings": [],
         "body_lines": 7
+      },
+      {
+        "name": "init",
+        "line": 47,
+        "called": [
+          [
+            "getInstance",
+            4
+          ],
+          [
+            "init",
+            1
+          ],
+          [
+            "modelType",
+            1
+          ],
+          [
+            "getPerformanceBright",
+            1
+          ],
+          [
+            "getStandardBright",
+            1
+          ],
+          [
+            "getQuietBright",
+            1
+          ]
+        ],
+        "strings": [],
+        "body_lines": 7
+      },
+      {
+        "name": "findUI",
+        "line": 55,
+        "called": [
+          [
+            "findViewById",
+            9
+          ],
+          [
+            "setOnKeyListener",
+            4
+          ],
+          [
+            "findUI",
+            1
+          ],
+          [
+            "setOnClickListener",
+            1
+          ]
+        ],
+        "strings": [],
+        "body_lines": 17
+      },
+      {
+        "name": "initView",
+        "line": 80,
+        "called": [
+          [
+            "initView",
+            1
+          ],
+          [
+            "viewBrightValue",
+            1
+          ]
+        ],
+        "strings": [],
+        "body_lines": 3
+      },
+      {
+        "name": "enterClick",
+        "line": 74,
+        "called": [
+          [
+            "enterClick",
+            1
+          ],
+          [
+            "if",
+            1
+          ],
+          [
+            "getId",
+            1
+          ],
+          [
+            "defaultBrightDialog",
+            1
+          ]
+        ],
+        "strings": [],
+        "body_lines": 5
+      },
+      {
+        "name": "defaultBright",
+        "line": 223,
+        "called": [
+          [
+            "getInstance",
+            4
+          ],
+          [
+            "setPerformanceDefaultBright",
+            2
+          ],
+          [
+            "defaultBright",
+            1
+          ],
+          [
+            "if",
+            1
+          ],
+          [
+            "setStandardDefaultBright",
+            1
+          ],
+          [
+            "setQuietDefaultBright",
+            1
+          ],
+          [
+            "viewBrightValue",
+            1
+          ]
+        ],
+        "strings": [],
+        "body_lines": 10
       },
       {
         "name": "onClick",
