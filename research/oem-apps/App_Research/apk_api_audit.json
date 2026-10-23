@@ -1,0 +1,1063 @@
+{
+  "KuSettings": {
+    "path": "system_a/system/app/KuSettings/KuSettings.apk",
+    "bytes": 17997485,
+    "classes_dex": [
+      "classes.dex",
+      "classes10.dex",
+      "classes11.dex",
+      "classes12.dex",
+      "classes13.dex",
+      "classes14.dex",
+      "classes15.dex",
+      "classes2.dex",
+      "classes3.dex",
+      "classes4.dex",
+      "classes5.dex",
+      "classes6.dex",
+      "classes7.dex",
+      "classes8.dex",
+      "classes9.dex"
+    ],
+    "aapt": {
+      "launcher_activity": "launchable-activity: name='com.my.settings.SettingActivity'  label='' icon=''"
+    },
+    "pattern_occurrences": {
+      "settings_provider": 79,
+      "keystone": 14,
+      "hidl_binder": 81,
+      "mtk_api": 13,
+      "input_source": 28,
+      "autofocus": 53
+    },
+    "code_files_sample": {
+      "settings_provider": [
+        "com/p001my/settingslib/WirelessUtils.java",
+        "com/p001my/utils/SharedPreferencesTest.java",
+        "com/p001my/utils/DreamUtils.java",
+        "com/p001my/settings/WirelessSettings.java",
+        "com/p001my/settings/AirplaneModeEnabler.java",
+        "com/p001my/settings/Utils.java",
+        "com/p001my/settingslib/bluetooth/LocalBluetoothLeBroadcast.java",
+        "com/p001my/settingslib/wifi/AccessPoint.java",
+        "com/p001my/settingslib/wifi/WifiTracker.java",
+        "com/p001my/settings/language/InputMethodManagerUtils.java",
+        "com/p001my/settings/language/LanguageLocalActivity.java",
+        "com/p001my/settings/time/DateTimeUtils.java"
+      ],
+      "keystone": [
+        "com/p001my/utils/IntentUtils.java",
+        "com/p001my/settings/C0950R.java",
+        "com/p001my/settings/SettingActivity.java",
+        "com/p001my/service/ScreenServices.java"
+      ],
+      "hidl_binder": [
+        "com/p001my/settings/Utils.java",
+        "com/p001my/service/MySetTimeService.java",
+        "com/p001my/service/ScreenServices.java",
+        "com/p001my/settings/wifi/WifiConfigController.java",
+        "androidx/versionedparcelable/VersionedParcelParcel.java",
+        "androidx/versionedparcelable/VersionedParcel.java",
+        "androidx/versionedparcelable/VersionedParcelStream.java",
+        "androidx/appcompat/app/AppLocalesMetadataHolderService.java",
+        "androidx/appcompat/view/menu/MenuDialogHelper.java",
+        "androidx/core/os/BundleCompat.java",
+        "androidx/core/os/BundleKt.java",
+        "androidx/core/app/ActivityRecreator.java"
+      ],
+      "mtk_api": [
+        "com/p001my/service/ScreenServices.java",
+        "com/google/android/material/color/utilities/Cam16.java",
+        "androidx/core/content/res/CamColor.java"
+      ],
+      "input_source": [
+        "com/p001my/settingslib/bluetooth/LocalBluetoothLeBroadcastAssistant.java",
+        "com/p001my/settingslib/bluetooth/LocalBluetoothLeBroadcastMetadata.java",
+        "com/bumptech/glide/GlideBuilder.java",
+        "androidx/viewpager2/widget/ViewPager2.java",
+        "androidx/customview/widget/ExploreByTouchHelper.java",
+        "androidx/core/content/IntentSanitizer.java",
+        "androidx/core/view/ContentInfoCompat.java",
+        "androidx/core/view/ViewCompat.java",
+        "androidx/core/view/accessibility/AccessibilityRecordCompat.java",
+        "androidx/core/view/accessibility/AccessibilityNodeInfoCompat.java",
+        "androidx/drawerlayout/widget/DrawerLayout.java"
+      ],
+      "autofocus": [
+        "com/p001my/settings/widget/SwitchBar.java",
+        "com/google/android/material/navigation/NavigationBarItemView.java",
+        "com/google/android/material/timepicker/ClockFaceView.java",
+        "com/google/android/material/tabs/TabLayout.java",
+        "com/google/android/material/textfield/EndCompoundLayout.java",
+        "com/google/android/material/textfield/IconHelper.java",
+        "com/google/android/material/snackbar/BaseTransientBottomBar.java",
+        "com/google/android/material/search/SearchBar.java",
+        "com/google/android/material/search/SearchViewAnimationHelper.java",
+        "com/google/android/material/slider/RangeSlider.java",
+        "com/google/android/material/slider/Slider.java",
+        "com/google/android/material/slider/BaseSlider.java"
+      ]
+    },
+    "library_loads": [],
+    "permissions": [],
+    "manifest_counts": {
+      "android:exported": 7,
+      "android:permission": 1,
+      "android:sharedUserId": 0,
+      "android:debuggable": 0,
+      "android:allowBackup": 0,
+      "android:usesCleartextTraffic": 0
+    },
+    "exported_true_mentions": 6,
+    "jadx_status": 3,
+    "jadx_log_last": "\nINFO  - progress: 752 of 2330 (32%)\nINFO  - progress: 901 of 2330 (38%)\nINFO  - progress: 976 of 2330 (41%)\nINFO  - progress: 1049 of 2330 (45%)\nINFO  - progress: 1073 of 2330 (46%)\nINFO  - progress: 1105 of 2330 (47%)\nINFO  - progress: 1162 of 2330 (49%)\nINFO  - progress: 1238 of 2330 (53%)\nINFO  - progress: 1359 of 2330 (58%)\nINFO  - progress: 1431 of 2330 (61%)\nINFO  - progress: 1493 of 2330 (64%)\nINFO  - progress: 1561 of 2330 (66%)\nINFO  - progress: 1634 of 2330 (70%)\nINFO  - progress: 1663 of 2330 (71%)\nINFO  - progress: 1677 of 2330 (71%)\nINFO  - progress: 1725 of 2330 (74%)\nINFO  - progress: 1739 of 2330 (74%)\nINFO  - progress: 1818 of 2330 (78%)\nINFO  - progress: 1871 of 2330 (80%)\nINFO  - progress: 1891 of 2330 (81%)\nINFO  - progress: 1991 of 2330 (85%)\nINFO  - progress: 2037 of 2330 (87%)\nINFO  - progress: 2066 of 2330 (88%)\nINFO  - progress: 2100 of 2330 (90%)\nINFO  - progress: 2121 of 2330 (91%)\nINFO  - progress: 2169 of 2330 (93%)\nINFO  - progress: 2262 of 2330 (97%)\n                                                             \nERROR - finished with errors, count: 94\n\n",
+    "decompiled_java_files": 3470
+  },
+  "KeystoneCorrection": {
+    "path": "system_a/system/priv-app/KeystoneCorrection/KeystoneCorrection.apk",
+    "bytes": 2301421,
+    "classes_dex": [
+      "classes.dex"
+    ],
+    "aapt": {
+      "package": "package: name='com.rjpj.tcorrection' versionCode='33' versionName='13' platformBuildVersionName='13' platformBuildVersionCode='33' compileSdkVersion='33' compileSdkVersionCodename='13'"
+    },
+    "pattern_occurrences": {
+      "keystone": 86,
+      "hardware_bridge": 8,
+      "jni_load": 1,
+      "native_methods": 4,
+      "hidl_binder": 18,
+      "autofocus": 12,
+      "settings_provider": 3,
+      "input_source": 1
+    },
+    "code_files_sample": {
+      "keystone": [
+        "com/rjpj/tcorrection/KeystoneUtil.java",
+        "com/rjpj/tcorrection/HVKeystoneActivity.java",
+        "com/rjpj/tcorrection/TCorrectionBroadcastReceiver.java",
+        "com/rjpj/tcorrection/DigitalZoomActivity.java",
+        "com/rjpj/tcorrection/FourCornerActivity.java",
+        "com/rjpj/tcorrection/R.java"
+      ],
+      "hardware_bridge": [
+        "com/rjpj/tcorrection/KeystoneUtil.java",
+        "com/rjpj/tcorrection/I2CDevice.java"
+      ],
+      "jni_load": [
+        "com/rjpj/tcorrection/I2CDevice.java"
+      ],
+      "native_methods": [
+        "com/rjpj/tcorrection/I2CDevice.java"
+      ],
+      "hidl_binder": [
+        "com/trd/common/TrdContext.java",
+        "com/trd/framework/IProjectorCtrl.java",
+        "com/trd/framework/ITrdSystemService.java",
+        "androidx/appcompat/view/menu/MenuDialogHelper.java",
+        "android/support/v4/os/IResultReceiver.java"
+      ],
+      "autofocus": [
+        "androidx/appcompat/app/AlertController.java",
+        "androidx/appcompat/widget/ActionMenuPresenter.java",
+        "androidx/appcompat/widget/SearchView.java",
+        "androidx/appcompat/widget/AppCompatEmojiEditTextHelper.java",
+        "androidx/appcompat/widget/ListPopupWindow.java",
+        "androidx/fragment/app/Fragment.java",
+        "androidx/fragment/app/SpecialEffectsController.java",
+        "androidx/fragment/app/FragmentStateManager.java",
+        "androidx/core/widget/NestedScrollView.java"
+      ],
+      "settings_provider": [
+        "androidx/core/graphics/TypefaceCompatApi29Impl.java",
+        "androidx/core/graphics/TypefaceCompatUtil.java",
+        "androidx/core/provider/FontProvider.java"
+      ],
+      "input_source": [
+        "androidx/core/view/ViewCompat.java"
+      ]
+    },
+    "library_loads": [
+      "i2c_jni"
+    ],
+    "permissions": [
+      "uses-permission: name='androidx.constraintlayout.widget.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'"
+    ],
+    "manifest_counts": {
+      "android:exported": 6,
+      "android:permission": 0,
+      "android:sharedUserId": 1,
+      "android:debuggable": 0,
+      "android:allowBackup": 1,
+      "android:usesCleartextTraffic": 0
+    },
+    "exported_true_mentions": 5,
+    "jadx_status": 3,
+    "jadx_log_last": "INFO  - loading ...\nINFO  - processing ...\nINFO  - progress: 0 of 250 (0%)\nINFO  - progress: 24 of 250 (9%)\nINFO  - progress: 82 of 250 (32%)\nINFO  - progress: 114 of 250 (45%)\nINFO  - progress: 152 of 250 (60%)\nINFO  - progress: 185 of 250 (74%)\nINFO  - progress: 210 of 250 (84%)\nINFO  - progress: 247 of 250 (98%)\n                                                             \nERROR - finished with errors, count: 2\n\n",
+    "decompiled_java_files": 449
+  },
+  "RuiAutoFocus": {
+    "path": "system_a/system/app/RuiAutoFocus/RuiAutoFocus.apk",
+    "bytes": 20906247,
+    "classes_dex": [
+      "classes.dex",
+      "classes2.dex",
+      "classes3.dex",
+      "classes4.dex",
+      "classes5.dex",
+      "classes6.dex",
+      "classes7.dex"
+    ],
+    "aapt": {},
+    "pattern_occurrences": {
+      "mtk_api": 11611,
+      "runtime_exec": 5,
+      "input_source": 162,
+      "hardware_bridge": 23,
+      "jni_load": 5,
+      "native_methods": 683,
+      "hidl_binder": 764,
+      "autofocus": 174,
+      "keystone": 66,
+      "settings_provider": 11
+    },
+    "code_files_sample": {
+      "mtk_api": [
+        "org/ini4j/ConfigParser.java",
+        "com/mediatek/twoworlds/factory/MtkTvFApiSystem.java",
+        "com/mediatek/twoworlds/factory/MtkTvFApiNetwork.java",
+        "com/mediatek/twoworlds/factory/MtkTvFApiCustomEventManager.java",
+        "com/mediatek/twoworlds/factory/MtkTvFApiPeripheralBase.java",
+        "com/mediatek/twoworlds/factory/MtkTvFApiDisplayBase.java",
+        "com/mediatek/twoworlds/factory/MtkTvFApiInformation.java",
+        "com/mediatek/twoworlds/factory/MtkTvFApiInputSource.java",
+        "com/mediatek/twoworlds/factory/MtkTvFApiTvBase.java",
+        "com/mediatek/twoworlds/factory/MtkTvFApiDisplay.java",
+        "com/mediatek/twoworlds/factory/MtkTvFApiInformationBase.java",
+        "com/mediatek/twoworlds/factory/MtkTvFApiTv.java"
+      ],
+      "runtime_exec": [
+        "org/ini4j/Reg.java",
+        "com/trd/common/utils/FileUtil.java"
+      ],
+      "input_source": [
+        "com/mediatek/twoworlds/factory/MtkTvFApiPeripheralBase.java",
+        "com/mediatek/twoworlds/factory/MtkTvFApiDisplayBase.java",
+        "com/mediatek/twoworlds/factory/MtkTvFApiAudioBase.java",
+        "com/mediatek/twoworlds/factory/MtkTvFApiInputSourceBase.java",
+        "com/mediatek/twoworlds/p002tv/MtkTvRecordAdaptorBase.java",
+        "com/mediatek/twoworlds/p002tv/TVNativeWrapper.java",
+        "com/mediatek/twoworlds/p002tv/MtkTvInputSourceBase.java",
+        "com/mediatek/twoworlds/p002tv/TVNative.java",
+        "com/mediatek/twoworlds/factory/common/MtkTvFApiDisplayTypes.java",
+        "com/mediatek/twoworlds/factory/common/MtkTvFApiAudioTypes.java",
+        "com/mediatek/twoworlds/factory/model/MtkTvFApiAudioOutPathEnum.java",
+        "com/mediatek/twoworlds/factory/common/inimanager/MtkTvFApiDisplayIniManager.java"
+      ],
+      "hardware_bridge": [
+        "com/mediatek/twoworlds/factory/MtkTvFApiPeripheralBase.java",
+        "com/trd/framework/ISystemCtrl.java",
+        "com/trd/sdk/impl/SystemCtrlImpl.java"
+      ],
+      "jni_load": [
+        "com/mediatek/twoworlds/p002tv/TVNativeCustom.java",
+        "com/mediatek/twoworlds/p002tv/TVNative.java",
+        "com/rui/cameraapi/MotorJNI.java",
+        "com/rui/cameraapi/PhioJNI.java",
+        "com/hysd/vafocus/HYSDVAF2.java"
+      ],
+      "native_methods": [
+        "com/mediatek/twoworlds/p002tv/TVNativeCustom.java",
+        "com/mediatek/twoworlds/p002tv/TVNative.java",
+        "com/rui/cameraapi/MotorJNI.java",
+        "com/rui/cameraapi/PhioJNI.java",
+        "com/hysd/vafocus/HYSDVAF2.java"
+      ],
+      "hidl_binder": [
+        "com/mediatek/twoworlds/p002tv/TVCommonUtil.java",
+        "com/mediatek/twoworlds/factory/clientwrapper/MtkTvFApiCustomWrapper.java",
+        "com/mediatek/twoworlds/factory/clientwrapper/MtkTvFApiManagerProxy.java",
+        "com/hysd/client/VAF2S.java",
+        "com/trd/common/TrdContext.java",
+        "com/trd/framework/IProjectorCtrl.java",
+        "com/trd/framework/ITemperatureCtrl.java",
+        "com/trd/framework/ITrdSystemService.java",
+        "com/trd/framework/ISystemCtrlCallback.java",
+        "com/trd/framework/IMotorCtrl.java",
+        "com/trd/framework/ISensorCtrl.java",
+        "com/trd/framework/ICommunicationCtrl.java"
+      ],
+      "autofocus": [
+        "com/hysd/vafocus/HYSDVAF2.java",
+        "com/hysd/xymscreen/MainActivity.java",
+        "com/hysd/p001ai/AiTools.java",
+        "com/hysd/p001ai/RuiCameraApi.java",
+        "com/hysd/client/VAF2S.java",
+        "com/hysd/client/HYSDkeystone.java",
+        "com/trd/framework/IProjectorCtrl.java",
+        "com/trd/framework/ITofDataListener.java",
+        "com/trd/sdk/impl/TofCtrlImpl.java",
+        "android/support/v7/app/AlertController.java",
+        "android/support/v7/widget/ActionMenuPresenter.java",
+        "android/support/v7/widget/AppCompatProgressBarHelper.java"
+      ],
+      "keystone": [
+        "com/hysd/vafocus/HYSDVAF2.java",
+        "com/hysd/xymscreen/MainActivity.java",
+        "com/hysd/p001ai/AiTools.java",
+        "com/hysd/p001ai/RuiCameraApi.java",
+        "com/hysd/client/ERRORCODE.java",
+        "com/hysd/client/VAF2S.java",
+        "com/hysd/client/HYSDkeystone.java",
+        "com/trd/framework/IProjectorCtrl.java",
+        "com/trd/sdk/ProjectorCtrl.java",
+        "com/trd/sdk/impl/ProjectorCtrlImpl.java",
+        "mediatek/sysprop/VendorProperties.java"
+      ],
+      "settings_provider": [
+        "com/hysd/p001ai/RuiCameraApi.java",
+        "com/trd/common/utils/CommonUtil.java",
+        "android/support/v4/app/NotificationManagerCompat.java",
+        "android/support/v4/graphics/TypefaceCompatApi21Impl.java",
+        "android/support/v4/graphics/TypefaceCompatUtil.java",
+        "android/support/v4/content/ContentResolverCompat.java",
+        "android/support/v4/provider/TreeDocumentFile.java",
+        "android/support/v4/provider/DocumentsContractApi19.java"
+      ]
+    },
+    "library_loads": [
+      "com_mediatek_twoworlds_tv_jni",
+      "focusvahysd",
+      "ruicameraapi_jni"
+    ],
+    "permissions": [
+      "uses-permission: name='android.permission.READ_EXTERNAL_STORAGE'",
+      "uses-permission: name='android.permission.RECEIVE_BOOT_COMPLETED'",
+      "uses-permission: name='android.permission.READ_EXTERNAL_STORAGE'",
+      "uses-permission: name='android.permission.WRITE_EXTERNAL_STORAGE'",
+      "uses-permission: name='android.permission.INTERNET'",
+      "uses-permission: name='android.permission.WRITE_EXTERNAL_STORAGE'",
+      "uses-permission: name='android.permission.READ_EXTERNAL_STORAGE'",
+      "uses-permission: name='android.permission.ACCESS_NETWORK_STATE'",
+      "uses-permission: name='android.permission.ACCESS_COARSE_LOCATION'",
+      "uses-permission: name='android.permission.ACCESS_FINE_LOCATION'",
+      "uses-permission: name='android.permission.WRITE_EXTERNAL_STORAGE'",
+      "uses-permission: name='android.permission.DISABLE_KEYGUARD'",
+      "uses-permission: name='android.permission.SYSTEM_ALERT_WINDOW'",
+      "uses-permission: name='android.permission.SYSTEM_OVERLAY_WINDOW'",
+      "uses-permission: name='android.permission.SYSTEM_ALERT_WINDOW'",
+      "uses-permission: name='android.permission.SENSOR_INFO'",
+      "uses-permission: name='android.permission.SENSOR_ENABLE'",
+      "uses-permission: name='android.permission.ACTIVITY_RECOGNITION'",
+      "uses-permission: name='android.permission.INTERACT_ACROSS_USERS'",
+      "uses-permission: name='android.permission.INJECT_EVENTS'",
+      "uses-permission: name='android.permission.INTERACT_ACROSS_USERS'"
+    ],
+    "manifest_counts": {
+      "android:exported": 2,
+      "android:permission": 0,
+      "android:sharedUserId": 0,
+      "android:debuggable": 1,
+      "android:allowBackup": 0,
+      "android:usesCleartextTraffic": 0
+    },
+    "exported_true_mentions": 2,
+    "jadx_status": 0,
+    "jadx_log_last": "INFO  - loading ...\nINFO  - processing ...\nINFO  - progress: 0 of 559 (0%)\nINFO  - progress: 7 of 559 (1%)\nINFO  - progress: 16 of 559 (2%)\nINFO  - progress: 31 of 559 (5%)\nINFO  - progress: 172 of 559 (30%)\nINFO  - progress: 253 of 559 (45%)\nINFO  - progress: 301 of 559 (53%)\nINFO  - progress: 338 of 559 (60%)\nINFO  - progress: 375 of 559 (67%)\nINFO  - progress: 397 of 559 (71%)\nINFO  - progress: 408 of 559 (72%)\nINFO  - progress: 419 of 559 (74%)\nINFO  - progress: 443 of 559 (79%)\nINFO  - progress: 464 of 559 (83%)\nINFO  - progress: 481 of 559 (86%)\nINFO  - progress: 516 of 559 (92%)\n                                                             \nINFO  - done\n\n",
+    "decompiled_java_files": 1091
+  },
+  "KuSourceRJ": {
+    "path": "system_a/system/app/KuSourceRJ/KuSourceRJ.apk",
+    "bytes": 58460781,
+    "classes_dex": [
+      "classes.dex"
+    ],
+    "aapt": {
+      "package": "package: name='com.coolux.source' versionCode='41' versionName='5.3' platformBuildVersionName='15' platformBuildVersionCode='35' compileSdkVersion='35' compileSdkVersionCodename='15'",
+      "launcher_activity": "launchable-activity: name='com.coolux.source.MainActivity'  label='' icon=''"
+    },
+    "pattern_occurrences": {
+      "autofocus": 103,
+      "keystone": 30,
+      "input_source": 190,
+      "settings_provider": 26,
+      "runtime_exec": 6,
+      "hidl_binder": 296
+    },
+    "code_files_sample": {
+      "autofocus": [
+        "com/coolux/source/C0537R.java",
+        "com/coolux/source/utils/ImageUtils.java",
+        "com/coolux/source/activity/KeystoneActivity.java",
+        "com/google/android/material/navigation/NavigationBarItemView.java",
+        "com/google/android/material/timepicker/ClockFaceView.java",
+        "com/google/android/material/tabs/TabLayout.java",
+        "com/google/android/material/textfield/EndCompoundLayout.java",
+        "com/google/android/material/textfield/IconHelper.java",
+        "com/google/android/material/snackbar/BaseTransientBottomBar.java",
+        "com/google/android/material/search/SearchBar.java",
+        "com/google/android/material/search/SearchViewAnimationHelper.java",
+        "com/google/android/material/slider/RangeSlider.java"
+      ],
+      "keystone": [
+        "com/coolux/source/C0537R.java",
+        "com/coolux/source/utils/IntentUtils.java",
+        "com/coolux/source/activity/KeystoneActivity.java",
+        "com/trd/framework/IProjectorCtrl.java",
+        "com/trd/sdk/ProjectorCtrl.java",
+        "com/trd/sdk/impl/ProjectorCtrlImpl.java"
+      ],
+      "input_source": [
+        "com/coolux/source/C0537R.java",
+        "com/coolux/source/MainActivity.java",
+        "com/coolux/source/constant/Constans.java",
+        "com/coolux/source/utils/ImageUtils.java",
+        "com/coolux/source/activity/BootSoureActivity.java",
+        "com/coolux/source/activity/BootSoureActivityOld.java",
+        "com/coolux/source/activity/testcast/StandbyActivity.java",
+        "com/coolux/source/activity/testcast/InterfaceActivity.java",
+        "com/trd/common/enums/SourceItem.java",
+        "com/trd/common/bean/TrdTvInputSourceInfo.java",
+        "androidx/viewpager2/widget/ViewPager2.java",
+        "androidx/customview/widget/ExploreByTouchHelper.java"
+      ],
+      "settings_provider": [
+        "com/coolux/source/utils/SharedPreferencesTest.java",
+        "com/coolux/source/utils/VoiceUtils.java",
+        "com/google/android/material/progressindicator/AnimatorDurationScaleProvider.java",
+        "com/trd/common/utils/CommonUtil.java",
+        "androidx/documentfile/provider/TreeDocumentFile.java",
+        "androidx/documentfile/provider/DocumentsContractApi19.java",
+        "androidx/core/app/NotificationManagerCompat.java",
+        "androidx/core/app/NotificationChannelCompat.java",
+        "androidx/core/graphics/TypefaceCompatApi29Impl.java",
+        "androidx/core/graphics/TypefaceCompatUtil.java",
+        "androidx/core/content/ContentResolverCompat.java",
+        "androidx/core/provider/FontProvider.java"
+      ],
+      "runtime_exec": [
+        "com/coolux/source/utils/UtilsTools.java",
+        "com/trd/common/utils/FileUtil.java"
+      ],
+      "hidl_binder": [
+        "com/coolux/source/service/TimeService.java",
+        "com/trd/common/TrdContext.java",
+        "com/trd/framework/IProjectorCtrl.java",
+        "com/trd/framework/ITemperatureCtrl.java",
+        "com/trd/framework/ITrdSystemService.java",
+        "com/trd/framework/ISystemCtrlCallback.java",
+        "com/trd/framework/IMotorCtrl.java",
+        "com/trd/framework/ISensorCtrl.java",
+        "com/trd/framework/ICommunicationCtrl.java",
+        "com/trd/framework/ITofCtrl.java",
+        "com/trd/framework/ISystemCtrl.java",
+        "com/trd/framework/ITrdSystemListener.java"
+      ]
+    },
+    "library_loads": [],
+    "permissions": [
+      "uses-permission: name='android.permission.CHANGE_NETWORK_STATE'",
+      "uses-permission: name='android.permission.ACCESS_WIFI_STATE'",
+      "uses-permission: name='android.permission.CHANGE_WIFI_STATE'",
+      "uses-permission: name='android.permission.INTERNET'",
+      "uses-permission: name='android.permission.ACCESS_NETWORK_STATE'",
+      "uses-permission: name='android.permission.TV_INPUT_HARDWARE'",
+      "uses-permission: name='android.permission.BIND_TV_INPUT'",
+      "uses-permission: name='android.permission.WRITE_EPG_DATA'",
+      "uses-permission: name='com.android.providers.tv.permission.WRITE_EPG_DATA'",
+      "uses-permission: name='com.coolux.source.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'"
+    ],
+    "manifest_counts": {
+      "android:exported": 9,
+      "android:permission": 0,
+      "android:sharedUserId": 0,
+      "android:debuggable": 0,
+      "android:allowBackup": 0,
+      "android:usesCleartextTraffic": 0
+    },
+    "exported_true_mentions": 8,
+    "jadx_status": 3,
+    "jadx_log_last": "(17%)\nINFO  - progress: 407 of 1969 (20%)\nINFO  - progress: 461 of 1969 (23%)\nINFO  - progress: 589 of 1969 (29%)\nINFO  - progress: 674 of 1969 (34%)\nINFO  - progress: 777 of 1969 (39%)\nINFO  - progress: 888 of 1969 (45%)\nINFO  - progress: 935 of 1969 (47%)\nINFO  - progress: 964 of 1969 (48%)\nINFO  - progress: 1013 of 1969 (51%)\nINFO  - progress: 1061 of 1969 (53%)\nINFO  - progress: 1143 of 1969 (58%)\nINFO  - progress: 1226 of 1969 (62%)\nINFO  - progress: 1273 of 1969 (64%)\nINFO  - progress: 1332 of 1969 (67%)\nINFO  - progress: 1392 of 1969 (70%)\nINFO  - progress: 1448 of 1969 (73%)\nINFO  - progress: 1492 of 1969 (75%)\nINFO  - progress: 1562 of 1969 (79%)\nINFO  - progress: 1612 of 1969 (81%)\nINFO  - progress: 1648 of 1969 (83%)\nINFO  - progress: 1696 of 1969 (86%)\nINFO  - progress: 1741 of 1969 (88%)\nINFO  - progress: 1756 of 1969 (89%)\nINFO  - progress: 1796 of 1969 (91%)\nINFO  - progress: 1796 of 1969 (91%)\nINFO  - progress: 1871 of 1969 (95%)\nINFO  - progress: 1941 of 1969 (98%)\n                                                             \nERROR - finished with errors, count: 79\n\n",
+    "decompiled_java_files": 3007
+  },
+  "trdservice": {
+    "path": "system_a/system/app/trdservice/trdservice.apk",
+    "bytes": 1966418,
+    "classes_dex": [
+      "classes.dex"
+    ],
+    "aapt": {
+      "package": "package: name='com.trd.service' versionCode='33' versionName='13' platformBuildVersionName='13' platformBuildVersionCode='33' compileSdkVersion='33' compileSdkVersionCodename='13'"
+    },
+    "pattern_occurrences": {
+      "mtk_api": 423,
+      "hidl_binder": 54,
+      "settings_provider": 8,
+      "jni_load": 1,
+      "native_methods": 5,
+      "runtime_exec": 1,
+      "autofocus": 12,
+      "input_source": 1
+    },
+    "code_files_sample": {
+      "mtk_api": [
+        "com/mediatek/twoworlds/factory/MtkTvFApiInformation.java",
+        "com/mediatek/twoworlds/factory/MtkTvFApiInformationBase.java",
+        "com/mediatek/twoworlds/factory/MtkTvFApiEventManager.java",
+        "com/mediatek/twoworlds/factory/common/IMtkTvFApiEventListener.java",
+        "com/mediatek/twoworlds/factory/interfaces/IMtkTvFApiInformationWrapper.java",
+        "com/mediatek/twoworlds/factory/callbackservice/MtkTvFApiCallbackManagerImp.java",
+        "com/mediatek/twoworlds/factory/model/MtkTvFApiEventCommonObject.java",
+        "com/mediatek/twoworlds/factory/clientwrapper/MtkTvFApiManagerProxy.java",
+        "com/mediatek/twoworlds/factory/clientwrapper/MtkTvFApiInformationWrapper.java",
+        "com/trd/service/TrdService.java",
+        "vendor/mediatek/p001tv/mtktvfactory/V1_0/MtkTvFApiEventCommonObject.java",
+        "vendor/mediatek/p001tv/mtktvfactory/V1_0/IMtkTvFApiInformation.java"
+      ],
+      "hidl_binder": [
+        "com/mediatek/twoworlds/factory/clientwrapper/MtkTvFApiManagerProxy.java",
+        "com/trd/common/TrdContext.java",
+        "com/trd/framework/ITemperatureCtrl.java",
+        "com/trd/framework/ITrdSystemService.java",
+        "com/trd/framework/ISystemCtrl.java",
+        "com/trd/service/IKeyEventCtrl.java",
+        "com/trd/service/TrdService.java",
+        "com/trd/service/ITrdService.java",
+        "androidx/appcompat/view/menu/MenuDialogHelper.java",
+        "vendor/mediatek/p001tv/mtktvfactory/V1_0/IMtkTvFApiInformation.java",
+        "vendor/mediatek/p001tv/mtktvfactory/V1_0/IMtkTvFApiManager.java",
+        "vendor/mediatek/p001tv/mtktvfactory/V1_0/IMtkTvFApiCallbackManager.java"
+      ],
+      "settings_provider": [
+        "com/trd/service/TrdService.java",
+        "com/trd/service/communication/KeyEventCtrlService.java",
+        "androidx/core/graphics/TypefaceCompatApi29Impl.java",
+        "androidx/core/graphics/TypefaceCompatUtil.java",
+        "androidx/core/provider/FontProvider.java"
+      ],
+      "jni_load": [
+        "com/trd/service/jni/MotorJNI.java"
+      ],
+      "native_methods": [
+        "com/trd/service/jni/MotorJNI.java"
+      ],
+      "runtime_exec": [
+        "com/trd/service/savemac/SaveMacToUsb.java"
+      ],
+      "autofocus": [
+        "androidx/appcompat/app/AlertController.java",
+        "androidx/appcompat/widget/ActionMenuPresenter.java",
+        "androidx/appcompat/widget/SearchView.java",
+        "androidx/appcompat/widget/AppCompatEmojiEditTextHelper.java",
+        "androidx/appcompat/widget/ListPopupWindow.java",
+        "androidx/fragment/app/Fragment.java",
+        "androidx/fragment/app/SpecialEffectsController.java",
+        "androidx/fragment/app/FragmentStateManager.java",
+        "androidx/core/widget/NestedScrollView.java"
+      ],
+      "input_source": [
+        "androidx/core/view/ViewCompat.java"
+      ]
+    },
+    "library_loads": [
+      "rjpj_private_function"
+    ],
+    "permissions": [
+      "uses-permission: name='android.permission.BLUETOOTH_CONNECT'",
+      "uses-permission: name='android.permission.INTERNET'",
+      "uses-permission: name='android.permission.ACCESS_WIFI_STATE'",
+      "uses-permission: name='android.permission.READ_EXTERNAL_STORAGE'",
+      "uses-permission: name='android.Manifest.permission.WRITE_DREAM_STATE'",
+      "uses-permission: name='android.permission.HDMI_CEC'",
+      "uses-permission: name='android.permission.ACCESS_TUNED_INFO'",
+      "uses-permission: name='android.permission.SYSTEM_ALERT_WINDOW'",
+      "uses-permission: name='androidx.constraintlayout.widget.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'"
+    ],
+    "manifest_counts": {
+      "android:exported": 4,
+      "android:permission": 0,
+      "android:sharedUserId": 0,
+      "android:debuggable": 0,
+      "android:allowBackup": 1,
+      "android:usesCleartextTraffic": 0
+    },
+    "exported_true_mentions": 3,
+    "jadx_status": 0,
+    "jadx_log_last": "INFO  - loading ...\nINFO  - processing ...\nINFO  - progress: 0 of 244 (0%)\nINFO  - progress: 14 of 244 (5%)\nINFO  - progress: 77 of 244 (31%)\nINFO  - progress: 115 of 244 (47%)\nINFO  - progress: 153 of 244 (62%)\nINFO  - progress: 194 of 244 (79%)\nINFO  - progress: 232 of 244 (95%)\n                                                             \nINFO  - done\n\n",
+    "decompiled_java_files": 438
+  },
+  "trdmiddle": {
+    "path": "vendor_a/priv-app/trdmiddle/trdmiddle.apk",
+    "bytes": 33216960,
+    "classes_dex": [
+      "classes.dex"
+    ],
+    "aapt": {
+      "package": "package: name='com.trd.framework' versionCode='1' versionName='1.0' platformBuildVersionName='13' platformBuildVersionCode='33' compileSdkVersion='33' compileSdkVersionCodename='13'"
+    },
+    "pattern_occurrences": {
+      "runtime_exec": 1,
+      "mtk_api": 11679,
+      "keystone": 61,
+      "input_source": 159,
+      "settings_provider": 22,
+      "jni_load": 5,
+      "autofocus": 74,
+      "hidl_binder": 539,
+      "native_methods": 655,
+      "hardware_bridge": 5
+    },
+    "code_files_sample": {
+      "runtime_exec": [
+        "p006e/C0062c.java"
+      ],
+      "mtk_api": [
+        "p006e/C0062c.java",
+        "p017p/C0088a.java",
+        "p017p/C0092e.java",
+        "p012k/BinderC0074a.java",
+        "com/mediatek/twoworlds/p003tv/MtkTvMdsBase.java",
+        "com/mediatek/twoworlds/p003tv/MtkTvCfgParser.java",
+        "com/mediatek/twoworlds/p003tv/MtkTvEventATSC.java",
+        "com/mediatek/twoworlds/p003tv/MtkTvSubtitleBase.java",
+        "com/mediatek/twoworlds/p003tv/MtkTvScanISDBBase.java",
+        "com/mediatek/twoworlds/p003tv/MtkTvConfigBase.java",
+        "com/mediatek/twoworlds/p003tv/MtkTvCecAnBase.java",
+        "com/mediatek/twoworlds/p003tv/MtkTvMHEG5.java"
+      ],
+      "keystone": [
+        "p006e/C0062c.java",
+        "p010i/BinderC0072a.java",
+        "com/trd/framework/InterfaceC0044c.java",
+        "com/trd/framework/projector/TrapezoidUtil.java"
+      ],
+      "input_source": [
+        "p006e/C0062c.java",
+        "com/mediatek/twoworlds/p003tv/MtkTvRecordAdaptorBase.java",
+        "com/mediatek/twoworlds/p003tv/TVNativeWrapper.java",
+        "com/mediatek/twoworlds/p003tv/MtkTvInputSourceBase.java",
+        "com/mediatek/twoworlds/p003tv/TVNative.java",
+        "com/mediatek/twoworlds/factory/MtkTvFApiPeripheralBase.java",
+        "com/mediatek/twoworlds/factory/MtkTvFApiDisplayBase.java",
+        "com/mediatek/twoworlds/factory/MtkTvFApiAudioBase.java",
+        "com/mediatek/twoworlds/factory/MtkTvFApiInputSourceBase.java",
+        "com/mediatek/twoworlds/p003tv/common/MtkTvConfigTypeBase.java",
+        "com/mediatek/twoworlds/p003tv/model/MtkTvBookingBase.java",
+        "com/mediatek/twoworlds/factory/common/MtkTvFApiDisplayTypes.java"
+      ],
+      "settings_provider": [
+        "p012k/BinderC0074a.java",
+        "p013l/C0076b.java",
+        "p010i/BinderC0072a.java",
+        "com/trd/framework/TrdSystemService.java"
+      ],
+      "jni_load": [
+        "p009h/C0071a.java",
+        "com/mediatek/twoworlds/p003tv/TVNativeCustom.java",
+        "com/mediatek/twoworlds/p003tv/TVNative.java",
+        "com/trd/android/api/TrdManager.java"
+      ],
+      "autofocus": [
+        "p009h/C0071a.java",
+        "p015n/C0086b.java",
+        "p010i/BinderC0072a.java",
+        "com/trd/framework/InterfaceC0045d.java",
+        "com/trd/framework/TrdSystemService.java",
+        "com/trd/framework/InterfaceC0049h.java",
+        "com/trd/framework/InterfaceC0052k.java",
+        "com/trd/framework/InterfaceC0044c.java",
+        "com/trd/framework/tof/TofMessage.java",
+        "com/trd/framework/tof/TofCtrlService.java",
+        "com/trd/framework/tof/TofController.java",
+        "com/trd/framework/tof/TofMessageBuilder.java"
+      ],
+      "hidl_binder": [
+        "p005d/C0057d.java",
+        "com/mediatek/twoworlds/p003tv/TVCommonUtil.java",
+        "com/mediatek/twoworlds/factory/clientwrapper/MtkTvFApiCustomWrapper.java",
+        "com/mediatek/twoworlds/factory/clientwrapper/MtkTvFApiManagerProxy.java",
+        "com/trd/framework/InterfaceC0045d.java",
+        "com/trd/framework/InterfaceC0051j.java",
+        "com/trd/framework/TrdSystemService.java",
+        "com/trd/framework/InterfaceC0043b.java",
+        "com/trd/framework/InterfaceC0048g.java",
+        "com/trd/framework/InterfaceC0049h.java",
+        "com/trd/framework/InterfaceC0042a.java",
+        "com/trd/framework/InterfaceC0050i.java"
+      ],
+      "native_methods": [
+        "com/mediatek/twoworlds/p003tv/TVNativeCustom.java",
+        "com/mediatek/twoworlds/p003tv/TVNative.java",
+        "com/trd/framework/tof/TofController.java",
+        "com/trd/android/api/TrdManager.java"
+      ],
+      "hardware_bridge": [
+        "com/mediatek/twoworlds/factory/MtkTvFApiPeripheralBase.java"
+      ]
+    },
+    "library_loads": [
+      "com_mediatek_twoworlds_tv_jni",
+      "tof_jni",
+      "trd_jni",
+      "trdmiddle"
+    ],
+    "permissions": [
+      "uses-permission: name='android.permission.BLUETOOTH_CONNECT'",
+      "uses-permission: name='android.permission.INTERNET'",
+      "uses-permission: name='android.permission.READ_EXTERNAL_STORAGE'",
+      "uses-permission: name='android.Manifest.permission.WRITE_DREAM_STATE'",
+      "uses-permission: name='android.permission.SYSTEM_ALERT_WINDOW'"
+    ],
+    "manifest_counts": {
+      "android:exported": 2,
+      "android:permission": 0,
+      "android:sharedUserId": 1,
+      "android:debuggable": 0,
+      "android:allowBackup": 1,
+      "android:usesCleartextTraffic": 0
+    },
+    "exported_true_mentions": 2,
+    "jadx_status": 3,
+    "jadx_log_last": "INFO  - loading ...\nINFO  - processing ...\nINFO  - progress: 0 of 249 (0%)\nINFO  - progress: 2 of 249 (0%)\nINFO  - progress: 11 of 249 (4%)\nINFO  - progress: 79 of 249 (31%)\nINFO  - progress: 119 of 249 (47%)\nINFO  - progress: 151 of 249 (60%)\nINFO  - progress: 180 of 249 (72%)\nINFO  - progress: 187 of 249 (75%)\nINFO  - progress: 210 of 249 (84%)\nINFO  - progress: 238 of 249 (95%)\n                                                             \nERROR - finished with errors, count: 26\n\n",
+    "decompiled_java_files": 568
+  },
+  "TvSettingsPlus": {
+    "path": "system_ext_a/priv-app/TvSettingsPlus/TvSettingsPlus.apk",
+    "bytes": 45871293,
+    "classes_dex": [
+      "classes.dex",
+      "classes10.dex",
+      "classes11.dex",
+      "classes12.dex",
+      "classes13.dex",
+      "classes14.dex",
+      "classes15.dex",
+      "classes16.dex",
+      "classes2.dex",
+      "classes3.dex",
+      "classes4.dex",
+      "classes5.dex",
+      "classes6.dex",
+      "classes7.dex",
+      "classes8.dex",
+      "classes9.dex"
+    ],
+    "aapt": {},
+    "pattern_occurrences": {
+      "mtk_api": 14510,
+      "input_source": 461,
+      "settings_provider": 571,
+      "hidl_binder": 1035,
+      "native_methods": 662,
+      "jni_load": 4,
+      "keystone": 1037,
+      "autofocus": 205,
+      "hardware_bridge": 22,
+      "runtime_exec": 1
+    },
+    "code_files_sample": {
+      "mtk_api": [
+        "okio/Utf8.java",
+        "okio/Buffer.java",
+        "kotlin/UByte.java",
+        "kotlin/Triple.java",
+        "kotlin/TuplesKt.java",
+        "kotlin/ULong.java",
+        "kotlin/DeepRecursiveScopeImpl.java",
+        "kotlin/UInt.java",
+        "kotlin/NumbersKt__BigDecimalsKt.java",
+        "kotlin/UShort.java",
+        "kotlin/DeepRecursiveScope.java",
+        "kotlin/Pair.java"
+      ],
+      "input_source": [
+        "okio/Pipe.java",
+        "com/mediatek/p005tv/p006ui/C2209R.java",
+        "com/mediatek/support/androidversioncompatiblelib/CompatibleApis.java",
+        "com/mediatek/support/sharecode/C2207R.java",
+        "com/mediatek/twoworlds/factory/MtkTvFApiPeripheralBase.java",
+        "com/mediatek/twoworlds/factory/MtkTvFApiDisplayBase.java",
+        "com/mediatek/twoworlds/factory/MtkTvFApiAudioBase.java",
+        "com/mediatek/twoworlds/factory/MtkTvFApiInputSourceBase.java",
+        "com/mediatek/twoworlds/p007tv/MtkTvRecordAdaptorBase.java",
+        "com/mediatek/twoworlds/p007tv/TVNativeWrapper.java",
+        "com/mediatek/twoworlds/p007tv/MtkTvInputSourceBase.java",
+        "com/mediatek/twoworlds/p007tv/TVNative.java"
+      ],
+      "settings_provider": [
+        "com/mediatek/opapp/OpAppUtils.java",
+        "com/mediatek/wwtv/tvcenter/util/SatelliteProviderManager.java",
+        "com/mediatek/wwtv/tvcenter/util/CommonUtil.java",
+        "com/mediatek/wwtv/tvcenter/util/SystemsApi.java",
+        "com/google/android/setupcompat/util/WizardManagerHelper.java",
+        "com/google/android/material/progressindicator/AnimatorDurationScaleProvider.java",
+        "com/airbnb/lottie/utils/Utils.java",
+        "com/android/settingslib/WirelessUtils.java",
+        "com/android/settingslib/HelpUtils.java",
+        "com/android/settingslib/Utils.java",
+        "com/android/settingslib/notification/ZenDurationDialog.java",
+        "com/android/settingslib/dream/DreamBackend.java"
+      ],
+      "hidl_binder": [
+        "com/mediatek/speakerwrapper/SpeakerServiceWrapper.java",
+        "com/mediatek/p004dm/DMDeathRecipient.java",
+        "com/mediatek/p004dm/DeviceManager.java",
+        "com/mediatek/p004dm/DMClientDeathRecipient.java",
+        "com/mediatek/p004dm/DMServer.java",
+        "com/mediatek/speakerhandler/ISpeakerCallback.java",
+        "com/mediatek/speakerhandler/ISpeakerRemoteService.java",
+        "com/mediatek/twoworlds/p007tv/TVCommonUtil.java",
+        "com/mediatek/twoworlds/factory/clientwrapper/MtkTvFApiCustomWrapper.java",
+        "com/mediatek/twoworlds/factory/clientwrapper/MtkTvFApiManagerProxy.java",
+        "com/mediatek/twoworlds/aipq/clientwrapper/MtkTvAipqProxy.java",
+        "com/google/android/setupcompat/ISetupCompatService.java"
+      ],
+      "native_methods": [
+        "com/mediatek/p004dm/DMServer.java",
+        "com/mediatek/net/MtkNetworkNative.java",
+        "com/mediatek/twoworlds/p007tv/TVNativeCustom.java",
+        "com/mediatek/twoworlds/p007tv/TVNative.java",
+        "com/android/p002tv/settings/uicustom/I2CDevice.java"
+      ],
+      "jni_load": [
+        "com/mediatek/net/MtkNetworkNative.java",
+        "com/mediatek/twoworlds/p007tv/TVNativeCustom.java",
+        "com/mediatek/twoworlds/p007tv/TVNative.java",
+        "com/android/p002tv/settings/uicustom/I2CDevice.java"
+      ],
+      "keystone": [
+        "com/mediatek/p005tv/p006ui/C2209R.java",
+        "com/mediatek/support/sharecode/C2207R.java",
+        "com/google/android/setupdesign/C2155R.java",
+        "com/google/android/setupcompat/C2138R.java",
+        "com/google/android/material/C1851R.java",
+        "com/airbnb/lottie/C1016R.java",
+        "com/android/settingslib/C1040R.java",
+        "com/android/wifitrackerlib/C1850R.java",
+        "com/android/settingslib/utils/C1116R.java",
+        "com/android/settingslib/collapsingtoolbar/C1081R.java",
+        "com/android/settingslib/transition/C1115R.java",
+        "com/android/settingslib/widget/C1125R.java"
+      ],
+      "autofocus": [
+        "com/mediatek/p005tv/p006ui/pindialog/Picker.java",
+        "com/mediatek/p005tv/p006ui/pindialog/PinPicker.java",
+        "com/google/android/setupdesign/view/CheckableLinearLayout.java",
+        "com/google/android/setupdesign/view/RichTextView.java",
+        "com/google/android/setupdesign/items/ExpandableSwitchItem.java",
+        "com/google/android/setupdesign/items/ItemViewHolder.java",
+        "com/google/android/setupdesign/accessibility/LinkAccessibilityHelper.java",
+        "com/google/android/material/navigation/NavigationBarItemView.java",
+        "com/google/android/material/timepicker/ClockFaceView.java",
+        "com/google/android/material/tabs/TabLayout.java",
+        "com/google/android/material/textfield/TextInputLayout.java",
+        "com/google/android/material/snackbar/BaseTransientBottomBar.java"
+      ],
+      "hardware_bridge": [
+        "com/mediatek/twoworlds/factory/MtkTvFApiPeripheralBase.java",
+        "com/mediatek/twoworlds/aipq/clientwrapper/MtkTvAipqWrapper.java",
+        "com/android/p002tv/settings/uicustom/I2CDevice.java",
+        "com/android/p002tv/settings/uicustom/util/ProjectorManager.java",
+        "vendor/mediatek/p010tv/mtktvaipq/V1_0/IMtkTvAipq.java"
+      ],
+      "runtime_exec": [
+        "com/android/p002tv/settings/uicustom/util/MtkUtil.java"
+      ]
+    },
+    "library_loads": [
+      "com_mediatek_net_jni",
+      "com_mediatek_twoworlds_tv_jni",
+      "settingsi2c_jni"
+    ],
+    "permissions": [
+      "uses-permission: name='android.permission.WRITE_MEDIA_STORAGE'",
+      "uses-permission: name='android.permission.MANAGE_EXTERNAL_STORAGE'",
+      "uses-permission: name='android.permission.WRITE_SETTINGS'",
+      "uses-permission: name='android.permission.WRITE_SECURE_SETTINGS'",
+      "uses-permission: name='android.permission.REQUEST_DELETE_PACKAGES'",
+      "uses-permission: name='android.permission.QUERY_ALL_PACKAGES'",
+      "uses-permission: name='com.google.android.assistant.READ_HOTWORD_STATE'",
+      "uses-permission: name='com.google.android.assistant.WRITE_HOTWORD_STATE'",
+      "uses-permission: name='android.permission.MANAGE_SLICE_PERMISSIONS'",
+      "uses-permission: name='com.netflix.ninja.permission.ESN'",
+      "uses-permission: name='com.netflix.ninja.permission.ESN_RESPONSE'",
+      "uses-permission: name='com.mediatek.tv.permission.BROADCAST'",
+      "uses-permission: name='android.permission.TV_INPUT_HARDWARE'",
+      "uses-permission: name='android.permission.BIND_TV_INPUT'",
+      "uses-permission: name='android.permission.WRITE_EPG_DATA'",
+      "uses-permission: name='com.android.providers.tv.permission.WRITE_EPG_DATA'",
+      "uses-permission: name='android.permission.MANAGE_SENSOR_PRIVACY'",
+      "uses-permission: name='android.permission.OBSERVE_SENSOR_PRIVACY'",
+      "uses-permission: name='android.permission.START_ACTIVITIES_FROM_BACKGROUND'",
+      "uses-permission: name='android.permission.SET_UNRESTRICTED_KEEP_CLEAR_AREAS'",
+      "uses-permission: name='androidx.legacy.preference.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'",
+      "uses-permission: name='com.android.tv.twopanelsettings.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'",
+      "uses-permission: name='androidx.recyclerview.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'",
+      "uses-permission: name='androidx.preference.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'",
+      "uses-permission: name='androidx.appcompat.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'",
+      "uses-permission: name='androidx.leanback.preference.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'",
+      "uses-permission: name='androidx.leanback.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'",
+      "uses-permission: name='com.android.tv.settings.library.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'",
+      "uses-permission: name='androidx.legacy.v4.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'",
+      "uses-permission: name='com.android.settingslib.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'"
+    ],
+    "manifest_counts": {
+      "android:exported": 9,
+      "android:permission": 1,
+      "android:sharedUserId": 0,
+      "android:debuggable": 0,
+      "android:allowBackup": 0,
+      "android:usesCleartextTraffic": 0
+    },
+    "exported_true_mentions": 6,
+    "jadx_status": 3,
+    "jadx_log_last": "FO  - progress: 1520 of 4062 (37%)\nINFO  - progress: 1576 of 4062 (38%)\nINFO  - progress: 1594 of 4062 (39%)\nINFO  - progress: 1631 of 4062 (40%)\nINFO  - progress: 1775 of 4062 (43%)\nINFO  - progress: 1860 of 4062 (45%)\nINFO  - progress: 1960 of 4062 (48%)\nINFO  - progress: 2085 of 4062 (51%)\nINFO  - progress: 2215 of 4062 (54%)\nINFO  - progress: 2252 of 4062 (55%)\nINFO  - progress: 2358 of 4062 (58%)\nINFO  - progress: 2503 of 4062 (61%)\nINFO  - progress: 2601 of 4062 (64%)\nINFO  - progress: 2643 of 4062 (65%)\nINFO  - progress: 2709 of 4062 (66%)\nINFO  - progress: 2777 of 4062 (68%)\nINFO  - progress: 2913 of 4062 (71%)\nINFO  - progress: 3054 of 4062 (75%)\nINFO  - progress: 3133 of 4062 (77%)\nINFO  - progress: 3221 of 4062 (79%)\nINFO  - progress: 3301 of 4062 (81%)\nINFO  - progress: 3381 of 4062 (83%)\nINFO  - progress: 3401 of 4062 (83%)\nINFO  - progress: 3541 of 4062 (87%)\nINFO  - progress: 3672 of 4062 (90%)\nINFO  - progress: 3713 of 4062 (91%)\nINFO  - progress: 3912 of 4062 (96%)\n                                                             \nERROR - finished with errors, count: 20\n\n",
+    "decompiled_java_files": 5796
+  },
+  "zxlauncher": {
+    "path": "system_a/system/app/zxlauncher/zxlauncher.apk",
+    "bytes": 42139009,
+    "classes_dex": [
+      "classes.dex",
+      "classes2.dex",
+      "classes3.dex"
+    ],
+    "aapt": {
+      "launcher_activity": "launchable-activity: name='com.zeasn.launcher.ui.MainActivity'  label='' icon=''"
+    },
+    "pattern_occurrences": {
+      "input_source": 72,
+      "native_methods": 212,
+      "settings_provider": 77,
+      "jni_load": 19,
+      "hidl_binder": 539,
+      "autofocus": 270,
+      "runtime_exec": 20,
+      "hardware_bridge": 10,
+      "mtk_api": 1
+    },
+    "code_files_sample": {
+      "input_source": [
+        "okio/Pipe.java",
+        "com/zeasn/analytics/Bean.java",
+        "com/zeasn/launcher/base/bean/SeriesBean.java",
+        "com/zeasn/launcher/base/p016ui/BaseVideoDetailsActivity.java",
+        "com/zeasn/launcher/base/p016ui/dialog/BasePlayerNotInstallDialog.java",
+        "com/zeasn/saasapi/bean/VideoDetail.java",
+        "com/zeasn/saasapi/bean/DeeplinkSource.java",
+        "com/zeasn/saasapi/bean/ColumnContent.java",
+        "com/zeasn/saasapi/bean/VideoCategoryDetail.java",
+        "com/zeasn/saasapi/bean/Recommend.java",
+        "com/zeasn/saasapi/bean/AppSilent.java",
+        "com/zeasn/widget/p023ex/ExDialogBuilder.java"
+      ],
+      "native_methods": [
+        "org/chromium/base/JavaHandlerThread.java",
+        "org/chromium/base/TimeUtils.java",
+        "org/chromium/base/PowerMonitor.java",
+        "org/chromium/base/TraceEvent.java",
+        "org/chromium/base/MemoryPressureListener.java",
+        "org/chromium/base/FieldTrialList.java",
+        "org/chromium/base/PathService.java",
+        "org/chromium/base/ApplicationStatus.java",
+        "org/chromium/base/JavaExceptionReporter.java",
+        "org/chromium/base/SysUtils.java",
+        "org/chromium/base/CpuFeatures.java",
+        "org/chromium/base/AnimationFrameTimeHistogram.java"
+      ],
+      "settings_provider": [
+        "org/chromium/base/CommandLineInitUtil.java",
+        "org/chromium/base/ContentUriUtils.java",
+        "org/chromium/base/ApiCompatibilityUtils.java",
+        "com/zeasn/utils/AppUtil.java",
+        "com/zeasn/launcher/base/widget/ZTextClock.java",
+        "com/squareup/picasso/MediaStoreRequestHandler.java",
+        "com/squareup/picasso/ContactsPhotoRequestHandler.java",
+        "com/squareup/picasso/Utils.java",
+        "com/google/ads/interactivemedia/p003v3/internal/C1196cw.java",
+        "com/google/ads/interactivemedia/p003v3/internal/akf.java",
+        "com/google/ads/interactivemedia/p003v3/internal/afo.java",
+        "com/google/android/gms/dynamite/DynamiteModule.java"
+      ],
+      "jni_load": [
+        "org/chromium/net/CronetEngine.java",
+        "org/chromium/base/library_loader/LibraryLoader.java",
+        "org/chromium/base/library_loader/Linker.java",
+        "org/chromium/base/library_loader/NativeLibraryPreloader.java",
+        "org/chromium/net/impl/CronetLibraryLoader.java",
+        "org/chromium/net/impl/VersionSafeCallbacks.java",
+        "com/tencent/mmkv/MMKV.java",
+        "com/google/android/exoplayer2/util/LibraryLoader.java",
+        "net/sqlcipher/database/SQLiteDatabase.java"
+      ],
+      "hidl_binder": [
+        "org/chromium/base/process_launcher/ChildProcessLauncher.java",
+        "org/chromium/base/process_launcher/ChildProcessService.java",
+        "org/chromium/base/process_launcher/ICallbackInt.java",
+        "org/chromium/base/process_launcher/ChildProcessServiceDelegate.java",
+        "org/chromium/base/process_launcher/IChildProcessService.java",
+        "org/chromium/base/process_launcher/ChildProcessConnection.java",
+        "com/liulishuo/filedownloader/FileDownloadLineAsync.java",
+        "com/liulishuo/filedownloader/LostServiceConnectedHandler.java",
+        "com/liulishuo/filedownloader/FileDownloader.java",
+        "com/liulishuo/filedownloader/FileDownloadServiceUIGuard.java",
+        "com/liulishuo/filedownloader/FileDownloadLine.java",
+        "com/liulishuo/filedownloader/services/BaseFileServiceUIGuard.java"
+      ],
+      "autofocus": [
+        "com/journeyapps/barcodescanner/camera/AutoFocusManager.java",
+        "com/journeyapps/barcodescanner/camera/CameraSettings.java",
+        "com/journeyapps/barcodescanner/camera/CameraConfigurationUtils.java",
+        "com/journeyapps/barcodescanner/camera/CameraManager.java",
+        "com/zeasn/tou_library/TouSettingActivity.java",
+        "com/zeasn/utils/CodeUtil.java",
+        "com/zeasn/widget/ZShapeButton.java",
+        "com/zeasn/widget/SelectorFactory.java",
+        "com/zeasn/widget/NetWorkView.java",
+        "com/zeasn/widget/ZImageView.java",
+        "com/zeasn/widget/FragmentTabLayout.java",
+        "com/zeasn/widget/ZTextView.java"
+      ],
+      "runtime_exec": [
+        "com/zeasn/utils/MyMacControl.java",
+        "com/zeasn/utils/NetWorkUtils.java",
+        "com/zeasn/utils/AppUtil.java",
+        "com/zeasn/utils/Utils.java",
+        "com/zeasn/live_data/LocalAppDataProvider.java",
+        "com/zeasn/p012c/download/install/ShellAppInstaller.java",
+        "com/zeasn/installer/xapi_lib/RomUtils.java",
+        "com/zeasn/installer/runnables/AndroidManualInstall.java",
+        "com/zeasn/installer/runnables/AndroidSilenceInstall.java",
+        "com/zeasn/saasapi/util/ShellUtils.java",
+        "com/qiniu/android/dns/local/AndroidDnsServer.java",
+        "com/android/media/api/service_api/utils/NetWorkUtils.java"
+      ],
+      "hardware_bridge": [
+        "com/zeasn/utils/NetWorkUtils.java",
+        "com/zeasn/installer/xapi_lib/RomUtils.java",
+        "com/qiniu/android/dns/local/AndroidDnsServer.java",
+        "com/android/media/api/service_api/utils/NetWorkUtils.java"
+      ],
+      "mtk_api": [
+        "com/zeasn/dpapi/brand/ZhiYuanMsd.java"
+      ]
+    },
+    "library_loads": [
+      "mmkv"
+    ],
+    "permissions": [],
+    "manifest_counts": {
+      "android:exported": 8,
+      "android:permission": 0,
+      "android:sharedUserId": 0,
+      "android:debuggable": 0,
+      "android:allowBackup": 0,
+      "android:usesCleartextTraffic": 0
+    },
+    "exported_true_mentions": 0,
+    "jadx_status": 3,
+    "jadx_log_last": "FO  - progress: 6104 of 7663 (79%)\nINFO  - progress: 6262 of 7663 (81%)\nINFO  - progress: 6367 of 7663 (83%)\nINFO  - progress: 6416 of 7663 (83%)\nINFO  - progress: 6440 of 7663 (84%)\nINFO  - progress: 6515 of 7663 (85%)\nINFO  - progress: 6538 of 7663 (85%)\nINFO  - progress: 6619 of 7663 (86%)\nINFO  - progress: 6776 of 7663 (88%)\nINFO  - progress: 6818 of 7663 (88%)\nINFO  - progress: 6901 of 7663 (90%)\nINFO  - progress: 6918 of 7663 (90%)\nINFO  - progress: 6918 of 7663 (90%)\nINFO  - progress: 6918 of 7663 (90%)\nINFO  - progress: 6918 of 7663 (90%)\nINFO  - progress: 6918 of 7663 (90%)\nINFO  - progress: 6918 of 7663 (90%)\nINFO  - progress: 6918 of 7663 (90%)\nINFO  - progress: 6918 of 7663 (90%)\nINFO  - progress: 6918 of 7663 (90%)\nINFO  - progress: 6918 of 7663 (90%)\nINFO  - progress: 6918 of 7663 (90%)\nINFO  - progress: 7052 of 7663 (92%)\nINFO  - progress: 7190 of 7663 (93%)\nINFO  - progress: 7223 of 7663 (94%)\nINFO  - progress: 7263 of 7663 (94%)\nINFO  - progress: 7531 of 7663 (98%)\n                                                             \nERROR - finished with errors, count: 35\n\n",
+    "decompiled_java_files": 11007
+  }
+}
