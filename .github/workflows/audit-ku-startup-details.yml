@@ -1,0 +1,37 @@
+name: Audit KuSettings startup targets and Bluetooth intent filters
+on:
+  push:
+    paths:
+      - "tools/audit_ku_startup_details.py"
+      - ".github/workflows/audit-ku-startup-details.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install metadata/decompiler tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq aapt unzip
+          curl -fL --retry 3 https://github.com/skylot/jadx/releases/download/v1.5.6/jadx-1.5.6.zip -o /tmp/jadx.zip
+          mkdir -p /tmp/jadx
+          unzip -q /tmp/jadx.zip -d /tmp/jadx
+      - name: Inspect KuSettings service targets
+        run: |
+          /tmp/jadx/bin/jadx --no-res --no-imports --threads-count 2 \
+            -d /tmp/ku-start/KuSettings vendor/reference/8052/APK/KuSettings.apk > /tmp/jadx.log 2>&1 || true
+          python3 tools/audit_ku_startup_details.py /tmp/ku-start vendor/reference/8052/APK research/oem-apps/KuSettings_Behavior/startup_target_details.json
+      - name: Save non-proprietary findings
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research/oem-apps/KuSettings_Behavior/startup_target_details.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Identify KuSettings boot service target and Bluetooth intent-filter availability"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
