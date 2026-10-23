@@ -1,0 +1,41 @@
+name: Resolve KuSettings boot startup and Miracast key callgraph
+on:
+  push:
+    paths:
+      - "tools/audit_ku_callgraph.py"
+      - ".github/workflows/audit-ku-callgraph.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install static decompiler
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq unzip
+          curl -fL --retry 3 https://github.com/skylot/jadx/releases/download/v1.5.6/jadx-1.5.6.zip -o /tmp/jadx.zip
+          mkdir -p /tmp/jadx
+          unzip -q /tmp/jadx.zip -d /tmp/jadx
+      - name: Decompile OEM APK locally
+        run: |
+          mkdir -p /tmp/ku-code
+          for app in KuSettings KuSetupWizard WFDSinkTest KuSourceRJ; do
+            /tmp/jadx/bin/jadx --no-res --no-imports --threads-count 2 \
+              -d "/tmp/ku-code/$app" "vendor/reference/8052/APK/$app.apk" \
+              > "/tmp/jadx-$app.log" 2>&1 || echo "::warning::$app partial"
+          done
+          python3 tools/audit_ku_callgraph.py /tmp/ku-code research/oem-apps/KuSettings_Behavior/target_callgraph.json
+      - name: Save references only
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research/oem-apps/KuSettings_Behavior/target_callgraph.json
+          if ! git diff --cached --quiet; then
+             git commit -m "Trace boot time service and Miracast KuSettings launch site"
+             git pull --rebase origin main
+             git push origin HEAD:main
+          fi
