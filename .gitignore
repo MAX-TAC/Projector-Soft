@@ -1,0 +1,14 @@
+build/
+dist/
+work/
+extracted/
+*.img
+*.pkg
+*.rar
+*.zip
+*.pk8
+*.keystore
+*.jks
+*.log
+*.tmp
+*.bak
