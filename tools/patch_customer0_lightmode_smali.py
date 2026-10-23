@@ -53,15 +53,20 @@ def patch(root):
         location=refs[0]; original=location.read_text()
         rebuilt=original; changed_count=0
         for method in methods:
-            pattern=re.compile(r"(?ms)^\.method [^\n]* "+method+r"\([^\n]*\)[^\n]*\n.*?^\.end method")
-            mm=list(pattern.finditer(rebuilt))
-            if not mm:continue
+            pattern=re.compile(r"(?ms)^\.method[^\n]*\n.*?^\.end method")
+            all_blocks=list(pattern.finditer(rebuilt))
+            mm=[x for x in all_blocks if re.search(r"(?<![\w$])"+re.escape(method)+r"\(",x.group().splitlines()[0])]
+            if not mm:
+                print("No method",cls,method,". Available:",
+                      [v.splitlines()[0] for v in rebuilt.split(".end method") if ".method" in v][-12:])
+                continue
             if len(mm)!=1:raise ValueError("Ambiguous "+method+" in "+cls)
             block=mm[0].group()
             hook="    invoke-static {p0}, "+visibility_hook+"\n"
-            count=block.count("return-void")
+            count=block.count("return-void") + block.count("return-object")
             if count<1:raise ValueError("No return-void in "+cls+" "+method)
             block=block.replace("    return-void",hook+"    return-void")
+            block=block.replace("    return-object",hook+"    return-object")
             if hook not in block:raise ValueError("Hook not inserted into "+cls+" "+method)
             rebuilt=rebuilt[:mm[0].start()]+block+rebuilt[mm[0].end():]
             changed_count+=1
