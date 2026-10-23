@@ -85,3 +85,15 @@
 
 Исходный [отчёт](../research/oem-apps/Full_OTA_KuReferences/inventory.json) и сборка [TvSettingsPlus v2](BUILD_STATUS_8052_v2.md).
 
+
+
+### Дополнительный поиск по OEM launcher и store
+
+В 8052 OTA повторно просканированы 2054 файла, включая 85 APK, с маркерами имён и конфигураций:
+- В DEX `zxlauncher.apk` обнаружены 3 упоминания имени `whaletv_config.json`.
+- В DEX `zxstore.apk` обнаружены 2 упоминания того же имени.
+- В `whaletv_config.json` пакет `com.my.settings` находится в white_list, но это **не доказывает**, что его используют для запуска настроек.
+- В `xtzm_setting.txt` `settingApps` непосредственно указывает на `com.my.settings`. Имя потребителя конфигурации пока не установлено.
+
+Без анализа потребителя `settingApps`, проверок разрешения Intent и теста кнопки пульта нельзя гарантировать полное отключение OEM GUI только заменой TvSettingsPlus. См. [обновлённый полный аудит](../research/oem-apps/Full_OTA_KuReferences/README.md).
+
