@@ -40,7 +40,35 @@ def patch(root):
     insert='\n    invoke-static {p0}, Ldev/projectorsoft/tvsettings/LegacyBrightnessUiHook;->install(Ljava/lang/Object;)V'
     block=block[:hits[0].end()]+insert+block[hits[0].end():]
     target.write_text(old[:parts.start()]+block+old[parts.end():])
-    changed=[target,listener]
+    # Hide only the obsolete Bluetooth-speaker SOURCE entry. Never disable BT services.
+    visibility_hook="Ldev/projectorsoft/tvsettings/OemMenuVisibilityHook;->hideBluetoothSpeaker(Ljava/lang/Object;)V"
+    extra=[]
+    for cls,methods in [
+        ("SourceSubMenuController.smali",("initView","onResume")),
+        ("SourceFragment.smali",("initView","onReLoad"))
+    ]:
+        refs=[p for p in root.glob("smali*/**/"+cls)
+              if p.is_file() and "/source/" in p.as_posix()]
+        if len(refs)!=1:raise ValueError("Expected one "+cls+": "+str(refs))
+        location=refs[0]; original=location.read_text()
+        rebuilt=original; changed_count=0
+        for method in methods:
+            pattern=re.compile(r"(?ms)^\\.method [^\\n]* "+method+r"\\([^\\n]*\\)[^\\n]*\\n.*?^\\.end method")
+            mm=list(pattern.finditer(rebuilt))
+            if not mm:continue
+            if len(mm)!=1:raise ValueError("Ambiguous "+method+" in "+cls)
+            block=mm[0].group()
+            hook="    invoke-static {p0}, "+visibility_hook+"\\n"
+            count=block.count("return-void")
+            if count<1:raise ValueError("No return-void in "+cls+" "+method)
+            block=block.replace("    return-void",hook+"    return-void")
+            if hook not in block:raise ValueError("Hook not inserted into "+cls+" "+method)
+            rebuilt=rebuilt[:mm[0].start()]+block+rebuilt[mm[0].end():]
+            changed_count+=1
+        if changed_count<1:raise ValueError("Cannot find init methods in "+cls)
+        location.write_text(rebuilt)
+        extra.append(location)
+    changed=[target,listener]+extra
     return {"edited_smali":[str(p.relative_to(root)) for p in changed],
             "edited_dex":sorted({mode_dex(p) for p in changed}),
             "customer_0":"only redirects if receiver and actual OEM property usable; otherwise original BrightActivity path",
