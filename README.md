@@ -38,3 +38,7 @@
 - **Projector-Soft** хранит приложения, API, зависимости, сборку и прикладные отчёты.
 
 Оригинальные APK и иные производительские бинарники принадлежат соответствующим правообладателям. Публикация в открытом репозитории требует проверки прав на распространение.
+
+## OEM brightness migration
+
+[Light-source brightness migration — 4 modes, native receiver, inline right pane and calibration protection](docs/LIGHT_SOURCE_MODE_MIGRATION.md). The Java module compiles as Android 13 DEX, but the installable v2 APK does not yet include it.
