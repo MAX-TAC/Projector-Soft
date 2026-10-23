@@ -8,316 +8,316 @@
         "components": [
           {
             "type": "provider",
-            "name": "androidx.lifecycle.ProcessLifecycleInitializer",
-            "exported": "(type 0x12)0x0",
+            "name": "androidx.startup.InitializationProvider",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.partnercustomizer.timer.TimerActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.partnercustomizer.retailmode.RetailModeConfirmActivity",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.partnercustomizer.EnergyCommonActivity",
-            "exported": "(type 0x12)0xffffffff",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.partnercustomizer.sound.AudioResetActivity",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.partnercustomizer.picture.PictureResetActivity",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.partnercustomizer.inputs.InputsActivity",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.partnercustomizer.power.PowerActivity",
-            "exported": "(type 0x12)0xffffffff",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.partnercustomizer.power.PictureOffActivity",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.partnercustomizer.vendor.channels.ChannelsActivity",
-            "exported": "(type 0x12)0xffffffff",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.partnercustomizer.vendor.channels.DiseqcTypeActivity",
-            "exported": "(type 0x12)0xffffffff",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.partnercustomizer.vendor.channels.ChannelsTwoPanalActivity",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.partnercustomizer.vendor.channels.ChannelConfirmActivity",
-            "exported": "(type 0x12)0xffffffff",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.partnercustomizer.retailmode.RetailModeActivity",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.device.sound.SoundActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.partnercustomizer.picture.PictureActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.partnercustomizer.timer.TimePickerActivity",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.partnercustomizer.multicast.NormalCastActivity",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.partnercustomizer.picture.DisplayModeActivity",
-            "exported": "(type 0x12)0xffffffff",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.device.sound.AudioOutputActivity",
-            "exported": "(type 0x12)0xffffffff",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.partnercustomizer.utils.ProgressDialogActivity",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.partnercustomizer.picture.PictureConfirmActivity",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.partnercustomizer.vendor.ResetActivity",
-            "exported": "(type 0x12)0xffffffff",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.settings.CAPTIONING_SETTINGS",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.partnercustomizer.timer.TimerSetActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.partnercustomizer.date.DateTimeActivity",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.partnercustomizer.DisplayAndSoundActivity",
-            "exported": "(type 0x12)0xffffffff",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.partnercustomizer.sound.wireless.WirelessAddNoteActivity",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.partnercustomizer.sound.wireless.WirelessNoteCommonActivity",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.partnercustomizer.sound.wireless.SpeakerDevicesBeyondActivity",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.partnercustomizer.sound.wireless.SpeakerDeviceBeyondTipsActivity",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.partnercustomizer.sound.wireless.ResetSpeakerActivity",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.partnercustomizer.sound.wireless.SelectListActivity",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.partnercustomizer.sound.wireless.StatelliteSpeakerLayoutActivity",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.partnercustomizer.sound.wireless.StatelliteSpeakerLayoutChangeTipsActivity",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "receiver",
             "name": "com.android.tv.settings.partnercustomizer.network.NetworkSliceBroadcastReceiver",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "provider",
-            "name": "android.app.slice.category.SLICE",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.partnercustomizer.TvSettingsSliceProvider",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "provider",
             "name": "com.android.tv.settings.partnercustomizer.CustomizedContentProvider",
-            "exported": "(type 0x12)0xffffffff",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "service",
             "name": "com.android.tv.settings.partnercustomizer.tvsettingservice.BluetoothReconnectService",
-            "exported": "(type 0x12)0xffffffff",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "service",
             "name": "com.android.tv.settings.partnercustomizer.switchofftimer.SwitchOffTimerService",
-            "exported": "(type 0x12)0xffffffff",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "service",
             "name": "com.android.tv.settings.partnercustomizer.tvsettingservice.WirelessSpeakerServices",
-            "exported": "(type 0x12)0xffffffff",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "receiver",
-            "name": "android.intent.action.BOOT_COMPLETED",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.partnercustomizer.utils.SoundEARCReceiver",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "receiver",
-            "name": "android.intent.action.BOOT_COMPLETED",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.partnercustomizer.tvsettingservice.TvBootupReceiver",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "receiver",
-            "name": "android.intent.action.LOCALE_CHANGED",
-            "exported": "(type 0x12)0x0",
+            "name": "com.android.tv.settings.partnercustomizer.reeciver.LanguageChangeReceiver",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.uicustom.MainActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.uicustom.fragment.projector.KeystoneCalibrationActivity",
-            "exported": "(type 0x12)0xffffffff",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
@@ -331,182 +331,182 @@
           {
             "type": "service",
             "name": "com.android.tv.settings.uicustom.floatmenu.FloatMenuService",
-            "exported": "(type 0x12)0xffffffff",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.LEANBACK_LAUNCHER",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.MainSettings",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.connectivity.setup.WifiSetupActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.connectivity.NetworkRequestDialogActivity",
+            "exported": "true",
             "permission": "android.permission.NETWORK_SETTINGS",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.connectivity.WifiConnectionActivity",
+            "exported": "true",
             "permission": "android.permission.NETWORK_SETTINGS",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.connectivity.EditProxySettingsActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.connectivity.EditIpSettingsActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.connectivity.AddWifiNetworkActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.accounts.AccountSliceActivity",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.accounts.AccountsActivity",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.accounts.AccountsTrampolineActivity",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
-            "enabled": "(type 0x12)0xffffffff"
+            "enabled": "true"
           },
           {
             "type": "activity-alias",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.google.android.tv.settings.AccountActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.accounts.AccountSyncActivity",
-            "exported": "(type 0x12)0xffffffff",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.accounts.ManageUserServicesSliceActivity",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity-alias",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.google.android.tv.settings.ManageUserServicesActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.accounts.RemoveAccountDialog",
-            "exported": "(type 0x12)0xffffffff",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.accounts.AddAccountWithTypeActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "com.android.settings.SHORTCUT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.device.apps.AppsActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "com.android.settings.SHORTCUT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.device.apps.AllAppsActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.settings.MANAGE_APP_ALL_FILES_ACCESS_PERMISSION",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.device.apps.specialaccess.AllFilesAccessActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.settings.USAGE_ACCESS_SETTINGS",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.device.apps.specialaccess.AppUsageAccessActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.settings.PICTURE_IN_PICTURE_SETTINGS",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.device.apps.specialaccess.PictureInPictureActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.settings.action.MANAGE_OVERLAY_PERMISSION",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.device.apps.specialaccess.SystemAlertActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.settings.REQUEST_SCHEDULE_EXACT_ALARM",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.device.apps.specialaccess.AlarmsAndRemindersActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.device.apps.AppManagementActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.os.storage.action.MANAGE_STORAGE",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.device.StorageResetActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
@@ -519,491 +519,491 @@
           },
           {
             "type": "activity",
-            "name": "android.intent.category.LEANBACK_SETTINGS",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.connectivity.NetworkActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity-alias",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.oemlink.NetworkSettingsActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.system.SecurityActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity-alias",
-            "name": "android.intent.category.LEANBACK_SETTINGS",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.users.RestrictedProfileActivityLauncherEntry",
+            "exported": "true",
             "permission": "",
-            "enabled": "(type 0x12)0x0"
+            "enabled": "false"
           },
           {
             "type": "activity",
-            "name": "com.android.settings.SHORTCUT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.device.displaysound.DisplaySoundActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.device.display.ambient.AmbientSliceActivity",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity-alias",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.google.android.tv.settings.AmbientActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.device.display.daydream.DaydreamActivity",
-            "exported": "(type 0x12)0xffffffff",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.device.display.daydream.DaydreamVoiceAction",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.system.CaptionSetupActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity-alias",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.oemlink.AccessibilityCaptionActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.system.DateTimeActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "com.android.settings.SHORTCUT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.system.LocationActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.system.TextToSpeechActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.system.development.DevelopmentActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.system.development.AppPicker",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.inputmethod.KeyboardActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.autofill.AutofillPickerActivity",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.autofill.AutofillPickerTrampolineActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.system.AppLanguageActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.system.LanguageActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.system.InputsActivity",
-            "exported": "(type 0x12)0xffffffff",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.accessories.BluetoothAccessoryActivity",
-            "exported": "(type 0x12)0xffffffff",
+            "exported": "true",
             "permission": "android.permission.BLUETOOTH_CONNECT",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.accessories.AddAccessoryActivity",
+            "exported": "true",
             "permission": "android.permission.BLUETOOTH_CONNECT",
             "enabled": ""
           },
           {
             "type": "receiver",
-            "name": "android.bluetooth.device.action.PAIRING_REQUEST",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.accessories.BluetoothPairingRequest",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.accessories.BluetoothPairingDialog",
+            "exported": "true",
             "permission": "android.permission.BLUETOOTH_PRIVILEGED",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.accessories.BluetoothDevicePickerActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.VOICE_LAUNCH",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.about.AboutActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.VOICE_LAUNCH",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.about.StatusActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.about.LicenseActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.name.DeviceNameSettingsActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "com.android.settings.icon",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.name.DeviceNameSuggestionActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.name.setup.DeviceNameFlowStartActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "service",
             "name": "com.android.tv.settings.users.UserSwitchListenerService",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "receiver",
-            "name": "android.intent.action.BOOT_COMPLETED",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.users.UserSwitchListenerService$BootReceiver",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "receiver",
-            "name": "com.google.android.tungsten.setupwraith.TV_SETTINGS_POST_SETUP",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.device.storage.DiskReceiver",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "service",
             "name": "com.android.tv.settings.users.RestrictedProfilePinService",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "service",
             "name": "com.android.tv.settings.device.storage.SettingsStorageService$Impl",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0x0",
+            "name": "com.android.tv.settings.device.storage.NewStorageActivity",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0x0",
+            "name": "com.android.tv.settings.device.storage.UnmountActivity",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0x0",
+            "name": "com.android.tv.settings.device.storage.FormatActivity",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0x0",
+            "name": "com.android.tv.settings.device.storage.MigrateStorageActivity",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0x0",
+            "name": "com.android.tv.settings.device.apps.MoveAppActivity",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.accessories.BluetoothRequestPermissionActivity",
+            "exported": "true",
             "permission": "android.permission.BLUETOOTH",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.system.FallbackHome",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.inputmethod.InputMethodAndSubtypeEnablerActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.device.apps.specialaccess.ExternalSourcesActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.privacy.NotificationAccessActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.privacy.SensorToggleActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.EmptyStubActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "provider",
-            "name": "android.support.FILE_PROVIDER_PATHS",
-            "exported": "(type 0x12)0x0",
+            "name": "androidx.core.content.FileProvider",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "provider",
-            "name": "com.android.settings.action.SUGGESTION_STATE_PROVIDER",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.name.SuggestionContentProvider",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.deviceadmin.ProfileOwnerAdd",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.ActionDisabledByAdminDialog",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.deviceadmin.DeviceAdminAdd",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.slice.SliceActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.oemlink.AccessibilitySettingsActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.oemlink.AccessibilityServiceActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.oemlink.FactoryResetActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.vendor.VendorActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "receiver",
-            "name": "com.android.tv.settings.REMOVE_WIFI",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.DeviceSettingBroadcastReceiver",
+            "exported": "true",
             "permission": "android.permission.READ_PRIVILEGED_PHONE_STATE",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.android.tv.settings.accessories.BluetoothActionActivity",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "service",
             "name": "com.android.tv.settings.accessories.BluetoothDevicesService",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "provider",
-            "name": "android.app.slice.category.SLICE",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.accessories.ConnectedDevicesSliceProvider",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "receiver",
             "name": "com.android.tv.settings.accessories.ConnectedDevicesSliceBroadcastReceiver",
-            "exported": "(type 0x12)0x0",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "receiver",
-            "name": "android.intent.action.BOOT_COMPLETED",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.BootReceiver",
+            "exported": "true",
             "permission": "",
-            "enabled": "(type 0x12)0xffffffff"
+            "enabled": "true"
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.RemoteBugreportActivity",
+            "exported": "true",
             "permission": "android.permission.DUMP",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.enterprise.EnterprisePrivacySettingsActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.device.apps.ConfirmationActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "receiver",
-            "name": "android.intent.action.GLOBAL_BUTTON",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.android.tv.settings.GlobalKeyReceiver",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
@@ -1040,50 +1040,50 @@
         "components": [
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.my.settings.SettingActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.settings.WIFI_SETTINGS",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.my.settings.wifi.MyWifiActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.my.settings.bluetooth.MyBluetoothActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.my.settings.bluetooth.MyAutoBluetoothActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.my.settings.language.LanguageActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.my.settings.language.LanguageLocalActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.my.settings.time.DateTimeActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
@@ -1096,8 +1096,8 @@
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.my.settings.activity.ScreenshotActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
@@ -1110,22 +1110,22 @@
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.my.settings.activity.ProjectionActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.my.settings.activity.AllAppActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "receiver",
-            "name": "android.intent.action.BOOT_COMPLETED",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.my.service.BootupReceiver",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
@@ -1134,21 +1134,21 @@
             "name": "com.my.service.MySetTimeService",
             "exported": "",
             "permission": "",
-            "enabled": "(type 0x12)0xffffffff"
+            "enabled": "true"
           },
           {
             "type": "provider",
-            "name": "androidx.profileinstaller.ProfileInstallerInitializer",
-            "exported": "(type 0x12)0x0",
+            "name": "androidx.startup.InitializationProvider",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "receiver",
-            "name": "androidx.profileinstaller.action.BENCHMARK_OPERATION",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "androidx.profileinstaller.ProfileInstallReceiver",
+            "exported": "true",
             "permission": "android.permission.DUMP",
-            "enabled": "(type 0x12)0xffffffff"
+            "enabled": "true"
           }
         ]
       },
@@ -4887,6 +4887,63 @@
             ]
           }
         ],
+        "KuSettings activity/services": [
+          {
+            "file": "com/p001my/utils/IntentUtils.java",
+            "hits": 2,
+            "lines": [
+              229,
+              237
+            ]
+          },
+          {
+            "file": "com/p001my/settings/SettingActivity.java",
+            "hits": 6,
+            "lines": [
+              4,
+              5,
+              27,
+              30,
+              33
+            ]
+          },
+          {
+            "file": "com/p001my/service/BootupReceiver.java",
+            "hits": 1,
+            "lines": [
+              4
+            ]
+          },
+          {
+            "file": "com/p001my/service/MySetTimeService.java",
+            "hits": 6,
+            "lines": [
+              4,
+              5,
+              7,
+              10,
+              13
+            ]
+          },
+          {
+            "file": "com/p001my/service/ScreenServices.java",
+            "hits": 19,
+            "lines": [
+              4,
+              5,
+              7,
+              12,
+              18
+            ]
+          },
+          {
+            "file": "com/p001my/settings/activity/ScreenshotActivity.java",
+            "hits": 1,
+            "lines": [
+              203
+            ]
+          }
+        ],
         "KuSourceRJ package": [
           {
             "file": "com/p001my/utils/IntentUtils.java",
@@ -5016,92 +5073,92 @@
         "components": [
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.MainActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.activity.BootSoureActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.activity.BrightActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.activity.VoiceActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.activity.RestoreActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.activity.HighTemperatureActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.activity.FanDetectionActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.activity.AllAppAutoActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.activity.AuthorizationActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.activity.DustproofActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "receiver",
-            "name": "android.intent.action.BOOT_COMPLETED",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.service.BootupReceiver",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "receiver",
-            "name": "com.action.screensaver",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.service.ScreensaverReceiver",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "receiver",
-            "name": "com.action.brightReceiver",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.service.BrightReceiver",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
@@ -5110,173 +5167,173 @@
             "name": "com.coolux.source.service.TimeService",
             "exported": "",
             "permission": "",
-            "enabled": "(type 0x12)0xffffffff"
+            "enabled": "true"
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.activity.PoweronModeActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.activity.ProjectModelActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.activity.KeystoneActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.activity.AutomaticAdmissionActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.activity.MyTestActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.activity.testcast.TestCastActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.activity.testcast.InterfaceTestActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.activity.testcast.StandbyActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.activity.testcast.DlpActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.activity.testcast.InterfaceActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.activity.testcast.BrightTestActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.activity.testcast.AudioVideoActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.activity.testcast.LeftRightVideoActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.activity.testcast.AgingModelActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.activity.testcast.AgingActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.activity.testcast.RebootNumActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.activity.testcast.PrintTestActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.activity.testcast.CustomBrightActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.activity.testcast.OtherActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.activity.testcast.ClearTimeActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.activity.testcast.SetTimeActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.activity.testcast.WifiSNActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.coolux.source.activity.testcast.WiredSNActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "provider",
-            "name": "androidx.lifecycle.ProcessLifecycleInitializer",
-            "exported": "(type 0x12)0x0",
+            "name": "androidx.startup.InitializationProvider",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           }
@@ -7148,6 +7205,99 @@
             ]
           }
         ],
+        "TRD SDK call sites": [
+          {
+            "file": "com/trd/framework/ITrdSystemService.java",
+            "hits": 6,
+            "lines": [
+              113,
+              115,
+              115,
+              119,
+              121
+            ]
+          },
+          {
+            "file": "com/trd/sdk/MotorCtrl.java",
+            "hits": 1,
+            "lines": [
+              4
+            ]
+          },
+          {
+            "file": "com/trd/sdk/TrdSystemManager.java",
+            "hits": 9,
+            "lines": [
+              4,
+              5,
+              6,
+              10,
+              12
+            ]
+          },
+          {
+            "file": "com/trd/sdk/ProjectorCtrl.java",
+            "hits": 1,
+            "lines": [
+              4
+            ]
+          },
+          {
+            "file": "com/trd/sdk/TrdSdk.java",
+            "hits": 13,
+            "lines": [
+              4,
+              5,
+              5,
+              7,
+              8
+            ]
+          },
+          {
+            "file": "com/trd/sdk/impl/MotorCtrlImpl.java",
+            "hits": 10,
+            "lines": [
+              4,
+              6,
+              18,
+              22,
+              22
+            ]
+          },
+          {
+            "file": "com/trd/sdk/impl/SystemCtrlImpl.java",
+            "hits": 5,
+            "lines": [
+              4,
+              5,
+              20,
+              22,
+              29
+            ]
+          },
+          {
+            "file": "com/trd/sdk/impl/ProjectorCtrlImpl.java",
+            "hits": 36,
+            "lines": [
+              4,
+              6,
+              18,
+              22,
+              22
+            ]
+          },
+          {
+            "file": "com/coolux/source/utils/ImageUtils.java",
+            "hits": 10,
+            "lines": [
+              49,
+              53,
+              71,
+              75,
+              79
+            ]
+          }
+        ],
         "System settings writes": [
           {
             "file": "com/trd/common/utils/CommonUtil.java",
@@ -7904,6 +8054,15 @@
               410
             ]
           }
+        ],
+        "KuSettings activity/services": [
+          {
+            "file": "com/coolux/source/service/BootupReceiver.java",
+            "hits": 1,
+            "lines": [
+              4
+            ]
+          }
         ]
       }
     },
@@ -7915,16 +8074,16 @@
           {
             "type": "service",
             "name": "com.hysd.client.VAF2S",
-            "exported": "(type 0x12)0xffffffff",
+            "exported": "true",
             "permission": "",
-            "enabled": "(type 0x12)0xffffffff"
+            "enabled": "true"
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.hysd.xymscreen.MainActivity",
+            "exported": "true",
             "permission": "",
-            "enabled": "(type 0x12)0xffffffff"
+            "enabled": "true"
           }
         ]
       },
@@ -7938,43 +8097,43 @@
         "components": [
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.rjpj.tcorrection.FourCornerActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.rjpj.tcorrection.DigitalZoomActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
-            "name": "android.intent.category.DEFAULT",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.rjpj.tcorrection.HVKeystoneActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": "com.rjpj.tcorrection.MainActivity",
-            "exported": "(type 0x12)0xffffffff",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "receiver",
             "name": "com.rjpj.tcorrection.TCorrectionBroadcastReceiver",
-            "exported": "(type 0x12)0xffffffff",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "provider",
-            "name": "androidx.lifecycle.ProcessLifecycleInitializer",
-            "exported": "(type 0x12)0x0",
+            "name": "androidx.startup.InitializationProvider",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           }
@@ -7990,29 +8149,29 @@
         "components": [
           {
             "type": "activity",
-            "name": "android.intent.action.MAIN",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.trd.service.MainActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "service",
-            "name": "com.trd.service.service",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.trd.service.TrdService",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "receiver",
-            "name": "com.android.server.power.ACTION_PRE_SHUTDOWN",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.trd.service.system.shutdown.PreShutdownReceiver",
+            "exported": "true",
             "permission": "",
-            "enabled": "(type 0x12)0xffffffff"
+            "enabled": "true"
           },
           {
             "type": "provider",
-            "name": "androidx.lifecycle.ProcessLifecycleInitializer",
-            "exported": "(type 0x12)0x0",
+            "name": "androidx.startup.InitializationProvider",
+            "exported": "false",
             "permission": "",
             "enabled": ""
           }
@@ -8028,15 +8187,15 @@
         "components": [
           {
             "type": "activity",
-            "name": "android.intent.action.MAIN",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.trd.framework.MainActivity",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "service",
-            "name": "com.trd.framework.service",
-            "exported": "(type 0x12)0xffffffff",
+            "name": "com.trd.framework.TrdSystemService",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           }
@@ -8053,14 +8212,14 @@
           {
             "type": "activity",
             "name": ".OTASystemNetworkUpdateActivity",
-            "exported": "(type 0x12)0xffffffff",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
           {
             "type": "activity",
             "name": ".OTASystemLocalUpdateActivity",
-            "exported": "(type 0x12)0xffffffff",
+            "exported": "true",
             "permission": "",
             "enabled": ""
           },
@@ -8069,14 +8228,14 @@
             "name": ".OTADownloadService",
             "exported": "",
             "permission": "",
-            "enabled": "(type 0x12)0xffffffff"
+            "enabled": "true"
           },
           {
             "type": "service",
             "name": ".OTACheckService",
             "exported": "",
             "permission": "",
-            "enabled": "(type 0x12)0xffffffff"
+            "enabled": "true"
           },
           {
             "type": "activity",

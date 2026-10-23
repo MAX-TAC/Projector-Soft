@@ -10,149 +10,149 @@ Decompiled Java files: 5796
 
 | Type | Name | Exported | Permission |
 |---|---|---|---|
-| provider | androidx.lifecycle.ProcessLifecycleInitializer | (type 0x12)0x0 |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | com.android.tv.settings.partnercustomizer.retailmode.RetailModeConfirmActivity | (type 0x12)0x0 |  |
-| activity | com.android.tv.settings.partnercustomizer.EnergyCommonActivity | (type 0x12)0xffffffff |  |
-| activity | com.android.tv.settings.partnercustomizer.sound.AudioResetActivity | (type 0x12)0x0 |  |
-| activity | com.android.tv.settings.partnercustomizer.picture.PictureResetActivity | (type 0x12)0x0 |  |
-| activity | com.android.tv.settings.partnercustomizer.inputs.InputsActivity | (type 0x12)0x0 |  |
-| activity | com.android.tv.settings.partnercustomizer.power.PowerActivity | (type 0x12)0xffffffff |  |
-| activity | com.android.tv.settings.partnercustomizer.power.PictureOffActivity | (type 0x12)0x0 |  |
-| activity | com.android.tv.settings.partnercustomizer.vendor.channels.ChannelsActivity | (type 0x12)0xffffffff |  |
-| activity | com.android.tv.settings.partnercustomizer.vendor.channels.DiseqcTypeActivity | (type 0x12)0xffffffff |  |
-| activity | com.android.tv.settings.partnercustomizer.vendor.channels.ChannelsTwoPanalActivity | (type 0x12)0x0 |  |
-| activity | com.android.tv.settings.partnercustomizer.vendor.channels.ChannelConfirmActivity | (type 0x12)0xffffffff |  |
-| activity | com.android.tv.settings.partnercustomizer.retailmode.RetailModeActivity | (type 0x12)0x0 |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | com.android.tv.settings.partnercustomizer.timer.TimePickerActivity | (type 0x12)0x0 |  |
-| activity | com.android.tv.settings.partnercustomizer.multicast.NormalCastActivity | (type 0x12)0x0 |  |
-| activity | com.android.tv.settings.partnercustomizer.picture.DisplayModeActivity | (type 0x12)0xffffffff |  |
-| activity | com.android.tv.settings.device.sound.AudioOutputActivity | (type 0x12)0xffffffff |  |
-| activity | com.android.tv.settings.partnercustomizer.utils.ProgressDialogActivity | (type 0x12)0x0 |  |
-| activity | com.android.tv.settings.partnercustomizer.picture.PictureConfirmActivity | (type 0x12)0x0 |  |
-| activity | com.android.tv.settings.partnercustomizer.vendor.ResetActivity | (type 0x12)0xffffffff |  |
-| activity | android.settings.CAPTIONING_SETTINGS | (type 0x12)0xffffffff |  |
-| activity | com.android.tv.settings.partnercustomizer.date.DateTimeActivity | (type 0x12)0x0 |  |
-| activity | com.android.tv.settings.partnercustomizer.DisplayAndSoundActivity | (type 0x12)0xffffffff |  |
-| activity | com.android.tv.settings.partnercustomizer.sound.wireless.WirelessAddNoteActivity | (type 0x12)0x0 |  |
-| activity | com.android.tv.settings.partnercustomizer.sound.wireless.WirelessNoteCommonActivity | (type 0x12)0x0 |  |
-| activity | com.android.tv.settings.partnercustomizer.sound.wireless.SpeakerDevicesBeyondActivity | (type 0x12)0x0 |  |
-| activity | com.android.tv.settings.partnercustomizer.sound.wireless.SpeakerDeviceBeyondTipsActivity | (type 0x12)0x0 |  |
-| activity | com.android.tv.settings.partnercustomizer.sound.wireless.ResetSpeakerActivity | (type 0x12)0x0 |  |
-| activity | com.android.tv.settings.partnercustomizer.sound.wireless.SelectListActivity | (type 0x12)0x0 |  |
-| activity | com.android.tv.settings.partnercustomizer.sound.wireless.StatelliteSpeakerLayoutActivity | (type 0x12)0x0 |  |
-| activity | com.android.tv.settings.partnercustomizer.sound.wireless.StatelliteSpeakerLayoutChangeTipsActivity | (type 0x12)0x0 |  |
-| receiver | com.android.tv.settings.partnercustomizer.network.NetworkSliceBroadcastReceiver | (type 0x12)0x0 |  |
-| provider | android.app.slice.category.SLICE | (type 0x12)0xffffffff |  |
-| provider | com.android.tv.settings.partnercustomizer.CustomizedContentProvider | (type 0x12)0xffffffff |  |
-| service | com.android.tv.settings.partnercustomizer.tvsettingservice.BluetoothReconnectService | (type 0x12)0xffffffff |  |
-| service | com.android.tv.settings.partnercustomizer.switchofftimer.SwitchOffTimerService | (type 0x12)0xffffffff |  |
-| service | com.android.tv.settings.partnercustomizer.tvsettingservice.WirelessSpeakerServices | (type 0x12)0xffffffff |  |
-| receiver | android.intent.action.BOOT_COMPLETED | (type 0x12)0xffffffff |  |
-| receiver | android.intent.action.BOOT_COMPLETED | (type 0x12)0xffffffff |  |
-| receiver | android.intent.action.LOCALE_CHANGED | (type 0x12)0x0 |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | com.android.tv.settings.uicustom.fragment.projector.KeystoneCalibrationActivity | (type 0x12)0xffffffff |  |
+| provider | androidx.startup.InitializationProvider | false |  |
+| activity | com.android.tv.settings.partnercustomizer.timer.TimerActivity | true |  |
+| activity | com.android.tv.settings.partnercustomizer.retailmode.RetailModeConfirmActivity | false |  |
+| activity | com.android.tv.settings.partnercustomizer.EnergyCommonActivity | true |  |
+| activity | com.android.tv.settings.partnercustomizer.sound.AudioResetActivity | false |  |
+| activity | com.android.tv.settings.partnercustomizer.picture.PictureResetActivity | false |  |
+| activity | com.android.tv.settings.partnercustomizer.inputs.InputsActivity | false |  |
+| activity | com.android.tv.settings.partnercustomizer.power.PowerActivity | true |  |
+| activity | com.android.tv.settings.partnercustomizer.power.PictureOffActivity | false |  |
+| activity | com.android.tv.settings.partnercustomizer.vendor.channels.ChannelsActivity | true |  |
+| activity | com.android.tv.settings.partnercustomizer.vendor.channels.DiseqcTypeActivity | true |  |
+| activity | com.android.tv.settings.partnercustomizer.vendor.channels.ChannelsTwoPanalActivity | false |  |
+| activity | com.android.tv.settings.partnercustomizer.vendor.channels.ChannelConfirmActivity | true |  |
+| activity | com.android.tv.settings.partnercustomizer.retailmode.RetailModeActivity | false |  |
+| activity | com.android.tv.settings.device.sound.SoundActivity | true |  |
+| activity | com.android.tv.settings.partnercustomizer.picture.PictureActivity | true |  |
+| activity | com.android.tv.settings.partnercustomizer.timer.TimePickerActivity | false |  |
+| activity | com.android.tv.settings.partnercustomizer.multicast.NormalCastActivity | false |  |
+| activity | com.android.tv.settings.partnercustomizer.picture.DisplayModeActivity | true |  |
+| activity | com.android.tv.settings.device.sound.AudioOutputActivity | true |  |
+| activity | com.android.tv.settings.partnercustomizer.utils.ProgressDialogActivity | false |  |
+| activity | com.android.tv.settings.partnercustomizer.picture.PictureConfirmActivity | false |  |
+| activity | com.android.tv.settings.partnercustomizer.vendor.ResetActivity | true |  |
+| activity | com.android.tv.settings.partnercustomizer.timer.TimerSetActivity | true |  |
+| activity | com.android.tv.settings.partnercustomizer.date.DateTimeActivity | false |  |
+| activity | com.android.tv.settings.partnercustomizer.DisplayAndSoundActivity | true |  |
+| activity | com.android.tv.settings.partnercustomizer.sound.wireless.WirelessAddNoteActivity | false |  |
+| activity | com.android.tv.settings.partnercustomizer.sound.wireless.WirelessNoteCommonActivity | false |  |
+| activity | com.android.tv.settings.partnercustomizer.sound.wireless.SpeakerDevicesBeyondActivity | false |  |
+| activity | com.android.tv.settings.partnercustomizer.sound.wireless.SpeakerDeviceBeyondTipsActivity | false |  |
+| activity | com.android.tv.settings.partnercustomizer.sound.wireless.ResetSpeakerActivity | false |  |
+| activity | com.android.tv.settings.partnercustomizer.sound.wireless.SelectListActivity | false |  |
+| activity | com.android.tv.settings.partnercustomizer.sound.wireless.StatelliteSpeakerLayoutActivity | false |  |
+| activity | com.android.tv.settings.partnercustomizer.sound.wireless.StatelliteSpeakerLayoutChangeTipsActivity | false |  |
+| receiver | com.android.tv.settings.partnercustomizer.network.NetworkSliceBroadcastReceiver | false |  |
+| provider | com.android.tv.settings.partnercustomizer.TvSettingsSliceProvider | true |  |
+| provider | com.android.tv.settings.partnercustomizer.CustomizedContentProvider | true |  |
+| service | com.android.tv.settings.partnercustomizer.tvsettingservice.BluetoothReconnectService | true |  |
+| service | com.android.tv.settings.partnercustomizer.switchofftimer.SwitchOffTimerService | true |  |
+| service | com.android.tv.settings.partnercustomizer.tvsettingservice.WirelessSpeakerServices | true |  |
+| receiver | com.android.tv.settings.partnercustomizer.utils.SoundEARCReceiver | true |  |
+| receiver | com.android.tv.settings.partnercustomizer.tvsettingservice.TvBootupReceiver | true |  |
+| receiver | com.android.tv.settings.partnercustomizer.reeciver.LanguageChangeReceiver | false |  |
+| activity | com.android.tv.settings.uicustom.MainActivity | true |  |
+| activity | com.android.tv.settings.uicustom.fragment.projector.KeystoneCalibrationActivity | true |  |
 | activity | com.android.tv.settings.uicustom.floatmenu.MenuJumpActivity |  |  |
-| service | com.android.tv.settings.uicustom.floatmenu.FloatMenuService | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.LEANBACK_LAUNCHER | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff | android.permission.NETWORK_SETTINGS |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff | android.permission.NETWORK_SETTINGS |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | com.android.tv.settings.accounts.AccountSliceActivity | (type 0x12)0x0 |  |
-| activity | com.android.tv.settings.accounts.AccountsActivity | (type 0x12)0x0 |  |
-| activity | com.android.tv.settings.accounts.AccountsTrampolineActivity | (type 0x12)0x0 |  |
-| activity-alias | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | com.android.tv.settings.accounts.AccountSyncActivity | (type 0x12)0xffffffff |  |
-| activity | com.android.tv.settings.accounts.ManageUserServicesSliceActivity | (type 0x12)0x0 |  |
-| activity-alias | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | com.android.tv.settings.accounts.RemoveAccountDialog | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | com.android.settings.SHORTCUT | (type 0x12)0xffffffff |  |
-| activity | com.android.settings.SHORTCUT | (type 0x12)0xffffffff |  |
-| activity | android.settings.MANAGE_APP_ALL_FILES_ACCESS_PERMISSION | (type 0x12)0xffffffff |  |
-| activity | android.settings.USAGE_ACCESS_SETTINGS | (type 0x12)0xffffffff |  |
-| activity | android.settings.PICTURE_IN_PICTURE_SETTINGS | (type 0x12)0xffffffff |  |
-| activity | android.settings.action.MANAGE_OVERLAY_PERMISSION | (type 0x12)0xffffffff |  |
-| activity | android.settings.REQUEST_SCHEDULE_EXACT_ALARM | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.os.storage.action.MANAGE_STORAGE | (type 0x12)0xffffffff |  |
+| service | com.android.tv.settings.uicustom.floatmenu.FloatMenuService | true |  |
+| activity | com.android.tv.settings.MainSettings | true |  |
+| activity | com.android.tv.settings.connectivity.setup.WifiSetupActivity | true |  |
+| activity | com.android.tv.settings.connectivity.NetworkRequestDialogActivity | true | android.permission.NETWORK_SETTINGS |
+| activity | com.android.tv.settings.connectivity.WifiConnectionActivity | true | android.permission.NETWORK_SETTINGS |
+| activity | com.android.tv.settings.connectivity.EditProxySettingsActivity | true |  |
+| activity | com.android.tv.settings.connectivity.EditIpSettingsActivity | true |  |
+| activity | com.android.tv.settings.connectivity.AddWifiNetworkActivity | true |  |
+| activity | com.android.tv.settings.accounts.AccountSliceActivity | false |  |
+| activity | com.android.tv.settings.accounts.AccountsActivity | false |  |
+| activity | com.android.tv.settings.accounts.AccountsTrampolineActivity | false |  |
+| activity-alias | com.google.android.tv.settings.AccountActivity | true |  |
+| activity | com.android.tv.settings.accounts.AccountSyncActivity | true |  |
+| activity | com.android.tv.settings.accounts.ManageUserServicesSliceActivity | false |  |
+| activity-alias | com.google.android.tv.settings.ManageUserServicesActivity | true |  |
+| activity | com.android.tv.settings.accounts.RemoveAccountDialog | true |  |
+| activity | com.android.tv.settings.accounts.AddAccountWithTypeActivity | true |  |
+| activity | com.android.tv.settings.device.apps.AppsActivity | true |  |
+| activity | com.android.tv.settings.device.apps.AllAppsActivity | true |  |
+| activity | com.android.tv.settings.device.apps.specialaccess.AllFilesAccessActivity | true |  |
+| activity | com.android.tv.settings.device.apps.specialaccess.AppUsageAccessActivity | true |  |
+| activity | com.android.tv.settings.device.apps.specialaccess.PictureInPictureActivity | true |  |
+| activity | com.android.tv.settings.device.apps.specialaccess.SystemAlertActivity | true |  |
+| activity | com.android.tv.settings.device.apps.specialaccess.AlarmsAndRemindersActivity | true |  |
+| activity | com.android.tv.settings.device.apps.AppManagementActivity | true |  |
+| activity | com.android.tv.settings.device.StorageResetActivity | true |  |
 | activity | com.android.tv.settings.device.storage.ResetActivity |  |  |
-| activity | android.intent.category.LEANBACK_SETTINGS | (type 0x12)0xffffffff |  |
-| activity-alias | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity-alias | android.intent.category.LEANBACK_SETTINGS | (type 0x12)0xffffffff |  |
-| activity | com.android.settings.SHORTCUT | (type 0x12)0xffffffff |  |
-| activity | com.android.tv.settings.device.display.ambient.AmbientSliceActivity | (type 0x12)0x0 |  |
-| activity-alias | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | com.android.tv.settings.device.display.daydream.DaydreamActivity | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity-alias | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | com.android.settings.SHORTCUT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | com.android.tv.settings.system.development.AppPicker | (type 0x12)0x0 |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | com.android.tv.settings.autofill.AutofillPickerActivity | (type 0x12)0x0 |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | com.android.tv.settings.system.InputsActivity | (type 0x12)0xffffffff |  |
-| activity | com.android.tv.settings.accessories.BluetoothAccessoryActivity | (type 0x12)0xffffffff | android.permission.BLUETOOTH_CONNECT |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff | android.permission.BLUETOOTH_CONNECT |
-| receiver | android.bluetooth.device.action.PAIRING_REQUEST | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff | android.permission.BLUETOOTH_PRIVILEGED |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.VOICE_LAUNCH | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.VOICE_LAUNCH | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | com.android.settings.icon | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| service | com.android.tv.settings.users.UserSwitchListenerService | (type 0x12)0x0 |  |
-| receiver | android.intent.action.BOOT_COMPLETED | (type 0x12)0xffffffff |  |
-| receiver | com.google.android.tungsten.setupwraith.TV_SETTINGS_POST_SETUP | (type 0x12)0xffffffff |  |
-| service | com.android.tv.settings.users.RestrictedProfilePinService | (type 0x12)0x0 |  |
-| service | com.android.tv.settings.device.storage.SettingsStorageService$Impl | (type 0x12)0x0 |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0x0 |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0x0 |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0x0 |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0x0 |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0x0 |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff | android.permission.BLUETOOTH |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| provider | android.support.FILE_PROVIDER_PATHS | (type 0x12)0x0 |  |
-| provider | com.android.settings.action.SUGGESTION_STATE_PROVIDER | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| receiver | com.android.tv.settings.REMOVE_WIFI | (type 0x12)0xffffffff | android.permission.READ_PRIVILEGED_PHONE_STATE |
-| activity | com.android.tv.settings.accessories.BluetoothActionActivity | (type 0x12)0x0 |  |
-| service | com.android.tv.settings.accessories.BluetoothDevicesService | (type 0x12)0x0 |  |
-| provider | android.app.slice.category.SLICE | (type 0x12)0xffffffff |  |
-| receiver | com.android.tv.settings.accessories.ConnectedDevicesSliceBroadcastReceiver | (type 0x12)0x0 |  |
-| receiver | android.intent.action.BOOT_COMPLETED | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff | android.permission.DUMP |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| receiver | android.intent.action.GLOBAL_BUTTON | (type 0x12)0xffffffff |  |
+| activity | com.android.tv.settings.connectivity.NetworkActivity | true |  |
+| activity-alias | com.android.tv.settings.oemlink.NetworkSettingsActivity | true |  |
+| activity | com.android.tv.settings.system.SecurityActivity | true |  |
+| activity-alias | com.android.tv.settings.users.RestrictedProfileActivityLauncherEntry | true |  |
+| activity | com.android.tv.settings.device.displaysound.DisplaySoundActivity | true |  |
+| activity | com.android.tv.settings.device.display.ambient.AmbientSliceActivity | false |  |
+| activity-alias | com.google.android.tv.settings.AmbientActivity | true |  |
+| activity | com.android.tv.settings.device.display.daydream.DaydreamActivity | true |  |
+| activity | com.android.tv.settings.device.display.daydream.DaydreamVoiceAction | true |  |
+| activity | com.android.tv.settings.system.CaptionSetupActivity | true |  |
+| activity-alias | com.android.tv.settings.oemlink.AccessibilityCaptionActivity | true |  |
+| activity | com.android.tv.settings.system.DateTimeActivity | true |  |
+| activity | com.android.tv.settings.system.LocationActivity | true |  |
+| activity | com.android.tv.settings.system.TextToSpeechActivity | true |  |
+| activity | com.android.tv.settings.system.development.DevelopmentActivity | true |  |
+| activity | com.android.tv.settings.system.development.AppPicker | false |  |
+| activity | com.android.tv.settings.inputmethod.KeyboardActivity | true |  |
+| activity | com.android.tv.settings.autofill.AutofillPickerActivity | false |  |
+| activity | com.android.tv.settings.autofill.AutofillPickerTrampolineActivity | true |  |
+| activity | com.android.tv.settings.system.AppLanguageActivity | true |  |
+| activity | com.android.tv.settings.system.LanguageActivity | true |  |
+| activity | com.android.tv.settings.system.InputsActivity | true |  |
+| activity | com.android.tv.settings.accessories.BluetoothAccessoryActivity | true | android.permission.BLUETOOTH_CONNECT |
+| activity | com.android.tv.settings.accessories.AddAccessoryActivity | true | android.permission.BLUETOOTH_CONNECT |
+| receiver | com.android.tv.settings.accessories.BluetoothPairingRequest | true |  |
+| activity | com.android.tv.settings.accessories.BluetoothPairingDialog | true | android.permission.BLUETOOTH_PRIVILEGED |
+| activity | com.android.tv.settings.accessories.BluetoothDevicePickerActivity | true |  |
+| activity | com.android.tv.settings.about.AboutActivity | true |  |
+| activity | com.android.tv.settings.about.StatusActivity | true |  |
+| activity | com.android.tv.settings.about.LicenseActivity | true |  |
+| activity | com.android.tv.settings.name.DeviceNameSettingsActivity | true |  |
+| activity | com.android.tv.settings.name.DeviceNameSuggestionActivity | true |  |
+| activity | com.android.tv.settings.name.setup.DeviceNameFlowStartActivity | true |  |
+| service | com.android.tv.settings.users.UserSwitchListenerService | false |  |
+| receiver | com.android.tv.settings.users.UserSwitchListenerService$BootReceiver | true |  |
+| receiver | com.android.tv.settings.device.storage.DiskReceiver | true |  |
+| service | com.android.tv.settings.users.RestrictedProfilePinService | false |  |
+| service | com.android.tv.settings.device.storage.SettingsStorageService$Impl | false |  |
+| activity | com.android.tv.settings.device.storage.NewStorageActivity | false |  |
+| activity | com.android.tv.settings.device.storage.UnmountActivity | false |  |
+| activity | com.android.tv.settings.device.storage.FormatActivity | false |  |
+| activity | com.android.tv.settings.device.storage.MigrateStorageActivity | false |  |
+| activity | com.android.tv.settings.device.apps.MoveAppActivity | false |  |
+| activity | com.android.tv.settings.accessories.BluetoothRequestPermissionActivity | true | android.permission.BLUETOOTH |
+| activity | com.android.tv.settings.system.FallbackHome | true |  |
+| activity | com.android.tv.settings.inputmethod.InputMethodAndSubtypeEnablerActivity | true |  |
+| activity | com.android.tv.settings.device.apps.specialaccess.ExternalSourcesActivity | true |  |
+| activity | com.android.tv.settings.privacy.NotificationAccessActivity | true |  |
+| activity | com.android.tv.settings.privacy.SensorToggleActivity | true |  |
+| activity | com.android.tv.settings.EmptyStubActivity | true |  |
+| provider | androidx.core.content.FileProvider | false |  |
+| provider | com.android.tv.settings.name.SuggestionContentProvider | true |  |
+| activity | com.android.tv.settings.deviceadmin.ProfileOwnerAdd | true |  |
+| activity | com.android.tv.settings.ActionDisabledByAdminDialog | true |  |
+| activity | com.android.tv.settings.deviceadmin.DeviceAdminAdd | true |  |
+| activity | com.android.tv.settings.slice.SliceActivity | true |  |
+| activity | com.android.tv.settings.oemlink.AccessibilitySettingsActivity | true |  |
+| activity | com.android.tv.settings.oemlink.AccessibilityServiceActivity | true |  |
+| activity | com.android.tv.settings.oemlink.FactoryResetActivity | true |  |
+| activity | com.android.tv.settings.vendor.VendorActivity | true |  |
+| receiver | com.android.tv.settings.DeviceSettingBroadcastReceiver | true | android.permission.READ_PRIVILEGED_PHONE_STATE |
+| activity | com.android.tv.settings.accessories.BluetoothActionActivity | false |  |
+| service | com.android.tv.settings.accessories.BluetoothDevicesService | false |  |
+| provider | com.android.tv.settings.accessories.ConnectedDevicesSliceProvider | true |  |
+| receiver | com.android.tv.settings.accessories.ConnectedDevicesSliceBroadcastReceiver | false |  |
+| receiver | com.android.tv.settings.BootReceiver | true |  |
+| activity | com.android.tv.settings.RemoteBugreportActivity | true | android.permission.DUMP |
+| activity | com.android.tv.settings.enterprise.EnterprisePrivacySettingsActivity | true |  |
+| activity | com.android.tv.settings.device.apps.ConfirmationActivity | true |  |
+| receiver | com.android.tv.settings.GlobalKeyReceiver | true |  |
 | activity | com.android.settingslib.users.AvatarPickerActivity |  |  |
 | receiver | androidx.remotecallback.ProviderRelayReceiver |  |  |
 | activity | androidx.slice.compat.SlicePermissionActivity |  |  |
@@ -162,95 +162,95 @@ Decompiled Java files: 3470
 
 | Type | Name | Exported | Permission |
 |---|---|---|---|
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.settings.WIFI_SETTINGS | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
+| activity | com.my.settings.SettingActivity | true |  |
+| activity | com.my.settings.wifi.MyWifiActivity | true |  |
+| activity | com.my.settings.bluetooth.MyBluetoothActivity | true |  |
+| activity | com.my.settings.bluetooth.MyAutoBluetoothActivity | true |  |
+| activity | com.my.settings.language.LanguageActivity | true |  |
+| activity | com.my.settings.language.LanguageLocalActivity | true |  |
+| activity | com.my.settings.time.DateTimeActivity | true |  |
 | activity | com.my.settings.time.MyZonePicker |  |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
+| activity | com.my.settings.activity.ScreenshotActivity | true |  |
 | service | com.my.service.ScreenServices |  |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| receiver | android.intent.action.BOOT_COMPLETED | (type 0x12)0xffffffff |  |
+| activity | com.my.settings.activity.ProjectionActivity | true |  |
+| activity | com.my.settings.activity.AllAppActivity | true |  |
+| receiver | com.my.service.BootupReceiver | true |  |
 | service | com.my.service.MySetTimeService |  |  |
-| provider | androidx.profileinstaller.ProfileInstallerInitializer | (type 0x12)0x0 |  |
-| receiver | androidx.profileinstaller.action.BENCHMARK_OPERATION | (type 0x12)0xffffffff | android.permission.DUMP |
+| provider | androidx.startup.InitializationProvider | false |  |
+| receiver | androidx.profileinstaller.ProfileInstallReceiver | true | android.permission.DUMP |
 
 ### KuSourceRJ
 Decompiled Java files: 3007
 
 | Type | Name | Exported | Permission |
 |---|---|---|---|
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| receiver | android.intent.action.BOOT_COMPLETED | (type 0x12)0xffffffff |  |
-| receiver | com.action.screensaver | (type 0x12)0xffffffff |  |
-| receiver | com.action.brightReceiver | (type 0x12)0xffffffff |  |
+| activity | com.coolux.source.MainActivity | true |  |
+| activity | com.coolux.source.activity.BootSoureActivity | true |  |
+| activity | com.coolux.source.activity.BrightActivity | true |  |
+| activity | com.coolux.source.activity.VoiceActivity | true |  |
+| activity | com.coolux.source.activity.RestoreActivity | true |  |
+| activity | com.coolux.source.activity.HighTemperatureActivity | true |  |
+| activity | com.coolux.source.activity.FanDetectionActivity | true |  |
+| activity | com.coolux.source.activity.AllAppAutoActivity | true |  |
+| activity | com.coolux.source.activity.AuthorizationActivity | true |  |
+| activity | com.coolux.source.activity.DustproofActivity | true |  |
+| receiver | com.coolux.source.service.BootupReceiver | true |  |
+| receiver | com.coolux.source.service.ScreensaverReceiver | true |  |
+| receiver | com.coolux.source.service.BrightReceiver | true |  |
 | service | com.coolux.source.service.TimeService |  |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| activity | android.intent.category.DEFAULT | (type 0x12)0xffffffff |  |
-| provider | androidx.lifecycle.ProcessLifecycleInitializer | (type 0x12)0x0 |  |
+| activity | com.coolux.source.activity.PoweronModeActivity | true |  |
+| activity | com.coolux.source.activity.ProjectModelActivity | true |  |
+| activity | com.coolux.source.activity.KeystoneActivity | true |  |
+| activity | com.coolux.source.activity.AutomaticAdmissionActivity | true |  |
+| activity | com.coolux.source.activity.MyTestActivity | true |  |
+| activity | com.coolux.source.activity.testcast.TestCastActivity | true |  |
+| activity | com.coolux.source.activity.testcast.InterfaceTestActivity | true |  |
+| activity | com.coolux.source.activity.testcast.StandbyActivity | true |  |
+| activity | com.coolux.source.activity.testcast.DlpActivity | true |  |
+| activity | com.coolux.source.activity.testcast.InterfaceActivity | true |  |
+| activity | com.coolux.source.activity.testcast.BrightTestActivity | true |  |
+| activity | com.coolux.source.activity.testcast.AudioVideoActivity | true |  |
+| activity | com.coolux.source.activity.testcast.LeftRightVideoActivity | true |  |
+| activity | com.coolux.source.activity.testcast.AgingModelActivity | true |  |
+| activity | com.coolux.source.activity.testcast.AgingActivity | true |  |
+| activity | com.coolux.source.activity.testcast.RebootNumActivity | true |  |
+| activity | com.coolux.source.activity.testcast.PrintTestActivity | true |  |
+| activity | com.coolux.source.activity.testcast.CustomBrightActivity | true |  |
+| activity | com.coolux.source.activity.testcast.OtherActivity | true |  |
+| activity | com.coolux.source.activity.testcast.ClearTimeActivity | true |  |
+| activity | com.coolux.source.activity.testcast.SetTimeActivity | true |  |
+| activity | com.coolux.source.activity.testcast.WifiSNActivity | true |  |
+| activity | com.coolux.source.activity.testcast.WiredSNActivity | true |  |
+| provider | androidx.startup.InitializationProvider | false |  |
 
 ### RuiAutoFocus
 Decompiled Java files: 0
 
 | Type | Name | Exported | Permission |
 |---|---|---|---|
-| service | com.hysd.client.VAF2S | (type 0x12)0xffffffff |  |
+| service | com.hysd.client.VAF2S | true |  |
 
 ### KeystoneCorrection
 Decompiled Java files: 0
 
 | Type | Name | Exported | Permission |
 |---|---|---|---|
-| receiver | com.rjpj.tcorrection.TCorrectionBroadcastReceiver | (type 0x12)0xffffffff |  |
+| receiver | com.rjpj.tcorrection.TCorrectionBroadcastReceiver | true |  |
 
 ### trdservice
 Decompiled Java files: 0
 
 | Type | Name | Exported | Permission |
 |---|---|---|---|
-| service | com.trd.service.service | (type 0x12)0xffffffff |  |
-| receiver | com.android.server.power.ACTION_PRE_SHUTDOWN | (type 0x12)0xffffffff |  |
+| service | com.trd.service.TrdService | true |  |
+| receiver | com.trd.service.system.shutdown.PreShutdownReceiver | true |  |
 
 ### trdmiddle
 Decompiled Java files: 0
 
 | Type | Name | Exported | Permission |
 |---|---|---|---|
-| service | com.trd.framework.service | (type 0x12)0xffffffff |  |
+| service | com.trd.framework.TrdSystemService | true |  |
 
 ### RuiYunOta
 Decompiled Java files: 0
