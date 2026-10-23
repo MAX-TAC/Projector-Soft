@@ -1,0 +1,42 @@
+name: Audit SetupWizard and original TvSettingsPlus menu
+on:
+  push:
+    paths:
+      - "tools/audit_menu_and_setup_wizard.py"
+      - ".github/workflows/audit-original-menu.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare package metadata tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq aapt apktool
+      - name: Compare original APK class definitions and extract preference XML
+        run: |
+          set -euo pipefail
+          python3 -m py_compile tools/audit_menu_and_setup_wizard.py
+          python3 tools/audit_menu_and_setup_wizard.py vendor/reference/8052/APK /tmp/menu-decode research/oem-apps/Menu_Inventory_8052
+          head -n 70 research/oem-apps/Menu_Inventory_8052/README.md
+      - name: Commit static results to repository
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research/oem-apps/Menu_Inventory_8052/
+          if ! git diff --cached --quiet; then
+            git commit -m "Audit KuSetupWizard self-contained classes and stock TvSettingsPlus menu XML"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: menu-setup-audit-8052
+          path: research/oem-apps/Menu_Inventory_8052/
+          retention-days: 30
