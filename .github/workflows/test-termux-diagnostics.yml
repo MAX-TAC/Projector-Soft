@@ -1,0 +1,42 @@
+name: Validate read-only Termux diagnostic script
+on:
+  push:
+    paths:
+      - "tools/collect_tvsettingsplus_adb_diagnostics.sh"
+      - ".github/workflows/test-termux-diagnostics.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  lint-and-mock:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bash syntax
+        run: |
+          set -e
+          bash -n tools/collect_tvsettingsplus_adb_diagnostics.sh
+      - name: Mock one projector via ADB, check zipped snapshot
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/tvsp-fake-home/storage/downloads /tmp/tvsp-fakebin
+          cat > /tmp/tvsp-fakebin/adb <<'STUB'
+          #!/bin/bash
+          if [ "$1" = "devices" ]; then
+            printf 'List of devices attached\n127.0.0.1:5555\tdevice\n'
+          elif [ "$1" = "shell" ] || [ "$1" = "-s" ]; then
+            echo "Mock read-only shell OK"
+          else
+            echo "Unexpected adb argument: $*" >&2; exit 1
+          fi
+          STUB
+          chmod +x /tmp/tvsp-fakebin/adb
+          PATH="/tmp/tvsp-fakebin:$PATH" HOME=/tmp/tvsp-fake-home \
+            bash tools/collect_tvsettingsplus_adb_diagnostics.sh < /dev/null
+          find /tmp/tvsp-fake-home/storage/downloads -name 'TvSettingsPlus_Diagnostic_*.zip' -print
+          test "$(find /tmp/tvsp-fake-home/storage/downloads -name 'TvSettingsPlus_Diagnostic_*.zip' | wc -l)" -eq 1
+          unzip -Z1 /tmp/tvsp-fake-home/storage/downloads/*.zip | grep -q 'system/xtzm_setting.txt'
+          unzip -Z1 /tmp/tvsp-fake-home/storage/downloads/*.zip | grep -q 'intents/android.settings.SETTINGS.resolve.txt'
+          unzip -Z1 /tmp/tvsp-fake-home/storage/downloads/*.zip | grep -q 'packages/com.my.settings.package.txt'
+          echo "PASS: all read-only probes executed and ZIP generated"
