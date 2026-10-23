@@ -1,0 +1,123 @@
+name: Extract OEM APKs from verified 8052 OTA
+on:
+  push:
+    paths:
+      - ".github/workflows/extract-oem-8052.yml"
+      - "tools/extract_ota_apks.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout application repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Install read-only Android firmware tools
+        run: |
+          set -euo pipefail
+          sudo rm -f /etc/apt/sources.list.d/microsoft-prod.list /etc/apt/sources.list.d/microsoft-prod.sources
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq erofs-utils aapt apksigner unzip file openssl xz-utils
+          mkdir -p /tmp/ota-src /tmp/ota-images /tmp/ota-erofs /tmp/payload-dumper
+          curl -fL --retry 4 --retry-delay 5 \
+            https://github.com/ssut/payload-dumper-go/releases/download/2.1.0/payload-dumper-go_2.1.0_linux_amd64.tar.gz \
+            -o /tmp/payload-dumper.tar.gz
+          tar -xzf /tmp/payload-dumper.tar.gz -C /tmp/payload-dumper
+          df -h /tmp
+      - name: Download verified original OTA 8052 from firmware repository
+        run: |
+          set -euo pipefail
+          curl -fL --retry 5 --retry-delay 5 \
+            https://github.com/MAX-TAC/Everycom-Cinelux-Firmware/releases/download/OTA_Updates/RJMT9660_firmware_8052.zip \
+            -o /tmp/ota-src/source.zip
+          echo "bedea70fbf3f08d3c18e59d5f91e7d12828c77fac314c30fcc98332c32c88e35  /tmp/ota-src/source.zip" | sha256sum -c -
+          unzip -l /tmp/ota-src/source.zip | head -n 60
+      - name: Reconstruct original OTA Android images
+        run: |
+          set -euo pipefail
+          BIN=/tmp/payload-dumper/payload-dumper-go
+          if [ ! -x "$BIN" ]; then BIN="$(find /tmp/payload-dumper -type f -name 'payload-dumper-go*' | head -n 1)"; fi
+          chmod +x "$BIN"
+          "$BIN" -l /tmp/ota-src/source.zip
+          "$BIN" -c 3 -o /tmp/ota-images /tmp/ota-src/source.zip > /tmp/payload-dumper.log 2>&1 || { tail -n 120 /tmp/payload-dumper.log; exit 1; }
+          find /tmp/ota-images -maxdepth 1 -type f -printf '%f %s bytes\n'
+      - name: Extract only system, system_ext, vendor, product partitions
+        run: |
+          set -euo pipefail
+          for name in system system_ext vendor product; do
+            p="/tmp/ota-images/$name.img"
+            [ -f "$p" ] || continue
+            if file -b "$p" | grep -q "EROFS"; then
+              mkdir -p "/tmp/ota-erofs/$name"
+              fsck.erofs --extract="/tmp/ota-erofs/$name" "$p" > "/tmp/erofs-$name.log" 2>&1 || {
+                tail -n 80 "/tmp/erofs-$name.log"; exit 1;
+              }
+            else
+              echo "::warning::Partition $name is not EROFS; manual support may be required."
+            fi
+          done
+          du -sh /tmp/ota-erofs/*
+      - name: Gather and verify manufacturer APKs, support frameworks and certificates
+        run: |
+          set -euo pipefail
+          python3 -u tools/extract_ota_apks.py /tmp/ota-erofs . --code 8052
+          test -s vendor/reference/8052/APK/TvSettingsPlus.apk
+          cat reports/8052/README.md | head -n 45
+          python3 - <<'PY'
+          import json, pathlib
+          f=json.loads(pathlib.Path("reports/8052/inventory.json").read_text())
+          assert "TvSettingsPlus" in f["files"]
+          print("TvSettingsPlus version/package:",f["files"]["TvSettingsPlus"].get("package_line"))
+          print("OEM applications found:",len(f["files"]))
+          PY
+      - name: Compare installed APK signature to publicly known AOSP platform certificate
+        run: |
+          set -euo pipefail
+          mkdir -p reports/8052
+          curl -fL --retry 3 \
+            https://raw.githubusercontent.com/aosp-mirror/platform_build/master/target/product/security/platform.x509.pem \
+            -o /tmp/aosp-platform.x509.pem
+          openssl x509 -in /tmp/aosp-platform.x509.pem -noout -fingerprint -sha256 | tee reports/8052/platform_aosp_sha256.txt
+          apksigner verify --print-certs vendor/reference/8052/APK/TvSettingsPlus.apk | tee reports/8052/tvsettingsplus_apk_signature.txt
+          python3 - <<'PY'
+          from pathlib import Path
+          import json, re
+          data=json.loads(Path("reports/8052/inventory.json").read_text())
+          original=data["files"]["TvSettingsPlus"].get("signer_sha256","").replace(":","").lower()
+          cert=Path("reports/8052/platform_aosp_sha256.txt").read_text()
+          match=re.search(r"=\s*([0-9A-Fa-f:]{64,95})",cert)
+          platform=match.group(1).replace(":","").lower() if match else ""
+          lines=["# APK signing certificate compatibility","",
+            "Original TvSettingsPlus APK SHA256: "+original,
+            "Standard AOSP platform test certificate SHA256: "+platform,
+            "Exact APK certificate match: "+str(bool(original and platform and original==platform)),
+            "",
+            "**Note:** AOSP OTA testkey and AOSP platform test key are different certificates.",
+            "Never sign/reinstall over system shared UID app unless this APK comparison succeeds."]
+          Path("reports/8052/APK_SIGNING.md").write_text("\n".join(lines)+"\n")
+          print("\n".join(lines))
+          PY
+      - name: Commit reference APKs and engineering inventory to Projector-Soft
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add vendor/reference/8052/ reports/8052/
+          if git diff --cached --quiet; then echo "No APK changes"; exit 0; fi
+          git commit -m "Import verified 8052 TvSettingsPlus, OEM service APKs, framework and signature audit"
+          git pull --rebase origin main
+          git push origin HEAD:main
+      - name: Keep read-only extraction reports as workflow artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: 8052-oem-apk-inventory
+          path: reports/8052/
+          retention-days: 30
+          if-no-files-found: warn
