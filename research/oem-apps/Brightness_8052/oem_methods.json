@@ -1,0 +1,824 @@
+{
+  "KuSourceRJ/com/coolux/source/activity/BrightActivity.java": {
+    "methods": [
+      {
+        "name": "onCreate",
+        "line": 31,
+        "called": [
+          [
+            "onCreate",
+            2
+          ],
+          [
+            "setContentView",
+            1
+          ],
+          [
+            "init",
+            1
+          ],
+          [
+            "findUI",
+            1
+          ],
+          [
+            "initView",
+            1
+          ],
+          [
+            "viewScreensaver",
+            1
+          ]
+        ],
+        "strings": [],
+        "body_lines": 8
+      },
+      {
+        "name": "initView",
+        "line": 91,
+        "called": [
+          [
+            "setText",
+            5
+          ],
+          [
+            "getString",
+            5
+          ],
+          [
+            "setVisibility",
+            5
+          ],
+          [
+            "if",
+            4
+          ],
+          [
+            "initView",
+            1
+          ]
+        ],
+        "strings": [],
+        "body_lines": 21
+      },
+      {
+        "name": "onClick",
+        "line": 15,
+        "called": [
+          [
+            "onClick",
+            1
+          ],
+          [
+            "enterClick",
+            1
+          ]
+        ],
+        "strings": [],
+        "body_lines": 3
+      }
+    ],
+    "filtered_strings": [
+      "BrightActivity"
+    ]
+  },
+  "KuSourceRJ/com/coolux/source/utils/BrightUtils.java": {
+    "methods": [
+      {
+        "name": "setBrightModel",
+        "line": 27,
+        "called": [
+          [
+            "getInstance",
+            7
+          ],
+          [
+            "if",
+            4
+          ],
+          [
+            "setRegularModel",
+            3
+          ],
+          [
+            "setBrightModel",
+            2
+          ],
+          [
+            "setRegularDefaultModel",
+            1
+          ],
+          [
+            "startThreadReduceNew",
+            1
+          ],
+          [
+            "highBrightService",
+            1
+          ],
+          [
+            "standerBrightService",
+            1
+          ]
+        ],
+        "strings": [],
+        "body_lines": 21
+      },
+      {
+        "name": "startReduceNew",
+        "line": 166,
+        "called": [
+          [
+            "if",
+            32
+          ],
+          [
+            "getInstance",
+            14
+          ],
+          [
+            "setPwmValue",
+            2
+          ],
+          [
+            "startReduceNew",
+            1
+          ],
+          [
+            "getBrightModel",
+            1
+          ],
+          [
+            "deviceType",
+            1
+          ],
+          [
+            "getLedTem",
+            1
+          ],
+          [
+            "getFs2Value",
+            1
+          ],
+          [
+            "getFs0Value",
+            1
+          ],
+          [
+            "sendEmptyMessage",
+            1
+          ],
+          [
+            "setFs2Value",
+            1
+          ],
+          [
+            "setFs0Value",
+            1
+          ],
+          [
+            "getGlvalue",
+            1
+          ],
+          [
+            "getPerformanceBright",
+            1
+          ],
+          [
+            "getQuietBright",
+            1
+          ],
+          [
+            "getStandardBright",
+            1
+          ],
+          [
+            "setBacklight",
+            1
+          ]
+        ],
+        "strings": [],
+        "body_lines": 114
+      },
+      {
+        "name": "startReduceNew518",
+        "line": 67,
+        "called": [
+          [
+            "if",
+            29
+          ],
+          [
+            "getInstance",
+            17
+          ],
+          [
+            "setBacklight",
+            4
+          ],
+          [
+            "sendEmptyMessage",
+            2
+          ],
+          [
+            "setPwmValue",
+            2
+          ],
+          [
+            "getQuietBright",
+            2
+          ],
+          [
+            "startReduceNew518",
+            1
+          ],
+          [
+            "getBrightModel",
+            1
+          ],
+          [
+            "getLedTem",
+            1
+          ],
+          [
+            "getFs2Value",
+            1
+          ],
+          [
+            "getLcdTem",
+            1
+          ],
+          [
+            "getFs0Value",
+            1
+          ],
+          [
+            "setFs2Value",
+            1
+          ],
+          [
+            "setFs0Value",
+            1
+          ],
+          [
+            "getPerformanceBright",
+            1
+          ],
+          [
+            "getStandardBright",
+            1
+          ]
+        ],
+        "strings": [],
+        "body_lines": 91
+      }
+    ],
+    "filtered_strings": [
+      "BrightUtils"
+    ]
+  },
+  "KuSourceRJ/com/coolux/source/utils/ImageUtils.java": {
+    "methods": [
+      {
+        "name": "getBrightModel",
+        "line": 123,
+        "called": [
+          [
+            "getBrightModel",
+            1
+          ],
+          [
+            "getInt",
+            1
+          ],
+          [
+            "defaultBrightModel",
+            1
+          ]
+        ],
+        "strings": [
+          "persist.bright.model"
+        ],
+        "body_lines": 3
+      },
+      {
+        "name": "defaultBrightModel",
+        "line": 127,
+        "called": [
+          [
+            "defaultBrightModel",
+            1
+          ],
+          [
+            "isDefaultPerformance",
+            1
+          ]
+        ],
+        "strings": [],
+        "body_lines": 3
+      },
+      {
+        "name": "setBrightModel",
+        "line": 136,
+        "called": [
+          [
+            "setBrightModel",
+            1
+          ],
+          [
+            "set",
+            1
+          ],
+          [
+            "valueOf",
+            1
+          ]
+        ],
+        "strings": [
+          "persist.bright.model"
+        ],
+        "body_lines": 3
+      },
+      {
+        "name": "getBacklight",
+        "line": 93,
+        "called": [
+          [
+            "getBacklight",
+            1
+          ],
+          [
+            "getInstance",
+            1
+          ],
+          [
+            "getGlvalue",
+            1
+          ]
+        ],
+        "strings": [],
+        "body_lines": 3
+      }
+    ],
+    "filtered_strings": [
+      "LED=",
+      "performanceBright",
+      "persist.bright.model",
+      "persist.rjpj.projector.mode",
+      "projector_mode_value",
+      "quietBright",
+      "regularDefaultModel",
+      "standardBright"
+    ]
+  },
+  "KuSourceRJ/com/coolux/source/utils/MyTimeUtils.java": {
+    "methods": [
+      {
+        "name": "highBrightService",
+        "line": 38,
+        "called": [
+          [
+            "getInstance",
+            2
+          ],
+          [
+            "highBrightService",
+            1
+          ],
+          [
+            "setRegularModel",
+            1
+          ],
+          [
+            "setRegularTimeString",
+            1
+          ],
+          [
+            "addMinuteSemih",
+            1
+          ]
+        ],
+        "strings": [],
+        "body_lines": 4
+      },
+      {
+        "name": "standerBrightService",
+        "line": 53,
+        "called": [
+          [
+            "getInstance",
+            2
+          ],
+          [
+            "standerBrightService",
+            1
+          ],
+          [
+            "setRegularModel",
+            1
+          ],
+          [
+            "setRegularTimeString",
+            1
+          ],
+          [
+            "addMinuteSemih",
+            1
+          ]
+        ],
+        "strings": [],
+        "body_lines": 4
+      }
+    ],
+    "filtered_strings": []
+  },
+  "KuSourceRJ/com/coolux/source/activity/testcast/CustomBrightActivity.java": {
+    "methods": [
+      {
+        "name": "onCreate",
+        "line": 39,
+        "called": [
+          [
+            "onCreate",
+            2
+          ],
+          [
+            "setContentView",
+            1
+          ],
+          [
+            "init",
+            1
+          ],
+          [
+            "findUI",
+            1
+          ],
+          [
+            "initView",
+            1
+          ]
+        ],
+        "strings": [],
+        "body_lines": 7
+      },
+      {
+        "name": "onClick",
+        "line": 23,
+        "called": [
+          [
+            "onClick",
+            1
+          ],
+          [
+            "enterClick",
+            1
+          ]
+        ],
+        "strings": [],
+        "body_lines": 3
+      },
+      {
+        "name": "onClick",
+        "line": 250,
+        "called": [
+          [
+            "onClick",
+            1
+          ],
+          [
+            "dismiss",
+            1
+          ]
+        ],
+        "strings": [],
+        "body_lines": 3
+      },
+      {
+        "name": "onClick",
+        "line": 256,
+        "called": [
+          [
+            "onClick",
+            1
+          ],
+          [
+            "dismiss",
+            1
+          ],
+          [
+            "defaultBright",
+            1
+          ]
+        ],
+        "strings": [],
+        "body_lines": 4
+      }
+    ],
+    "filtered_strings": [
+      "CustomBrightActivity"
+    ]
+  },
+  "TvSettingsPlus/com/android/tv/settings/uicustom/floatmenu/controller/picture/AdvanceSettingsSecondaryController.java": {
+    "methods": [
+      {
+        "name": "initView",
+        "line": 60,
+        "called": [
+          [
+            "findViewById",
+            13
+          ],
+          [
+            "setOnClickListener",
+            7
+          ],
+          [
+            "OnClickListener",
+            7
+          ],
+          [
+            "onClick",
+            7
+          ],
+          [
+            "if",
+            7
+          ],
+          [
+            "putInt",
+            6
+          ],
+          [
+            "check",
+            6
+          ],
+          [
+            "updateDemoPartitionEnabled",
+            5
+          ],
+          [
+            "initView",
+            1
+          ],
+          [
+            "post",
+            1
+          ],
+          [
+            "Runnable",
+            1
+          ],
+          [
+            "run",
+            1
+          ],
+          [
+            "lambda$initView$0",
+            1
+          ],
+          [
+            "MenuMjcDemoDialog",
+            1
+          ],
+          [
+            "initCheck",
+            1
+          ]
+        ],
+        "strings": [
+          "tv_picture_advance_video_mjc_effect"
+        ],
+        "body_lines": 98
+      },
+      {
+        "name": "onClick",
+        "line": 85,
+        "called": [
+          [
+            "onClick",
+            1
+          ],
+          [
+            "if",
+            1
+          ],
+          [
+            "putInt",
+            1
+          ],
+          [
+            "updateDemoPartitionEnabled",
+            1
+          ],
+          [
+            "check",
+            1
+          ]
+        ],
+        "strings": [
+          "tv_picture_advance_video_mjc_effect"
+        ],
+        "body_lines": 9
+      },
+      {
+        "name": "onClick",
+        "line": 97,
+        "called": [
+          [
+            "onClick",
+            1
+          ],
+          [
+            "if",
+            1
+          ],
+          [
+            "putInt",
+            1
+          ],
+          [
+            "updateDemoPartitionEnabled",
+            1
+          ],
+          [
+            "check",
+            1
+          ]
+        ],
+        "strings": [
+          "tv_picture_advance_video_mjc_effect"
+        ],
+        "body_lines": 9
+      },
+      {
+        "name": "onClick",
+        "line": 109,
+        "called": [
+          [
+            "onClick",
+            1
+          ],
+          [
+            "if",
+            1
+          ],
+          [
+            "putInt",
+            1
+          ],
+          [
+            "updateDemoPartitionEnabled",
+            1
+          ],
+          [
+            "check",
+            1
+          ]
+        ],
+        "strings": [
+          "tv_picture_advance_video_mjc_effect"
+        ],
+        "body_lines": 9
+      },
+      {
+        "name": "onClick",
+        "line": 121,
+        "called": [
+          [
+            "onClick",
+            1
+          ],
+          [
+            "if",
+            1
+          ],
+          [
+            "putInt",
+            1
+          ],
+          [
+            "updateDemoPartitionEnabled",
+            1
+          ],
+          [
+            "check",
+            1
+          ]
+        ],
+        "strings": [
+          "tv_picture_advance_video_mjc_effect"
+        ],
+        "body_lines": 9
+      },
+      {
+        "name": "onClick",
+        "line": 133,
+        "called": [
+          [
+            "onClick",
+            1
+          ],
+          [
+            "if",
+            1
+          ],
+          [
+            "putInt",
+            1
+          ],
+          [
+            "check",
+            1
+          ]
+        ],
+        "strings": [],
+        "body_lines": 8
+      },
+      {
+        "name": "onClick",
+        "line": 144,
+        "called": [
+          [
+            "onClick",
+            1
+          ],
+          [
+            "if",
+            1
+          ],
+          [
+            "putInt",
+            1
+          ],
+          [
+            "check",
+            1
+          ]
+        ],
+        "strings": [],
+        "body_lines": 8
+      }
+    ],
+    "filtered_strings": []
+  },
+  "TvSettingsPlus/com/android/tv/settings/uicustom/fragment/picture/PictureFragment.java": {
+    "methods": [],
+    "filtered_strings": [
+      "picture_mode"
+    ]
+  },
+  "TvSettingsPlus/com/android/tv/settings/uicustom/util/ProjectorManager.java": {
+    "methods": [
+      {
+        "name": "setProjectorMirrorMode",
+        "line": 32,
+        "called": [
+          [
+            "setProjectorMirrorMode",
+            1
+          ],
+          [
+            "Intent",
+            1
+          ],
+          [
+            "setComponent",
+            1
+          ],
+          [
+            "ComponentName",
+            1
+          ],
+          [
+            "putExtra",
+            1
+          ],
+          [
+            "startService",
+            1
+          ],
+          [
+            "catch",
+            1
+          ],
+          [
+            "printStackTrace",
+            1
+          ]
+        ],
+        "strings": [
+          "mediatek.factorymenu.ui",
+          "mediatek.tvsetting.factory.ui.ApiService",
+          "projector_mode_value"
+        ],
+        "body_lines": 10
+      }
+    ],
+    "filtered_strings": [
+      "Failed to close I2C device.",
+      "persist.rjpj.projector.mode",
+      "projector_mode_value"
+    ]
+  }
+}
