@@ -239,7 +239,7 @@ TvSettingsPlus 8052 (набор реальных разделов AOSP/MTK; не
 | AllAppActivity | AllAppsActivity | [A][I] |
 | ScreenshotActivity / ScreenServices | Нет | [X] согласованное исключение |
 | BootupReceiver + MySetTimeService | Сохраняем KuSourceRJ BootupReceiver/TimeService | Не переносим целиком; требуется тест восстановления TimeService после сбоя |
-| KuSetupWizard | Оставить самостоятельным пакетом | Исследование собственных классов/манифеста; аппаратный тест первого запуска |
+| KuSetupWizard | Оставить самостоятельным пакетом | 7 946 собственных совпадающих классов; 14/15 DEX одинаковы, различается только WarningActivity; аппаратный тест первого запуска всё равно требуется |
 | Системный services.jar / WhaleTV / xtzm_setting | Не заменяются APK-манифестом | Остаточные зависимости, требуется трассировка и/или отдельные совместимые маршруты |
 | Пять полос EQ, MEMC, HDR, игра, термопанель | Целевые пункты выше | [P][H] не включены в v2 |
 
@@ -248,6 +248,7 @@ TvSettingsPlus 8052 (набор реальных разделов AOSP/MTK; не
 ## Источники в этом репозитории
 
 - research/oem-apps/Menu_Inventory_8052/menu_inventory.json — точные manifest / DEX / preference XML.
+- research/oem-apps/Menu_Inventory_8052/KuSetupWizard_DEX_MATCH.md и KuSetupWizard_CLASSES12_DIFF.md — побайтовое сравнение 15 DEX и единственного отличающегося Java-класса.
 - research/oem-apps/Full_OTA_KuReferences/inventory.json — 85 APK / 2054 файлов OTA 8052.
 - research/oem-apps/KuSettings_Behavior/startup_target_details.json — точная роль BootupReceiver/MySetTimeService.
 - research/migration-8052/wfd-bluetooth-reference.json — legacy Bluetooth action в системном PhoneWindowManager.
