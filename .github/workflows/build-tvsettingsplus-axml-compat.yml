@@ -16,7 +16,7 @@ jobs:
       - name: Install Android inspector
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq aapt
+          sudo apt-get install -y -qq aapt apksigner zipalign openssl
       - name: Patch and verify compiled manifest
         run: |
           set -euo pipefail
@@ -28,9 +28,34 @@ jobs:
              grep -Fq "$action" /tmp/compat/manifest.txt
           done
           echo "Binary manifest patch validated"
+      - name: Sign original-certificate-compatible experimental APK and verify original files
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/compat/keys
+          curl -fsSL --retry 3 https://raw.githubusercontent.com/aosp-mirror/platform_build/master/target/product/security/platform.x509.pem -o /tmp/compat/keys/platform.x509.pem
+          curl -fsSL --retry 3 https://raw.githubusercontent.com/aosp-mirror/platform_build/master/target/product/security/platform.pk8 -o /tmp/compat/keys/platform.pk8
+          ORIGINAL="$(apksigner verify --print-certs vendor/reference/8052/APK/TvSettingsPlus.apk | grep 'Signer #1 certificate SHA-256 digest:' | awk '{print $NF}')"
+          PLATFORM="$(openssl x509 -in /tmp/compat/keys/platform.x509.pem -noout -fingerprint -sha256 | cut -d= -f2 | tr -d : | tr '[:upper:]' '[:lower:]')"
+          test "$ORIGINAL" = "$PLATFORM"
+          zipalign -f -p 4 /tmp/compat/unsigned.apk /tmp/compat/aligned.apk
+          apksigner sign --key /tmp/compat/keys/platform.pk8 --cert /tmp/compat/keys/platform.x509.pem --v1-signing-enabled true --v2-signing-enabled true --out /tmp/compat/TvSettingsPlus-8052-v2-LEGACY-INTENTS-EXPERIMENTAL.apk /tmp/compat/aligned.apk
+          apksigner verify --verbose --print-certs /tmp/compat/TvSettingsPlus-8052-v2-LEGACY-INTENTS-EXPERIMENTAL.apk
+          aapt dump badging /tmp/compat/TvSettingsPlus-8052-v2-LEGACY-INTENTS-EXPERIMENTAL.apk | grep "name='com.android.tv.settings' versionCode='2'"
+          python3 - <<'PY'
+          import zipfile
+          src='vendor/reference/8052/APK/TvSettingsPlus.apk'
+          mod='/tmp/compat/TvSettingsPlus-8052-v2-LEGACY-INTENTS-EXPERIMENTAL.apk'
+          with zipfile.ZipFile(src) as a,zipfile.ZipFile(mod) as b:
+            names=[x for x in a.namelist() if not x.startswith('META-INF/') and x!='AndroidManifest.xml']
+            assert all(a.read(x)==b.read(x) for x in names)
+            print("Verified",len(names),"OEM files unchanged")
+          PY
+          sha256sum /tmp/compat/TvSettingsPlus-8052-v2-LEGACY-INTENTS-EXPERIMENTAL.apk
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: tvsettingsplus-8052-v2-axml-probe-unsigned
-          path: /tmp/compat/manifest.txt
+          name: tvsettingsplus-8052-v2-legacy-intents-SIGNED-EXPERIMENTAL
+          path: |
+            /tmp/compat/TvSettingsPlus-8052-v2-LEGACY-INTENTS-EXPERIMENTAL.apk
+            /tmp/compat/manifest.txt
           retention-days: 7
