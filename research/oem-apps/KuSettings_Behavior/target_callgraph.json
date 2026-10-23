@@ -1,0 +1,86 @@
+{
+  "KuSettings:/utils/IntentUtils.java": [
+    {
+      "method": "startTime",
+      "line": 214,
+      "total_lines": 10,
+      "literals": [],
+      "invocations": [
+        "Runnable",
+        "Thread",
+        "isServiceStart",
+        "startMyTimeService"
+      ]
+    },
+    {
+      "method": "startSourceService",
+      "line": 241,
+      "total_lines": 12,
+      "literals": [
+        "TimeServiceSourceHasStart"
+      ],
+      "invocations": [
+        "Runnable",
+        "Thread",
+        "e",
+        "isSourceServiceStart",
+        "startSourceTimeService"
+      ]
+    }
+  ],
+  "KuSetupWizard:/utils/IntentUtils.java": [
+    {
+      "method": "startTime",
+      "line": 214,
+      "total_lines": 10,
+      "literals": [],
+      "invocations": [
+        "Runnable",
+        "Thread",
+        "isServiceStart",
+        "startMyTimeService"
+      ]
+    },
+    {
+      "method": "startSourceService",
+      "line": 241,
+      "total_lines": 12,
+      "literals": [
+        "TimeServiceSourceHasStart"
+      ],
+      "invocations": [
+        "Runnable",
+        "Thread",
+        "e",
+        "isSourceServiceStart",
+        "startSourceTimeService"
+      ]
+    }
+  ],
+  "KuSourceRJ:/utils/IntentUtils.java": [],
+  "KuSourceRJ:/service/BootupReceiver.java": [
+    {
+      "method": "defaultInit",
+      "line": 30,
+      "total_lines": 4,
+      "literals": [],
+      "invocations": [
+        "getInstance"
+      ]
+    }
+  ],
+  "WFD:inbound_KuSettings": [
+    {
+      "line": 2351,
+      "content": "android.content.Intent intent = new android.content.Intent(\"android.settings.SETTINGS\");"
+    },
+    {
+      "line": 2432,
+      "content": "z2 = className2 != null && className2.equals(\"com.my.settings.bluetooth.MyAutoBluetoothActivity\");"
+    },
+    {
+      "line": 2496,
+      "content": "if (className != null && className.equals(\"com.my.settings.bluetooth.MyAutoBluetoothActivity\")) {"
+    }
+  ]
+}
