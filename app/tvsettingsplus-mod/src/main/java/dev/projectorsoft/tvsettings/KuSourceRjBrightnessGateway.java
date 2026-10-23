@@ -62,7 +62,7 @@ public final class KuSourceRjBrightnessGateway
         if (!("8052".equals(firmwareId) || "8054".equals(firmwareId)))
             return Collections.emptyList();
         requireReceiver();
-        return MODES_8052;
+        return OEM_MODES;
     }
 
     @Override
