@@ -1,0 +1,22 @@
+name: Test TvSettingsPlus OEM capabilities
+on:
+  push:
+    paths:
+      - "app/tvsettingsplus-mod/**"
+      - ".github/workflows/test-tvsettings-capabilities.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile pure-Java variant policy and run regression tests
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/tvsettings-java
+          javac -d /tmp/tvsettings-java \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/ProjectorCapabilities.java \
+            app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/ProjectorCapabilitiesTest.java
+          java -cp /tmp/tvsettings-java dev.projectorsoft.tvsettings.ProjectorCapabilitiesTest
