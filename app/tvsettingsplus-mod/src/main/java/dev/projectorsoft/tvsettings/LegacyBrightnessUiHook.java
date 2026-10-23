@@ -83,7 +83,7 @@ public final class LegacyBrightnessUiHook {
         addChoice(root,ID_STANDARD,1,modes);
         addChoice(root,ID_HIGHLIGHT,0,modes);
         View altitude=addChoice(root,ID_AUTO,3,modes);
-        if (altitude instanceof TextView) ((TextView)altitude).setText("Высокогорный");
+        if (altitude!=null) changeLabel(altitude,"Высокогорный");
         if (altitude!=null) altitude.setVisibility(View.VISIBLE);
         if (modes.size()!=4) return; // OEM layout not recognized; don't intercept UI
         updateCheck(root,model.currentSnapshot().currentId,modes);
@@ -105,6 +105,19 @@ public final class LegacyBrightnessUiHook {
                 if (model.currentSnapshot().pendingId!=null) poll(root,model,modes,0);
             });
         }
+    }
+    private static boolean changeLabel(View view,String value) {
+        if (view instanceof TextView) {
+            ((TextView)view).setText(value);
+            return true;
+        }
+        if (view instanceof ViewGroup) {
+            ViewGroup container=(ViewGroup)view;
+            for (int i=0;i<container.getChildCount();i++) {
+                if (changeLabel(container.getChildAt(i),value)) return true;
+            }
+        }
+        return false;
     }
     private static void poll(View root,LightSourceBrightnessController model,
                              Map<View,Integer> modes,int attempt) {
