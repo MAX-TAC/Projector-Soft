@@ -1,0 +1,690 @@
+{
+  "KuSettings": [
+    {
+      "path": "com/p001my/service/BootupReceiver.java",
+      "methods": [
+        {
+          "method": "onReceive",
+          "line": 10,
+          "lines": 7,
+          "calls": [
+            [
+              "onReceive",
+              1
+            ],
+            [
+              "intent.getAction",
+              1
+            ],
+            [
+              "if",
+              1
+            ],
+            [
+              ".equals",
+              1
+            ],
+            [
+              "com.p001my.utils.IntentUtils.getInstance",
+              1
+            ],
+            [
+              ".startTime",
+              1
+            ]
+          ],
+          "literals": [
+            "android.intent.action.BOOT_COMPLETED"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "com/p001my/service/MySetTimeService.java",
+      "methods": [
+        {
+          "method": "onStartCommand",
+          "line": 25,
+          "lines": 4,
+          "calls": [
+            [
+              "onStartCommand",
+              1
+            ],
+            [
+              "registerTimeTick",
+              1
+            ]
+          ],
+          "literals": []
+        },
+        {
+          "method": "onReceive",
+          "line": 9,
+          "lines": 8,
+          "calls": [
+            [
+              "onReceive",
+              1
+            ],
+            [
+              "intent.getAction",
+              1
+            ],
+            [
+              "if",
+              1
+            ],
+            [
+              "action.equals",
+              1
+            ],
+            [
+              "com.p001my.utils.MyLog.m184e",
+              1
+            ],
+            [
+              "com.p001my.utils.IntentUtils.getInstance",
+              1
+            ],
+            [
+              ".startSourceService",
+              1
+            ]
+          ],
+          "literals": [
+            "android.intent.action.TIME_TICK"
+          ]
+        },
+        {
+          "method": "registerTimeTick",
+          "line": 30,
+          "lines": 3,
+          "calls": [
+            [
+              "registerTimeTick",
+              1
+            ],
+            [
+              "registerReceiver",
+              1
+            ],
+            [
+              "android.content.IntentFilter",
+              1
+            ]
+          ],
+          "literals": [
+            "android.intent.action.TIME_TICK"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "com/p001my/service/ScreenServices.java",
+      "methods": [
+        {
+          "method": "onStartCommand",
+          "line": 32,
+          "lines": 5,
+          "calls": [
+            [
+              "onStartCommand",
+              1
+            ],
+            [
+              "com.p001my.utils.SharedPreferencesTest.getInstance",
+              1
+            ],
+            [
+              ".getScreenshotTime",
+              1
+            ],
+            [
+              "getApplicationContext",
+              1
+            ],
+            [
+              "startShot",
+              1
+            ]
+          ],
+          "literals": []
+        },
+        {
+          "method": "onBind",
+          "line": 27,
+          "lines": 3,
+          "calls": [
+            [
+              "onBind",
+              1
+            ]
+          ],
+          "literals": []
+        },
+        {
+          "method": "startShot",
+          "line": 43,
+          "lines": 19,
+          "calls": [
+            [
+              "java.lang.Thread.sleep",
+              2
+            ],
+            [
+              "startShot",
+              1
+            ],
+            [
+              "java.lang.Thread",
+              1
+            ],
+            [
+              "run",
+              1
+            ],
+            [
+              "if",
+              1
+            ],
+            [
+              "com.p001my.service.ScreenServices.this.mhandler.obtainMessage",
+              1
+            ],
+            [
+              "com.p001my.service.ScreenServices.this.mhandler.sendMessage",
+              1
+            ],
+            [
+              "catch",
+              1
+            ],
+            [
+              "e.printStackTrace",
+              1
+            ],
+            [
+              ".start",
+              1
+            ]
+          ],
+          "literals": []
+        },
+        {
+          "method": "takeScreenShot",
+          "line": 64,
+          "lines": 42,
+          "calls": [
+            [
+              "if",
+              2
+            ],
+            [
+              "android.os.Messenger",
+              2
+            ],
+            [
+              "android.util.Log.i",
+              2
+            ],
+            [
+              "takeScreenShot",
+              1
+            ],
+            [
+              "synchronized",
+              1
+            ],
+            [
+              "android.content.Intent",
+              1
+            ],
+            [
+              "intent.setClassName",
+              1
+            ],
+            [
+              "android.content.ServiceConnection",
+              1
+            ],
+            [
+              "onServiceConnected",
+              1
+            ],
+            [
+              "android.os.Message.obtain",
+              1
+            ],
+            [
+              "android.os.Handler",
+              1
+            ],
+            [
+              "com.p001my.service.ScreenServices.this.mHandler.getLooper",
+              1
+            ],
+            [
+              "handleMessage",
+              1
+            ],
+            [
+              "com.p001my.service.ScreenServices.this.unbindService",
+              1
+            ],
+            [
+              "messenger.send",
+              1
+            ],
+            [
+              "catch",
+              1
+            ],
+            [
+              "e.printStackTrace",
+              1
+            ],
+            [
+              "onServiceDisconnected",
+              1
+            ],
+            [
+              "bindService",
+              1
+            ]
+          ],
+          "literals": [
+            "com.android.systemui",
+            "com.android.systemui.screenshot.TakeScreenshotService",
+            "onServiceConnected handle reply message",
+            "bind service success!"
+          ]
+        }
+      ]
+    }
+  ],
+  "KuSetupWizard": [
+    {
+      "path": "com/p001my/service/BootupReceiver.java",
+      "methods": [
+        {
+          "method": "onReceive",
+          "line": 10,
+          "lines": 7,
+          "calls": [
+            [
+              "onReceive",
+              1
+            ],
+            [
+              "intent.getAction",
+              1
+            ],
+            [
+              "if",
+              1
+            ],
+            [
+              ".equals",
+              1
+            ],
+            [
+              "com.p001my.utils.IntentUtils.getInstance",
+              1
+            ],
+            [
+              ".startTime",
+              1
+            ]
+          ],
+          "literals": [
+            "android.intent.action.BOOT_COMPLETED"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "com/p001my/service/MySetTimeService.java",
+      "methods": [
+        {
+          "method": "onStartCommand",
+          "line": 25,
+          "lines": 4,
+          "calls": [
+            [
+              "onStartCommand",
+              1
+            ],
+            [
+              "registerTimeTick",
+              1
+            ]
+          ],
+          "literals": []
+        },
+        {
+          "method": "onReceive",
+          "line": 9,
+          "lines": 8,
+          "calls": [
+            [
+              "onReceive",
+              1
+            ],
+            [
+              "intent.getAction",
+              1
+            ],
+            [
+              "if",
+              1
+            ],
+            [
+              "action.equals",
+              1
+            ],
+            [
+              "com.p001my.utils.MyLog.m184e",
+              1
+            ],
+            [
+              "com.p001my.utils.IntentUtils.getInstance",
+              1
+            ],
+            [
+              ".startSourceService",
+              1
+            ]
+          ],
+          "literals": [
+            "android.intent.action.TIME_TICK"
+          ]
+        }
+      ]
+    }
+  ],
+  "WFDSinkTest": [
+    {
+      "path": "com/android/server/policy/PhoneWindowManager.java",
+      "methods": [
+        {
+          "method": "interceptKeyBeforeDispatching",
+          "line": 2202,
+          "lines": 170,
+          "calls": [
+            [
+              "if",
+              27
+            ],
+            [
+              "this.mHandler.sendMessage",
+              5
+            ],
+            [
+              "this.mHandler.obtainMessage",
+              5
+            ],
+            [
+              "this.mContext.startActivity",
+              5
+            ],
+            [
+              "android.hardware.input.InputManager.getInstance",
+              3
+            ],
+            [
+              ".closeInputDevice",
+              3
+            ],
+            [
+              "android.util.Log.d",
+              3
+            ],
+            [
+              "getLaunchIntent",
+              3
+            ],
+            [
+              "goStoreForPackagename",
+              3
+            ],
+            [
+              "gotoAutoFocus",
+              2
+            ],
+            [
+              "catch",
+              2
+            ],
+            [
+              "packageName.equals",
+              2
+            ],
+            [
+              "android.content.Intent",
+              2
+            ],
+            [
+              "interceptKeyBeforeDispatching",
+              1
+            ],
+            [
+              "keyguardOn",
+              1
+            ],
+            [
+              "keyEvent.getKeyCode",
+              1
+            ],
+            [
+              "keyEvent.getRepeatCount",
+              1
+            ],
+            [
+              "keyEvent.getMetaState",
+              1
+            ],
+            [
+              "keyEvent.getFlags",
+              1
+            ],
+            [
+              "keyEvent.getAction",
+              1
+            ],
+            [
+              "keyEvent.isCanceled",
+              1
+            ],
+            [
+              "keyEvent.getDisplayId",
+              1
+            ],
+            [
+              "android.util.Log.v",
+              1
+            ],
+            [
+              "this.mContext.getSystemService",
+              1
+            ],
+            [
+              "activityManager.getRunningTasks",
+              1
+            ],
+            [
+              ".get",
+              1
+            ],
+            [
+              ".topActivity.getPackageName",
+              1
+            ],
+            [
+              "handleVirtualMouseKey",
+              1
+            ],
+            [
+              "switch",
+              1
+            ],
+            [
+              "launchIntent.addFlags",
+              1
+            ],
+            [
+              "launchIntent2.addFlags",
+              1
+            ],
+            [
+              "launchIntent3.addFlags",
+              1
+            ],
+            [
+              "intent.addFlags",
+              1
+            ],
+            [
+              "gotoAutoFocusPoweron",
+              1
+            ],
+            [
+              "intent2.addFlags",
+              1
+            ]
+          ],
+          "literals": [
+            "it's KEYCODE_MOUSE key and down = ",
+            "activity",
+            "check netflix error",
+            "",
+            "com.netflix.mediaclient",
+            "com.amazon.avod.thirdpartyclient",
+            "open netflix set mouse true",
+            "close netflix set mouse false",
+            "zeasn.open.technical.tv.store",
+            "com.teamsmart.videomanager.tv",
+            "android.settings.SETTINGS",
+            "android.settings.Aging"
+          ]
+        }
+      ]
+    }
+  ],
+  "TvSettingsPlus": [
+    {
+      "path": "com/android/p002tv/settings/partnercustomizer/tvsettingservice/TvBootupReceiver.java",
+      "methods": [
+        {
+          "method": "onReceive",
+          "line": 6,
+          "lines": 4,
+          "calls": [
+            [
+              "onReceive",
+              1
+            ],
+            [
+              "com.mediatek.wwtv.tvcenter.util.MtkLog.m71i",
+              1
+            ],
+            [
+              "context.startService",
+              1
+            ],
+            [
+              "android.content.Intent",
+              1
+            ]
+          ],
+          "literals": [
+            "TvBootupReceiver"
+          ]
+        }
+      ]
+    }
+  ],
+  "KuSourceRJ": [
+    {
+      "path": "com/coolux/source/service/BootupReceiver.java",
+      "methods": [
+        {
+          "method": "onReceive",
+          "line": 10,
+          "lines": 12,
+          "calls": [
+            [
+              "onReceive",
+              1
+            ],
+            [
+              "intent.getAction",
+              1
+            ],
+            [
+              "com.coolux.source.utils.MyLog.m49e",
+              1
+            ],
+            [
+              "if",
+              1
+            ],
+            [
+              ".equals",
+              1
+            ],
+            [
+              "defaultInit",
+              1
+            ],
+            [
+              "defaultBright",
+              1
+            ],
+            [
+              "com.coolux.source.utils.UtilsTools.getInstance",
+              1
+            ],
+            [
+              ".startTime",
+              1
+            ],
+            [
+              "agingTest",
+              1
+            ],
+            [
+              "rebootStart",
+              1
+            ]
+          ],
+          "literals": [
+            "onReceive:",
+            "android.intent.action.BOOT_COMPLETED"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "com/coolux/source/service/TimeService.java",
+      "methods": [
+        {
+          "method": "onStartCommand",
+          "line": 59,
+          "lines": 4,
+          "calls": [
+            [
+              "onStartCommand",
+              1
+            ],
+            [
+              "registerTimeTick",
+              1
+            ]
+          ],
+          "literals": []
+        }
+      ]
+    }
+  ]
+}
