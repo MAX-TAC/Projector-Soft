@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * OEM-preserving adapter for RUIOS 8052 light-source modes.
+ * OEM-preserving adapter for MT9660 RUIOS 8052/8054 light-source modes.
  *
  * BrightReceiver performs the original BrightUtils.setBrightModel logic:
  * persistent mode, thermal/PWM limits and timing. Never write PWM, TRD or
@@ -30,7 +30,7 @@ public final class KuSourceRjBrightnessGateway
     public static final String EXTRA_MODE = "brightModel";
     public static final String PROPERTY_MODE = "persist.bright.model";
 
-    private static final List<LightSourceBrightnessController.Mode> MODES_8052 =
+    private static final List<LightSourceBrightnessController.Mode> OEM_MODES =
             Collections.unmodifiableList(Arrays.asList(
                     new LightSourceBrightnessController.Mode(0, "Повышенная яркость"),
                     new LightSourceBrightnessController.Mode(1, "Стандартный"),
@@ -57,8 +57,10 @@ public final class KuSourceRjBrightnessGateway
 
     @Override
     public List<LightSourceBrightnessController.Mode> readSupportedModes() throws Exception {
-        // 8054 must be audited separately: do not assume 8052 brightness IDs apply.
-        if (!"8052".equals(firmwareId)) return Collections.emptyList();
+        // The 8052/8054 static comparison finds identical BrightReceiver and BrightUtils.
+        // A runtime LIGHT_SOURCE_MODE capability gate remains mandatory on each board.
+        if (!("8052".equals(firmwareId) || "8054".equals(firmwareId)))
+            return Collections.emptyList();
         requireReceiver();
         return MODES_8052;
     }
@@ -81,7 +83,8 @@ public final class KuSourceRjBrightnessGateway
         if (hardwareId < 0 || hardwareId > 3) {
             throw new IllegalArgumentException("Non-OEM brightness mode");
         }
-        if (!"8052".equals(firmwareId)) throw new IllegalStateException("Unknown board");
+        if (!("8052".equals(firmwareId) || "8054".equals(firmwareId)))
+            throw new IllegalStateException("Unknown board");
         requireReceiver();
         Intent intent=new Intent(ACTION);
         intent.setComponent(new ComponentName(PACKAGE, RECEIVER));
