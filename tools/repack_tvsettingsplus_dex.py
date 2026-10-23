@@ -6,6 +6,7 @@ and all unknown vendor files are preserved byte-for-byte. This avoids AAPT
 renaming/dropping OEM resources. Requires successful apktool decode -r / build.
 """
 import argparse
+import copy
 import re
 import zipfile
 from pathlib import Path
@@ -41,7 +42,7 @@ def assemble(original, rebuilt_smali, output, current, next_version):
                     payload=dex.read(name)
                 else:
                     payload=src.read(name)
-                dst.writestr(info,payload)
+                dst.writestr(copy.copy(info),payload)
         with zipfile.ZipFile(output) as out:
             for name in out.namelist():
                 if name in modified:continue
