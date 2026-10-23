@@ -97,3 +97,15 @@
 
 Без анализа потребителя `settingApps`, проверок разрешения Intent и теста кнопки пульта нельзя гарантировать полное отключение OEM GUI только заменой TvSettingsPlus. См. [обновлённый полный аудит](../research/oem-apps/Full_OTA_KuReferences/README.md).
 
+
+
+### Итоговая сверка KuSetupWizard с KuSettings (8052)
+
+- У обоих APK 15 файлов DEX; 14 побайтово совпадают. Отличается только `classes12.dex`.
+- Методная декомпиляция различающегося DEX нашла **ровно один изменённый Java-файл из 47: `com/my/settings/activity/WarningActivity.java`**. Остальные 46 совпадают после нормализации пробелов/комментариев.
+- `WarningActivity` находится среди Activity, заявленных манифестом именно `KuSetupWizard`. Старые `BootupReceiver`, `MySetTimeService`, `ScreenServices`, `SettingActivity` и `MyAutoBluetoothActivity` присутствуют в его DEX, но **не объявлены компонентами в его Manifest**.
+- Следовательно, с точки зрения Java-классов и declared components `KuSetupWizard` имеет собственный код для первичной настройки и не требует загрузки классов из внешнего пакета `com.my.settings`.
+- Вне-Java зависимости от системных настроек, Intent, shared UID и OEM configuration должны быть проверены аппаратно: полную независимость это не доказывает. `KuSetupWizard` сохраняем в прошивке.
+
+Отчёты: [DEX SHA256](../research/oem-apps/Menu_Inventory_8052/KuSetupWizard_DEX_MATCH.md), [класс-дифф](../research/oem-apps/Menu_Inventory_8052/KuSetupWizard_CLASSES12_DIFF.md).
+
