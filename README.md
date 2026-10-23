@@ -8,6 +8,13 @@
 
 **База:** RUIOS.8052.1.0.4 (один HDMI). Для 8054 (два HDMI) нужен независимый аппаратный профиль.
 
+### Текущая версия и аудит KuSettings
+
+- [Полное дерево меню и статус переноса KuSettings](docs/TVSETTINGSPLUS_FULL_MENU_AND_PARITY_2026-10-23.md) — исходные Android TV пункты, целевое полное меню, контроль полного отказа от KuSettings.
+- [Аудит оригинальных XML/DEX и KuSetupWizard](research/oem-apps/Menu_Inventory_8052/README.md) — реальные Activity, receivers, preference resources и внутренние классы.
+- [Подписанный экспериментальный TvSettingsPlus v2](https://github.com/MAX-TAC/Projector-Soft/actions/runs/39948327567) — девять совместимых Intent-действий без изменения DEX/UI. Не установка для production.
+- [Полный аудит упоминаний KuSettings в OTA](research/oem-apps/Full_OTA_KuReferences/README.md) — 85 APK и 2054 файлов, остаточные config/framework зависимости.
+
 ### Содержимое
 
 - [docs/APP_ARCHITECTURE.md](docs/APP_ARCHITECTURE.md) — архитектура меню и правила безопасной интеграции.
