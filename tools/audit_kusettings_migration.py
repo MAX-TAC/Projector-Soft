@@ -78,7 +78,7 @@ def main():
             try:t=f.read_text(errors="replace")
             except OSError:continue
             own=("com/my/" in rel or "com/p001my/" in rel or
-                 "com/android/tv/settings/" in rel or "com/p001android/tv/settings/" in rel or
+                 "com/android/tv/settings/" in rel or "com/android/p002tv/settings/" in rel or "com/p001android/tv/settings/" in rel or
                  "com/coolux/source/" in rel or
                  "com/trd/" in rel or
                  "com/hysd/" in rel or "com/rjpj/" in rel)
@@ -89,7 +89,7 @@ def main():
                     key_files.append({"path":rel,"class":nm.group(1) if nm else "", "methods":methods[:45]})
             # Don't count generic AndroidX / bundled libraries to reduce noise
             if not own and target != "TvSettingsPlus":continue
-            if not own and "/com/android/tv/settings/" not in "/"+rel:continue
+            if not own and "/com/android/tv/settings/" not in "/"+rel and "/com/android/p002tv/settings/" not in "/"+rel:continue
             for label,pat in TOKENS.items():
                 hits=list(pat.finditer(t))
                 if hits:
