@@ -1,0 +1,34 @@
+name: Audit existing TvSettingsPlus OEM controllers
+on:
+  push:
+    paths:
+      - "tools/audit_tvsettings_menu_controllers.py"
+      - ".github/workflows/audit-tvsettings-controllers.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  survey:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup JADX
+        run: |
+          curl -fsSL --retry 3 https://github.com/skylot/jadx/releases/download/v1.5.6/jadx-1.5.6.zip -o /tmp/jadx.zip
+          mkdir -p /tmp/jadx
+          unzip -q /tmp/jadx.zip -d /tmp/jadx
+      - name: Decompile and inspect existing right-pane OEM controllers
+        run: |
+          /tmp/jadx/bin/jadx --no-res --no-imports --threads-count 2 -d /tmp/tvsettings vendor/reference/8052/APK/TvSettingsPlus.apk >/tmp/jadx.log 2>&1 || true
+          python3 tools/audit_tvsettings_menu_controllers.py /tmp/tvsettings research/oem-apps/TvSettings_Controller_8052/metadata.json
+      - name: Commit safe report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research/oem-apps/TvSettings_Controller_8052/
+          if ! git diff --cached --quiet; then
+            git commit -m "Document original OEM menu controller methods and view IDs"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
