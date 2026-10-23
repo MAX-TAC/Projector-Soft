@@ -6,11 +6,13 @@ from pathlib import Path
 import argparse,re,json,collections
 APP_METHODS={
  "KuSourceRJ":[
-  ("com/coolux/source/activity/BrightActivity.java",["onCreate","initView","onClick","onCheckedChanged","setBright","setLight"]),
+  ("com/coolux/source/activity/BrightActivity.java",["onCreate","init","findUI","initView","enterClick","onClick","onCheckedChanged","setBright","setLight"]),
   ("com/coolux/source/utils/BrightUtils.java",["setBrightModel","startReduceNew","startReduceNew518"]),
-  ("com/coolux/source/utils/ImageUtils.java",["getBrightModel","defaultBrightModel","setBrightModel","getBacklight"]),
+  ("com/coolux/source/service/BrightReceiver.java",["onReceive"]),
+  ("com/coolux/source/utils/IntentUtils.java",["bright","customBright","setBright"]),
+  ("com/coolux/source/utils/ImageUtils.java",["getBrightModel","defaultBrightModel","setBrightModel","getBacklight","setBacklight","setPwmValue","getPerformanceBright","getStandardBright","getQuietBright"]),
   ("com/coolux/source/utils/MyTimeUtils.java",["highBrightService","standerBrightService"]),
-  ("com/coolux/source/activity/testcast/CustomBrightActivity.java",["onCreate","onClick","onCheckedChanged"]),
+  ("com/coolux/source/activity/testcast/CustomBrightActivity.java",["onCreate","init","findUI","initView","enterClick","defaultBright","onClick","onCheckedChanged"]),
  ],
  "TvSettingsPlus":[
   ("com/android/tv/settings/uicustom/floatmenu/controller/picture/AdvanceSettingsSecondaryController.java",["initView","onClick","onCheckedChanged"]),
