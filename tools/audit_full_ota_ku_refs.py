@@ -55,8 +55,21 @@ def main():
             if not isinstance(vals,dict):continue
             for k,v in vals.items():
                 if isinstance(v,int):totals[k]+=v
+    config_references={}
+    for rel in ("system/system/etc/xtzm_setting.txt","system/system/menu_config_xml/whaletv_config.json"):
+        path=a.root/rel
+        if not path.exists():continue
+        content=path.read_text(encoding="utf-8",errors="replace")
+        out=[]
+        for i,line in enumerate(content.splitlines(),1):
+            if "com.my.settings" in line or "com/my/settings" in line:
+                idx=line.find("com.my.settings")
+                if idx<0:idx=line.find("com/my/settings")
+                out.append({"line":i,"near_reference":line[max(0,idx-90):idx+130]})
+        config_references[rel]=out[:30]
+        print("OEM config reference",rel,out[:8])
     data={"scope":"All extracted 8052 EROFS system, system_ext, vendor, product readable files",
-          "files_scanned":len(candidates),"apk_scanned":apps,"references":hits,"totals":dict(totals),
+          "files_scanned":len(candidates),"apk_scanned":apps,"references":hits,"totals":dict(totals),"config_reference_locations":config_references,
           "caveat":"DEX strings may contain dead code; inaccessible runtime ODEX may escape detection; no hardware execution."}
     (a.out/"inventory.json").write_text(json.dumps(data,ensure_ascii=False,indent=2)+"\n")
     rows=["# RUIOS 8052: full read-only KuSettings reference audit","",
@@ -73,6 +86,9 @@ def main():
                 if isinstance(c,int):counts[k]+=c
         if any(counts.get(k) for k in ("ku_package","ku_service","auto_bt","screen_services")):
             rows.append(f"| {rel} | {counts['ku_package']} | {counts['ku_service']} | {counts['auto_bt']} | {counts['screen_services']} |")
+    rows+=["","## OEM config usages"]
+    for k,values in config_references.items():
+        rows.append("- "+k+": "+str(values[:6]))
     rows+=["","Important: no arbitrary replacements. Android framework PhoneWindowManager may be runtime-loaded from services.jar, not WFDSinkTest.apk; check actual hosting process before patching an APK.", "",
       "Do not disable KuSettings until all live intents have handlers, HDMI/focus/audio services tested, and a rollback plan exists."]
     (a.out/"README.md").write_text("\n".join(rows)+"\n")
