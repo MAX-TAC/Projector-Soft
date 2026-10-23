@@ -1,0 +1,297 @@
+{
+  "TvSettingsPlus/com/android/tv/settings/uicustom/floatmenu/controller/general/BrightnessModeSettingsSecondaryController.java": {
+    "methods": {
+      "initData": [
+        {
+          "at_line": 35,
+          "calls": [
+            "getInstance",
+            "getLightMode",
+            "initData"
+          ],
+          "property_strings": []
+        }
+      ],
+      "initView": [
+        {
+          "at_line": 39,
+          "calls": [
+            "Runnable",
+            "findViewById",
+            "initCheck",
+            "initListener",
+            "initView",
+            "lambda$initView$0",
+            "post",
+            "run",
+            "setVisibility"
+          ],
+          "property_strings": []
+        }
+      ],
+      "initCheck": [
+        {
+          "at_line": 61,
+          "calls": [
+            "check",
+            "if",
+            "initCheck"
+          ],
+          "property_strings": []
+        }
+      ],
+      "initListener": [
+        {
+          "at_line": 79,
+          "calls": [
+            "Intent",
+            "OnClickListener",
+            "check",
+            "getInstance",
+            "if",
+            "initListener",
+            "onClick",
+            "putLightMode",
+            "sendBroadcast",
+            "setAction",
+            "setOnClickListener",
+            "setPackage"
+          ],
+          "property_strings": []
+        }
+      ],
+      "onClick": [
+        {
+          "at_line": 82,
+          "calls": [
+            "check",
+            "getInstance",
+            "if",
+            "onClick",
+            "putLightMode"
+          ],
+          "property_strings": []
+        },
+        {
+          "at_line": 92,
+          "calls": [
+            "check",
+            "getInstance",
+            "if",
+            "onClick",
+            "putLightMode"
+          ],
+          "property_strings": []
+        }
+      ]
+    },
+    "identifiers": [
+      "getLightMode",
+      "putLightMode"
+    ]
+  },
+  "TvSettingsPlus/com/android/tv/settings/uicustom/fragment/general/BrightnessModeSettingsFragment.java": {
+    "methods": {
+      "initData": [
+        {
+          "at_line": 30,
+          "calls": [
+            "getInstance",
+            "getLightMode",
+            "initData"
+          ],
+          "property_strings": []
+        }
+      ],
+      "initView": [
+        {
+          "at_line": 35,
+          "calls": [
+            "findViewById",
+            "initCheck",
+            "initListener",
+            "initView",
+            "setVisibility"
+          ],
+          "property_strings": []
+        }
+      ],
+      "onCheckedChanged": [
+        {
+          "at_line": 67,
+          "calls": [
+            "getInstance",
+            "if",
+            "onCheckedChanged",
+            "putLightMode"
+          ],
+          "property_strings": []
+        },
+        {
+          "at_line": 77,
+          "calls": [
+            "getInstance",
+            "if",
+            "onCheckedChanged",
+            "putLightMode"
+          ],
+          "property_strings": []
+        }
+      ]
+    },
+    "identifiers": [
+      "getLightMode",
+      "putLightMode"
+    ]
+  },
+  "TvSettingsPlus/com/android/tv/settings/uicustom/floatmenu/controller/general/GeneralSubMenuController.java": {
+    "methods": {
+      "getCurBrightnessModeResId": [
+        {
+          "at_line": 29,
+          "calls": [
+            "getCurBrightnessModeResId",
+            "if"
+          ],
+          "property_strings": []
+        }
+      ],
+      "initData": [
+        {
+          "at_line": 79,
+          "calls": [
+            "getCurLanguageName",
+            "getInstance",
+            "getLightMode",
+            "getSystemFontScale",
+            "initData",
+            "isElectricityBoot"
+          ],
+          "property_strings": []
+        }
+      ],
+      "onClick": [
+        {
+          "at_line": 108,
+          "calls": [
+            "getContext",
+            "getInstance",
+            "onClick",
+            "openSecondaryInterface"
+          ],
+          "property_strings": []
+        },
+        {
+          "at_line": 114,
+          "calls": [
+            "getContext",
+            "getInstance",
+            "onClick",
+            "openSecondaryInterface"
+          ],
+          "property_strings": []
+        }
+      ]
+    },
+    "identifiers": [
+      "getLightMode"
+    ]
+  },
+  "KuSourceRJ/com/coolux/source/activity/BrightActivity.java": {
+    "methods": {
+      "init": [
+        {
+          "at_line": 40,
+          "calls": [
+            "getBrightModel",
+            "getInstance",
+            "init",
+            "startTime"
+          ],
+          "property_strings": []
+        }
+      ],
+      "initView": [
+        {
+          "at_line": 91,
+          "calls": [
+            "getString",
+            "if",
+            "initView",
+            "setText",
+            "setVisibility"
+          ],
+          "property_strings": []
+        }
+      ],
+      "clickScreensaverModel": [
+        {
+          "at_line": 74,
+          "calls": [
+            "clickScreensaverModel",
+            "getInstance",
+            "getScreensaverModelValue",
+            "if",
+            "setScreensaverModelValue",
+            "viewScreensaver"
+          ],
+          "property_strings": []
+        }
+      ]
+    },
+    "identifiers": [
+      "setBrightModel"
+    ]
+  },
+  "KuSourceRJ/com/coolux/source/service/BrightReceiver.java": {
+    "methods": {
+      "onReceive": [
+        {
+          "at_line": 10,
+          "calls": [
+            "e",
+            "equals",
+            "getAction",
+            "getInstance",
+            "getIntExtra",
+            "if",
+            "onReceive",
+            "setBrightModel"
+          ],
+          "property_strings": [
+            "com.action.brightReceiver"
+          ]
+        }
+      ]
+    },
+    "identifiers": [
+      "com.action.brightReceiver",
+      "setBrightModel"
+    ]
+  },
+  "KuSourceRJ/com/coolux/source/utils/BrightUtils.java": {
+    "methods": {
+      "setBrightModel": [
+        {
+          "at_line": 27,
+          "calls": [
+            "getInstance",
+            "highBrightService",
+            "if",
+            "setBrightModel",
+            "setRegularDefaultModel",
+            "setRegularModel",
+            "standerBrightService",
+            "startThreadReduceNew"
+          ],
+          "property_strings": []
+        }
+      ]
+    },
+    "identifiers": [
+      "setBacklight",
+      "setBrightModel",
+      "setPwmValue"
+    ]
+  }
+}
