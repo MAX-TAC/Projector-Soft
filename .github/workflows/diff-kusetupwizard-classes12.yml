@@ -1,0 +1,63 @@
+name: Compare KuSetupWizard classes12 DEX implementation
+on:
+  push:
+    paths:
+      - ".github/workflows/diff-kusetupwizard-classes12.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare JADX
+        run: |
+          curl -fL --retry 3 https://github.com/skylot/jadx/releases/download/v1.5.6/jadx-1.5.6.zip -o /tmp/jadx.zip
+          mkdir -p /tmp/jadx /tmp/compare
+          unzip -q /tmp/jadx.zip -d /tmp/jadx
+          unzip -p vendor/reference/8052/APK/KuSettings.apk classes12.dex > /tmp/compare/ku.dex
+          unzip -p vendor/reference/8052/APK/KuSetupWizard.apk classes12.dex > /tmp/compare/setup.dex
+      - name: Decompiled method-level comparison
+        run: |
+          /tmp/jadx/bin/jadx --no-res --no-imports --threads-count 2 -d /tmp/compare/ku /tmp/compare/ku.dex > /tmp/ku.log 2>&1 || true
+          /tmp/jadx/bin/jadx --no-res --no-imports --threads-count 2 -d /tmp/compare/setup /tmp/compare/setup.dex > /tmp/setup.log 2>&1 || true
+          python3 - <<'PY'
+          import hashlib,re
+          from pathlib import Path
+          a=Path("/tmp/compare/ku/sources");b=Path("/tmp/compare/setup/sources")
+          allpaths=sorted(set(x.relative_to(a) for x in a.rglob("*.java")) | set(x.relative_to(b) for x in b.rglob("*.java")))
+          changed=[];added=[];removed=[];same=0
+          for p in allpaths:
+            f=a/p;g=b/p
+            if not f.exists():added.append(p.as_posix());continue
+            if not g.exists():removed.append(p.as_posix());continue
+            one=f.read_text(errors="replace");two=g.read_text(errors="replace")
+            # eliminate uninteresting decompiler formatting/comment noise
+            normalize=lambda s:re.sub(r"\s+","",re.sub(r"/\*.*?\*/","",s,flags=re.S))
+            if normalize(one)==normalize(two):same+=1
+            else:
+              changed.append(p.as_posix())
+          lines=["# Classes12 source-level comparison: KuSettings vs KuSetupWizard (8052)","",
+            "JADX reconstruction is approximate; this is not a runtime equivalence proof.",
+            "Identical normalized Java files: "+str(same),
+            "Changed: "+str(len(changed))+", only in Setup: "+str(len(added))+", only in KuSettings: "+str(len(removed)),"",
+            "## Changed class files",*["- "+p for p in changed[:130]],
+            "","## Only in KuSetupWizard",*["- "+p for p in added[:40]],
+            "","## Only in KuSettings",*["- "+p for p in removed[:40]]]
+          result=Path("research/oem-apps/Menu_Inventory_8052/KuSetupWizard_CLASSES12_DIFF.md")
+          result.parent.mkdir(parents=True,exist_ok=True)
+          result.write_text("\n".join(lines)+"\n")
+          print("\n".join(lines[:90]))
+          PY
+      - name: Commit metadata only
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research/oem-apps/Menu_Inventory_8052/KuSetupWizard_CLASSES12_DIFF.md
+          if ! git diff --cached --quiet; then
+            git commit -m "Identify source-level differences in SetupWizard vs KuSettings classes12"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
