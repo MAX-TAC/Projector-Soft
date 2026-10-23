@@ -16,6 +16,8 @@
 - [Подписанный экспериментальный TvSettingsPlus v2](https://github.com/MAX-TAC/Projector-Soft/actions/runs/39948327567) — девять совместимых Intent-действий без изменения DEX/UI. Не установка для production.
 - [Полный аудит упоминаний KuSettings в OTA](research/oem-apps/Full_OTA_KuReferences/README.md) — 85 APK и 2054 файлов, остаточные config/framework зависимости.
 
+- [Диагностика реального запуска настроек, KuSettings и KuSourceRJ по ADB](docs/ADB_DIAGNOSTICS_AND_SETTINGS_LAUNCH.md) — одна команда для Termux, ZIP-отчёт без изменений проектора; [скрипт](tools/collect_tvsettingsplus_adb_diagnostics.sh).
+
 ### Содержимое
 
 - [docs/APP_ARCHITECTURE.md](docs/APP_ARCHITECTURE.md) — архитектура меню и правила безопасной интеграции.
