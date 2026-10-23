@@ -1,0 +1,84 @@
+name: Build signed TvSettingsPlus v2 smoke APK (no functional changes)
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/build-tvsettingsplus-smoke.yml"
+      - "tools/patch_axml_version.py"
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Android signing tools
+        run: |
+          set -euo pipefail
+          sudo rm -f /etc/apt/sources.list.d/microsoft-prod.list /etc/apt/sources.list.d/microsoft-prod.sources
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq aapt apksigner zipalign openssl
+          mkdir -p /tmp/platform-test /tmp/build-tvsettings
+      - name: Validate original system APK and patch only versionCode
+        run: |
+          set -euo pipefail
+          SOURCE=vendor/reference/8052/APK/TvSettingsPlus.apk
+          echo "e4184a13fbf56fa069effc6a40ea50c0da7e9190321b389f59ba34700a80d0a1  $SOURCE" | sha256sum -c -
+          python3 -m py_compile tools/patch_axml_version.py
+          python3 tools/patch_axml_version.py "$SOURCE" /tmp/build-tvsettings/v2-unaligned.apk --old 1 --new 2
+          aapt dump badging /tmp/build-tvsettings/v2-unaligned.apk | grep -E "^package:|^sdkVersion:|^targetSdkVersion:"
+          aapt dump badging /tmp/build-tvsettings/v2-unaligned.apk | grep -E "name='com.android.tv.settings' versionCode='2'"
+          python3 - <<'PY'
+          import zipfile
+          a="vendor/reference/8052/APK/TvSettingsPlus.apk"
+          b="/tmp/build-tvsettings/v2-unaligned.apk"
+          with zipfile.ZipFile(a) as x,zipfile.ZipFile(b) as y:
+              old={n:x.read(n) for n in x.namelist() if n.endswith(".dex") or n=="resources.arsc"}
+              assert old
+              assert all(y.read(k)==v for k,v in old.items())
+              print("All DEX and resources.arsc are byte-identical with the original")
+          PY
+      - name: Verify exact AOSP platform test certificate and sign
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 4 \
+            https://raw.githubusercontent.com/aosp-mirror/platform_build/master/target/product/security/platform.x509.pem \
+            -o /tmp/platform-test/platform.x509.pem
+          curl -fsSL --retry 4 \
+            https://raw.githubusercontent.com/aosp-mirror/platform_build/master/target/product/security/platform.pk8 \
+            -o /tmp/platform-test/platform.pk8
+          openssl x509 -in /tmp/platform-test/platform.x509.pem -noout -fingerprint -sha256
+          ORIGINAL="$(apksigner verify --print-certs vendor/reference/8052/APK/TvSettingsPlus.apk | grep 'Signer #1 certificate SHA-256 digest:' | head -1 | awk '{print $NF}')"
+          PLATFORM="$(openssl x509 -in /tmp/platform-test/platform.x509.pem -noout -fingerprint -sha256 | cut -d= -f2 | tr -d : | tr '[:upper:]' '[:lower:]')"
+          test "$ORIGINAL" = "$PLATFORM"
+          zipalign -f -p 4 /tmp/build-tvsettings/v2-unaligned.apk /tmp/build-tvsettings/v2-aligned.apk
+          apksigner sign --key /tmp/platform-test/platform.pk8 \
+            --cert /tmp/platform-test/platform.x509.pem --v1-signing-enabled true \
+            --v2-signing-enabled true --out /tmp/build-tvsettings/TvSettingsPlus-SMOKE-8052-v2.apk \
+            /tmp/build-tvsettings/v2-aligned.apk
+          apksigner verify --verbose --print-certs /tmp/build-tvsettings/TvSettingsPlus-SMOKE-8052-v2.apk
+          aapt dump badging /tmp/build-tvsettings/TvSettingsPlus-SMOKE-8052-v2.apk | grep -E "^package:|^sdkVersion:|^targetSdkVersion:"
+          SIGNED="$(apksigner verify --print-certs /tmp/build-tvsettings/TvSettingsPlus-SMOKE-8052-v2.apk | grep 'Signer #1 certificate SHA-256 digest:' | head -1 | awk '{print $NF}')"
+          test "$SIGNED" = "$PLATFORM"
+      - name: Save artifact build report
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/build-tvsettings/report
+          {
+            echo "TvSettingsPlus smoke build, 8052 (not a functional MOD)"
+            echo "Original APK: RUIOS.8052.1.0.4, platform test key"
+            echo "Only binary manifest versionCode changed from 1 to 2."
+            echo "ALL original DEX resources preserved, no KuSettings migration applied."
+            echo "This APK HAS NOT been installed/tested on a projector."
+            echo "Do not disable KuSettings or use as production replacement."
+            echo
+            sha256sum /tmp/build-tvsettings/TvSettingsPlus-SMOKE-8052-v2.apk
+          } > /tmp/build-tvsettings/report/README.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tvsettingsplus-signed-smoke-8052-v2-NOT-FEATURE-COMPLETE
+          path: |
+            /tmp/build-tvsettings/TvSettingsPlus-SMOKE-8052-v2.apk
+            /tmp/build-tvsettings/report/README.txt
+          retention-days: 14
