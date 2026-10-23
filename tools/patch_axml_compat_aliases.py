@@ -18,6 +18,8 @@ ALIASES=[
   ("legacy.AllAppsAlias","com.android.tv.settings.device.apps.AllAppsActivity","android.settings.ALLAPPS"),
   ("legacy.DateTimeAlias","com.android.tv.settings.system.DateTimeActivity","android.settings.DATETIME_SETTINGS"),
   ("legacy.LanguageAlias","com.android.tv.settings.system.LanguageActivity","android.settings.LAUGUAGE_SETTINGS"),
+  ("legacy.LanguageLocalAlias","com.android.tv.settings.system.LanguageActivity","android.settings.LAUGUAGE_LOCAL_SETTINGS"),
+  ("legacy.ProjectionAlias","com.android.tv.settings.uicustom.MainActivity","android.settings.PROJECTABOUT_SETTINGS"),
 ]
 
 def u16(b,o):return struct.unpack_from("<H",b,o)[0]
