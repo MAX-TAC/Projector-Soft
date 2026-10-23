@@ -50,6 +50,10 @@ public final class LegacyBrightnessUiHook {
         try {
             String id=firmwareId();
             if (!"8052".equals(id) && !"8054".equals(id)) return false;
+            // Fail back to original fullscreen UI if any OEM radio widget is missing.
+            for (String viewName:new String[] {ID_ECO,ID_STANDARD,ID_HIGHLIGHT,ID_AUTO,ID_GROUP}) {
+                if (ctx.getResources().getIdentifier(viewName,"id",PACKAGE)==0) return false;
+            }
             KuSourceRjBrightnessGateway gateway=new KuSourceRjBrightnessGateway(ctx,id);
             if (gateway.readSupportedModes().size()!=4) return false;
             return gateway.readCurrentModeId()>=0;
