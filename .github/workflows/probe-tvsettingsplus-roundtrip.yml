@@ -1,0 +1,85 @@
+name: Probe TvSettingsPlus roundtrip 8052
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/probe-tvsettingsplus-roundtrip.yml"
+permissions:
+  contents: write
+jobs:
+  baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare Android APK decompile/rebuild utilities
+        run: |
+          set -euo pipefail
+          sudo rm -f /etc/apt/sources.list.d/microsoft-prod.list /etc/apt/sources.list.d/microsoft-prod.sources
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq apktool aapt apksigner zipalign unzip
+          apktool --version
+          mkdir -p /tmp/tvsettings-tool /tmp/tvsettings-baseline research/build-probe-8052
+      - name: Check source APK and platform certificate
+        run: |
+          set -euo pipefail
+          test -s vendor/reference/8052/APK/TvSettingsPlus.apk
+          test -s vendor/reference/8052/APK/framework-res.apk
+          echo "e4184a13fbf56fa069effc6a40ea50c0da7e9190321b389f59ba34700a80d0a1  vendor/reference/8052/APK/TvSettingsPlus.apk" | sha256sum -c -
+          aapt dump badging vendor/reference/8052/APK/TvSettingsPlus.apk | grep -E '^package:|^sdkVersion:|^targetSdkVersion:'
+          apksigner verify --print-certs vendor/reference/8052/APK/TvSettingsPlus.apk | head -n 8
+      - name: Install framework and unpack original TvSettingsPlus
+        run: |
+          set +e
+          apktool if vendor/reference/8052/APK/framework-res.apk -p /tmp/tvsettings-tool > /tmp/apktool-if.log 2>&1
+          IF_RC=$?
+          apktool d -f -p /tmp/tvsettings-tool vendor/reference/8052/APK/TvSettingsPlus.apk -o /tmp/tvsettings-baseline/decoded > /tmp/apktool-decode.log 2>&1
+          DECODE_RC=$?
+          printf "framework_rc=%s\ndecode_rc=%s\n" "$IF_RC" "$DECODE_RC" > /tmp/tvsettings-baseline/status.txt
+          tail -n 80 /tmp/apktool-if.log
+          tail -n 100 /tmp/apktool-decode.log
+          test "$IF_RC" = 0 && test "$DECODE_RC" = 0
+      - name: Roundtrip rebuild without source modifications
+        run: |
+          set +e
+          apktool b -p /tmp/tvsettings-tool /tmp/tvsettings-baseline/decoded -o /tmp/tvsettings-baseline/rebuilt-unsigned.apk > /tmp/apktool-build.log 2>&1
+          BUILD_RC=$?
+          echo "build_rc=$BUILD_RC" >> /tmp/tvsettings-baseline/status.txt
+          tail -n 140 /tmp/apktool-build.log
+          if [ "$BUILD_RC" = 0 ]; then
+            aapt dump badging /tmp/tvsettings-baseline/rebuilt-unsigned.apk | grep "^package:"
+          fi
+          exit "$BUILD_RC"
+      - name: Publish safe build diagnostics (never publish unsigned APK as release)
+        if: always()
+        run: |
+          mkdir -p research/build-probe-8052
+          cp /tmp/tvsettings-baseline/status.txt research/build-probe-8052/status.txt 2>/dev/null || true
+          for name in if decode build; do
+            f="/tmp/apktool-$name.log"
+            [ -f "$f" ] && tail -n 250 "$f" > "research/build-probe-8052/apktool-$name.log" || true
+          done
+          {
+            echo "# TvSettingsPlus baseline roundtrip test"
+            echo
+            echo "APK: original OTA 8052, TvSettingsPlus.apk, versionCode 1."
+            echo "No changes, patches, signature or APK installation attempted."
+            echo "The diagnostic success of apktool is a prerequisite to building TvSettingsPlus MOD, not proof of installability."
+            echo
+            cat research/build-probe-8052/status.txt 2>/dev/null || echo "No stages completed"
+          } > research/build-probe-8052/README.md
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research/build-probe-8052
+          if ! git diff --cached --quiet; then
+            git commit -m "Record unmodified TvSettingsPlus apktool roundtrip diagnostics"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tvsettingsplus-8052-baseline-diagnostics
+          path: research/build-probe-8052
+          retention-days: 30
+          if-no-files-found: warn
