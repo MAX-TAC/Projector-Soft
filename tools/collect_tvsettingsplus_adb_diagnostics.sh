@@ -85,6 +85,9 @@ capture "activity/kusource_services.txt" 'dumpsys activity services com.coolux.s
 capture "activity/kusettings_services.txt" 'dumpsys activity services com.my.settings'
 capture "activity/current_activities.txt" 'dumpsys activity activities'
 capture "activity/window_focus.txt" 'dumpsys window | grep -E "mCurrentFocus|mFocusedApp" | head -n 40'
+capture "status/brightness_mode_property.txt" 'echo "persist.bright.model=$(getprop persist.bright.model)"; echo "ro.rjpj.machine.id=$(getprop ro.rjpj.machine.id)"'
+capture "activity/brightness_receiver_resolution.txt" 'cmd package query-receivers --user 0 -a com.action.brightReceiver 2>&1'
+capture "activity/brightness_receiver_manifest.txt" 'dumpsys package com.coolux.source | grep -E -C 6 "BrightReceiver|com.action.brightReceiver|brightModel" | head -n 180'
 capture "activity/boot_source_service.txt" 'dumpsys package com.coolux.source | grep -E -C 3 "BOOT_COMPLETED|TimeService|BootupReceiver" | head -n 150'
 
 capture "system/xtzm_setting.txt" 'if [ -r /system/etc/xtzm_setting.txt ]; then cat /system/etc/xtzm_setting.txt; else echo "not readable"; fi'
