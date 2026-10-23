@@ -16,7 +16,7 @@ import java.util.Set;
  * This class deliberately contains no guessed TRD/I2C constants or shell calls.
  */
 public final class LightSourceBrightnessController {
-    public static final int EXPECTED_MODE_COUNT = 3;
+    public static final int EXPECTED_MODE_COUNT = 4;
 
     public static final class Mode {
         public final int hardwareId;
@@ -46,19 +46,22 @@ public final class LightSourceBrightnessController {
         public final boolean enabled;
         public final List<Mode> choices;
         public final Integer currentId;
+        public final Integer pendingId;
         public final String error;
 
-        private Snapshot(boolean enabled, List<Mode> choices, Integer currentId, String error) {
+        private Snapshot(boolean enabled, List<Mode> choices, Integer currentId, Integer pendingId, String error) {
             this.enabled = enabled;
             this.choices = Collections.unmodifiableList(new ArrayList<>(choices));
             this.currentId = currentId;
+            this.pendingId = pendingId;
             this.error = error;
         }
     }
 
     private final ProjectorCapabilities capabilities;
     private final VendorGateway gateway;
-    private Snapshot snapshot = new Snapshot(false, Collections.<Mode>emptyList(), null, "Not loaded");
+    private Snapshot snapshot = new Snapshot(false, Collections.<Mode>emptyList(), null, null, "Not loaded");
+    private Integer pendingId = null;
 
     public LightSourceBrightnessController(ProjectorCapabilities capabilities, VendorGateway gateway) {
         this.capabilities = Objects.requireNonNull(capabilities, "capabilities");
@@ -72,38 +75,43 @@ public final class LightSourceBrightnessController {
      */
     public Snapshot refresh() {
         if (!capabilities.supports(ProjectorCapabilities.Feature.LIGHT_SOURCE_MODE)) {
-            return snapshot = new Snapshot(false, Collections.<Mode>emptyList(), null,
+            return snapshot = new Snapshot(false, Collections.<Mode>emptyList(), null, null,
                     "Light source API is not verified for this board");
         }
         try {
             List<Mode> modes = gateway.readSupportedModes();
             if (modes == null || modes.size() != EXPECTED_MODE_COUNT) {
-                return snapshot = new Snapshot(false, Collections.<Mode>emptyList(), null,
-                        "Expected exactly three verified OEM modes");
+                return snapshot = new Snapshot(false, Collections.<Mode>emptyList(), null, null,
+                        "Expected exactly four verified OEM modes for 8052");
             }
             Set<Integer> unique = new HashSet<>();
             for (Mode mode : modes) {
-                if (mode == null || !unique.add(mode.hardwareId)) {
-                    return snapshot = new Snapshot(false, Collections.<Mode>emptyList(), null,
+                if (mode == null || mode.hardwareId < 0 || mode.hardwareId > 3 || !unique.add(mode.hardwareId)) {
+                    return snapshot = new Snapshot(false, Collections.<Mode>emptyList(), null, null,
                             "Duplicate or null OEM brightness mode");
                 }
             }
+            for (int i=0;i<EXPECTED_MODE_COUNT;i++) {
+                if (!unique.contains(i)) return snapshot = new Snapshot(false, Collections.<Mode>emptyList(), null, null,
+                    "Required OEM brightness mode is missing: " + i);
+            }
             int current = gateway.readCurrentModeId();
             if (!unique.contains(current)) {
-                return snapshot = new Snapshot(false, Collections.<Mode>emptyList(), null,
+                return snapshot = new Snapshot(false, Collections.<Mode>emptyList(), null, null,
                         "Current OEM brightness mode is not in the supported table");
             }
-            return snapshot = new Snapshot(true, modes, current, null);
+            if (pendingId != null && current == pendingId.intValue()) pendingId = null;
+            return snapshot = new Snapshot(true, modes, current, pendingId, null);
         } catch (Exception e) {
-            return snapshot = new Snapshot(false, Collections.<Mode>emptyList(), null,
+            return snapshot = new Snapshot(false, Collections.<Mode>emptyList(), null, null,
                     "Failed reading OEM brightness state: " + e.getClass().getSimpleName());
         }
     }
 
     /**
-     * Called by right-pane single-choice UI on user interaction only.
-     * Read back the selected value before reporting success.
-     * No shared preference is used as an authoritative hardware state.
+     * Called only on user action in the right-hand pane.
+     * An Android broadcast is asynchronous: success indicates dispatch, not
+     * confirmation. Call refresh() after a delay and check pendingId.
      */
     public boolean select(int hardwareId) {
         if (!snapshot.enabled) return false;
@@ -113,19 +121,25 @@ public final class LightSourceBrightnessController {
         }
         if (!available) return false;
         if (snapshot.currentId != null && snapshot.currentId == hardwareId) return true;
+        if (pendingId != null) return false;
         try {
             gateway.applyMode(hardwareId);
-            int actual = gateway.readCurrentModeId();
-            if (actual != hardwareId) {
-                refresh();
-                return false;
-            }
-            snapshot = new Snapshot(true, snapshot.choices, actual, null);
+            pendingId = hardwareId;
+            snapshot = new Snapshot(true, snapshot.choices, snapshot.currentId, pendingId, null);
             return true;
         } catch (Exception e) {
+            pendingId = null;
             refresh();
             return false;
         }
+    }
+
+    /** The right pane calls this if the OEM broadcast did not confirm in time. */
+    public boolean abandonUnconfirmedRequest() {
+        boolean confirmed = pendingId == null;
+        pendingId = null;
+        refresh();
+        return confirmed;
     }
 
     public Snapshot currentSnapshot() { return snapshot; }
