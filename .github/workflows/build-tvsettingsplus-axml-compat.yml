@@ -1,0 +1,36 @@
+name: Verify TvSettingsPlus v2 legacy intent binary manifest
+on:
+  push:
+    paths:
+      - "tools/patch_axml_compat_aliases.py"
+      - ".github/workflows/build-tvsettingsplus-axml-compat.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Android inspector
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq aapt
+      - name: Patch and verify compiled manifest
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/compat
+          python3 tools/patch_axml_compat_aliases.py vendor/reference/8052/APK/TvSettingsPlus.apk /tmp/compat/unsigned.apk
+          aapt dump badging /tmp/compat/unsigned.apk | grep "name='com.android.tv.settings' versionCode='2'"
+          aapt dump xmltree /tmp/compat/unsigned.apk AndroidManifest.xml > /tmp/compat/manifest.txt
+          for action in android.settings.SETTINGS android.settings.WIFI_SETTINGS android.settings.AUTO_BLUETOOTH android.settings.BLUETOOTH_SETTINGS android.settings.ALLAPPS; do
+             grep -Fq "$action" /tmp/compat/manifest.txt
+          done
+          echo "Binary manifest patch validated"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tvsettingsplus-8052-v2-axml-probe-unsigned
+          path: /tmp/compat/manifest.txt
+          retention-days: 7
