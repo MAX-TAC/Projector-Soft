@@ -38,7 +38,7 @@ def main():
        else src.read(name))
     result.writestr(copy.copy(i),data)
    result.writestr("classes17.dex",a.compiled_dex.read_bytes(),compress_type=zipfile.ZIP_DEFLATED)
- with zipfile.ZipFile(a.output) as result:
+ with zipfile.ZipFile(a.original) as src,zipfile.ZipFile(a.output) as result:
   assert result.read("resources.arsc")==src.read("resources.arsc")
   assert result.read("AndroidManifest.xml")!=src.read("AndroidManifest.xml")
   for name in src.namelist():
