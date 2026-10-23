@@ -42,3 +42,9 @@
 ## OEM brightness migration
 
 [Light-source brightness migration — 4 modes, native receiver, inline right pane and calibration protection](docs/LIGHT_SOURCE_MODE_MIGRATION.md). The Java module compiles as Android 13 DEX, but the installable v2 APK does not yet include it.
+
+## Экспериментальная TvSettingsPlus MOD v3 (8052)
+
+- [Отчёт о переносе OEM-функций, реальных экранах и ограничениях](docs/OEM_MIGRATION_IMPLEMENTATION_REPORT_2026-10-23.md)
+- [Аудит существующих заводских контроллеров](docs/OEM_MENU_CONTROLLER_AUDIT_2026-10-23.md)
+- [Собранная и подписанная APK v3 (GitHub Actions Artifacts)](https://github.com/MAX-TAC/Projector-Soft/actions/runs/39997799927/artifacts/12519724074): исправление customer-0 яркости в правой панели, скрытие пункта BT-колонки, неизменность системных сервисов и калибровки. **Не тестировалась на железе, KuSettings не отключать.**
