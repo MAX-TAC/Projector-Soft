@@ -24,7 +24,9 @@ jobs:
           set -euo pipefail
           echo "e4184a13fbf56fa069effc6a40ea50c0da7e9190321b389f59ba34700a80d0a1  vendor/reference/8052/APK/TvSettingsPlus.apk" | sha256sum -c -
           apktool if vendor/reference/8052/APK/framework-res.apk -p /tmp/tvsp/framework
-          apktool d -f -r -p /tmp/tvsp/framework vendor/reference/8052/APK/TvSettingsPlus.apk -o /tmp/tvsp/build/decoded
+          apktool d -f -p /tmp/tvsp/framework vendor/reference/8052/APK/TvSettingsPlus.apk -o /tmp/tvsp/build/decoded
+          # Full decode is required for editing OEM binary XML manifest.
+          # The final repack restores original resources.arsc byte-for-byte.
           file /tmp/tvsp/build/decoded/AndroidManifest.xml
           head -c 160 /tmp/tvsp/build/decoded/AndroidManifest.xml | strings | head -n 3
       - name: Add compatibility actions and rebuild DEX
