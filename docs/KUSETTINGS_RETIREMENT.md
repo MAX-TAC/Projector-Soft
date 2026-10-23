@@ -26,12 +26,24 @@
 
 | OEM компонент | Статус | Как заменить |
 |---|---|---|
-| `BootupReceiver` | Не изучены все побочные эффекты | Только после точного аудита событий и выполняемых действий |
-| `MySetTimeService` | Не изучены условия запуска | Использовать штатное Android время/синхронизацию при доказанной эквивалентности |
-| `ScreenServices` | Имеет код скриншотов, возможны и другие функции | Исключить ненужные скриншоты, проверить все остальные публичные вызовы и регистрацию |
+| `BootupReceiver` | Выясняем фактические действия и события из исходного DEX | Переносить только если обнаружена уникальная необходимая функция, не дублируемая Android/TRD/TvSettingsPlus/KuSourceRJ |
+| `MySetTimeService` | Выясняем источники времени, периоды и побочные эффекты | Не переносить без доказанной необходимости; сравнить Android NetworkTimeUpdateService и TimeService KuSourceRJ |
+| `ScreenServices` | **Не переносить в TvSettingsPlus по решению проекта** | Проверить входящие вызовы и жизненный цикл; после отключения KuSettings не должен оставаться необходимым |
 | `KuSourceRJ` | Сохраняется | Адаптер источников Android/HDMI, проверить косвенные зависимости от KuSettings |
 | `RuiAutoFocus`, `KeystoneCorrection`, `trdservice`, `trdmiddle` | Сохраняются | Проверенные Intent/SDK/Binder, никакого сырого I²C до аппаратной верификации |
 | `RuiYunOta`, `KuSetupWizard` | Сохраняются | OTA в «Об устройстве», SetupWizard не отключать |
+
+## Обнаруженная зависимость Miracast
+
+В `com.mediatek.miracast` (WFDSinkTest) класс `com.android.server.policy.PhoneWindowManager` при обработке кнопки содержит ссылку на `com.my.settings.bluetooth.MyAutoBluetoothActivity`. Прямых DEX-ссылок на `com.my.settings` в TvSettingsPlus и KuSourceRJ в статическом сканировании не было, но это не доказывает отсутствие runtime-зависимостей. Нельзя скрыть эту ссылку изменением одного TvSettingsPlus: нужен патч WFDSinkTest, совместимая подпись и проверка соответствия UX назначения кнопки. Скан и конкретный метод: `research/migration-8052/DEX_DEPENDENCIES.md`, `wfd-bluetooth-reference.json`.
+
+`KuSetupWizard` содержит похожие внутренние классы `com.my.settings`; не отключать и не модифицировать без отдельной проверки жизненного цикла.
+
+## Список не переносимых компонентов
+
+- `com.my.service.ScreenServices` — **не переносить**, скриншоты не добавлять.
+- `com.my.settings.activity.ScreenshotActivity` — **не переносить**, соответствующий экран не добавлять.
+- Bluetooth speaker sink — не переносить.
 
 **НЕ ГОТОВО:** 8052/8054 не подвергались аппаратным испытаниям MOD; нельзя считать `KuSettings` независимым только из-за отсутствия прямой текстовой ссылки на него в Java. Вызовы могут идти через Intent actions, shared UID, системные свойства и фоновые сервисы.
 
