@@ -1,0 +1,47 @@
+name: Determine KuSettings boot and time service behavior
+on:
+  push:
+    paths:
+      - ".github/workflows/audit-ku-behavior.yml"
+      - "tools/audit_ku_behavior.py"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare static decompiler
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq unzip
+          curl -fL --retry 3 "https://github.com/skylot/jadx/releases/download/v1.5.6/jadx-1.5.6.zip" -o /tmp/jadx.zip
+          mkdir -p /tmp/jadx
+          unzip -q /tmp/jadx.zip -d /tmp/jadx
+      - name: Inspect APK classes without executing them
+        run: |
+          mkdir -p /tmp/ku-audit
+          for name in KuSettings KuSetupWizard WFDSinkTest TvSettingsPlus KuSourceRJ; do
+            /tmp/jadx/bin/jadx --no-res --no-imports --threads-count 2 --deobf \
+              -d "/tmp/ku-audit/$name" "vendor/reference/8052/APK/$name.apk" \
+              > "/tmp/jadx-$name.log" 2>&1 || echo "::warning::$name partially decompiled"
+          done
+          python3 tools/audit_ku_behavior.py /tmp/ku-audit research/oem-apps/KuSettings_Behavior
+      - name: Commit only metadata and method names
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research/oem-apps/KuSettings_Behavior/behavior_inventory.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Inventory KuSettings startup and clock service behavior without mirroring OEM code"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ku-boot-service-behavior-audit
+          path: research/oem-apps/KuSettings_Behavior/behavior_inventory.json
+          retention-days: 30
