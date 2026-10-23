@@ -1,0 +1,41 @@
+name: Trace WFD Bluetooth dependency on KuSettings
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "tools/audit_wfd_ku_dependency.py"
+      - ".github/workflows/audit-wfd-ku-dependency.yml"
+permissions:
+  contents: write
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare JADX
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 \
+            https://github.com/skylot/jadx/releases/download/v1.5.6/jadx-1.5.6.zip \
+            -o /tmp/jadx.zip
+          mkdir -p /tmp/jadx-tools /tmp/wfd-code
+          unzip -q /tmp/jadx.zip -d /tmp/jadx-tools
+      - name: Decompile WFD and identify exact call site
+        run: |
+          set -euo pipefail
+          /tmp/jadx-tools/bin/jadx --no-res --no-imports --threads-count 2 \
+            -d /tmp/wfd-code vendor/reference/8052/APK/WFDSinkTest.apk \
+            > /tmp/wfd-jadx.log 2>&1 || true
+          test -d /tmp/wfd-code/sources
+          python3 tools/audit_wfd_ku_dependency.py /tmp/wfd-code/sources research/migration-8052/wfd-bluetooth-reference.json
+      - name: Commit structural finding
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research/migration-8052/wfd-bluetooth-reference.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Map Miracast WFD outbound KuSettings Bluetooth activity callsite"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
