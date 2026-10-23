@@ -1,0 +1,33 @@
+name: Audit all OEM APK DEX references to KuSettings
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "tools/audit_ku_dex_references.py"
+      - ".github/workflows/audit-ku-dex-refs.yml"
+permissions:
+  contents: write
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - name: Scan all original 8052 APK DEX symbol tables
+        run: |
+          set -euo pipefail
+          python3 -m py_compile tools/audit_ku_dex_references.py
+          python3 tools/audit_ku_dex_references.py \
+            vendor/reference/8052/APK research/migration-8052
+          head -n 100 research/migration-8052/DEX_DEPENDENCIES.md
+      - name: Publish static cross-package data
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research/migration-8052/DEX_DEPENDENCIES.md research/migration-8052/dex-package-references.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Audit potential inbound KuSettings references from all OEM APKs"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
