@@ -16,6 +16,7 @@ import java.util.Set;
 public final class ProjectorCapabilities {
     public enum Feature {
         INPUT_ANDROID, HDMI_1, HDMI_2,
+        LIGHT_SOURCE_MODE, // Discrete optical light levels; never picture brightness slider
         PICTURE_BRIGHTNESS, PICTURE_CONTRAST, PICTURE_COLOR,
         HDR_CONTROL, MEMC_CONTROL, GAME_LOW_LATENCY,
         AUDIO_EQUALIZER_5_BAND, AUDIO_OUTPUT,
