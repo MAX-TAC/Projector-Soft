@@ -18,7 +18,7 @@ jobs:
           set -euo pipefail
           sudo rm -f /etc/apt/sources.list.d/microsoft-prod.list /etc/apt/sources.list.d/microsoft-prod.sources
           sudo apt-get update -qq
-          sudo apt-get install -y -qq aapt apksigner zipalign openssl
+          sudo apt-get install -y -qq aapt apktool apksigner zipalign openssl
           mkdir -p /tmp/platform-test /tmp/build-tvsettings
       - name: Validate original system APK and patch only versionCode
         run: |
@@ -26,18 +26,25 @@ jobs:
           SOURCE=vendor/reference/8052/APK/TvSettingsPlus.apk
           echo "e4184a13fbf56fa069effc6a40ea50c0da7e9190321b389f59ba34700a80d0a1  $SOURCE" | sha256sum -c -
           python3 -m py_compile tools/patch_axml_version.py
-          python3 tools/patch_axml_version.py "$SOURCE" /tmp/build-tvsettings/v2-unaligned.apk --old 1 --new 2
+          mkdir -p /tmp/tvsettings-framework
+          apktool if vendor/reference/8052/APK/framework-res.apk -p /tmp/tvsettings-framework
+          apktool d -f -r -p /tmp/tvsettings-framework "$SOURCE" -o /tmp/build-tvsettings/decoded
+          apktool b -p /tmp/tvsettings-framework /tmp/build-tvsettings/decoded -o /tmp/build-tvsettings/smali-rebuilt.apk
+          python3 tools/repack_tvsettingsplus_dex.py "$SOURCE"             /tmp/build-tvsettings/smali-rebuilt.apk /tmp/build-tvsettings/v2-unaligned.apk --old 1 --new 2
           aapt dump badging /tmp/build-tvsettings/v2-unaligned.apk | grep -E "^package:|^sdkVersion:|^targetSdkVersion:"
           aapt dump badging /tmp/build-tvsettings/v2-unaligned.apk | grep -E "name='com.android.tv.settings' versionCode='2'"
           python3 - <<'PY'
-          import zipfile
+          import zipfile,re
           a="vendor/reference/8052/APK/TvSettingsPlus.apk"
           b="/tmp/build-tvsettings/v2-unaligned.apk"
           with zipfile.ZipFile(a) as x,zipfile.ZipFile(b) as y:
-              old={n:x.read(n) for n in x.namelist() if n.endswith(".dex") or n=="resources.arsc"}
-              assert old
-              assert all(y.read(k)==v for k,v in old.items())
-              print("All DEX and resources.arsc are byte-identical with the original")
+              dex=lambda z: {n for n in z.namelist() if re.fullmatch(r"classes[0-9]*\.dex",n)}
+              assert dex(x)==dex(y) and len(dex(x))==16
+              assert x.read("resources.arsc")==y.read("resources.arsc")
+              for name in x.namelist():
+                  if name.endswith(".dex") or name=="AndroidManifest.xml" or name.startswith("META-INF/"):continue
+                  assert x.read(name)==y.read(name),name
+              print("16 DEX rebuilt; original resources, JNI and vendor assets byte-identical")
           PY
       - name: Verify exact AOSP platform test certificate and sign
         run: |
@@ -68,8 +75,8 @@ jobs:
           {
             echo "TvSettingsPlus smoke build, 8052 (not a functional MOD)"
             echo "Original APK: RUIOS.8052.1.0.4, platform test key"
-            echo "Only binary manifest versionCode changed from 1 to 2."
-            echo "ALL original DEX resources preserved, no KuSettings migration applied."
+            echo "DEX files reassembled from Apktool -r with no intended source changes; versionCode changed from 1 to 2."
+            echo "Original OEM resources and other assets preserved; no KuSettings migration applied."
             echo "This APK HAS NOT been installed/tested on a projector."
             echo "Do not disable KuSettings or use as production replacement."
             echo
