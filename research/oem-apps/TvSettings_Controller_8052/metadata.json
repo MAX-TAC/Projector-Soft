@@ -1,0 +1,1137 @@
+{
+  "source": "Stock 8052 TvSettingsPlus DEX JADX metadata; not runtime proof",
+  "controllers": {
+    "floatmenu/controller/general/BrightnessModeSettingsSecondaryController": {
+      "present": true,
+      "java_path": "com/android/tv/settings/uicustom/floatmenu/controller/general/BrightnessModeSettingsSecondaryController.java",
+      "line_count": 125,
+      "methods": {
+        "onAttach": 1,
+        "onResume": 1,
+        "onKey": 1,
+        "initData": 1,
+        "initView": 1,
+        "run": 1,
+        "initCheck": 1,
+        "initListener": 1,
+        "onClick": 4
+      },
+      "resource_ids": [
+        "rjRadioGroup",
+        "rtv_general_projection_brightness_mode_auto",
+        "rtv_general_projection_brightness_mode_eco",
+        "rtv_general_projection_brightness_mode_highlight",
+        "rtv_general_projection_brightness_mode_standard"
+      ],
+      "strings": [],
+      "interesting_calls": [
+        "getLightMode",
+        "onKey",
+        "putLightMode",
+        "requestFocus"
+      ],
+      "actions_properties": []
+    },
+    "floatmenu/controller/general/GeneralSubMenuController": {
+      "present": true,
+      "java_path": "com/android/tv/settings/uicustom/floatmenu/controller/general/GeneralSubMenuController.java",
+      "line_count": 177,
+      "methods": {
+        "fontScaleToContentResId": 1,
+        "getCurBrightnessModeResId": 1,
+        "onAttach": 1,
+        "onResume": 1,
+        "onKey": 1,
+        "initData": 1,
+        "initView": 1,
+        "initListeners": 1,
+        "onClick": 5,
+        "onSwitchChangeListener": 1,
+        "getCurLanguageName": 1,
+        "getSystemFontScale": 1,
+        "getLanguage": 1,
+        "isDevelopmentSettingsEnabled": 1
+      },
+      "resource_ids": [
+        "tciv_general_date_time",
+        "tciv_general_font_size",
+        "tciv_general_language_settings",
+        "tciv_general_projection_brightness_mode",
+        "tciv_general_screensaver_settings",
+        "tsv_general_power_on_up"
+      ],
+      "strings": [
+        "general_font_size_large",
+        "general_font_size_medium",
+        "general_font_size_small",
+        "general_font_size_xlarge",
+        "general_projection_brightness_mode_auto",
+        "general_projection_brightness_mode_eco",
+        "general_projection_brightness_mode_highlight",
+        "general_projection_brightness_mode_standard"
+      ],
+      "interesting_calls": [
+        "getCurBrightnessModeResId",
+        "getLightMode",
+        "onKey"
+      ],
+      "actions_properties": [
+        "android.settings.BRIGHT_SETTINGS"
+      ]
+    },
+    "floatmenu/controller/picture/PictureSubMenuController": {
+      "present": true,
+      "java_path": "com/android/tv/settings/uicustom/floatmenu/controller/picture/PictureSubMenuController.java",
+      "line_count": 327,
+      "methods": {
+        "onAttach": 1,
+        "onResume": 1,
+        "onKey": 1,
+        "initData": 1,
+        "initView": 1,
+        "initCheck": 1,
+        "initListener": 1,
+        "onClick": 14,
+        "run": 3,
+        "showRestDialog": 1,
+        "showLoadingDialog": 1,
+        "dismissLoadingDialog": 1,
+        "resetPicture": 1
+      },
+      "resource_ids": [
+        "rjRadioGroup_color_temperature",
+        "rjRadioGroup_picture_mode",
+        "rjscrollView",
+        "rtv_color_temp_cool",
+        "rtv_color_temp_custom",
+        "rtv_color_temp_standard",
+        "rtv_color_temp_warm",
+        "rtv_picture_mode_energy_saving",
+        "rtv_picture_mode_game",
+        "rtv_picture_mode_movie",
+        "rtv_picture_mode_sport",
+        "rtv_picture_mode_standard",
+        "rtv_picture_mode_user",
+        "rtv_picture_mode_vivid",
+        "tciv_picture_advanced_settings",
+        "tciv_picture_reset"
+      ],
+      "strings": [
+        "sound_reset_to_default",
+        "str_cancel",
+        "str_confirm"
+      ],
+      "interesting_calls": [
+        "getDefaultValueAutoBrightness",
+        "getResources",
+        "onKey",
+        "reSetAutoBackLightValue",
+        "resetPicture"
+      ],
+      "actions_properties": []
+    },
+    "floatmenu/controller/picture/PictureModeValueSecondaryController": {
+      "present": true,
+      "java_path": "com/android/tv/settings/uicustom/floatmenu/controller/picture/PictureModeValueSecondaryController.java",
+      "line_count": 115,
+      "methods": {
+        "onAttach": 1,
+        "onResume": 1,
+        "onKey": 1,
+        "initData": 1,
+        "initView": 1,
+        "run": 1,
+        "onValueChanged": 5
+      },
+      "resource_ids": [
+        "tsbv_picture_brightness",
+        "tsbv_picture_contrast",
+        "tsbv_picture_hue",
+        "tsbv_picture_saturation",
+        "tsbv_picture_sharpness"
+      ],
+      "strings": [],
+      "interesting_calls": [
+        "onKey",
+        "requestFocus"
+      ],
+      "actions_properties": []
+    },
+    "floatmenu/controller/picture/ColorTempValueSecondaryController": {
+      "present": true,
+      "java_path": "com/android/tv/settings/uicustom/floatmenu/controller/picture/ColorTempValueSecondaryController.java",
+      "line_count": 87,
+      "methods": {
+        "onAttach": 1,
+        "onResume": 1,
+        "onKey": 1,
+        "initData": 1,
+        "initView": 1,
+        "run": 1,
+        "onValueChanged": 3
+      },
+      "resource_ids": [
+        "tsbv_color_temp_blue",
+        "tsbv_color_temp_green",
+        "tsbv_color_temp_red"
+      ],
+      "strings": [],
+      "interesting_calls": [
+        "onKey",
+        "requestFocus"
+      ],
+      "actions_properties": []
+    },
+    "floatmenu/controller/picture/AdvanceSettingsSecondaryController": {
+      "present": true,
+      "java_path": "com/android/tv/settings/uicustom/floatmenu/controller/picture/AdvanceSettingsSecondaryController.java",
+      "line_count": 313,
+      "methods": {
+        "onAttach": 1,
+        "onResume": 1,
+        "onKey": 1,
+        "initData": 2,
+        "initView": 1,
+        "run": 1,
+        "onClick": 10,
+        "updateDemoPartitionEnabled": 1,
+        "initCheck": 1,
+        "onCreate": 1,
+        "onDismiss": 1,
+        "onStart": 1,
+        "onStop": 1,
+        "onDetachedFromWindow": 1
+      },
+      "resource_ids": [
+        "btn_mjc_demo",
+        "mjc_left",
+        "mjc_mid",
+        "mjc_right",
+        "rjRadioGroup_hdr",
+        "rjRadioGroup_mjc_demo_partition",
+        "rjRadioGroup_mjc_effect",
+        "rtv_hdr_off",
+        "rtv_hdr_on",
+        "rtv_mjc_demo_all",
+        "rtv_mjc_demo_left",
+        "rtv_mjc_demo_right",
+        "rtv_mjc_high",
+        "rtv_mjc_low",
+        "rtv_mjc_middle",
+        "rtv_mjc_off"
+      ],
+      "strings": [
+        "pic_advance_video_entries_off",
+        "pic_advance_video_entries_on"
+      ],
+      "interesting_calls": [
+        "MenuMjcDemoDialog",
+        "onKey",
+        "onStart",
+        "requestFocus",
+        "setFocusable"
+      ],
+      "actions_properties": [
+        "tv_picture_advance_video_mjc_demo_partition",
+        "tv_picture_advance_video_mjc_effect"
+      ]
+    },
+    "floatmenu/controller/sound/SoundSubMenuController": {
+      "present": true,
+      "java_path": "com/android/tv/settings/uicustom/floatmenu/controller/sound/SoundSubMenuController.java",
+      "line_count": 304,
+      "methods": {
+        "onAttach": 1,
+        "onResume": 1,
+        "onKey": 1,
+        "initData": 1,
+        "initView": 1,
+        "initCheck": 1,
+        "initListener": 1,
+        "onClick": 9,
+        "onSwitchChangeListener": 4,
+        "refreshSurroundState": 1,
+        "run": 2,
+        "showRestDialog": 1,
+        "showLoadingDialog": 1,
+        "dismissLoadingDialog": 1,
+        "restSound": 1
+      },
+      "resource_ids": [
+        "rjRadioGroup",
+        "rtv_sound_mode_custom",
+        "rtv_sound_mode_movie",
+        "rtv_sound_mode_music",
+        "rtv_sound_mode_news",
+        "rtv_sound_mode_sports",
+        "rtv_sound_mode_standard",
+        "rtv_sound_mode_vivid",
+        "tsv_sound_auto_volume",
+        "tsv_sound_earc",
+        "tsv_sound_surround",
+        "tsv_source_key_tone",
+        "tvic_sound_reset"
+      ],
+      "strings": [
+        "sound_reset_to_default",
+        "str_cancel",
+        "str_confirm"
+      ],
+      "interesting_calls": [
+        "getResources",
+        "onKey",
+        "refreshSurroundState",
+        "restSound"
+      ],
+      "actions_properties": []
+    },
+    "floatmenu/controller/sound/SoundModeValueSecondaryController": {
+      "present": true,
+      "java_path": "com/android/tv/settings/uicustom/floatmenu/controller/sound/SoundModeValueSecondaryController.java",
+      "line_count": 73,
+      "methods": {
+        "onAttach": 1,
+        "onResume": 1,
+        "onKey": 1,
+        "initData": 1,
+        "initView": 1,
+        "run": 1,
+        "onValueChanged": 2
+      },
+      "resource_ids": [
+        "tsbv_sound_mode_value_bass",
+        "tsbv_sound_mode_value_treble"
+      ],
+      "strings": [],
+      "interesting_calls": [
+        "onKey",
+        "requestFocus"
+      ],
+      "actions_properties": []
+    },
+    "floatmenu/controller/source/SourceSubMenuController": {
+      "present": true,
+      "java_path": "com/android/tv/settings/uicustom/floatmenu/controller/source/SourceSubMenuController.java",
+      "line_count": 571,
+      "methods": {
+        "onAttach": 1,
+        "onResume": 1,
+        "onKey": 1,
+        "initData": 1,
+        "initBoardConfig": 1,
+        "initView": 1,
+        "onClick": 10,
+        "onSwitchChangeListener": 4,
+        "getEdidVersion": 1,
+        "validateEdidVersion": 1,
+        "updateEdidEnableState": 1,
+        "showCecEnergyDialog": 1,
+        "checkBluetoothSpeakerPackage": 1,
+        "switchToHDMI": 1,
+        "switchToAV": 1,
+        "switchToUSB": 1,
+        "switchToBluetoothSpeaker": 1,
+        "updatePowerOnSourceAndApp": 1,
+        "isAppPackage": 1,
+        "resetTrapezoid": 1,
+        "isTopActivity": 1,
+        "initSource": 1
+      },
+      "resource_ids": [
+        "tciv_source_av",
+        "tciv_source_bluetooth_speaker",
+        "tciv_source_edid_version",
+        "tciv_source_hdmi",
+        "tciv_source_hdmi2",
+        "tciv_source_hdmi3",
+        "tciv_source_hdmi4",
+        "tciv_source_power_on",
+        "tciv_source_power_on_app",
+        "tciv_source_usb",
+        "tsv_hdmi_cec_control",
+        "tsv_hdmi_device_auto_off",
+        "tsv_hdmi_low_latency_game",
+        "tsv_source_plug_and_play"
+      ],
+      "strings": [
+        "source_av",
+        "source_hdmi",
+        "source_hdmi_2",
+        "source_hdmi_3",
+        "source_hdmi_4",
+        "source_usb",
+        "str_off"
+      ],
+      "interesting_calls": [
+        "getDisplayTitle",
+        "getResources",
+        "initSource",
+        "isHDMISource",
+        "isSupportPowerConfirmed",
+        "onKey",
+        "setDisableFocus",
+        "startsWith",
+        "updatePowerOnSourceAndApp"
+      ],
+      "actions_properties": [
+        "persist.rjpj.hdmiplug.autoplay",
+        "persist.trd.source_id",
+        "tv_input",
+        "tv_input_hdmi_edid_version"
+      ]
+    },
+    "floatmenu/controller/source/PowerOnSourceSecondaryController": {
+      "present": true,
+      "java_path": "com/android/tv/settings/uicustom/floatmenu/controller/source/PowerOnSourceSecondaryController.java",
+      "line_count": 346,
+      "methods": {
+        "onAttach": 1,
+        "onResume": 1,
+        "onKey": 1,
+        "initBoardConfig": 1,
+        "systemToLocal": 1,
+        "getHdmiInputId": 1,
+        "initView": 1,
+        "run": 1,
+        "initCheck": 1,
+        "initListener": 1,
+        "onClick": 7
+      },
+      "resource_ids": [
+        "rjRadioGroup",
+        "rtv_source_power_on_av",
+        "rtv_source_power_on_hdmi1",
+        "rtv_source_power_on_hdmi2",
+        "rtv_source_power_on_hdmi3",
+        "rtv_source_power_on_hdmi4",
+        "rtv_source_power_on_off",
+        "rtv_source_power_on_usb"
+      ],
+      "strings": [],
+      "interesting_calls": [
+        "onKey",
+        "requestFocus"
+      ],
+      "actions_properties": [
+        "persist.trd.source_id",
+        "tv_input"
+      ]
+    },
+    "floatmenu/controller/source/PowerOnAppSecondaryController": {
+      "present": true,
+      "java_path": "com/android/tv/settings/uicustom/floatmenu/controller/source/PowerOnAppSecondaryController.java",
+      "line_count": 159,
+      "methods": {
+        "onAttach": 1,
+        "onResume": 1,
+        "onKey": 2,
+        "isSignalSource": 1,
+        "checkKuleshiAppTitles": 1,
+        "initView": 1,
+        "initListener": 1,
+        "onItemClick": 1
+      },
+      "resource_ids": [
+        "listview_power_on_app"
+      ],
+      "strings": [
+        "str_off"
+      ],
+      "interesting_calls": [
+        "OnKeyListener",
+        "isSignalSource",
+        "onKey",
+        "setDisplayTitle",
+        "setOnKeyListener",
+        "setPowerOnApp",
+        "startsWith"
+      ],
+      "actions_properties": [
+        "persist.trd.source_id"
+      ]
+    },
+    "floatmenu/controller/system/SystemSubMenuController": {
+      "present": true,
+      "java_path": "com/android/tv/settings/uicustom/floatmenu/controller/system/SystemSubMenuController.java",
+      "line_count": 119,
+      "methods": {
+        "onAttach": 1,
+        "onKey": 1,
+        "initView": 1,
+        "initListeners": 1,
+        "onClick": 5,
+        "showFactoryResetDialog": 1,
+        "factoryReset": 1,
+        "intentComponent": 1,
+        "isKuleshiOta": 1
+      },
+      "resource_ids": [
+        "tciv_system_factory_reset",
+        "tciv_system_info",
+        "tciv_system_local_update",
+        "tciv_system_online_update"
+      ],
+      "strings": [
+        "str_cancel",
+        "str_confirm",
+        "system_restore_factory_settings",
+        "system_update_title"
+      ],
+      "interesting_calls": [
+        "isKuleshiOta",
+        "onKey",
+        "putLightMode"
+      ],
+      "actions_properties": []
+    },
+    "floatmenu/controller/system/SystemInfoSecondaryController": {
+      "present": true,
+      "java_path": "com/android/tv/settings/uicustom/floatmenu/controller/system/SystemInfoSecondaryController.java",
+      "line_count": 224,
+      "methods": {
+        "handleMessage": 1,
+        "onAttach": 1,
+        "onResume": 1,
+        "onKey": 1,
+        "onDetach": 1,
+        "initData": 1,
+        "initView": 1,
+        "run": 2,
+        "getModelName": 1,
+        "getAndroidVersion": 1,
+        "getSystemVersion": 1,
+        "getMac": 1,
+        "getWifiMacAddr": 1,
+        "getEthMac": 1,
+        "getDefaultMac": 1,
+        "getMacFromHardware": 1,
+        "convertToMac": 1,
+        "updateTemperatureUi": 1
+      },
+      "resource_ids": [
+        "tcvv_system_ambient_temperature",
+        "tcvv_system_android_version",
+        "tcvv_system_device_model",
+        "tcvv_system_device_temperature",
+        "tcvv_system_mac_address",
+        "tcvv_system_version",
+        "tcvv_system_wifi_mac_address"
+      ],
+      "strings": [],
+      "interesting_calls": [
+        "getDisplayName",
+        "getModelName",
+        "onKey",
+        "requestFocus",
+        "startsWith",
+        "updateTemperatureUi"
+      ],
+      "actions_properties": []
+    },
+    "floatmenu/controller/projector/ProjectorSubMenuController": {
+      "present": true,
+      "java_path": "com/android/tv/settings/uicustom/floatmenu/controller/projector/ProjectorSubMenuController.java",
+      "line_count": 203,
+      "methods": {
+        "onAttach": 1,
+        "onResume": 1,
+        "onKey": 1,
+        "initData": 1,
+        "initView": 1,
+        "onClick": 10,
+        "startAutoFocus": 1,
+        "startAutoKeystone": 1,
+        "showResetDialog": 1,
+        "resetTrapezoid": 1,
+        "jumpActivityByAction": 1
+      },
+      "resource_ids": [
+        "tciv_projector_auto_focus",
+        "tciv_projector_auto_keystone",
+        "tciv_projector_focus_settings",
+        "tciv_projector_four_point_keystone",
+        "tciv_projector_hv_keystone",
+        "tciv_projector_keystone_settings",
+        "tciv_projector_mode",
+        "tciv_projector_reset_keystone",
+        "tciv_projector_screen_zoom"
+      ],
+      "strings": [
+        "projector_keystone_correction_reset",
+        "str_cancel",
+        "str_confirm"
+      ],
+      "interesting_calls": [
+        "getResources",
+        "onKey",
+        "startActivity",
+        "startAutoFocus",
+        "startAutoKeystone",
+        "startService"
+      ],
+      "actions_properties": []
+    },
+    "floatmenu/controller/projector/FocusSettingsSecondaryController": {
+      "present": true,
+      "java_path": "com/android/tv/settings/uicustom/floatmenu/controller/projector/FocusSettingsSecondaryController.java",
+      "line_count": 99,
+      "methods": {
+        "onAttach": 1,
+        "onKey": 1,
+        "initData": 1,
+        "initView": 1,
+        "run": 1,
+        "onSwitchChangeListener": 3,
+        "setPowerOnAutoFocus": 1,
+        "setMoveAutoFocus": 1,
+        "setAccurateFocus": 1
+      },
+      "resource_ids": [
+        "tsv_focus_accurate_focus",
+        "tsv_focus_move_auto",
+        "tsv_focus_power_on_auto",
+        "tv_focus_accurate_focus_tip"
+      ],
+      "strings": [],
+      "interesting_calls": [
+        "onKey",
+        "requestFocus",
+        "setAccurateFocus",
+        "setMoveAutoFocus",
+        "setPowerOnAutoFocus"
+      ],
+      "actions_properties": [
+        "persist.rjpj.autofocus.move",
+        "persist.rjpj.autofocus.poweron",
+        "persist.rjpj.tof.autofocus"
+      ]
+    },
+    "floatmenu/controller/projector/KeystoneSettingsSecondaryController": {
+      "present": true,
+      "java_path": "com/android/tv/settings/uicustom/floatmenu/controller/projector/KeystoneSettingsSecondaryController.java",
+      "line_count": 221,
+      "methods": {
+        "onAttach": 1,
+        "onKey": 1,
+        "initData": 1,
+        "initView": 1,
+        "run": 2,
+        "onDetach": 1,
+        "initListener": 1,
+        "onSwitchChangeListener": 5,
+        "onClick": 2,
+        "setPowerOnAutoKeystone": 1,
+        "setMoveAutoKeystone": 1,
+        "setAutoScreen": 1,
+        "setAutoObstacleAvoidance": 1,
+        "setKeystoneVertical": 1,
+        "gotoKeystoneCorrection": 1,
+        "intentComponent": 1
+      },
+      "resource_ids": [
+        "tciv_keystone_auto_screen",
+        "tciv_keystone_correction",
+        "tsv_keystone_auto_obstacle_avoidance",
+        "tsv_keystone_auto_screen",
+        "tsv_keystone_move_auto",
+        "tsv_keystone_power_on_auto",
+        "tsv_keystone_vertical",
+        "tv_keystone_settings_title"
+      ],
+      "strings": [],
+      "interesting_calls": [
+        "gotoKeystoneCorrection",
+        "onKey",
+        "requestFocus",
+        "setDisableFocus",
+        "setKeystoneVertical",
+        "setMoveAutoKeystone",
+        "setPowerOnAutoKeystone",
+        "startActivity"
+      ],
+      "actions_properties": [
+        "persist.rjpj.autokeystone.move",
+        "persist.rjpj.autokeystone.poweron",
+        "persist.rjpj.keystone.auto.vertical",
+        "persist.rjpj.obstacle.avoidance",
+        "persist.rjpj.screen.alignment"
+      ]
+    },
+    "floatmenu/controller/projector/ProjectionModeSecondaryController": {
+      "present": true,
+      "java_path": "com/android/tv/settings/uicustom/floatmenu/controller/projector/ProjectionModeSecondaryController.java",
+      "line_count": 161,
+      "methods": {
+        "onAttach": 1,
+        "onKey": 1,
+        "initData": 1,
+        "initView": 1,
+        "run": 1,
+        "initCheck": 1,
+        "initListener": 1,
+        "onFocusChange": 5,
+        "onCheckedChanged": 4,
+        "onSwitchChangeListener": 1
+      },
+      "resource_ids": [
+        "iv_mode_tips",
+        "rjRadioGroup",
+        "rtv_projector_mode_ceiling_front",
+        "rtv_projector_mode_ceiling_rear",
+        "rtv_projector_mode_front",
+        "rtv_projector_mode_rear",
+        "tsv_auto_reverse"
+      ],
+      "strings": [],
+      "interesting_calls": [
+        "OnFocusChangeListener",
+        "onFocusChange",
+        "onKey",
+        "requestFocus",
+        "setImageResource",
+        "setOnFocusChangeListener"
+      ],
+      "actions_properties": []
+    },
+    "fragment/general/BrightnessModeSettingsFragment": {
+      "present": true,
+      "java_path": "com/android/tv/settings/uicustom/fragment/general/BrightnessModeSettingsFragment.java",
+      "line_count": 117,
+      "methods": {
+        "getLayoutResId": 1,
+        "onFirstLoad": 1,
+        "onReLoad": 1,
+        "refreshTexts": 1,
+        "initData": 1,
+        "initView": 1,
+        "initCheck": 1,
+        "initListener": 1,
+        "onCheckedChanged": 4
+      },
+      "resource_ids": [
+        "rjRadioGroup",
+        "rtv_general_projection_brightness_mode_auto",
+        "rtv_general_projection_brightness_mode_eco",
+        "rtv_general_projection_brightness_mode_highlight",
+        "rtv_general_projection_brightness_mode_standard"
+      ],
+      "strings": [],
+      "interesting_calls": [
+        "getLightMode",
+        "putLightMode",
+        "refreshTexts"
+      ],
+      "actions_properties": []
+    },
+    "fragment/general/GeneralFragment": {
+      "present": true,
+      "java_path": "com/android/tv/settings/uicustom/fragment/general/GeneralFragment.java",
+      "line_count": 220,
+      "methods": {
+        "fontScaleToContentResId": 1,
+        "getCurBrightnessModeResId": 1,
+        "getLayoutResId": 1,
+        "onFirstLoad": 1,
+        "initData": 1,
+        "initView": 1,
+        "onClick": 5,
+        "onSwitchChangeListener": 1,
+        "onReLoad": 1,
+        "refreshTexts": 1,
+        "handleActivityEvent": 1,
+        "getCurLanguageName": 1,
+        "indexValueToFontScale": 1,
+        "setSystemFontScale": 1,
+        "getSystemFontScale": 1,
+        "getLanguage": 1,
+        "isDevelopmentSettingsEnabled": 1
+      },
+      "resource_ids": [
+        "tciv_general_date_time",
+        "tciv_general_font_size",
+        "tciv_general_language_settings",
+        "tciv_general_projection_brightness_mode",
+        "tciv_general_screensaver_settings",
+        "tsv_general_power_on_up"
+      ],
+      "strings": [
+        "general_font_size_large",
+        "general_font_size_medium",
+        "general_font_size_small",
+        "general_font_size_xlarge",
+        "general_projection_brightness_mode_auto",
+        "general_projection_brightness_mode_eco",
+        "general_projection_brightness_mode_highlight",
+        "general_projection_brightness_mode_standard",
+        "system_language"
+      ],
+      "interesting_calls": [
+        "getCurBrightnessModeResId",
+        "getLightMode",
+        "getResources",
+        "refreshTexts",
+        "requestFocus",
+        "startActivity"
+      ],
+      "actions_properties": [
+        "android.settings.BRIGHT_SETTINGS"
+      ]
+    },
+    "fragment/picture/PictureFragment": {
+      "present": true,
+      "java_path": "com/android/tv/settings/partnercustomizer/picture/PictureFragment.java",
+      "line_count": 680,
+      "methods": {
+        "onReceive": 1,
+        "handleMessage": 1,
+        "getMetricsCategory": 1,
+        "newInstance": 1,
+        "showPreferenceFromStartkey": 1,
+        "onResume": 1,
+        "onCreate": 1,
+        "onStart": 1,
+        "onStop": 1,
+        "onDestroy": 1,
+        "onCreatePreferences": 1,
+        "createPreferences": 1,
+        "onPreferenceTreeClick": 1,
+        "onPreferenceChange": 1,
+        "showConfirmation": 1,
+        "confirmed": 1,
+        "onPfChange": 1,
+        "run": 1,
+        "updateOLEDVisible": 1,
+        "setDolbyVision": 1,
+        "isDolbyVision": 1,
+        "showDolbyWindow": 1,
+        "hideDolbyWindow": 1,
+        "updateDolbyVisionState": 1,
+        "updatePicModeItemValue": 1,
+        "updateBacklightState": 1,
+        "disableAutoBackLight": 1,
+        "syncFromACFGForBacklight": 1,
+        "updatePicPreUI": 1,
+        "updateSomePrefEnabled": 1,
+        "getCurrentPictureModeEntries": 1,
+        "isSupportImaxAutoDetect": 1,
+        "insert": 1,
+        "getEntriesValue": 1,
+        "getSomePreferencesEntries": 1,
+        "updateAllPictureValue": 1,
+        "updateAIPQEnabled": 1,
+        "isHdmiVdi": 1,
+        "showLoading": 1,
+        "hideLoading": 1,
+        "updateBackLightUI": 1,
+        "syncAutoBackLigthEnableToACFG": 1
+      },
+      "resource_ids": [
+        "content"
+      ],
+      "strings": [
+        "device_picture",
+        "device_picture_advanced_settings",
+        "device_picture_als",
+        "device_picture_brightness",
+        "device_picture_contrast",
+        "device_picture_hue",
+        "device_picture_mode",
+        "device_picture_mode_item_imax_enhanced",
+        "device_picture_mode_item_imax_enhanced_hdr10",
+        "device_picture_mode_item_imax_enhanced_hdr10_plus",
+        "device_picture_oled",
+        "device_picture_reset_to_default",
+        "device_picture_restore",
+        "device_picture_saturation",
+        "device_picture_sharpness",
+        "retail_mode_confirm_description",
+        "retail_mode_confirm_title"
+      ],
+      "interesting_calls": [
+        "BroadcastReceiver",
+        "PictureFragment",
+        "disableAutoBackLight",
+        "getAutoBackLightValue",
+        "getCurrentPictureModeEntries",
+        "getDefaultValueAutoBrightness",
+        "getKey",
+        "getResources",
+        "isHDMISource",
+        "isSupportPowerConfirmed",
+        "isVGASource",
+        "onStart",
+        "registerReceiver",
+        "sendKeyDownUpSync",
+        "setPreferencesFromResource",
+        "showPreferenceFromStartkey",
+        "startActivity",
+        "startImmersiveFragment",
+        "syncFromACFGForBacklight",
+        "unregisterReceiver",
+        "updateAllPictureValue",
+        "updateBackLightUI",
+        "updateBacklightState"
+      ],
+      "actions_properties": [
+        "persist.sys.settings.all"
+      ]
+    },
+    "fragment/sound/SoundFragment": {
+      "present": true,
+      "java_path": "com/android/tv/settings/device/sound/SoundFragment.java",
+      "line_count": 1000,
+      "methods": {
+        "handleMessage": 1,
+        "onReceive": 2,
+        "onAudioDevicesAdded": 1,
+        "onAudioDevicesRemoved": 1,
+        "getMetricsCategory": 1,
+        "newInstance": 1,
+        "onAttach": 1,
+        "onStart": 1,
+        "onCreatePreferences": 1,
+        "notifyBannerMessage": 1,
+        "onDestroy": 1,
+        "onPreferenceTreeClick": 1,
+        "getStateByProvider": 1,
+        "onPreferenceChange": 1,
+        "run": 2,
+        "setEarcEnable": 1,
+        "isOnePlusOpened": 1,
+        "isDtsOpened": 1,
+        "isSonicEmotionOpened": 1,
+        "isDBXOpened": 1,
+        "isDAPOpened": 1,
+        "isDTSStudioOpened": 1,
+        "onResume": 1,
+        "updateSettingsEnable": 1,
+        "updateAdvanceUiEnabled": 1,
+        "setupSPDIF_TypePref": 1,
+        "getSoundEffectsEnabled": 2,
+        "getSoundModeEntries": 1,
+        "getSpeakerStatusEntries": 1,
+        "getEarcEntries": 1,
+        "createPreferences": 1,
+        "isSupportDRC": 1,
+        "isDialogueEnhancerEnabled": 1,
+        "parseDecTypeForAudioTrack": 1,
+        "updateAllAudioPrefValue": 1,
+        "updateDAPUI": 1,
+        "updateDialogEnhancerUI": 1,
+        "updateSoundStyleRelatedItemUI": 1,
+        "updateBasicSoundUiEnabled": 1,
+        "isSupportHeadPhoneCoexistWithSpeaker": 1,
+        "registHeadsetReciver": 1,
+        "getAudioOutput": 1,
+        "audioOutputIsHP": 1,
+        "audioOutputIsBT": 1,
+        "onChange": 2,
+        "formatUriToString": 1,
+        "buildUri": 1,
+        "registObserver": 1,
+        "showWirelessSpeakerDialog": 1,
+        "onClick": 1,
+        "isSupportSpeakerLR": 1,
+        "isArcConnected": 1
+      },
+      "resource_ids": [
+        "content"
+      ],
+      "strings": [
+        "bluetooth_surround_sound",
+        "device_sound_advanced_dialogueenhancer",
+        "device_sound_autovolumecontrol",
+        "device_sound_balance",
+        "device_sound_bass",
+        "device_sound_digital_output",
+        "device_sound_dolby_atmos_notification",
+        "device_sound_downmixmode",
+        "device_sound_dts_drc",
+        "device_sound_earc",
+        "device_sound_equalizer_detail",
+        "device_sound_sonic_emotion",
+        "device_sound_spdifdelay",
+        "device_sound_speaker_delay",
+        "device_sound_speaker_volume",
+        "device_sound_speakers",
+        "device_sound_style",
+        "device_sound_surround",
+        "device_sound_treble",
+        "device_sound_wireless_speaker",
+        "menu_ok",
+        "pic_advance_video_entries_auto",
+        "pic_advance_video_entries_off",
+        "sound_dap",
+        "sound_dbx",
+        "sound_dts",
+        "sound_dts_studio",
+        "sound_reset_to_default",
+        "sound_speaker_lr_swap",
+        "wireless_speaker_dialog_message_wifi_off"
+      ],
+      "interesting_calls": [
+        "BroadcastReceiver",
+        "SoundFragment",
+        "getKey",
+        "getResources",
+        "getSoundEffectsEnabled",
+        "getSoundModeEntries",
+        "onStart",
+        "registerReceiver",
+        "setPreferencesFromResource",
+        "startActivity",
+        "unregisterReceiver",
+        "updateBasicSoundUiEnabled",
+        "updateSoundStyleRelatedItemUI"
+      ],
+      "actions_properties": [
+        "persist.sys.settings.all"
+      ]
+    },
+    "fragment/projector/ProjectorFragment": {
+      "present": true,
+      "java_path": "com/android/tv/settings/uicustom/fragment/projector/ProjectorFragment.java",
+      "line_count": 237,
+      "methods": {
+        "getLayoutResId": 1,
+        "onFirstLoad": 1,
+        "initData": 1,
+        "initView": 1,
+        "onClick": 11,
+        "onReLoad": 1,
+        "refreshTexts": 1,
+        "startAutoFocus": 1,
+        "startAutoKeystone": 1,
+        "toTrapezoidCorrection": 1,
+        "showResetDialog": 1,
+        "resetTrapezoid": 1,
+        "jumpActivityByAction": 1
+      },
+      "resource_ids": [
+        "tciv_projector_auto_focus",
+        "tciv_projector_auto_keystone",
+        "tciv_projector_focus_settings",
+        "tciv_projector_four_point_keystone",
+        "tciv_projector_hv_keystone",
+        "tciv_projector_keystone_settings",
+        "tciv_projector_mode",
+        "tciv_projector_reset_keystone",
+        "tciv_projector_screen_zoom"
+      ],
+      "strings": [
+        "projector_keystone_correction_reset",
+        "str_cancel",
+        "str_confirm"
+      ],
+      "interesting_calls": [
+        "getResources",
+        "refreshTexts",
+        "startActivity",
+        "startAutoFocus",
+        "startAutoKeystone",
+        "startService"
+      ],
+      "actions_properties": []
+    },
+    "fragment/source/SourceFragment": {
+      "present": true,
+      "java_path": "com/android/tv/settings/uicustom/fragment/source/SourceFragment.java",
+      "line_count": 355,
+      "methods": {
+        "getLayoutResId": 1,
+        "onFirstLoad": 1,
+        "refreshTexts": 1,
+        "initData": 1,
+        "initBoardConfig": 1,
+        "initView": 1,
+        "onClick": 7,
+        "onSwitchChangeListener": 3,
+        "showCecEnergyDialog": 1,
+        "checkBluetoothSpeakerPackage": 1,
+        "switchToHDMI": 1,
+        "switchToUSB": 1,
+        "switchToBluetoothSpeaker": 1,
+        "onReLoad": 1,
+        "handleActivityEvent": 1,
+        "updatePowerOnSourceAndApp": 1,
+        "isAppPackage": 1
+      },
+      "resource_ids": [
+        "tciv_source_bluetooth_speaker",
+        "tciv_source_edid_version",
+        "tciv_source_hdmi",
+        "tciv_source_hdmi2",
+        "tciv_source_power_on",
+        "tciv_source_power_on_app",
+        "tciv_source_usb",
+        "tsv_hdmi_cec_control",
+        "tsv_hdmi_device_auto_off",
+        "tsv_source_plug_and_play"
+      ],
+      "strings": [
+        "source_av",
+        "source_hdmi",
+        "source_hdmi_1",
+        "source_hdmi_2",
+        "source_usb",
+        "str_off"
+      ],
+      "interesting_calls": [
+        "getDisplayTitle",
+        "getResources",
+        "isSupportPowerConfirmed",
+        "refreshTexts",
+        "requestFocus",
+        "setDisableFocus",
+        "startActivity",
+        "startsWith",
+        "updatePowerOnSourceAndApp"
+      ],
+      "actions_properties": [
+        "persist.rjpj.hdmiplug.autoplay",
+        "persist.trd.source_id",
+        "tv_input",
+        "tv_input_hdmi_edid_version"
+      ]
+    },
+    "fragment/system/SystemFragment": {
+      "present": true,
+      "java_path": "com/android/tv/settings/uicustom/fragment/system/SystemFragment.java",
+      "line_count": 134,
+      "methods": {
+        "getLayoutResId": 1,
+        "initData": 1,
+        "onFirstLoad": 1,
+        "onReLoad": 1,
+        "refreshTexts": 1,
+        "initView": 1,
+        "onClick": 6,
+        "handleActivityEvent": 1,
+        "showFactoryResetDialog": 1,
+        "factoryReset": 1,
+        "intentComponent": 1,
+        "isKuleshiOta": 1
+      },
+      "resource_ids": [
+        "tciv_system_factory_reset",
+        "tciv_system_info",
+        "tciv_system_local_update",
+        "tciv_system_online_update"
+      ],
+      "strings": [
+        "str_cancel",
+        "str_confirm",
+        "system_restore_factory_settings",
+        "system_update_title"
+      ],
+      "interesting_calls": [
+        "isKuleshiOta",
+        "putLightMode",
+        "refreshTexts",
+        "requestFocus",
+        "startActivity"
+      ],
+      "actions_properties": []
+    }
+  }
+}
