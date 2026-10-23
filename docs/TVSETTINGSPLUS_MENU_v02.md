@@ -74,7 +74,7 @@ TvSettingsPlus / Настройки
 - AVB к установке APK через PackageManager не относится; AVB важен для модификации системных образов.
 - Совпадение сертификата недостаточно, нужен закрытый ключ: если это действительно один из стандартных опубликованных AOSP test-keys, можно проверять точное совпадение соответствующего keypair.
 - Выяснить sharedUserId / privileged grants и проверить системную роль до установки.
-- Оригинальный TvSettingsPlus из 8052 уже повторно извлечён и сохранён в `vendor/reference/8052/APK/TvSettingsPlus.apk`. Модифицированная сборка ещё не произведена.
+- Оригинальный TvSettingsPlus 8052 извлечён и сохранён в `vendor/reference/8052/APK/TvSettingsPlus.apk`. Экспериментальная подписанная v2 с 9 legacy Intent aliases собрана; **DEX и UI ещё без изменений**, аппаратных тестов не было. См. [актуальное полное дерево](TVSETTINGSPLUS_FULL_MENU_AND_PARITY_2026-10-23.md).
 - Для AAPT2 остаётся задача связать vendor framework resources из родного framework-res.apk.
 
 ## Нельзя отключать без проверки
