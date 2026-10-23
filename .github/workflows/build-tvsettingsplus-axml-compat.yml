@@ -24,10 +24,11 @@ jobs:
           python3 tools/patch_axml_compat_aliases.py vendor/reference/8052/APK/TvSettingsPlus.apk /tmp/compat/unsigned.apk
           aapt dump badging /tmp/compat/unsigned.apk | grep "name='com.android.tv.settings' versionCode='2'"
           aapt dump xmltree /tmp/compat/unsigned.apk AndroidManifest.xml > /tmp/compat/manifest.txt
-          for action in android.settings.SETTINGS android.settings.WIFI_SETTINGS android.settings.AUTO_BLUETOOTH android.settings.BLUETOOTH_SETTINGS android.settings.ALLAPPS; do
+          for action in android.settings.SETTINGS android.settings.WIFI_SETTINGS android.settings.AUTO_BLUETOOTH android.settings.BLUETOOTH_SETTINGS android.settings.ALLAPPS android.settings.DATETIME_SETTINGS android.settings.LAUGUAGE_SETTINGS android.settings.LAUGUAGE_LOCAL_SETTINGS android.settings.PROJECTABOUT_SETTINGS; do
              grep -Fq "$action" /tmp/compat/manifest.txt
           done
-          echo "Binary manifest patch validated"
+          if grep -Fq "android.settings.SCREENSHOT_SETTINGS" /tmp/compat/manifest.txt; then echo "Screenshots action unexpectedly registered"; exit 1; fi
+          echo "All 9 compatibility actions validated; screenshot action excluded"
       - name: Sign original-certificate-compatible experimental APK and verify original files
         run: |
           set -euo pipefail
