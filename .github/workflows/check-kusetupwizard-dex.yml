@@ -1,0 +1,55 @@
+name: Verify KuSetupWizard independent DEX and APK components
+on:
+  push:
+    paths:
+      - ".github/workflows/check-kusetupwizard-dex.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compare class bytecode in KuSettings and KuSetupWizard
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import zipfile,re,hashlib
+          from pathlib import Path
+          p=Path("vendor/reference/8052/APK")
+          out=Path("research/oem-apps/Menu_Inventory_8052/KuSetupWizard_DEX_MATCH.md")
+          out.parent.mkdir(parents=True,exist_ok=True)
+          def d(apk):
+            with zipfile.ZipFile(apk) as z:
+              return {name:hashlib.sha256(z.read(name)).hexdigest() for name in z.namelist() if re.fullmatch(r"classes\d*\.dex",name)}
+          ku=d(p/"KuSettings.apk")
+          setup=d(p/"KuSetupWizard.apk")
+          missing=sorted(set(ku)^set(setup))
+          same={name:ku[name]==setup[name] for name in set(ku)&set(setup)}
+          lines=["# KuSetupWizard / KuSettings DEX SHA256 comparison (8052)","",
+                 "Method: compare full original DEX file bytes from each APK, not only class name strings.","",
+                 "KuSettings DEX: "+str(len(ku))+", KuSetupWizard DEX: "+str(len(setup)),"",
+                 "Identical DEX files: "+str(sum(same.values()))+" / "+str(len(same)),"",
+                 "DEX filenames present in only one package: "+str(missing),""]
+          for name in sorted(same):
+            lines.append("- "+name+": "+("identical" if same[name] else "DIFFERENT"))
+          lines+=["",
+                 "KuSetupWizard is a distinct installed package com.android.provision with its own DEX, and only its own manifest components are activated.",
+                 "DEX equality alone does not demonstrate runtime independence from implicit intents, settings provider, files, system services, or external package names.",
+                 "Do not disable KuSetupWizard."]
+          out.write_text("\n".join(lines)+"\n")
+          print("\n".join(lines))
+          assert not missing
+          PY
+      - name: Commit comparison report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research/oem-apps/Menu_Inventory_8052/KuSetupWizard_DEX_MATCH.md
+          if ! git diff --cached --quiet; then
+            git commit -m "Compare exact original DEX bytecode between KuSetupWizard and KuSettings"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
