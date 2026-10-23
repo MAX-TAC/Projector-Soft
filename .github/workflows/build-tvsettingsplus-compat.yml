@@ -1,0 +1,80 @@
+name: Build TvSettingsPlus v2 legacy-intent compatibility APK (experimental)
+on:
+  push:
+    paths:
+      - ".github/workflows/build-tvsettingsplus-compat.yml"
+      - "tools/add_ku_intent_aliases.py"
+      - "tools/repack_tvsettingsplus_with_manifest.py"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare Android packaging tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq apktool aapt apksigner zipalign openssl
+          mkdir -p /tmp/tvsp/framework /tmp/tvsp/build /tmp/tvsp/keys
+      - name: Decode original with OEM resource mappings
+        run: |
+          set -euo pipefail
+          echo "e4184a13fbf56fa069effc6a40ea50c0da7e9190321b389f59ba34700a80d0a1  vendor/reference/8052/APK/TvSettingsPlus.apk" | sha256sum -c -
+          apktool if vendor/reference/8052/APK/framework-res.apk -p /tmp/tvsp/framework
+          apktool d -f -r -p /tmp/tvsp/framework vendor/reference/8052/APK/TvSettingsPlus.apk -o /tmp/tvsp/build/decoded
+          file /tmp/tvsp/build/decoded/AndroidManifest.xml
+          head -c 160 /tmp/tvsp/build/decoded/AndroidManifest.xml | strings | head -n 3
+      - name: Add compatibility actions and rebuild DEX
+        run: |
+          set -euo pipefail
+          python3 tools/add_ku_intent_aliases.py /tmp/tvsp/build/decoded/AndroidManifest.xml
+          apktool b -p /tmp/tvsp/framework /tmp/tvsp/build/decoded -o /tmp/tvsp/build/rebuilt.apk
+          python3 tools/repack_tvsettingsplus_with_manifest.py \
+            vendor/reference/8052/APK/TvSettingsPlus.apk /tmp/tvsp/build/rebuilt.apk \
+            /tmp/tvsp/build/compat-unaligned.apk
+          aapt dump badging /tmp/tvsp/build/compat-unaligned.apk | grep "name='com.android.tv.settings' versionCode='2'"
+          aapt dump xmltree /tmp/tvsp/build/compat-unaligned.apk AndroidManifest.xml > /tmp/tvsp/build/manifest-tree.txt
+          for action in android.settings.SETTINGS android.settings.WIFI_SETTINGS \
+              android.settings.BLUETOOTH_SETTINGS android.settings.AUTO_BLUETOOTH \
+              android.settings.ALLAPPS android.settings.DATETIME_SETTINGS android.settings.LAUGUAGE_SETTINGS; do
+            grep -Fq "$action" /tmp/tvsp/build/manifest-tree.txt || { echo "Missing action $action"; exit 1; }
+          done
+      - name: Verify original package certificate, sign test APK
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 3 https://raw.githubusercontent.com/aosp-mirror/platform_build/master/target/product/security/platform.x509.pem -o /tmp/tvsp/keys/platform.x509.pem
+          curl -fsSL --retry 3 https://raw.githubusercontent.com/aosp-mirror/platform_build/master/target/product/security/platform.pk8 -o /tmp/tvsp/keys/platform.pk8
+          ORIGINAL="$(apksigner verify --print-certs vendor/reference/8052/APK/TvSettingsPlus.apk | grep 'Signer #1 certificate SHA-256 digest:' | head -1 | awk '{print $NF}')"
+          PLATFORM="$(openssl x509 -in /tmp/tvsp/keys/platform.x509.pem -noout -fingerprint -sha256 | cut -d= -f2 | tr -d : | tr '[:upper:]' '[:lower:]')"
+          test "$ORIGINAL" = "$PLATFORM"
+          zipalign -f -p 4 /tmp/tvsp/build/compat-unaligned.apk /tmp/tvsp/build/compat-aligned.apk
+          apksigner sign --key /tmp/tvsp/keys/platform.pk8 --cert /tmp/tvsp/keys/platform.x509.pem \
+             --v1-signing-enabled true --v2-signing-enabled true \
+             --out /tmp/tvsp/build/TvSettingsPlus-Compat-8052-v2-EXPERIMENTAL.apk \
+             /tmp/tvsp/build/compat-aligned.apk
+          apksigner verify --verbose --print-certs /tmp/tvsp/build/TvSettingsPlus-Compat-8052-v2-EXPERIMENTAL.apk
+          aapt dump badging /tmp/tvsp/build/TvSettingsPlus-Compat-8052-v2-EXPERIMENTAL.apk | grep -E '^package:|^sdkVersion:|^targetSdkVersion:'
+      - name: Describe artifact limitations
+        if: always()
+        run: |
+          mkdir -p /tmp/tvsp/build/report
+          cat > /tmp/tvsp/build/report/README.txt <<'EOF'
+          EXPERIMENTAL TvSettingsPlus 8052 v2; NOT DEVICE-TESTED; DO NOT INSTALL AS PRODUCTION.
+          Intended change: compatibility intent aliases for disabled KuSettings actions.
+          Does not port KuSettings services or OEM picture/sound feature completeness.
+          Does not disable ScreenServices or original KuSettings package on device.
+          Test AOSP platform signature and rollback required.
+          Source of truth: Projector-Soft GitHub repository.
+          EOF
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tvsettingsplus-compat-8052-v2-experimental
+          path: |
+            /tmp/tvsp/build/TvSettingsPlus-Compat-8052-v2-EXPERIMENTAL.apk
+            /tmp/tvsp/build/report/README.txt
+          retention-days: 14
+          if-no-files-found: warn
