@@ -52,11 +52,12 @@ def patch(raw):
     output=raw.replace("</application>",text+"\n    </application>")
     root2=ET.fromstring(output)
     old=root2.attrib.get(ns+"versionCode")
-    if old != "1":raise ValueError("Expected versionCode=1, got "+repr(old))
-    # only replace XML attribute once; preserve all other attributes verbatim
-    count=len(re.findall(r'android:versionCode="1"',output))
-    if count!=1:raise ValueError("Missing unambiguous android:versionCode attr: "+str(count))
-    output=output.replace('android:versionCode="1"','android:versionCode="2"',1)
+    if old not in (None,"1"):
+        raise ValueError("Unexpected versionCode: "+repr(old))
+    if old == "1":
+        output=output.replace('android:versionCode="1"','android:versionCode="2"',1)
+    else:
+        output=output.replace("<manifest ","<manifest android:versionCode=\"2\" ",1)
     ET.fromstring(output)
     return output,actions
 def main():
@@ -69,5 +70,14 @@ def main():
         raise ValueError("Apktool -r left a binary AndroidManifest.xml; abort without modification")
     text,actions=patch(data.decode("utf-8"))
     print("Added intent aliases:",actions)
-    if not a.preview:a.manifest.write_text(text,encoding="utf-8")
+    if not a.preview:
+        a.manifest.write_text(text,encoding="utf-8")
+        yml=a.manifest.parent/"apktool.yml"
+        if yml.is_file():
+            data=yml.read_text(encoding="utf-8")
+            for marker in ("versionCode: 1", "versionCode: '1'"):
+                if marker in data:
+                    data=data.replace(marker,marker.replace("1","2"),1)
+                    yml.write_text(data,encoding="utf-8")
+                    break
 if __name__=="__main__":main()
