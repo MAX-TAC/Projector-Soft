@@ -5,6 +5,7 @@ on:
     paths:
       - ".github/workflows/build-tvsettingsplus-smoke.yml"
       - "tools/patch_axml_version.py"
+      - "tools/repack_tvsettingsplus_dex.py"
 permissions:
   contents: read
 jobs:
