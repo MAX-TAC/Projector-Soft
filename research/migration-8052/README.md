@@ -263,6 +263,9 @@ Decompiled Java files: 0
 ## Cross-package references (possible links, not confirmed runtime calls)
 | Caller | Reference | File | Occurrences |
 |---|---|---|---:|
+| TvSettingsPlus | KuSourceRJ package | \`com/android/p002tv/settings/uicustom/fragment/general/GeneralFragment.java\` | 2 |
+| TvSettingsPlus | KuSourceRJ package | \`com/android/p002tv/settings/uicustom/floatmenu/controller/general/GeneralSubMenuController.java\` | 2 |
+| TvSettingsPlus | KuSourceRJ package | \`com/android/p002tv/settings/uicustom/floatmenu/controller/projector/KeystoneSettingsSecondaryController.java\` | 2 |
 
 ## OEM API candidate files
 
@@ -436,6 +439,101 @@ Decompiled Java files: 0
 - \`com/coolux/source/activity/testcast/ClearTimeActivity.java\`: clear, clearSuccess, clearTime, findUI, handleMessage, if, init, initView, onClick, onCreate, setContentView, viewTime
 - \`com/coolux/source/activity/testcast/AgingModelActivity.java\`: agingKeyModel, agingModel, enterClick, findUI, if, init, initView, onClick, onCreate, setContentView, viewAgingAuto, viewAgingKey
 ### TvSettingsPlus
+- \`com/android/p002tv/settings/BootReceiver.java\`: if, onReceive
+- \`com/android/p002tv/settings/SystemSoundsPlayer.java\`: SoundPoolHandler, SoundPoolLoadCompleteListener, SystemSoundsPlayer, for, getSoundPoolIdForEffect, handleMessage, if, onLoadComplete, playSoundEffect, prepareSoundPool, querySoundEffectsEnabled, releaseSoundPool, super
+- \`com/android/p002tv/settings/HasSettingsManager.java\`: getSettingsManager
+- \`com/android/p002tv/settings/HotwordSwitchController.java\`: HotwordLoader, HotwordState, HotwordSwitchController, doInBackground, getLocalizedStringResource, getPreferenceKey, handlePreferenceTreeClick, if, init, isAvailable, onChange, onHotwordDisable, onHotwordEnable
+- \`com/android/p002tv/settings/EmptyStubActivity.java\`: finish, onCreate
+- \`com/android/p002tv/settings/PreferenceControllerFragment$$ExternalSyntheticLambda0.java\`: test
+- \`com/android/p002tv/settings/SettingsFragmentProvider.java\`: newSettingsFragment
+- \`com/android/p002tv/settings/SettingsPreferenceFragment.java\`: C11471, for, getActivity, getPageId, getSettingsLifecycle, if, iteratePreferenceAndSetObserver, onArriveAtMainPanel, onAttach, onChanged, onCreate, onCreateAdapter, onCreateOptionsMenu
+- \`com/android/p002tv/settings/TakeBugReportController.java\`: TakeBugReportController, getPreferenceKey, handlePreferenceTreeClick, if, isAvailable, super, updateState
+- \`com/android/p002tv/settings/MainSettings.java\`: createSettingsFragment, isStartupVerificationRequired
+- \`com/android/p002tv/settings/RestrictedSettingsFragment.java\`: RestrictedSettingsFragment, ensurePin, getActivity, getEmptyTextView, getEmptyView, getRestrictionEnforcedAdmin, hasChallengeSucceeded, if, initEmptyTextView, isRestrictedAndNotProviderProtected, isUiRestricted, isUiRestrictedByOnlyAdmin, onActivityCreated
+- \`com/android/p002tv/settings/MainFragment.java\`: for, getActivity, getContext, getDrawableResource, getPageId, getPreferenceScreenResId, getProviderInfo, getStringResource, if, isRestricted, isWifiScanOptimisationEnabled, newInstance, onAttach
+- \`com/android/p002tv/settings/LongClickPreference.java\`: LongClickPreference, onBindViewHolder, onLongClick, onPreferenceLongClick, setLongClickListener, super
+- \`com/android/p002tv/settings/NopePreferenceController.java\`: NopePreferenceController, getPreferenceKey, isAvailable, super
+- \`com/android/p002tv/settings/PreferenceControllerFragment.java\`: addPreferenceController, for, getOnePreferenceController, getPreferenceControllers, getPreferenceManager, getPreferenceScreenResId, if, onAttach, onCreate, onCreatePreferenceControllers, onCreatePreferences, onPreferenceTreeClick, onResume
+- \`com/android/p002tv/settings/RemoteBugreportActivity.java\`: if, onClick, onCreate, onDismiss
+- \`com/android/p002tv/settings/ActionDisabledByAdminDialog.java\`: finish, getAdminDetailsFromIntent, getRestrictionFromIntent, if, onCreate, onDismiss, onNewIntent
+- \`com/android/p002tv/settings/SuggestionQuickSettingPrefsContainer.java\`: SuggestionQuickSettingPrefsContainer, for, hideQuickSettings, if, isRestricted, onCreate, onCreatePreferenceControllers, onCreatePreferences, onDestroy, onHotwordDisable, onHotwordEnable, onHotwordStateChanged, onPreferenceClick
+- \`com/android/p002tv/settings/GlobalKeyReceiver.java\`: if, onReceive, sendPairingIntent
+- \`com/android/p002tv/settings/EventLogTags.java\`: EventLogTags, writeExpDetDeviceAdminActivatedByUser, writeExpDetDeviceAdminDeclinedByUser, writeExpDetDeviceAdminUninstalledByUser, writeLockScreenType, writeSettingsLatency
+- \`com/android/p002tv/settings/DeviceSettingBroadcastReceiver.java\`: doInBackground, if, onReceive, removeWifis, restartDevice, while
+- \`com/android/p002tv/settings/ActionDisabledByAdminDialogHelper.java\`: ActionDisabledByAdminDialogHelper, getEnforcementAdminUserId, if, initializeDialogViews, maybeSetLearnMoreButton, onClick, prepareDialogBuilder, setAdminSupportDetails, setAdminSupportTitle, showAdminPolicies, switch, updateDialog
+- \`com/android/p002tv/settings/TvSettingsActivity.java\`: C11491, ViewTreeObserverOnPreDrawListenerC11502, accept, createSettingsFragment, finish, for, getAvailableFlavors, getSettingsManager, getSupportFragmentManager, getVisibleFragment, if, isStartupVerificationRequired, lambda$notifyUpdate$0
+- \`com/android/p002tv/settings/RadioPreference.java\`: RadioPreference, clearOtherRadioPreferences, for, getRadioGroup, if, setRadioGroup, setWidgetLayoutResource, super, this
+- \`com/android/p002tv/settings/RestrictedPreferenceAdapter.java\`: RestrictedPreferenceAdapter, adapt, getOriginalPreference, getPreference, if, isRestricted, isRestrictedByAdmin, replacePreference, setup, this, updatePreference, updateRestrictedPreference, while
+- \`com/android/p002tv/settings/PreferenceUtils.java\`: for, if, resolveSystemActivityOrRemove
+- \`com/android/p002tv/settings/TvSettingsApplication.java\`: getSystemSoundsPlayer, onCreate
+- \`com/android/p002tv/settings/Manifest.java\`: 
+- \`com/android/p002tv/settings/PreferenceExUtils.java\`: for, getHdmiDetectType, getSettingIntValue, getSettingStringValue, if, isSupportSpeakerAndSPDIFFlag, putSettingValue, putSettingValueInt, putSettingValueString, resolveSystemActivityOrRemove, setContext, setupListPreference, setupListPreferences
+- \`com/android/p002tv/settings/C1140R.java\`: 
+- \`com/android/p002tv/settings/BaseSettingsFragment.java\`: if, isUriValid, navigateBack, onPreferenceDisplayDialog, onPreferenceStartFragment, onPreferenceStartScreen, startImmersiveFragment, startPreferenceFragment
+- \`com/android/p002tv/settings/overlay/FeatureFactory.java\`: getSettingsFragmentProvider
+- \`com/android/p002tv/settings/overlay/FeatureFactoryImplTwoPanel.java\`: getSettingsFragmentProvider, if, newInstance, newSettingsFragment, onCreatePreviewFragment, onPreferenceStartInitialScreen, onPreferenceStartScreen, startPreferenceFragment
+- \`com/android/p002tv/settings/overlay/FeatureFactoryImplX.java\`: 
+- \`com/android/p002tv/settings/overlay/FeatureFactoryImpl.java\`: getSettingsFragmentProvider, newInstance, newSettingsFragment, onPreferenceStartInitialScreen, startPreferenceFragment
+- \`com/android/p002tv/settings/overlay/FlavorUtils.java\`: getFeatureFactory, getFlavor, if, isTwoPanel, return, switch
+- \`com/android/p002tv/settings/partnercustomizer/MtkPreferenceCategory.java\`: MtkPreferenceCategory, if, onBindViewHolder, super
+- \`com/android/p002tv/settings/partnercustomizer/CustomizedContentProvider.java\`: delete, for, getAllLanguages, getTranslucent, getType, if, initLocales, insert, onCreate, query, update
+- \`com/android/p002tv/settings/partnercustomizer/TvSettingsSliceProvider.java\`: call, createAudioSlice, createHelp, createNetWakeSlice, createNetflexESNSlice, createSampleSlice, createSoftwareVersionSlice, createTvLiftTime, getContext, getFirstSegment, getTvLifeTime, if, isMiscItemDisplay
+- \`com/android/p002tv/settings/partnercustomizer/CommonActivity.java\`: ViewTreeObserverOnPreDrawListenerC13491, createSettingsFragment, finish, finishActivity, for, getCurRunningPackageName, getSupportFragmentManager, getWindow, getsInstance, if, onActivityResult, onCreate, onPreDraw
+- \`com/android/p002tv/settings/partnercustomizer/EnergyCommonActivity.java\`: EnergyFragment, finish, getActivity, getContentResolver, if, newInstance, onBackPressed, onCreate, onCreateActions, onCreateGuidance, onGuidedActionClicked, onStop, run
+- \`com/android/p002tv/settings/partnercustomizer/DisplayAndSoundActivity.java\`: createSettingsFragment
+- \`com/android/p002tv/settings/accounts/RemoveAccountDialog.java\`: finish, for, if, newInstance, onCreate, onCreateActions, onCreateGuidance, onGuidedActionClicked, run
+- \`com/android/p002tv/settings/accounts/AccountsFragment.java\`: for, getAuthImage, getAuthTitle, getTargetContext, if, isRestricted, onAccountsUpdate, onCreate, onCreatePreferences, onPreferenceClick, onResume, onStart, onStop
+- \`com/android/p002tv/settings/accounts/AccountSyncFragment.java\`: accountExists, cancelSyncForEnabledProviders, createSyncStateSwitch, for, getActivity, getPageId, getPreferenceScreen, getToggleId, if, isSyncing, newInstance, onAccountsUpdate, onCreate
+- \`com/android/p002tv/settings/accounts/AddAccountWithTypeActivity.java\`: finish, if, onActivityResult, onCreate, run, setResult, setResultAndFinish, startAccountTypePicker, startAccountsActivity, startActivity, startActivityForResult, startAddAccount
+- \`com/android/p002tv/settings/accounts/AccountsSliceFragment.java\`: 
+- \`com/android/p002tv/settings/accounts/AccountsActivity.java\`: createSettingsFragment, if
+- \`com/android/p002tv/settings/accounts/AccountsTrampolineActivity.java\`: finish, getActivityToStart, if, onCreate, startActivity
+- \`com/android/p002tv/settings/accounts/ManageUserServicesSliceActivity.java\`: getAvailableFlavors, getScreenTitle, getSliceUri, getString, if
+- \`com/android/p002tv/settings/accounts/AccountSliceActivity.java\`: getAvailableFlavors, getScreenTitle, getSliceUri, getString
+- \`com/android/p002tv/settings/accounts/AccountsUtil.java\`: getAccountsFragmentToLaunch, if, isAdminRestricted
+- \`com/android/p002tv/settings/accounts/SyncStateSwitchPreference.java\`: SyncStateSwitchPreference, getAccount, getAuthority, if, isOneTimeSyncMode, notifyChanged, onBindViewHolder, onClick, setActive, setFailed, setOneTimeSyncMode, setPending, super
+- \`com/android/p002tv/settings/accounts/AccountSyncActivity.java\`: createSettingsFragment, for, getArguments, if
+- \`com/android/p002tv/settings/enterprise/CaCertsManagedProfilePreferenceController.java\`: CaCertsManagedProfilePreferenceController, getNumberOfCaCerts, getPreferenceKey, super
+- \`com/android/p002tv/settings/enterprise/AdminActionPreferenceControllerBase.java\`: AdminActionPreferenceControllerBase, getAdminActionTimestamp, if, isAvailable, super, updateState
+- \`com/android/p002tv/settings/enterprise/ApplicationListPreferenceController.java\`: ApplicationListPreferenceController, buildApplicationList, for, getPreferenceKey, if, isAvailable, onListOfAppsResult, super
+- \`com/android/p002tv/settings/enterprise/FailedPasswordWipePreferenceControllerBase.java\`: FailedPasswordWipePreferenceControllerBase, getMaximumFailedPasswordsBeforeWipe, isAvailable, super, updateState
+- \`com/android/p002tv/settings/enterprise/AdminGrantedLocationPermissionsPreferenceController.java\`: AdminGrantedLocationPermissionsPreferenceController, getPreferenceKey, super
+- \`com/android/p002tv/settings/enterprise/AdminGrantedPermissionsPreferenceControllerBase.java\`: AdminGrantedPermissionsPreferenceControllerBase, handlePreferenceTreeClick, if, isAvailable, onNumberOfAppsResult, super, updateState
+- \`com/android/p002tv/settings/enterprise/FailedPasswordWipeManagedProfilePreferenceController.java\`: FailedPasswordWipeManagedProfilePreferenceController, getMaximumFailedPasswordsBeforeWipe, getPreferenceKey, super
+- \`com/android/p002tv/settings/enterprise/EnterpriseInstalledPackagesPreferenceController.java\`: EnterpriseInstalledPackagesPreferenceController, getPreferenceKey, if, isAvailable, onNumberOfAppsResult, super, updateState
+- \`com/android/p002tv/settings/enterprise/ApplicationListFragment.java\`: AdminGrantedPermission, AdminGrantedPermissionCamera, AdminGrantedPermissionLocation, AdminGrantedPermissionMicrophone, buildApplicationList, getPreferenceScreenResId, newInstance, onCreatePreferenceControllers, super
+- \`com/android/p002tv/settings/enterprise/BugReportsPreferenceController.java\`: BugReportsPreferenceController, getAdminActionTimestamp, getPreferenceKey, super
+- \`com/android/p002tv/settings/enterprise/CaCertsCurrentUserPreferenceController.java\`: CaCertsCurrentUserPreferenceController, getNumberOfCaCerts, getPreferenceKey, super, updateState
+- \`com/android/p002tv/settings/enterprise/EnterpriseSetDefaultAppsPreferenceController.java\`: EnterpriseSetDefaultAppsPreferenceController, for, getNumberOfEnterpriseSetDefaultApps, getPreferenceKey, isAvailable, super, updateState
+- \`com/android/p002tv/settings/enterprise/EnterpriseSetDefaultAppsListFragment.java\`: getPageId, getPreferenceScreenResId, newInstance, onCreatePreferenceControllers
+- \`com/android/p002tv/settings/enterprise/ImePreferenceController.java\`: ImePreferenceController, getPreferenceKey, isAvailable, super, updateState
+- \`com/android/p002tv/settings/enterprise/AlwaysOnVpnManagedProfilePreferenceController.java\`: AlwaysOnVpnManagedProfilePreferenceController, getPreferenceKey, isAvailable, super
+- \`com/android/p002tv/settings/enterprise/AlwaysOnVpnCurrentUserPreferenceController.java\`: AlwaysOnVpnCurrentUserPreferenceController, getPreferenceKey, isAvailable, super, updateState
+- \`com/android/p002tv/settings/enterprise/AdminGrantedMicrophonePermissionPreferenceController.java\`: AdminGrantedMicrophonePermissionPreferenceController, getPreferenceKey, super
+- \`com/android/p002tv/settings/enterprise/CaCertsPreferenceControllerBase.java\`: CaCertsPreferenceControllerBase, getNumberOfCaCerts, isAvailable, super, updateState
+- \`com/android/p002tv/settings/enterprise/GlobalHttpProxyPreferenceController.java\`: GlobalHttpProxyPreferenceController, getPreferenceKey, isAvailable, super
+- \`com/android/p002tv/settings/enterprise/SecurityLogsPreferenceController.java\`: SecurityLogsPreferenceController, getAdminActionTimestamp, getPreferenceKey, isAvailable, super
+- \`com/android/p002tv/settings/enterprise/AdminGrantedCameraPermissionPreferenceController.java\`: AdminGrantedCameraPermissionPreferenceController, getPreferenceKey, super
+- \`com/android/p002tv/settings/enterprise/EnterprisePrivacySettingsActivity.java\`: createSettingsFragment
+- \`com/android/p002tv/settings/enterprise/EnterpriseSetDefaultAppsListPreferenceController.java\`: EnterpriseSetDefaultAppsListPreferenceController, buildAppList, buildSummaryString, createPreferences, for, getPreferenceKey, getTitle, if, isAvailable, lambda$buildAppList$0, run, super, switch
+- \`com/android/p002tv/settings/enterprise/PreferenceCategoryController.java\`: PreferenceCategoryController, getPreferenceKey, if, isAvailable, setChildren, super, while
+- \`com/android/p002tv/settings/enterprise/NetworkLogsPreferenceController.java\`: NetworkLogsPreferenceController, getAdminActionTimestamp, getPreferenceKey, isAvailable, super
+- \`com/android/p002tv/settings/enterprise/PrivacySettingsEnterprisePreference.java\`: PrivacySettingsEnterprisePreference, createPreferenceControllers, getPreferenceScreenResId, getXmlResourcesToIndex
+- \`com/android/p002tv/settings/enterprise/EnterprisePrivacySettingsFragment.java\`: getPageId, getPreferenceScreenResId, isPageEnabled, newInstance, onAttach, onCreatePreferenceControllers, onDetach
+- \`com/android/p002tv/settings/enterprise/FailedPasswordWipeCurrentUserPreferenceController.java\`: FailedPasswordWipeCurrentUserPreferenceController, getMaximumFailedPasswordsBeforeWipe, getPreferenceKey, super
+- \`com/android/p002tv/settings/enterprise/PrivacySettingsPreference.java\`: createPreferenceControllers, getPreferenceScreenResId, getXmlResourcesToIndex
+- \`com/android/p002tv/settings/users/RestrictedProfilePinService.java\`: PinServiceImpl, deletePin, getPin, isPinCorrect, isPinSet, isSystemUser, onBind, onCreate, onDestroy, setPin
+- \`com/android/p002tv/settings/users/AppRestrictionsFragment.java\`: AppLoadingTask, AppRestrictionsPreference, Listener, RestrictionsResultReceiver, addLocationAppRestrictionsPreference, apply, assertSafeToStartCustomActivity, doInBackground, findInArray, for, generateCustomActivityRequestCode, getActivity, getAppPreferenceGroup
+- \`com/android/p002tv/settings/users/IRestrictedProfilePinService.java\`: Proxy, Stub, asBinder, asInterface, attachInterface, deletePin, getInterfaceDescriptor, if, isPinCorrect, isPinSet, onTransact, return, setPin
+- \`com/android/p002tv/settings/users/RestrictionUtils.java\`: for, getRestrictions, if, setRestrictions, while
+- \`com/android/p002tv/settings/users/UserSwitchListenerService.java\`: getBootUser, hasRestrictedProfile, if, onBind, onCreate, onDestroy, onReceive, onStartCommand, onUserCreatedOrDeleted, onUserSwitchComplete, setBootUser, stopSelf, switchUserNow
+- \`com/android/p002tv/settings/users/RestrictedProfilePinServiceConnection.java\`: RestrictedProfilePinServiceConnection, bindPinService, getPinService, if, onBindingDied, onNullBinding, onServiceConnected, onServiceDisconnected, synchronized, unbindPinService, waitForService
+- \`com/android/p002tv/settings/users/RestrictedProfilePinStorage.java\`: RestrictedProfilePinStorage, bind, checkPasswordLegacy, clearLockPassword, deletePin, deletePinInternal, findRestrictedProfileParent, getPinService, hasLockscreenSecurity, if, isPinCorrect, isPinCorrectInternal, isPinSet
+- \`com/android/p002tv/settings/users/RestrictedProfilePinDialogFragment.java\`: deletePin, getDisablePinUntil, getPinDisabledUntil, isPinCorrect, isPinSet, newInstance, onAttach, onDetach, run, setDisablePinUntil, setPin, setPinDisabledUntil
+- \`com/android/p002tv/settings/basic/BasicModeExitSuggestionInfoFragment.java\`: onCreateView, updateInfoFragment
+- \`com/android/p002tv/settings/basic/BasicModeAccountsAndSignInInfoFragment.java\`: onCreateView, updateInfoFragment
+- \`com/android/p002tv/settings/vendor/ChannelsAndInputFragment.java\`: onCreatePreferences, setPreferencesFromResource
+- \`com/android/p002tv/settings/vendor/ResetOptionsFragment.java\`: if, onCreatePreferences, onPreferenceTreeClick, setPreferencesFromResource
 
 ## Safety gates
 
