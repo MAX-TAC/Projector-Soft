@@ -78,7 +78,7 @@ def main():
             try:t=f.read_text(errors="replace")
             except OSError:continue
             own=("com/my/" in rel or "com/p001my/" in rel or
-                 "com/android/tv/settings/uicustom/" in rel or
+                 "com/android/tv/settings/" in rel or "com/p001android/tv/settings/" in rel or
                  "com/coolux/source/" in rel or
                  "com/trd/" in rel or
                  "com/hysd/" in rel or "com/rjpj/" in rel)
@@ -98,7 +98,7 @@ def main():
                         lineno=t.count("\n",0,mt.start())+1
                         examples.append(lineno)
                     matches[label].append({"file":rel,"hits":len(hits),"lines":examples})
-        apps[target]={"java_files":len(files),"manifest":component,
+        apps[target]={"java_files":len(files),"sample_java_paths":[p.relative_to(base).as_posix() for p in files[:35]],"manifest":component,
                       "relevant_classes":key_files[:550],
                       "refs":dict(matches)}
     all_refs=[]
