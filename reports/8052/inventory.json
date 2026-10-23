@@ -1,0 +1,268 @@
+{
+  "machine_id": "8052",
+  "source": "Everycom-Cinelux-Firmware / OTA_Updates / RJMT9660_firmware_8052.zip",
+  "files": {
+    "TvSettingsPlus": {
+      "bytes": 45871293,
+      "sha256": "e4184a13fbf56fa069effc6a40ea50c0da7e9190321b389f59ba34700a80d0a1",
+      "is_zip": true,
+      "dex": [
+        "classes.dex",
+        "classes10.dex",
+        "classes11.dex",
+        "classes12.dex",
+        "classes13.dex",
+        "classes14.dex",
+        "classes15.dex",
+        "classes16.dex",
+        "classes2.dex",
+        "classes3.dex",
+        "classes4.dex",
+        "classes5.dex",
+        "classes6.dex",
+        "classes7.dex",
+        "classes8.dex",
+        "classes9.dex"
+      ],
+      "package_line": "package: name='com.android.tv.settings' versionCode='1' versionName='1.0' platformBuildVersionName='13' platformBuildVersionCode='33' compileSdkVersion='33' compileSdkVersionCodename='13'",
+      "apksigner_return_code": 0,
+      "signer_sha256": "c8a2e9bccf597c2fb6dc66bee293fc13f2fc47ec77bc6b2b0d52c11f51192ab8",
+      "source_relative_path": "system_ext/priv-app/TvSettingsPlus/TvSettingsPlus.apk",
+      "repo_relative_path": "vendor/reference/8052/APK/TvSettingsPlus.apk"
+    },
+    "KuSettings": {
+      "bytes": 17997485,
+      "sha256": "bd678e646a0cbc164f34273bcd396f9cf9221037b4c688d9d08464840cfca58b",
+      "is_zip": true,
+      "dex": [
+        "classes.dex",
+        "classes10.dex",
+        "classes11.dex",
+        "classes12.dex",
+        "classes13.dex",
+        "classes14.dex",
+        "classes15.dex",
+        "classes2.dex",
+        "classes3.dex",
+        "classes4.dex",
+        "classes5.dex",
+        "classes6.dex",
+        "classes7.dex",
+        "classes8.dex",
+        "classes9.dex"
+      ],
+      "package_line": "package: name='com.my.settings' versionCode='1' versionName='1.0' platformBuildVersionName='14' platformBuildVersionCode='34' compileSdkVersion='34' compileSdkVersionCodename='14'",
+      "apksigner_return_code": 0,
+      "signer_sha256": "c8a2e9bccf597c2fb6dc66bee293fc13f2fc47ec77bc6b2b0d52c11f51192ab8",
+      "source_relative_path": "system/system/app/KuSettings/KuSettings.apk",
+      "repo_relative_path": "vendor/reference/8052/APK/KuSettings.apk"
+    },
+    "KuSourceRJ": {
+      "bytes": 58460781,
+      "sha256": "15bf7b9fe31844bace197989ae393af7c3e4ca5a9c3c2019a4f662f0a9d881cc",
+      "is_zip": true,
+      "dex": [
+        "classes.dex"
+      ],
+      "package_line": "package: name='com.coolux.source' versionCode='41' versionName='5.3' platformBuildVersionName='15' platformBuildVersionCode='35' compileSdkVersion='35' compileSdkVersionCodename='15'",
+      "apksigner_return_code": 0,
+      "signer_sha256": "c8a2e9bccf597c2fb6dc66bee293fc13f2fc47ec77bc6b2b0d52c11f51192ab8",
+      "source_relative_path": "system/system/app/KuSourceRJ/KuSourceRJ.apk",
+      "repo_relative_path": "vendor/reference/8052/APK/KuSourceRJ.apk"
+    },
+    "RuiAutoFocus": {
+      "bytes": 20908983,
+      "sha256": "aa5257b38dc299d2160a5b5293915f3e0b4a88e690c5b6cd5a0bc2c940dc842f",
+      "is_zip": true,
+      "dex": [
+        "classes.dex",
+        "classes2.dex",
+        "classes3.dex",
+        "classes4.dex",
+        "classes5.dex",
+        "classes6.dex",
+        "classes7.dex"
+      ],
+      "package_line": "package: name='com.hysd.screen' versionCode='4' versionName='4.2' platformBuildVersionName='9' platformBuildVersionCode='28' compileSdkVersion='28' compileSdkVersionCodename='9'",
+      "apksigner_return_code": 0,
+      "signer_sha256": "c8a2e9bccf597c2fb6dc66bee293fc13f2fc47ec77bc6b2b0d52c11f51192ab8",
+      "source_relative_path": "system/system/app/RuiAutoFocus/RuiAutoFocus.apk",
+      "repo_relative_path": "vendor/reference/8052/APK/RuiAutoFocus.apk"
+    },
+    "KeystoneCorrection": {
+      "bytes": 2301421,
+      "sha256": "23c68874b1ad2147549b3538ebe7f9ad7c97987a99ccb165ec528a6467b98829",
+      "is_zip": true,
+      "dex": [
+        "classes.dex"
+      ],
+      "package_line": "package: name='com.rjpj.tcorrection' versionCode='33' versionName='13' platformBuildVersionName='13' platformBuildVersionCode='33' compileSdkVersion='33' compileSdkVersionCodename='13'",
+      "apksigner_return_code": 0,
+      "signer_sha256": "c8a2e9bccf597c2fb6dc66bee293fc13f2fc47ec77bc6b2b0d52c11f51192ab8",
+      "source_relative_path": "system/system/priv-app/KeystoneCorrection/KeystoneCorrection.apk",
+      "repo_relative_path": "vendor/reference/8052/APK/KeystoneCorrection.apk"
+    },
+    "trdservice": {
+      "bytes": 1966418,
+      "sha256": "309eaf1098bf3d544907b57fa24ae6ad31c591fe942133fd8ef1c69832d538f1",
+      "is_zip": true,
+      "dex": [
+        "classes.dex"
+      ],
+      "package_line": "package: name='com.trd.service' versionCode='33' versionName='13' platformBuildVersionName='13' platformBuildVersionCode='33' compileSdkVersion='33' compileSdkVersionCodename='13'",
+      "apksigner_return_code": 0,
+      "signer_sha256": "c8a2e9bccf597c2fb6dc66bee293fc13f2fc47ec77bc6b2b0d52c11f51192ab8",
+      "source_relative_path": "system/system/app/trdservice/trdservice.apk",
+      "repo_relative_path": "vendor/reference/8052/APK/trdservice.apk"
+    },
+    "trdmiddle": {
+      "bytes": 33216960,
+      "sha256": "d51088086756a96ad184ec31189c2b8babe7ba3b605b55375fd9e07c4f58bfa4",
+      "is_zip": true,
+      "dex": [
+        "classes.dex"
+      ],
+      "package_line": "package: name='com.trd.framework' versionCode='1' versionName='1.0' platformBuildVersionName='13' platformBuildVersionCode='33' compileSdkVersion='33' compileSdkVersionCodename='13'",
+      "apksigner_return_code": 0,
+      "signer_sha256": "c8a2e9bccf597c2fb6dc66bee293fc13f2fc47ec77bc6b2b0d52c11f51192ab8",
+      "source_relative_path": "vendor/priv-app/trdmiddle/trdmiddle.apk",
+      "repo_relative_path": "vendor/reference/8052/APK/trdmiddle.apk"
+    },
+    "TvServices": {
+      "bytes": 2033658,
+      "sha256": "d5260ce75c48978bd57383eed14c0ba524a73837bb079fb70147cef6078995e4",
+      "is_zip": true,
+      "dex": [
+        "classes.dex"
+      ],
+      "package_line": "package: name='com.mediatek.tv.service' versionCode='1' versionName='1.3' platformBuildVersionName='13' platformBuildVersionCode='33' compileSdkVersion='33' compileSdkVersionCodename='13'",
+      "apksigner_return_code": 0,
+      "signer_sha256": "c8a2e9bccf597c2fb6dc66bee293fc13f2fc47ec77bc6b2b0d52c11f51192ab8",
+      "source_relative_path": "system_ext/priv-app/TvServices/TvServices.apk",
+      "repo_relative_path": "vendor/reference/8052/APK/TvServices.apk"
+    },
+    "RuiYunOta": {
+      "bytes": 609697,
+      "sha256": "40f399ff15b692180243ce103469230bcb7f90278fc4ad5f6c7d86cbc75961a2",
+      "is_zip": true,
+      "dex": [
+        "classes.dex"
+      ],
+      "package_line": "package: name='com.rjpj.yunota' versionCode='1' versionName='1.0' platformBuildVersionName='13' platformBuildVersionCode='33' compileSdkVersion='33' compileSdkVersionCodename='13'",
+      "apksigner_return_code": 0,
+      "signer_sha256": "c8a2e9bccf597c2fb6dc66bee293fc13f2fc47ec77bc6b2b0d52c11f51192ab8",
+      "source_relative_path": "system/system/priv-app/RuiYunOta/RuiYunOta.apk",
+      "repo_relative_path": "vendor/reference/8052/APK/RuiYunOta.apk"
+    },
+    "KuSetupWizard": {
+      "bytes": 17997485,
+      "sha256": "17aaba977289fce5c991e44bd6018c37549f91dae1b99154b00b80b5a3a2c898",
+      "is_zip": true,
+      "dex": [
+        "classes.dex",
+        "classes10.dex",
+        "classes11.dex",
+        "classes12.dex",
+        "classes13.dex",
+        "classes14.dex",
+        "classes15.dex",
+        "classes2.dex",
+        "classes3.dex",
+        "classes4.dex",
+        "classes5.dex",
+        "classes6.dex",
+        "classes7.dex",
+        "classes8.dex",
+        "classes9.dex"
+      ],
+      "package_line": "package: name='com.android.provision' versionCode='1' versionName='1.0' platformBuildVersionName='14' platformBuildVersionCode='34' compileSdkVersion='34' compileSdkVersionCodename='14'",
+      "apksigner_return_code": 0,
+      "signer_sha256": "c8a2e9bccf597c2fb6dc66bee293fc13f2fc47ec77bc6b2b0d52c11f51192ab8",
+      "source_relative_path": "system/system/app/KuSetupWizard/KuSetupWizard.apk",
+      "repo_relative_path": "vendor/reference/8052/APK/KuSetupWizard.apk"
+    },
+    "LiveTV": {
+      "bytes": 13974251,
+      "sha256": "c7c7c8c66d927ea1e36814104e95e85bd95402d29952b973cc0ee1edde4a790b",
+      "is_zip": true,
+      "dex": [
+        "classes.dex"
+      ],
+      "package_line": "package: name='com.mediatek.wwtv.tvcenter' versionCode='5' versionName='2.30.5 build 18321512' platformBuildVersionName='13' platformBuildVersionCode='33' compileSdkVersion='33' compileSdkVersionCodename='13'",
+      "apksigner_return_code": 0,
+      "signer_sha256": "c8a2e9bccf597c2fb6dc66bee293fc13f2fc47ec77bc6b2b0d52c11f51192ab8",
+      "source_relative_path": "system_ext/priv-app/LiveTV/LiveTV.apk",
+      "repo_relative_path": "vendor/reference/8052/APK/LiveTV.apk"
+    },
+    "Factory": {
+      "bytes": 6679136,
+      "sha256": "40e755ec443340f1df1781388cd9807822176c848fb1d3082c48ff3719a1bcab",
+      "is_zip": true,
+      "dex": [
+        "classes.dex"
+      ],
+      "package_line": "package: name='mediatek.factorymenu.ui' versionCode='1' versionName='1.0' platformBuildVersionName='13' platformBuildVersionCode='33' compileSdkVersion='33' compileSdkVersionCodename='13'",
+      "apksigner_return_code": 0,
+      "signer_sha256": "c8a2e9bccf597c2fb6dc66bee293fc13f2fc47ec77bc6b2b0d52c11f51192ab8",
+      "source_relative_path": "system_ext/app/Factory/Factory.apk",
+      "repo_relative_path": "vendor/reference/8052/APK/Factory.apk"
+    },
+    "FTAirplayWireless": {
+      "bytes": 105214691,
+      "sha256": "393efb230f2d0aa55b6131cdc45c2eed0372babf9b554c8a78d3ce143eec30e8",
+      "is_zip": true,
+      "dex": [
+        "classes.dex",
+        "classes2.dex"
+      ],
+      "package_line": "package: name='com.android.toofifi' versionCode='2133261012' versionName='V3.3.4.2_22279_20261012' platformBuildVersionName='12' platformBuildVersionCode='31' compileSdkVersion='31' compileSdkVersionCodename='12'",
+      "apksigner_return_code": 0,
+      "signer_sha256": "c8a2e9bccf597c2fb6dc66bee293fc13f2fc47ec77bc6b2b0d52c11f51192ab8",
+      "source_relative_path": "system/system/app/FTAirplayWireless/FTAirplayWireless.apk",
+      "warning": "Over GitHub single-file size limit, not committed"
+    },
+    "WFDSinkTest": {
+      "bytes": 9853537,
+      "sha256": "ad021a8d5d9f4ec6f9454847ef223e0b09b324315465e35393a1b7e3fc4d3e9b",
+      "is_zip": true,
+      "dex": [
+        "classes.dex",
+        "classes2.dex",
+        "classes3.dex"
+      ],
+      "package_line": "package: name='com.mediatek.miracast' versionCode='1' versionName='1.0' platformBuildVersionName='13' platformBuildVersionCode='33' compileSdkVersion='33' compileSdkVersionCodename='13'",
+      "apksigner_return_code": 0,
+      "signer_sha256": "c8a2e9bccf597c2fb6dc66bee293fc13f2fc47ec77bc6b2b0d52c11f51192ab8",
+      "source_relative_path": "system_ext/app/WFDSinkTest/WFDSinkTest.apk",
+      "repo_relative_path": "vendor/reference/8052/APK/WFDSinkTest.apk"
+    },
+    "framework-res.apk": {
+      "bytes": 27861527,
+      "sha256": "b4218a15c5619586ae579d71d5ccf636d1dc70d8f35bded91b2e6fc8ea4a536b",
+      "is_zip": true,
+      "dex": [],
+      "package_line": "package: name='android' versionCode='33' versionName='13'",
+      "apksigner_return_code": 0,
+      "signer_sha256": "c8a2e9bccf597c2fb6dc66bee293fc13f2fc47ec77bc6b2b0d52c11f51192ab8",
+      "source_relative_path": "system/system/framework/framework-res.apk",
+      "repo_relative_path": "vendor/reference/8052/APK/framework-res.apk"
+    },
+    "jar:vendor.mediatek.tv.screenrecord-V1.0-java.jar": {
+      "bytes": 60678,
+      "sha256": "b4eea1c0f6f1bea80a363aff95bf2c3f124c5e558a46b74e62e32d0ef7902bf7",
+      "source_relative_path": "system/system/framework/vendor.mediatek.tv.screenrecord-V1.0-java.jar",
+      "repo_relative_path": "vendor/reference/8052/JAR/vendor.mediatek.tv.screenrecord-V1.0-java.jar"
+    },
+    "jar:com.mstar.android.jar": {
+      "bytes": 67049,
+      "sha256": "69dfb1fb235ffb7d0b5c41513bd1634ddea42c37df5cbc36668d01a23eb877fb",
+      "source_relative_path": "system_ext/framework/com.mstar.android.jar",
+      "repo_relative_path": "vendor/reference/8052/JAR/com.mstar.android.jar"
+    }
+  },
+  "missing": [
+    "Provision",
+    "TvCenter",
+    "TvInput"
+  ]
+}
