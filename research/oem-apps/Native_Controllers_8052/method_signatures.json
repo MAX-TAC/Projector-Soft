@@ -64,6 +64,16 @@
   },
   "com/android/tv/settings/uicustom/fragment/picture/PictureFragment.java": {
     "methods": {
+      "initData": [
+        {
+          "line": 39,
+          "declaration": "protected void initData(android.os.Bundle bundle) {",
+          "method_calls": [
+            "getGlobalValueInt",
+            "initData"
+          ]
+        }
+      ],
       "initCheck": [
         {
           "line": 113,
@@ -117,6 +127,17 @@
   },
   "com/android/tv/settings/uicustom/fragment/sound/SoundFragment.java": {
     "methods": {
+      "initData": [
+        {
+          "line": 43,
+          "declaration": "protected void initData(android.os.Bundle bundle) {",
+          "method_calls": [
+            "getGlobalValueInt",
+            "getSystemValueInt",
+            "initData"
+          ]
+        }
+      ],
       "initCheck": [
         {
           "line": 80,
