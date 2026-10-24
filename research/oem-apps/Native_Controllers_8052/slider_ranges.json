@@ -1,0 +1,177 @@
+{
+  "com/android/tv/settings/uicustom/floatmenu/controller/picture/PictureModeValueSecondaryController.java": [
+    {
+      "method": "initData",
+      "line": 49,
+      "oem_keys": [
+        "picture_brightness",
+        "picture_contrast",
+        "picture_hue",
+        "picture_saturation",
+        "picture_sharpness"
+      ],
+      "numeric_constants": [
+        "10",
+        "50"
+      ],
+      "calls": [
+        "getGlobalValueInt",
+        "initData"
+      ]
+    },
+    {
+      "method": "initView",
+      "line": 57,
+      "oem_keys": [
+        "picture_brightness",
+        "picture_contrast",
+        "picture_hue",
+        "picture_saturation",
+        "picture_sharpness"
+      ],
+      "numeric_constants": [
+        "0",
+        "1"
+      ],
+      "calls": [
+        "OnValueChangeListener",
+        "Runnable",
+        "findViewById",
+        "initView",
+        "lambda$initView$0",
+        "onValueChanged",
+        "post",
+        "putGlobalValueInt",
+        "run",
+        "setOnValueChangeListener",
+        "setValue"
+      ]
+    }
+  ],
+  "com/android/tv/settings/uicustom/floatmenu/controller/picture/ColorTempValueSecondaryController.java": [
+    {
+      "method": "initData",
+      "line": 41,
+      "oem_keys": [
+        "picture_blue_gain",
+        "picture_green_gain",
+        "picture_red_gain"
+      ],
+      "numeric_constants": [
+        "0"
+      ],
+      "calls": [
+        "getGlobalValueInt",
+        "initData"
+      ]
+    },
+    {
+      "method": "initView",
+      "line": 47,
+      "oem_keys": [
+        "picture_blue_gain",
+        "picture_green_gain",
+        "picture_red_gain"
+      ],
+      "numeric_constants": [
+        "0",
+        "1"
+      ],
+      "calls": [
+        "OnValueChangeListener",
+        "Runnable",
+        "findViewById",
+        "initView",
+        "lambda$initView$0",
+        "onValueChanged",
+        "post",
+        "putGlobalValueInt",
+        "run",
+        "setOnValueChangeListener",
+        "setValue"
+      ]
+    }
+  ],
+  "com/android/tv/settings/uicustom/floatmenu/controller/sound/SoundModeValueSecondaryController.java": [
+    {
+      "method": "initData",
+      "line": 37,
+      "oem_keys": [
+        "sound_bass",
+        "sound_treble"
+      ],
+      "numeric_constants": [
+        "50"
+      ],
+      "calls": [
+        "getGlobalValueInt",
+        "initData"
+      ]
+    },
+    {
+      "method": "initView",
+      "line": 42,
+      "oem_keys": [
+        "sound_bass",
+        "sound_treble"
+      ],
+      "numeric_constants": [
+        "0",
+        "1"
+      ],
+      "calls": [
+        "OnValueChangeListener",
+        "Runnable",
+        "findViewById",
+        "initView",
+        "lambda$initView$0",
+        "onValueChanged",
+        "post",
+        "putGlobalValueInt",
+        "run",
+        "setOnValueChangeListener",
+        "setValue"
+      ]
+    }
+  ],
+  "com/android/tv/settings/uicustom/view/TitleSeekBarView.java": [
+    {
+      "method": "setValue",
+      "line": 105,
+      "oem_keys": [],
+      "numeric_constants": [],
+      "calls": [
+        "if",
+        "setProgress",
+        "setText",
+        "setValue",
+        "valueOf"
+      ]
+    },
+    {
+      "method": "init",
+      "line": 44,
+      "oem_keys": [],
+      "numeric_constants": [
+        "0",
+        "1"
+      ],
+      "calls": [
+        "from",
+        "getInt",
+        "getResourceId",
+        "getString",
+        "if",
+        "inflate",
+        "init",
+        "initViews",
+        "obtainStyledAttributes",
+        "recycle",
+        "setBackgroundResource",
+        "setFocusable",
+        "setupSeekBarListener",
+        "updateView"
+      ]
+    }
+  ]
+}
