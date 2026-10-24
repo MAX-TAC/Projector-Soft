@@ -30,7 +30,7 @@ public final class OemInlinePreferencesHook {
     private static final String[] SOUND_TITLES={
         "Стандартный","Яркий","Спорт","Кино","Музыка","Новости","Пользовательский"};
     private static final int[] SOUND_VALUES={1,2,3,4,5,6,0};
-    private static final String CATEGORY_KEY="projectorsoft_quick_controls";
+    private static final String CATEGORY_KEY="projectorsoft_picture_category";
     private OemInlinePreferencesHook() {}
 
     public static int[] pictureValues() {return PIC_VALUES.clone();}
@@ -51,33 +51,35 @@ public final class OemInlinePreferencesHook {
 
             Object screen=fragment.getClass().getMethod("getPreferenceScreen").invoke(fragment);
             if (screen==null) return;
-            Object category=categoryClass.getConstructor(Context.class).newInstance(context);
-            categoryClass.getMethod("setKey",String.class).invoke(category,CATEGORY_KEY);
-            categoryClass.getMethod("setTitle",CharSequence.class)
-                    .invoke(category,"Быстрые настройки проектора");
-            categoryClass.getMethod("setOrder",int.class).invoke(category,210);
-            Method add=screen.getClass().getMethod("addPreference",preference);
-            if (!(Boolean)add.invoke(screen,category)) return;
+            Object pictureCategory=addCategory(screen,preference,categoryClass,
+                    context,CATEGORY_KEY,"Изображение · Проектор",210);
+            if(pictureCategory==null)return;
+            Object soundCategory=addCategory(screen,preference,categoryClass,
+                    context,"projectorsoft_sound_category","Звук · Проектор",230);
+            if(soundCategory==null)return;
+            Object placementCategory=addCategory(screen,preference,categoryClass,
+                    context,"projectorsoft_placement_category","Проекция · Проектор",250);
+            if(placementCategory==null)return;
 
             // All values below mirror known OEM SettingsUtil.putGlobalValueInt.
-            addList(category,preference,context,"projectorsoft_picture_mode",
+            addList(pictureCategory,preference,context,"projectorsoft_picture_mode",
                     "Режим изображения","picture_mode",PIC_TITLES,PIC_VALUES,7,211);
-            addList(category,preference,context,"projectorsoft_color_temp",
+            addList(pictureCategory,preference,context,"projectorsoft_color_temp",
                     "Цветовая температура","picture_color_temperature",
                     TEMP_TITLES,TEMP_VALUES,2,212);
-            addList(category,preference,context,"projectorsoft_sound_mode",
+            addList(soundCategory,preference,context,"projectorsoft_sound_mode",
                     "Режим звука","sound_style",SOUND_TITLES,SOUND_VALUES,1,213);
             // Sound surround/eARC/automatic volume must not bypass OEM
             // audio and CEC HAL. Until corresponding OEM callbacks are
             // migrated they remain accessible through the native sound screen.
             // Native Android TV seekbars: exact limits read from factory layout XML.
             // They remain hidden until the OEM Settings.Global value exists.
-            OemInlineSlidersHook.install(context,category,preference);
+            OemInlineSlidersHook.install(context,pictureCategory,soundCategory,preference);
             // OEM controller AdvanceSettingsSecondaryController provides
             // explicit 0/1 HDR and 0..3 MEMC options. No guessed HAL APIs.
             // Hide them until the factory settings provider already holds state.
             String hdrKey="picture_list_hdr";
-            addSwitchIfPresent(category,preference,context,
+            addSwitchIfPresent(pictureCategory,preference,context,
                     "projectorsoft_hdr","HDR (OEM)",hdrKey,230);
 
             String mjcKey="tv_picture_advance_video_mjc_effect";
@@ -85,7 +87,7 @@ public final class OemInlinePreferencesHook {
             if (mjcRaw != null && mjcRaw.matches("[0-3]")) {
                 String[] effects={"Выключено","Низкий","Средний","Высокий"};
                 int[] ids={0,1,2,3};
-                addList(category,preference,context,"projectorsoft_memc",
+                addList(pictureCategory,preference,context,"projectorsoft_memc",
                         "MEMC (OEM)",mjcKey,effects,ids,Integer.parseInt(mjcRaw),231);
             }
             // HDMI game mode is intentionally NOT a raw Settings.Global toggle.
@@ -93,15 +95,27 @@ public final class OemInlinePreferencesHook {
             // keep its original handler until the complete side-effect chain
             // is safely transferred.
             // Stock ProjectorManager orientation codes, not calibration/keystone.
-            OemProjectorOrientationHook.install(context,category,preference);
+            OemProjectorOrientationHook.install(context,placementCategory,preference);
             // Five genuine OEM bands via stock PartnerSettingsConfig only.
             // Uses original ProgressDialog scale but native TV SeekBar widgets.
-            OemFiveBandEqualizerHook.install(context,category,preference);
+            OemFiveBandEqualizerHook.install(context,soundCategory,preference);
         } catch(Throwable e) {
             Log.w(TAG,"OEM quick controls unavailable; keep original settings",e);
         }
     }
 
+
+    private static Object addCategory(Object screen,Class<?> preference,
+                                      Class<?> categoryClass,Context context,
+                                      String key,String title,int order) throws Exception {
+        Object category=categoryClass.getConstructor(Context.class).newInstance(context);
+        categoryClass.getMethod("setKey",String.class).invoke(category,key);
+        categoryClass.getMethod("setTitle",CharSequence.class).invoke(category,title);
+        categoryClass.getMethod("setOrder",int.class).invoke(category,order);
+        Object added=screen.getClass().getMethod("addPreference",preference)
+                .invoke(screen,category);
+        return Boolean.TRUE.equals(added)?category:null;
+    }
 
     private static String vendorKey(String fieldName) {
         try {
