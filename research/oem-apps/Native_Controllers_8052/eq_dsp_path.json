@@ -1,0 +1,1700 @@
+{
+  "com/android/tv/settings/partnercustomizer/tvsettingservice/util/PreferenceConfigUtilsBase.java": {
+    "matches": [
+      {
+        "at": 28,
+        "text": "public static final java.lang.String KEY_EQUALIZER_DETAIL_10000HZ = \"sound_equalizer_detail_10000hz\";"
+      },
+      {
+        "at": 29,
+        "text": "public static final java.lang.String KEY_EQUALIZER_DETAIL_120HZ = \"sound_equalizer_detail_120hz\";"
+      },
+      {
+        "at": 30,
+        "text": "public static final java.lang.String KEY_EQUALIZER_DETAIL_1500HZ = \"sound_equalizer_detail_1500hz\";"
+      },
+      {
+        "at": 31,
+        "text": "public static final java.lang.String KEY_EQUALIZER_DETAIL_5000HZ = \"sound_equalizer_detail_5000hz\";"
+      },
+      {
+        "at": 32,
+        "text": "public static final java.lang.String KEY_EQUALIZER_DETAIL_500HZ = \"sound_equalizer_detail_500hz\";"
+      },
+      {
+        "at": 183,
+        "text": "public static final java.lang.String KEY_SONIC_EMOTION = \"sound_sonic_emotion\";"
+      },
+      {
+        "at": 184,
+        "text": "public static final java.lang.String KEY_SOUND = \"sound_effects\";"
+      },
+      {
+        "at": 185,
+        "text": "public static final java.lang.String KEY_SOUND_ADVANCED_DIALOGUE_ENHANCEER = \"sound_advanced_dialogue_enhancer\";"
+      },
+      {
+        "at": 186,
+        "text": "public static final java.lang.String KEY_SOUND_ADVANCED_DOLBY_AP = \"sound_advanced_dolby_ap\";"
+      },
+      {
+        "at": 187,
+        "text": "public static final java.lang.String KEY_SOUND_ADVANCED_DOLBY_ATMOS = \"sound_advanced_dolby_atmos\";"
+      },
+      {
+        "at": 188,
+        "text": "public static final java.lang.String KEY_SOUND_ADVANCED_SOUND_MODE = \"sound_advanced_sound_mode\";"
+      },
+      {
+        "at": 189,
+        "text": "public static final java.lang.String KEY_SOUND_ADVANCED_SURROUND_VIRTUALIZER = \"sound_advanced_surround_virtualizer\";"
+      },
+      {
+        "at": 190,
+        "text": "public static final java.lang.String KEY_SOUND_ADVANCED_VOLUME_LEVELER = \"sound_advanced_volume_leveler\";"
+      },
+      {
+        "at": 191,
+        "text": "public static final java.lang.String KEY_SOUND_AUTO_VOLUME_CONTROL = \"sound_auto_volume_control\";"
+      },
+      {
+        "at": 192,
+        "text": "public static final java.lang.String KEY_SOUND_BALANCE = \"sound_balance\";"
+      },
+      {
+        "at": 193,
+        "text": "public static final java.lang.String KEY_SOUND_BASS = \"sound_bass\";"
+      },
+      {
+        "at": 194,
+        "text": "public static final java.lang.String KEY_SOUND_BLUETOOTH_SURROUND_SOUND = \"sound_bluetooth_surround_sound\";"
+      },
+      {
+        "at": 195,
+        "text": "public static final java.lang.String KEY_SOUND_DBX_ENABLE = \"sound_dbx_enable\";"
+      },
+      {
+        "at": 196,
+        "text": "public static final java.lang.String KEY_SOUND_DBX_TOTAL_SONIC = \"sound_dbx_total_sonic\";"
+      },
+      {
+        "at": 197,
+        "text": "public static final java.lang.String KEY_SOUND_DBX_TOTAL_SURROUND = \"sound_dbx_total_surround\";"
+      },
+      {
+        "at": 198,
+        "text": "public static final java.lang.String KEY_SOUND_DBX_TOTAL_VOL = \"sound_dbx_total_vol\";"
+      },
+      {
+        "at": 199,
+        "text": "public static final java.lang.String KEY_SOUND_DIALOGUE_ENHANCEER = \"sound_dialogue_enhancer\";"
+      },
+      {
+        "at": 200,
+        "text": "public static final java.lang.String KEY_SOUND_DOLBY_NOTIFICATION = \"sound_dolby_notification\";"
+      },
+      {
+        "at": 201,
+        "text": "public static final java.lang.String KEY_SOUND_DOWNMIX_MODE = \"sound_downmixmode\";"
+      },
+      {
+        "at": 202,
+        "text": "public static final java.lang.String KEY_SOUND_DTS = \"sound_dts\";"
+      },
+      {
+        "at": 203,
+        "text": "public static final java.lang.String KEY_SOUND_DTS_DEFINITION = \"sound_dts_definition\";"
+      },
+      {
+        "at": 204,
+        "text": "public static final java.lang.String KEY_SOUND_DTS_DIALOGCLARITY = \"sound_dts_dialogClarity\";"
+      },
+      {
+        "at": 205,
+        "text": "public static final java.lang.String KEY_SOUND_DTS_DRC = \"sound_dts_drc\";"
+      },
+      {
+        "at": 206,
+        "text": "public static final java.lang.String KEY_SOUND_DTS_HEIGHT = \"sound_dts_height\";"
+      },
+      {
+        "at": 207,
+        "text": "public static final java.lang.String KEY_SOUND_DTS_LIMITER = \"sound_dts_limiter\";"
+      },
+      {
+        "at": 208,
+        "text": "public static final java.lang.String KEY_SOUND_DTS_STUDIO = \"sound_dts_studio\";"
+      },
+      {
+        "at": 209,
+        "text": "public static final java.lang.String KEY_SOUND_DTS_STUDIO_ENABLE = \"sound_dts_studio_enable\";"
+      },
+      {
+        "at": 210,
+        "text": "public static final java.lang.String KEY_SOUND_DTS_STUDIO_SURROUND = \"sound_dts_studio_surround\";"
+      },
+      {
+        "at": 211,
+        "text": "public static final java.lang.String KEY_SOUND_DTS_STUDIO_TRUEVOLUME = \"sound_dts_studio_truevolume\";"
+      },
+      {
+        "at": 212,
+        "text": "public static final java.lang.String KEY_SOUND_DTS_TBHDX = \"sound_dts_tbhdx\";"
+      },
+      {
+        "at": 213,
+        "text": "public static final java.lang.String KEY_SOUND_DTS_TRUSURROUNDX = \"sound_dts_trusurroundx\";"
+      },
+      {
+        "at": 214,
+        "text": "public static final java.lang.String KEY_SOUND_DTS_TRUVOLUMEHD = \"sound_dts_truvolumehd\";"
+      },
+      {
+        "at": 215,
+        "text": "public static final java.lang.String KEY_SOUND_DTS_VIRTUAL_X = \"sound_dts_virtual_x\";"
+      },
+      {
+        "at": 216,
+        "text": "public static final java.lang.String KEY_SOUND_EARC = \"sound_earc\";"
+      },
+      {
+        "at": 217,
+        "text": "public static final java.lang.String KEY_SOUND_EQUALIZER = \"sound_equalizer\";"
+      },
+      {
+        "at": 218,
+        "text": "public static final java.lang.String KEY_SOUND_EQUALIZER_DETAIL = \"sound_equalizer_detail\";"
+      },
+      {
+        "at": 219,
+        "text": "public static final java.lang.String KEY_SOUND_LR_SWAP = \"sound_speaker_lr_swap\";"
+      },
+      {
+        "at": 220,
+        "text": "public static final java.lang.String KEY_SOUND_RESET_DEFAULT = \"sound_reset_to_default\";"
+      },
+      {
+        "at": 221,
+        "text": "public static final java.lang.String KEY_SOUND_SONIC_EMOTION_PRE = \"sound_sonic_emotion_premium\";"
+      },
+      {
+        "at": 222,
+        "text": "public static final java.lang.String KEY_SOUND_SOUND_SURROUND = \"sound_sound_surround\";"
+      },
+      {
+        "at": 223,
+        "text": "public static final java.lang.String KEY_SOUND_SPDIF_DELAY = \"sound_spdif_delay\";"
+      },
+      {
+        "at": 224,
+        "text": "public static final java.lang.String KEY_SOUND_SPDIF_TYPE = \"sound_spdif_type\";"
+      },
+      {
+        "at": 225,
+        "text": "public static final java.lang.String KEY_SOUND_SPEAKER = \"sound_speakers\";"
+      },
+      {
+        "at": 226,
+        "text": "public static final java.lang.String KEY_SOUND_SPEAKER_CATEGORY = \"sound_speaker_category\";"
+      },
+      {
+        "at": 227,
+        "text": "public static final java.lang.String KEY_SOUND_SPEAKER_DELAY = \"sound_speaker_delay\";"
+      },
+      {
+        "at": 228,
+        "text": "public static final java.lang.String KEY_SOUND_SPEAKER_STATUS = \"sound_speaker_status\";"
+      },
+      {
+        "at": 229,
+        "text": "public static final java.lang.String KEY_SOUND_SPEAKER_VOLUME = \"sound_speaker_volume\";"
+      },
+      {
+        "at": 230,
+        "text": "public static final java.lang.String KEY_SOUND_STYLE = \"sound_style\";"
+      },
+      {
+        "at": 231,
+        "text": "public static final java.lang.String KEY_SOUND_SUBWOOFER_CATEGORY = \"sound_subwoofer_category\";"
+      },
+      {
+        "at": 232,
+        "text": "public static final java.lang.String KEY_SOUND_SURROUND = \"sound_surround\";"
+      },
+      {
+        "at": 233,
+        "text": "public static final java.lang.String KEY_SOUND_TREBLE = \"sound_treble\";"
+      },
+      {
+        "at": 234,
+        "text": "public static final java.lang.String KEY_SOUND_TYPE = \"sound_type\";"
+      },
+      {
+        "at": 235,
+        "text": "public static final java.lang.String KEY_SOUND_WIRELESS_CHANGE_SPEAKER_LAYOUT = \"sound_wireless_change_speaker_layout\";"
+      },
+      {
+        "at": 236,
+        "text": "public static final java.lang.String KEY_SOUND_WIRELESS_SPEAKER = \"sound_wireless_speaker\";"
+      },
+      {
+        "at": 237,
+        "text": "public static final java.lang.String KEY_SOUND_WIRELESS_SPEAKER_AUDIO_BUFFER_LENGTH = \"sound_wireless_speaker_audio_buffer_length\";"
+      },
+      {
+        "at": 238,
+        "text": "public static final java.lang.String KEY_SOUND_WIRELESS_SPEAKER_BEYOND_ADD = \"sound_wireless_speaker_beyond_add\";"
+      },
+      {
+        "at": 239,
+        "text": "public static final java.lang.String KEY_SOUND_WIRELESS_SPEAKER_ENABLE = \"sound_wireless_speaker_enable\";"
+      },
+      {
+        "at": 240,
+        "text": "public static final java.lang.String KEY_SOUND_WIRELESS_SPEAKER_ENABLE_ADJUSTMENT = \"sound_wireless_jitter_buffer_adjust_enable\";"
+      },
+      {
+        "at": 241,
+        "text": "public static final java.lang.String KEY_SOUND_WIRELESS_STATELLITE_SPEAKER_ADD = \"sound_wireless_statellite_speaker_add\";"
+      },
+      {
+        "at": 242,
+        "text": "public static final java.lang.String KEY_SOUND_WIRELESS_SUBWOOFER_ADD = \"sound_wireless_subwoofer_add\";"
+      },
+      {
+        "at": 248,
+        "text": "public static final java.lang.String KEY_SPEAKER_DEVICE_SETTINGS_LOCATION_L = \"speaker_channel_setting_left_channel\";"
+      },
+      {
+        "at": 249,
+        "text": "public static final java.lang.String KEY_SPEAKER_DEVICE_SETTINGS_LOCATION_LS = \"speaker_channel_setting_left_surround_channel\";"
+      },
+      {
+        "at": 250,
+        "text": "public static final java.lang.String KEY_SPEAKER_DEVICE_SETTINGS_LOCATION_R = \"speaker_channel_setting_right_channel\";"
+      },
+      {
+        "at": 251,
+        "text": "public static final java.lang.String KEY_SPEAKER_DEVICE_SETTINGS_LOCATION_RS = \"speaker_channel_setting_right_surround_channel\";"
+      }
+    ],
+    "totalLines": 275
+  },
+  "com/android/tv/settings/partnercustomizer/tvsettingservice/util/PreferenceConfigUtils.java": {
+    "matches": [
+      {
+        "at": 1,
+        "text": "package com.android.tv.settings.partnercustomizer.tvsettingservice.util;"
+      },
+      {
+        "at": 6,
+        "text": "public static boolean isSoundSpeakerStatusPage = false;"
+      },
+      {
+        "at": 7,
+        "text": "private static com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtils mConfigUtils;"
+      },
+      {
+        "at": 9,
+        "text": "private com.android.tv.settings.partnercustomizer.tvsettingservice.TVSettingConfig mTVSettingConfig;"
+      },
+      {
+        "at": 12,
+        "text": "this.mTVSettingConfig = com.android.tv.settings.partnercustomizer.tvsettingservice.TVSettingConfig.getInstance(context);"
+      },
+      {
+        "at": 15,
+        "text": "public static synchronized com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtils getInstance(android.content.Context context) {"
+      },
+      {
+        "at": 17,
+        "text": "mConfigUtils = new com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtils(context);"
+      },
+      {
+        "at": 21,
+        "text": "mConfigUtils = new com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtils(context);"
+      },
+      {
+        "at": 28,
+        "text": "public com.android.tv.settings.partnercustomizer.utils.ProgressPreference createProgressPreference(androidx.leanback.preference.LeanbackPreferenceFragmentCompat leanbackPreferenceFragmentCompat, java.lang.String str, int i, java.lang.String str2, int i2, int i"
+      },
+      {
+        "at": 29,
+        "text": "com.android.tv.settings.partnercustomizer.utils.ProgressPreference progressPreference = new com.android.tv.settings.partnercustomizer.utils.ProgressPreference(themeContext);"
+      },
+      {
+        "at": 30,
+        "text": "progressPreference.setKey(str);"
+      },
+      {
+        "at": 31,
+        "text": "progressPreference.setTitle(themeContext.getResources().getString(i));"
+      },
+      {
+        "at": 32,
+        "text": "progressPreference.setMaxValue(i2);"
+      },
+      {
+        "at": 33,
+        "text": "progressPreference.setMinValue(i3);"
+      },
+      {
+        "at": 34,
+        "text": "progressPreference.setmStep(i4);"
+      },
+      {
+        "at": 35,
+        "text": "progressPreference.setCurrentValue(getSettingValueInt(leanbackPreferenceFragmentCompat.getContext().getContentResolver(), str));"
+      },
+      {
+        "at": 37,
+        "text": "progressPreference.setOnPreferenceChangeListener((androidx.preference.Preference.OnPreferenceChangeListener) leanbackPreferenceFragmentCompat);"
+      },
+      {
+        "at": 39,
+        "text": "return progressPreference;"
+      },
+      {
+        "at": 43,
+        "text": "public com.android.tv.settings.partnercustomizer.utils.ProgressPreference createProgressPreference(androidx.leanback.preference.LeanbackPreferenceFragmentCompat leanbackPreferenceFragmentCompat, java.lang.String str, int i, java.lang.String str2, int i2) {"
+      },
+      {
+        "at": 44,
+        "text": "com.android.tv.settings.partnercustomizer.utils.ProgressPreference progressPreference = new com.android.tv.settings.partnercustomizer.utils.ProgressPreference(themeContext);"
+      },
+      {
+        "at": 45,
+        "text": "progressPreference.setMaxValue(this.mTVSettingConfig.getMax(str2));"
+      },
+      {
+        "at": 46,
+        "text": "progressPreference.setMinValue(this.mTVSettingConfig.getMin(str2));"
+      },
+      {
+        "at": 47,
+        "text": "progressPreference.setCurrentValue(this.mTVSettingConfig.getConfigValueInt(str2));"
+      },
+      {
+        "at": 48,
+        "text": "progressPreference.setKey(str);"
+      },
+      {
+        "at": 49,
+        "text": "progressPreference.setTitle(themeContext.getResources().getString(i));"
+      },
+      {
+        "at": 50,
+        "text": "progressPreference.setmStep(i2);"
+      },
+      {
+        "at": 52,
+        "text": "progressPreference.setOnPreferenceChangeListener((androidx.preference.Preference.OnPreferenceChangeListener) leanbackPreferenceFragmentCompat);"
+      },
+      {
+        "at": 54,
+        "text": "return progressPreference;"
+      },
+      {
+        "at": 58,
+        "text": "public com.android.tv.settings.partnercustomizer.utils.NewProgressPreference createNewProgressPreferencesss(androidx.leanback.preference.LeanbackPreferenceFragmentCompat leanbackPreferenceFragmentCompat, java.lang.String str, java.lang.String str2, android.gra"
+      },
+      {
+        "at": 59,
+        "text": "com.mediatek.wwtv.tvcenter.util.MtkLog.d(TAG, \"createNewProgressPreferencesss()---key=\" + str + \";CurrentValue=\" + getSettingValueInt(leanbackPreferenceFragmentCompat.getContext().getContentResolver(), str));"
+      },
+      {
+        "at": 60,
+        "text": "com.android.tv.settings.partnercustomizer.utils.NewProgressPreference newProgressPreference = new com.android.tv.settings.partnercustomizer.utils.NewProgressPreference(themeContext);"
+      },
+      {
+        "at": 61,
+        "text": "newProgressPreference.setKey(str);"
+      },
+      {
+        "at": 63,
+        "text": "newProgressPreference.setMaxValue(this.mTVSettingConfig.getMax(str2));"
+      },
+      {
+        "at": 64,
+        "text": "newProgressPreference.setMinValue(this.mTVSettingConfig.getMin(str2));"
+      },
+      {
+        "at": 66,
+        "text": "newProgressPreference.setMaxValue(100);"
+      },
+      {
+        "at": 67,
+        "text": "newProgressPreference.setMinValue(0);"
+      },
+      {
+        "at": 69,
+        "text": "if (com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_SOUND_SPEAKER_DELAY.equals(str) || com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_SOUND_SPDIF_DELAY.equals(str)) {"
+      },
+      {
+        "at": 70,
+        "text": "newProgressPreference.setMaxValue(this.mTVSettingConfig.getMax(str2) * 10);"
+      },
+      {
+        "at": 71,
+        "text": "newProgressPreference.setMinValue(this.mTVSettingConfig.getMin(str2) * 10);"
+      },
+      {
+        "at": 73,
+        "text": "newProgressPreference.setmStep(i);"
+      },
+      {
+        "at": 74,
+        "text": "newProgressPreference.setTopIcon(drawable);"
+      },
+      {
+        "at": 75,
+        "text": "newProgressPreference.setCurrentValue(getSettingValueInt(leanbackPreferenceFragmentCompat.getContext().getContentResolver(), str));"
+      },
+      {
+        "at": 77,
+        "text": "newProgressPreference.setOnPreferenceChangeListener((androidx.preference.Preference.OnPreferenceChangeListener) leanbackPreferenceFragmentCompat);"
+      },
+      {
+        "at": 79,
+        "text": "return newProgressPreference;"
+      },
+      {
+        "at": 83,
+        "text": "public com.android.tv.settings.partnercustomizer.utils.ProgressPreference createProgressPreferenceTrans(androidx.leanback.preference.LeanbackPreferenceFragmentCompat leanbackPreferenceFragmentCompat, java.lang.String str, java.lang.String str2, java.lang.Strin"
+      },
+      {
+        "at": 84,
+        "text": "com.android.tv.settings.partnercustomizer.utils.ProgressPreference progressPreference = new com.android.tv.settings.partnercustomizer.utils.ProgressPreference(themeContext);"
+      },
+      {
+        "at": 85,
+        "text": "progressPreference.setKey(str);"
+      },
+      {
+        "at": 86,
+        "text": "progressPreference.setTitle(transString(str2));"
+      },
+      {
+        "at": 87,
+        "text": "progressPreference.setMaxValue(this.mTVSettingConfig.getMax(str3));"
+      },
+      {
+        "at": 88,
+        "text": "progressPreference.setMinValue(this.mTVSettingConfig.getMin(str3));"
+      },
+      {
+        "at": 89,
+        "text": "progressPreference.setmStep(i);"
+      },
+      {
+        "at": 90,
+        "text": "progressPreference.setCurrentValue(getSettingValueInt(leanbackPreferenceFragmentCompat.getContext().getContentResolver(), str));"
+      },
+      {
+        "at": 92,
+        "text": "progressPreference.setOnPreferenceChangeListener((androidx.preference.Preference.OnPreferenceChangeListener) leanbackPreferenceFragmentCompat);"
+      },
+      {
+        "at": 94,
+        "text": "return progressPreference;"
+      },
+      {
+        "at": 97,
+        "text": "public com.android.tv.settings.partnercustomizer.utils.ProgressDialogPreference createProgressDialogPreferenceTrans(androidx.leanback.preference.LeanbackPreferenceFragmentCompat leanbackPreferenceFragmentCompat, java.lang.String str, java.lang.String str2) {"
+      },
+      {
+        "at": 98,
+        "text": "com.android.tv.settings.partnercustomizer.utils.ProgressDialogPreference progressDialogPreference = new com.android.tv.settings.partnercustomizer.utils.ProgressDialogPreference(themeContext);"
+      },
+      {
+        "at": 99,
+        "text": "int settingValueInt = getSettingValueInt(leanbackPreferenceFragmentCompat.getContext().getContentResolver(), str);"
+      },
+      {
+        "at": 100,
+        "text": "progressDialogPreference.setKey(str);"
+      },
+      {
+        "at": 101,
+        "text": "progressDialogPreference.setTitle(transString(str2));"
+      },
+      {
+        "at": 102,
+        "text": "progressDialogPreference.setSummary(java.lang.String.valueOf(settingValueInt));"
+      },
+      {
+        "at": 103,
+        "text": "return progressDialogPreference;"
+      },
+      {
+        "at": 121,
+        "text": "string = themeContext.getResources().getString(com.android.tv.settings.R.string.device_sound_equalizer_detail_khz, (((double) i) / 1000.0d) + \"\");"
+      },
+      {
+        "at": 123,
+        "text": "string = themeContext.getResources().getString(com.android.tv.settings.R.string.device_sound_equalizer_detail_hz, str);"
+      },
+      {
+        "at": 138,
+        "text": "switchPreference.setChecked(getSettingValueInt(leanbackPreferenceFragmentCompat.getContext().getContentResolver(), str) == 1);"
+      },
+      {
+        "at": 145,
+        "text": "int settingValueInt = getSettingValueInt(leanbackPreferenceFragmentCompat.getContext().getContentResolver(), str);"
+      },
+      {
+        "at": 146,
+        "text": "if (str.equalsIgnoreCase(com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_SOUND_WIRELESS_SPEAKER_AUDIO_BUFFER_LENGTH)) {"
+      },
+      {
+        "at": 147,
+        "text": "settingValueInt = getSettingValueInt(leanbackPreferenceFragmentCompat.getContext().getContentResolver(), str, -1);"
+      },
+      {
+        "at": 148,
+        "text": "if (settingValueInt == -1) {"
+      },
+      {
+        "at": 150,
+        "text": "putSettingValueInt(leanbackPreferenceFragmentCompat.getContext().getContentResolver(), str, jitterIndex);"
+      },
+      {
+        "at": 151,
+        "text": "int settingValueInt2 = getSettingValueInt(leanbackPreferenceFragmentCompat.getContext().getContentResolver(), str, jitterIndex);"
+      },
+      {
+        "at": 152,
+        "text": "com.mediatek.wwtv.tvcenter.util.MtkLog.i(TAG, \" audio_buffer_length defaultValue = \" + jitterIndex);"
+      },
+      {
+        "at": 153,
+        "text": "settingValueInt = settingValueInt2;"
+      },
+      {
+        "at": 155,
+        "text": "com.mediatek.wwtv.tvcenter.util.MtkLog.i(TAG, \"val = \" + settingValueInt);"
+      },
+      {
+        "at": 157,
+        "text": "if (str.equals(com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_SOUND_EARC)) {"
+      },
+      {
+        "at": 158,
+        "text": "int integer = leanbackPreferenceFragmentCompat.getContext().getResources().getInteger(com.android.tv.settings.R.integer.sound_earc_default_value);"
+      },
+      {
+        "at": 159,
+        "text": "com.mediatek.wwtv.tvcenter.util.MtkLog.d(TAG, \"KEY_SOUND_EARC  defaultValue = \" + integer);"
+      },
+      {
+        "at": 160,
+        "text": "settingValueInt = android.provider.Settings.Global.getInt(leanbackPreferenceFragmentCompat.getContext().getContentResolver(), str, integer);"
+      },
+      {
+        "at": 163,
+        "text": "settingValueInt = getAutoBackLightValue();"
+      },
+      {
+        "at": 165,
+        "text": "if (str.equalsIgnoreCase(com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_SOUND_DIALOGUE_ENHANCEER)) {"
+      },
+      {
+        "at": 166,
+        "text": "settingValueInt = this.mTVSettingConfig.getConfigValueInt(\"g_audio__dialogue_enhancer\");"
+      },
+      {
+        "at": 168,
+        "text": "if (str.equalsIgnoreCase(com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_PICTURE_ADVANCE_VIDEO_DLG_MODE_REF_PLUS)) {"
+      },
+      {
+        "at": 169,
+        "text": "settingValueInt = android.provider.Settings.Global.getInt(leanbackPreferenceFragmentCompat.getContext().getContentResolver(), str, leanbackPreferenceFragmentCompat.getContext().getResources().getInteger(com.android.tv.settings.R.integer.picture_advanced_settin"
+      },
+      {
+        "at": 172,
+        "text": "if (settingValueInt < 0) {"
+      },
+      {
+        "at": 173,
+        "text": "settingValueInt = 0;"
+      },
+      {
+        "at": 184,
+        "text": "com.mediatek.wwtv.tvcenter.util.MtkLog.d(TAG, \"mEntryValues[i].toString() \" + entryValues[i5].toString() + \"    \" + settingValueInt);"
+      },
+      {
+        "at": 185,
+        "text": "if (entryValues[i5].toString().equals(java.lang.String.valueOf(settingValueInt))) {"
+      },
+      {
+        "at": 186,
+        "text": "settingValueInt = i5;"
+      },
+      {
+        "at": 191,
+        "text": "if (listPreference.getEntries().length <= settingValueInt) {"
+      },
+      {
+        "at": 192,
+        "text": "com.mediatek.wwtv.tvcenter.util.MtkLog.e(TAG, \"createListPreference arrayIndexOutOfbound key = \" + str + \" val = \" + settingValueInt);"
+      },
+      {
+        "at": 194,
+        "text": "i4 = settingValueInt;"
+      },
+      {
+        "at": 207,
+        "text": "int settingValueInt = getSettingValueInt(leanbackPreferenceFragmentCompat.getContext().getContentResolver(), str);"
+      },
+      {
+        "at": 208,
+        "text": "if (str.equalsIgnoreCase(com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_SOUND_DIALOGUE_ENHANCEER)) {"
+      },
+      {
+        "at": 209,
+        "text": "settingValueInt = this.mTVSettingConfig.getConfigValueInt(\"g_audio__dialogue_enhancer\");"
+      },
+      {
+        "at": 212,
+        "text": "if (settingValueInt < 0) {"
+      },
+      {
+        "at": 213,
+        "text": "settingValueInt = 0;"
+      },
+      {
+        "at": 223,
+        "text": "com.mediatek.wwtv.tvcenter.util.MtkLog.d(TAG, \"mEntryValues[i].toString() \" + charSequenceArr2[i3].toString() + \"    \" + settingValueInt);"
+      },
+      {
+        "at": 224,
+        "text": "if (charSequenceArr2[i3].toString().equals(java.lang.String.valueOf(settingValueInt))) {"
+      },
+      {
+        "at": 225,
+        "text": "settingValueInt = i3;"
+      },
+      {
+        "at": 230,
+        "text": "if (listPreference.getEntries().length <= settingValueInt) {"
+      },
+      {
+        "at": 231,
+        "text": "com.mediatek.wwtv.tvcenter.util.MtkLog.e(TAG, \"createListPreference arrayIndexOutOfbound key = \" + str + \" val = \" + settingValueInt);"
+      },
+      {
+        "at": 233,
+        "text": "i2 = settingValueInt;"
+      },
+      {
+        "at": 253,
+        "text": "public com.android.tv.settings.partnercustomizer.utils.ProgressDialogPreference createProgressDialogPreference(androidx.leanback.preference.LeanbackPreferenceFragmentCompat leanbackPreferenceFragmentCompat, java.lang.String str, int i, java.lang.String str2) {"
+      },
+      {
+        "at": 254,
+        "text": "int settingValueInt;"
+      },
+      {
+        "at": 255,
+        "text": "com.android.tv.settings.partnercustomizer.utils.ProgressDialogPreference progressDialogPreference = new com.android.tv.settings.partnercustomizer.utils.ProgressDialogPreference(themeContext);"
+      },
+      {
+        "at": 256,
+        "text": "if (com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_SOUND_SPEAKER_VOLUME.equals(str)) {"
+      },
+      {
+        "at": 257,
+        "text": "android.media.AudioManager audioManager = (android.media.AudioManager) leanbackPreferenceFragmentCompat.getContext().getSystemService(\"audio\");"
+      },
+      {
+        "at": 258,
+        "text": "audioManager.setParameters(\"ForceSpkVolAdj=true\");"
+      },
+      {
+        "at": 259,
+        "text": "settingValueInt = audioManager.getStreamVolume(3);"
+      },
+      {
+        "at": 260,
+        "text": "audioManager.setParameters(\"ForceSpkVolAdj=false\");"
+      },
+      {
+        "at": 262,
+        "text": "settingValueInt = getSettingValueInt(leanbackPreferenceFragmentCompat.getContext().getContentResolver(), str);"
+      },
+      {
+        "at": 264,
+        "text": "progressDialogPreference.setKey(str);"
+      },
+      {
+        "at": 265,
+        "text": "progressDialogPreference.setSummary(java.lang.String.valueOf(settingValueInt));"
+      },
+      {
+        "at": 266,
+        "text": "progressDialogPreference.setTitle(themeContext.getResources().getString(i));"
+      },
+      {
+        "at": 268,
+        "text": "progressDialogPreference.setFragment(str2);"
+      },
+      {
+        "at": 270,
+        "text": "return progressDialogPreference;"
+      },
+      {
+        "at": 283,
+        "text": "public static int getSettingValueInt(android.content.ContentResolver contentResolver, java.lang.String str) {"
+      },
+      {
+        "at": 284,
+        "text": "int i = android.provider.Settings.Global.getInt(contentResolver, str, 0);"
+      },
+      {
+        "at": 285,
+        "text": "com.mediatek.wwtv.tvcenter.util.MtkLog.d(TAG, \"getSettingValueInt : settingKey = \" + str + \"  value = \" + i);"
+      },
+      {
+        "at": 289,
+        "text": "public static int getSettingValueInt(android.content.ContentResolver contentResolver, java.lang.String str, int i) {"
+      },
+      {
+        "at": 290,
+        "text": "int i2 = android.provider.Settings.Global.getInt(contentResolver, str, i);"
+      },
+      {
+        "at": 291,
+        "text": "com.mediatek.wwtv.tvcenter.util.MtkLog.d(TAG, \"getSettingValueInt : settingKey = \" + str + \"  value = \" + i2 + \" def = \" + i);"
+      },
+      {
+        "at": 295,
+        "text": "public static void putSettingValueInt(android.content.ContentResolver contentResolver, java.lang.String str, int i) {"
+      },
+      {
+        "at": 296,
+        "text": "com.mediatek.wwtv.tvcenter.util.MtkLog.d(TAG, \"putSettingValueInt : settingKey = \" + str + \" settingValue = \" + i);"
+      },
+      {
+        "at": 297,
+        "text": "android.provider.Settings.Global.putInt(contentResolver, str, i);"
+      },
+      {
+        "at": 300,
+        "text": "public boolean updatePreferenceChanged(androidx.leanback.preference.LeanbackPreferenceFragmentCompat leanbackPreferenceFragmentCompat, androidx.preference.Preference preference, java.lang.Object obj) {"
+      },
+      {
+        "at": 305,
+        "text": "putSettingValueInt(leanbackPreferenceFragmentCompat.getContext().getContentResolver(), preference.getKey(), iOnPreferenceValueChange);"
+      },
+      {
+        "at": 356,
+        "text": "if (preference instanceof com.android.tv.settings.partnercustomizer.utils.ProgressPreference) {"
+      },
+      {
+        "at": 357,
+        "text": "com.android.tv.settings.partnercustomizer.utils.ProgressPreference progressPreference = (com.android.tv.settings.partnercustomizer.utils.ProgressPreference) preference;"
+      },
+      {
+        "at": 363,
+        "text": "progressPreference.setValue(iIntValue3);"
+      },
+      {
+        "at": 366,
+        "text": "if (preference instanceof com.android.tv.settings.partnercustomizer.utils.NewProgressPreference) {"
+      },
+      {
+        "at": 367,
+        "text": "com.mediatek.wwtv.tvcenter.util.MtkLog.d(TAG, \"type==NewProgressPreference==\");"
+      },
+      {
+        "at": 368,
+        "text": "com.android.tv.settings.partnercustomizer.utils.NewProgressPreference newProgressPreference = (com.android.tv.settings.partnercustomizer.utils.NewProgressPreference) preference;"
+      },
+      {
+        "at": 374,
+        "text": "newProgressPreference.setValue(iIntValue2);"
+      },
+      {
+        "at": 377,
+        "text": "if (!(preference instanceof com.android.tv.settings.partnercustomizer.utils.ProgressDialogPreference)) {"
+      },
+      {
+        "at": 380,
+        "text": "com.mediatek.wwtv.tvcenter.util.MtkLog.d(TAG, \"type==ProgressDialogPreference==\");"
+      },
+      {
+        "at": 381,
+        "text": "com.android.tv.settings.partnercustomizer.utils.ProgressDialogPreference progressDialogPreference = (com.android.tv.settings.partnercustomizer.utils.ProgressDialogPreference) preference;"
+      },
+      {
+        "at": 387,
+        "text": "progressDialogPreference.setSummary(java.lang.String.valueOf(iIntValue));"
+      },
+      {
+        "at": 408,
+        "text": "int configValueInt = this.mTVSettingConfig.getConfigValueInt(str);"
+      },
+      {
+        "at": 440,
+        "text": "java.lang.String worldStringValue = com.mediatek.wwtv.tvcenter.util.SaveValue.readWorldStringValue(context, com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.LOCAL_LANGUAGE);"
+      },
+      {
+        "at": 446,
+        "text": "com.mediatek.wwtv.tvcenter.util.SaveValue.writeWorldStringValue(context, com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.LOCAL_LANGUAGE, language, true);"
+      },
+      {
+        "at": 464,
+        "text": "com.mediatek.twoworlds.tv.MtkTvAVMode.getInstance().setAudioInfoValue(0, i);"
+      },
+      {
+        "at": 474,
+        "text": "int audioInfoValue = com.mediatek.twoworlds.tv.MtkTvAVMode.getInstance().getAudioInfoValue(3);"
+      },
+      {
+        "at": 477,
+        "text": "while (audioInfoValue != 0) {"
+      },
+      {
+        "at": 478,
+        "text": "iArr[i] = audioInfoValue % 2;"
+      },
+      {
+        "at": 479,
+        "text": "audioInfoValue /= 2;"
+      },
+      {
+        "at": 482,
+        "text": "android.util.Log.d(TAG, \"version = \" + audioInfoValue);"
+      },
+      {
+        "at": 485,
+        "text": "case \"sound_dap\":"
+      },
+      {
+        "at": 487,
+        "text": "case \"sound_dbx\":"
+      },
+      {
+        "at": 489,
+        "text": "case \"sound_dts\":"
+      },
+      {
+        "at": 491,
+        "text": "case \"sound_sonic_emotion_premium\":"
+      },
+      {
+        "at": 493,
+        "text": "case \"sound_dts_studio\":"
+      },
+      {
+        "at": 502,
+        "text": "java.lang.String customerName = com.mediatek.wwtv.tvcenter.util.PartnerSettingsConfig.getCustomerName();"
+      },
+      {
+        "at": 506,
+        "text": "case \"sound_style\":"
+      },
+      {
+        "at": 507,
+        "text": "if (customerName.equalsIgnoreCase(com.mediatek.wwtv.tvcenter.util.PartnerSettingsConfig.CUSTOMER_NAME_MTK)) {"
+      },
+      {
+        "at": 508,
+        "text": "return isSupportAIAQ() ? new int[]{com.android.tv.settings.R.array.sound_style_include_auto_entries, com.android.tv.settings.R.array.sound_style_include_auto_entries_values} : new int[]{com.android.tv.settings.R.array.sound_style_entries, com.android.tv.settin"
+      },
+      {
+        "at": 512,
+        "text": "return new int[]{com.android.tv.settings.R.array.picture_mode_hdr10plus_ref_entries};"
+      },
+      {
+        "at": 514,
+        "text": "return new int[]{com.android.tv.settings.R.array.picture_als_entries, com.android.tv.settings.R.array.picture_als_entries_values};"
+      },
+      {
+        "at": 515,
+        "text": "case \"sound_speaker_status\":"
+      },
+      {
+        "at": 516,
+        "text": "return new int[]{com.android.tv.settings.R.array.sound_speaker_status_entries, com.android.tv.settings.R.array.sound_speaker_status_entry_values};"
+      },
+      {
+        "at": 518,
+        "text": "return new int[]{com.android.tv.settings.R.array.picture_mode_dovi_game_entries, com.android.tv.settings.R.array.picture_mode_dovi_game_entry_values};"
+      },
+      {
+        "at": 520,
+        "text": "if (customerName.equalsIgnoreCase(com.mediatek.wwtv.tvcenter.util.PartnerSettingsConfig.CUSTOMER_NAME_MTK)) {"
+      },
+      {
+        "at": 521,
+        "text": "return new int[]{com.android.tv.settings.R.array.picture_mode_ref_entries, com.android.tv.settings.R.array.picture_mode_ref_entry_values};"
+      },
+      {
+        "at": 524,
+        "text": "case \"sound_spdif_type\":"
+      },
+      {
+        "at": 525,
+        "text": "return new int[]{com.android.tv.settings.R.array.audio_output_digital_output_entries, com.android.tv.settings.R.array.audio_output_digital_output_entry_values};"
+      },
+      {
+        "at": 526,
+        "text": "case \"sound_earc\":"
+      },
+      {
+        "at": 527,
+        "text": "return new int[]{com.android.tv.settings.R.array.sound_earc_entries, com.android.tv.settings.R.array.sound_earc_entry_values};"
+      },
+      {
+        "at": 529,
+        "text": "return new int[]{com.android.tv.settings.R.array.picture_mode_hlg_ref_entries};"
+      },
+      {
+        "at": 531,
+        "text": "return new int[]{com.android.tv.settings.R.array.picture_mode_filmmaker_hdr_ref_entries};"
+      },
+      {
+        "at": 533,
+        "text": "return new int[]{com.android.tv.settings.R.array.picture_mode_filmmaker_sdr_ref_entries};"
+      },
+      {
+        "at": 535,
+        "text": "return new int[]{com.android.tv.settings.R.array.picture_mode_dovi_entries, com.android.tv.settings.R.array.picture_mode_dovi_entry_values};"
+      },
+      {
+        "at": 537,
+        "text": "return new int[]{com.android.tv.settings.R.array.picture_mode_hdr10_ref_entries};"
+      },
+      {
+        "at": 539,
+        "text": "return new int[]{com.android.tv.settings.R.array.picture_mode_aipq_ref_entries, com.android.tv.settings.R.array.picture_mode_aipq_ref_entry_values};"
+      },
+      {
+        "at": 541,
+        "text": "return new int[]{com.android.tv.settings.R.array.picture_gamma_entries, com.android.tv.settings.R.array.picture_gamma_entry_values};"
+      },
+      {
+        "at": 543,
+        "text": "return new int[]{com.android.tv.settings.R.array.picture_mode_filmmaker_dovi_ref_entries};"
+      },
+      {
+        "at": 545,
+        "text": "return new int[]{com.android.tv.settings.R.array.picture_mode_dovi_iq_entries, com.android.tv.settings.R.array.picture_mode_dovi_iq_entry_values};"
+      },
+      {
+        "at": 547,
+        "text": "return new int[]{com.android.tv.settings.R.array.picture_mode_filmmaker_dovi_iq_ref_entries};"
+      },
+      {
+        "at": 549,
+        "text": "return new int[]{com.android.tv.settings.R.array.a_auto_backlight_entries, com.android.tv.settings.R.array.a_auto_backlight_entry_values};"
+      },
+      {
+        "at": 556,
+        "text": "int settingValueInt = getSettingValueInt(themeContext.getContentResolver(), \"picture_auto_backlight\", -1);"
+      },
+      {
+        "at": 557,
+        "text": "if (settingValueInt == -1) {"
+      },
+      {
+        "at": 558,
+        "text": "settingValueInt = getAutoBackLightDefaultWithReset();"
+      },
+      {
+        "at": 559,
+        "text": "putSettingValueInt(themeContext.getContentResolver(), \"picture_auto_backlight\", settingValueInt);"
+      },
+      {
+        "at": 561,
+        "text": "com.mediatek.wwtv.tvcenter.util.MtkLog.d(TAG, \"getAutoBackLightDefault value==\" + settingValueInt);"
+      },
+      {
+        "at": 562,
+        "text": "return settingValueInt;"
+      },
+      {
+        "at": 567,
+        "text": "int settingValueInt = getSettingValueInt(themeContext.getContentResolver(), \"picture_mode\");"
+      },
+      {
+        "at": 568,
+        "text": "if (settingValueInt != 0) {"
+      },
+      {
+        "at": 569,
+        "text": "if (settingValueInt != 7) {"
+      },
+      {
+        "at": 570,
+        "text": "if (settingValueInt != 2) {"
+      },
+      {
+        "at": 571,
+        "text": "if (settingValueInt == 3) {"
+      },
+      {
+        "at": 574,
+        "text": "defaultValueAutoBacklight = themeContext.getResources().getInteger(com.android.tv.settings.R.integer.picture_mode_vivid_auto_backlight_defalut);"
+      },
+      {
+        "at": 577,
+        "text": "switch (settingValueInt) {"
+      },
+      {
+        "at": 581,
+        "text": "defaultValueAutoBacklight = themeContext.getResources().getInteger(com.android.tv.settings.R.integer.picture_mode_movie_auto_backlight_defalut);"
+      },
+      {
+        "at": 587,
+        "text": "defaultValueAutoBacklight = themeContext.getResources().getInteger(com.android.tv.settings.R.integer.picture_mode_game_auto_backlight_defalut);"
+      },
+      {
+        "at": 593,
+        "text": "defaultValueAutoBacklight = themeContext.getResources().getInteger(com.android.tv.settings.R.integer.picture_mode_energy_saving_auto_backlight_defalut);"
+      },
+      {
+        "at": 599,
+        "text": "defaultValueAutoBacklight = themeContext.getResources().getInteger(com.android.tv.settings.R.integer.picture_mode_others_auto_backlight_defalut);"
+      },
+      {
+        "at": 607,
+        "text": "defaultValueAutoBacklight = themeContext.getResources().getInteger(com.android.tv.settings.R.integer.picture_mode_sport_auto_backlight_defalut);"
+      },
+      {
+        "at": 613,
+        "text": "defaultValueAutoBacklight = themeContext.getResources().getInteger(com.android.tv.settings.R.integer.picture_mode_standard_auto_backlight_defalut);"
+      },
+      {
+        "at": 619,
+        "text": "defaultValueAutoBacklight = themeContext.getResources().getInteger(com.android.tv.settings.R.integer.picture_mode_user_auto_backlight_defalut);"
+      },
+      {
+        "at": 622,
+        "text": "com.mediatek.wwtv.tvcenter.util.MtkLog.d(TAG, \"pictureModeValue==\" + settingValueInt + \",autoBackLightDefaultValue==\" + defaultValueAutoBacklight);"
+      },
+      {
+        "at": 628,
+        "text": "int settingValueInt = getSettingValueInt(themeContext.getContentResolver(), \"picture_mode\");"
+      },
+      {
+        "at": 629,
+        "text": "if (settingValueInt == 0) {"
+      },
+      {
+        "at": 630,
+        "text": "str = com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_PICTURE_MODE_USER;"
+      },
+      {
+        "at": 631,
+        "text": "} else if (settingValueInt == 7) {"
+      },
+      {
+        "at": 632,
+        "text": "str = com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_PICTURE_MODE_STANDARD;"
+      },
+      {
+        "at": 633,
+        "text": "} else if (settingValueInt == 2) {"
+      },
+      {
+        "at": 634,
+        "text": "str = com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_PICTURE_MODE_SPORT;"
+      },
+      {
+        "at": 635,
+        "text": "} else if (settingValueInt != 3) {"
+      },
+      {
+        "at": 636,
+        "text": "switch (settingValueInt) {"
+      },
+      {
+        "at": 638,
+        "text": "str = com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_PICTURE_MODE_MOVIE;"
+      },
+      {
+        "at": 641,
+        "text": "str = com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_PICTURE_MODE_GAME;"
+      },
+      {
+        "at": 644,
+        "text": "str = com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_PICTURE_MODE_ENERGY_SAVING;"
+      },
+      {
+        "at": 647,
+        "text": "str = com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_PICTURE_MODE_OTHERS;"
+      },
+      {
+        "at": 651,
+        "text": "str = com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_PICTURE_MODE_VIVID;"
+      },
+      {
+        "at": 653,
+        "text": "putSettingValueInt(themeContext.getContentResolver(), str, i);"
+      },
+      {
+        "at": 654,
+        "text": "com.mediatek.wwtv.tvcenter.util.MtkLog.d(TAG, \"pictureModeValue==\" + settingValueInt + \",value==\" + i + \",key==\" + str);"
+      },
+      {
+        "at": 661,
+        "text": "defaultValueAutoBacklight = themeContext.getResources().getInteger(com.android.tv.settings.R.integer.picture_mode_user_auto_backlight_defalut);"
+      },
+      {
+        "at": 663,
+        "text": "putSettingValueInt(themeContext.getContentResolver(), com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_PICTURE_MODE_USER, defaultValueAutoBacklight);"
+      },
+      {
+        "at": 666,
+        "text": "defaultValueAutoBacklight2 = themeContext.getResources().getInteger(com.android.tv.settings.R.integer.picture_mode_standard_auto_backlight_defalut);"
+      },
+      {
+        "at": 668,
+        "text": "putSettingValueInt(themeContext.getContentResolver(), com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_PICTURE_MODE_STANDARD, defaultValueAutoBacklight2);"
+      },
+      {
+        "at": 671,
+        "text": "defaultValueAutoBacklight3 = themeContext.getResources().getInteger(com.android.tv.settings.R.integer.picture_mode_vivid_auto_backlight_defalut);"
+      },
+      {
+        "at": 673,
+        "text": "putSettingValueInt(themeContext.getContentResolver(), com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_PICTURE_MODE_VIVID, defaultValueAutoBacklight3);"
+      },
+      {
+        "at": 676,
+        "text": "defaultValueAutoBacklight4 = themeContext.getResources().getInteger(com.android.tv.settings.R.integer.picture_mode_sport_auto_backlight_defalut);"
+      },
+      {
+        "at": 678,
+        "text": "putSettingValueInt(themeContext.getContentResolver(), com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_PICTURE_MODE_SPORT, defaultValueAutoBacklight4);"
+      },
+      {
+        "at": 681,
+        "text": "defaultValueAutoBacklight5 = themeContext.getResources().getInteger(com.android.tv.settings.R.integer.picture_mode_movie_auto_backlight_defalut);"
+      },
+      {
+        "at": 683,
+        "text": "putSettingValueInt(themeContext.getContentResolver(), com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_PICTURE_MODE_MOVIE, defaultValueAutoBacklight5);"
+      },
+      {
+        "at": 686,
+        "text": "defaultValueAutoBacklight6 = themeContext.getResources().getInteger(com.android.tv.settings.R.integer.picture_mode_game_auto_backlight_defalut);"
+      },
+      {
+        "at": 688,
+        "text": "putSettingValueInt(themeContext.getContentResolver(), com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_PICTURE_MODE_GAME, defaultValueAutoBacklight6);"
+      },
+      {
+        "at": 691,
+        "text": "defaultValueAutoBacklight7 = themeContext.getResources().getInteger(com.android.tv.settings.R.integer.picture_mode_energy_saving_auto_backlight_defalut);"
+      },
+      {
+        "at": 693,
+        "text": "putSettingValueInt(themeContext.getContentResolver(), com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_PICTURE_MODE_ENERGY_SAVING, defaultValueAutoBacklight7);"
+      },
+      {
+        "at": 696,
+        "text": "defaultValueAutoBacklight8 = themeContext.getResources().getInteger(com.android.tv.settings.R.integer.picture_mode_others_auto_backlight_defalut);"
+      },
+      {
+        "at": 698,
+        "text": "putSettingValueInt(themeContext.getContentResolver(), com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_PICTURE_MODE_OTHERS, defaultValueAutoBacklight8);"
+      },
+      {
+        "at": 703,
+        "text": "int settingValueInt = getSettingValueInt(themeContext.getContentResolver(), \"picture_mode\");"
+      },
+      {
+        "at": 704,
+        "text": "if (settingValueInt == 0) {"
+      },
+      {
+        "at": 705,
+        "text": "str = com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_PICTURE_MODE_USER;"
+      },
+      {
+        "at": 706,
+        "text": "} else if (settingValueInt == 7) {"
+      },
+      {
+        "at": 707,
+        "text": "str = com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_PICTURE_MODE_STANDARD;"
+      },
+      {
+        "at": 708,
+        "text": "} else if (settingValueInt == 2) {"
+      },
+      {
+        "at": 709,
+        "text": "str = com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_PICTURE_MODE_SPORT;"
+      },
+      {
+        "at": 710,
+        "text": "} else if (settingValueInt != 3) {"
+      },
+      {
+        "at": 711,
+        "text": "switch (settingValueInt) {"
+      },
+      {
+        "at": 713,
+        "text": "str = com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_PICTURE_MODE_MOVIE;"
+      },
+      {
+        "at": 716,
+        "text": "str = com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_PICTURE_MODE_GAME;"
+      },
+      {
+        "at": 719,
+        "text": "str = com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_PICTURE_MODE_ENERGY_SAVING;"
+      },
+      {
+        "at": 722,
+        "text": "str = com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_PICTURE_MODE_OTHERS;"
+      },
+      {
+        "at": 726,
+        "text": "str = com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_PICTURE_MODE_VIVID;"
+      },
+      {
+        "at": 728,
+        "text": "int settingValueInt2 = getSettingValueInt(themeContext.getContentResolver(), str, getAutoBackLightDefaultWithReset());"
+      },
+      {
+        "at": 729,
+        "text": "com.mediatek.wwtv.tvcenter.util.MtkLog.d(TAG, \"pictureModeValue==\" + settingValueInt + \",autoBackLIghtValue==\" + settingValueInt2 + \",key==\" + str);"
+      },
+      {
+        "at": 730,
+        "text": "return settingValueInt2;"
+      },
+      {
+        "at": 740,
+        "text": "int audioInfoValue = com.mediatek.twoworlds.tv.MtkTvAVMode.getInstance().getAudioInfoValue(1);"
+      },
+      {
+        "at": 741,
+        "text": "com.mediatek.wwtv.tvcenter.util.MtkLog.d(TAG, \"AIAQ ==\" + audioInfoValue);"
+      },
+      {
+        "at": 742,
+        "text": "return audioInfoValue != 0;"
+      },
+      {
+        "at": 745,
+        "text": "public void setProgressSummary(android.content.Context context, androidx.preference.PreferenceScreen preferenceScreen) {"
+      },
+      {
+        "at": 747,
+        "text": "com.mediatek.wwtv.tvcenter.util.MtkLog.d(TAG, \"setProgressSumarry screen is null\");"
+      },
+      {
+        "at": 751,
+        "text": "if ((preferenceScreen.getPreference(i) instanceof com.android.tv.settings.partnercustomizer.utils.ProgressDialogPreference) && !com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_SOUND_SPEAKER_VOLUME.equals(preference"
+      },
+      {
+        "at": 752,
+        "text": "preferenceScreen.getPreference(i).setSummary(java.lang.String.valueOf(getSettingValueInt(context.getContentResolver(), preferenceScreen.getPreference(i).getKey())));"
+      },
+      {
+        "at": 760,
+        "text": "switchPreference.setChecked(getSettingValueInt(leanbackPreferenceFragmentCompat.getContext().getContentResolver(), str2, switchPreference.isChecked() ? 1 : 0) != 0);"
+      }
+    ],
+    "totalLines": 766
+  },
+  "com/android/tv/settings/partnercustomizer/utils/ProgressDialogActivity.java": {
+    "matches": [
+      {
+        "at": 1,
+        "text": "package com.android.tv.settings.partnercustomizer.utils;"
+      },
+      {
+        "at": 6,
+        "text": "public static final java.lang.String TAG = \"ProgressDialogActivity\";"
+      },
+      {
+        "at": 8,
+        "text": "private android.media.AudioManager mAudioManager;"
+      },
+      {
+        "at": 9,
+        "text": "private com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtils mConfigUtils;"
+      },
+      {
+        "at": 10,
+        "text": "private com.android.tv.settings.partnercustomizer.utils.ProgressBarDialog progressBarDialog;"
+      },
+      {
+        "at": 14,
+        "text": "private android.media.AudioDeviceCallback mDeviceCallback = new android.media.AudioDeviceCallback() { // from class: com.android.tv.settings.partnercustomizer.utils.ProgressDialogActivity.3"
+      },
+      {
+        "at": 15,
+        "text": "@Override // android.media.AudioDeviceCallback"
+      },
+      {
+        "at": 16,
+        "text": "public void onAudioDevicesAdded(android.media.AudioDeviceInfo[] audioDeviceInfoArr) {"
+      },
+      {
+        "at": 17,
+        "text": "com.mediatek.wwtv.tvcenter.util.MtkLog.d(com.android.tv.settings.partnercustomizer.utils.ProgressDialogActivity.TAG, \"onAudioDevicesAdded = \");"
+      },
+      {
+        "at": 20,
+        "text": "@Override // android.media.AudioDeviceCallback"
+      },
+      {
+        "at": 21,
+        "text": "public void onAudioDevicesRemoved(android.media.AudioDeviceInfo[] audioDeviceInfoArr) {"
+      },
+      {
+        "at": 22,
+        "text": "com.mediatek.wwtv.tvcenter.util.MtkLog.d(com.android.tv.settings.partnercustomizer.utils.ProgressDialogActivity.TAG, \"onAudioDevicesRemoved = \");"
+      },
+      {
+        "at": 23,
+        "text": "if (!com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_SOUND_SPEAKER_VOLUME.equals(com.android.tv.settings.partnercustomizer.utils.ProgressDialogActivity.this.key) || com.android.tv.settings.partnercustomizer.utils.P"
+      },
+      {
+        "at": 26,
+        "text": "com.android.tv.settings.partnercustomizer.utils.ProgressDialogActivity.this.finish();"
+      },
+      {
+        "at": 33,
+        "text": "this.progressBarDialog = new com.android.tv.settings.partnercustomizer.utils.ProgressBarDialog(this, com.android.tv.settings.R.style.dialog_progressbar);"
+      },
+      {
+        "at": 46,
+        "text": "android.media.AudioManager audioManager = (android.media.AudioManager) getSystemService(\"audio\");"
+      },
+      {
+        "at": 47,
+        "text": "this.mAudioManager = audioManager;"
+      },
+      {
+        "at": 48,
+        "text": "audioManager.registerAudioDeviceCallback(this.mDeviceCallback, null);"
+      },
+      {
+        "at": 50,
+        "text": "if (str == null || !android.text.TextUtils.equals(str, com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_SPEAKER_DEVICE_INFO_SET_VOLUME) || this.progressBarDialog == null) {"
+      },
+      {
+        "at": 55,
+        "text": "this.progressBarDialog.setProgressPreferenceChangeListner(new com.android.tv.settings.partnercustomizer.utils.ProgressBarDialog.ProgressPreferenceChangeListner() { // from class: com.android.tv.settings.partnercustomizer.utils.ProgressDialogActivity.1"
+      },
+      {
+        "at": 56,
+        "text": "@Override // com.android.tv.settings.partnercustomizer.utils.ProgressBarDialog.ProgressPreferenceChangeListner"
+      },
+      {
+        "at": 57,
+        "text": "public void onProgressPreferenceChange(int i) {"
+      },
+      {
+        "at": 59,
+        "text": "com.mediatek.wwtv.tvcenter.util.MtkLog.i(com.android.tv.settings.partnercustomizer.utils.ProgressDialogActivity.TAG, \"onCreatePreferences . onProgressPreferenceChange . value = \" + i);"
+      },
+      {
+        "at": 71,
+        "text": "if (this.progressBarDialog != null && !\"\".equals(this.key) && !\"\".equals(this.title)) {"
+      },
+      {
+        "at": 72,
+        "text": "this.progressBarDialog.setActivity(this);"
+      },
+      {
+        "at": 73,
+        "text": "this.progressBarDialog.setData(this.title, this.key, this.isShowMessage);"
+      },
+      {
+        "at": 74,
+        "text": "this.progressBarDialog.show();"
+      },
+      {
+        "at": 79,
+        "text": "new com.android.tv.settings.partnercustomizer.picture.PictureConfirmActivity().setPictureConfirmCallback(new com.android.tv.settings.partnercustomizer.picture.PictureConfirmActivity.PictureConfirmCallback() { // from class: com.android.tv.settings.partnercusto"
+      },
+      {
+        "at": 80,
+        "text": "@Override // com.android.tv.settings.partnercustomizer.picture.PictureConfirmActivity.PictureConfirmCallback"
+      },
+      {
+        "at": 82,
+        "text": "com.android.tv.settings.partnercustomizer.utils.ProgressDialogActivity.this.isShowMessage = false;"
+      },
+      {
+        "at": 83,
+        "text": "com.mediatek.wwtv.tvcenter.util.SaveValue.getInstance(com.android.tv.settings.partnercustomizer.utils.ProgressDialogActivity.this).saveValue(\"isNotFirstChange\", 1);"
+      },
+      {
+        "at": 84,
+        "text": "com.android.tv.settings.partnercustomizer.utils.ProgressDialogActivity.this.progressBarDialog.setProgressBar(com.android.tv.settings.partnercustomizer.utils.ProgressDialogActivity.this.progressBarDialog.getCurrentValue(), false);"
+      },
+      {
+        "at": 87,
+        "text": "@Override // com.android.tv.settings.partnercustomizer.picture.PictureConfirmActivity.PictureConfirmCallback"
+      },
+      {
+        "at": 89,
+        "text": "com.android.tv.settings.partnercustomizer.utils.ProgressDialogActivity.this.progressBarDialog.setProgressBar(com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtils.getSettingValueInt(com.android.tv.settings.partnercustomizer.util"
+      },
+      {
+        "at": 98,
+        "text": "if (\"com.android.tv.settings\".equals(getCurRunningPackageName())) {"
+      },
+      {
+        "at": 123,
+        "text": "public boolean audioOutputIsHP() {"
+      },
+      {
+        "at": 124,
+        "text": "int devicesForStream = this.mAudioManager.getDevicesForStream(3);"
+      },
+      {
+        "at": 127,
+        "text": "com.mediatek.wwtv.tvcenter.util.MtkLog.i(TAG, \"audioOutputIsHPorBT . output is headphone\");"
+      },
+      {
+        "at": 130,
+        "text": "com.mediatek.wwtv.tvcenter.util.MtkLog.i(TAG, \"audioOutputIsHPorBT . other\");"
+      },
+      {
+        "at": 137,
+        "text": "this.mAudioManager.unregisterAudioDeviceCallback(this.mDeviceCallback);"
+      }
+    ],
+    "totalLines": 139
+  },
+  "com/android/tv/settings/partnercustomizer/utils/ProgressDialogPreference.java": {
+    "matches": [
+      {
+        "at": 1,
+        "text": "package com.android.tv.settings.partnercustomizer.utils;"
+      },
+      {
+        "at": 5,
+        "text": "public ProgressDialogPreference(android.content.Context context, android.util.AttributeSet attributeSet, int i, int i2) {"
+      },
+      {
+        "at": 9,
+        "text": "public ProgressDialogPreference(android.content.Context context, android.util.AttributeSet attributeSet, int i) {"
+      },
+      {
+        "at": 13,
+        "text": "public ProgressDialogPreference(android.content.Context context, android.util.AttributeSet attributeSet) {"
+      },
+      {
+        "at": 17,
+        "text": "public ProgressDialogPreference(android.content.Context context) {"
+      }
+    ],
+    "totalLines": 20
+  },
+  "com/mediatek/wwtv/tvcenter/util/PartnerSettingsConfig.java": {
+    "matches": [
+      {
+        "at": 7,
+        "text": "public static final java.lang.String ATTR_AUDIO_OUTPUT = \"audio_output\";"
+      },
+      {
+        "at": 28,
+        "text": "public static final java.lang.String ATTR_SOUND = \"sound_effects\";"
+      },
+      {
+        "at": 29,
+        "text": "public static final java.lang.String ATTR_SOUND_DAP = \"sound_dap\";"
+      },
+      {
+        "at": 30,
+        "text": "public static final java.lang.String ATTR_SOUND_DBX = \"sound_dbx\";"
+      },
+      {
+        "at": 31,
+        "text": "public static final java.lang.String ATTR_SOUND_DTS_STUDIO = \"sound_dts_studio\";"
+      },
+      {
+        "at": 32,
+        "text": "public static final java.lang.String ATTR_SOUND_DTS_VX = \"sound_dts_vx\";"
+      },
+      {
+        "at": 33,
+        "text": "public static final java.lang.String ATTR_SOUND_EQUALIZER_DETAIL = \"sound_equalizer_detail\";"
+      },
+      {
+        "at": 34,
+        "text": "public static final java.lang.String ATTR_SOUND_SONIC_EMOTION_PRE = \"sound_sonic_emotion_premium\";"
+      },
+      {
+        "at": 37,
+        "text": "private static final java.lang.String CONFIG_FILE = \"tv-settings-configs.xml\";"
+      },
+      {
+        "at": 38,
+        "text": "private static final java.lang.String CUSDATA_CONFIG_FILE_PATH = \"m_pSettingsConfig_File\";"
+      },
+      {
+        "at": 49,
+        "text": "private static final java.lang.String TAG = \"PartnerSettingsConfig\";"
+      },
+      {
+        "at": 54,
+        "text": "private static final java.util.Map<java.lang.String, java.util.ArrayList<java.lang.String>> mSettingsList = new java.util.HashMap();"
+      },
+      {
+        "at": 118,
+        "text": "mSettingsList.put(textContent2, arrayList);"
+      },
+      {
+        "at": 129,
+        "text": "public static java.util.ArrayList<java.lang.String> getSettingsList(java.lang.String str) {"
+      },
+      {
+        "at": 130,
+        "text": "return mSettingsList.get(str);"
+      },
+      {
+        "at": 134,
+        "text": "java.util.ArrayList<java.lang.String> settingsList = getSettingsList(str2);"
+      },
+      {
+        "at": 135,
+        "text": "if (settingsList == null) {"
+      },
+      {
+        "at": 138,
+        "text": "return settingsList.contains(str);"
+      },
+      {
+        "at": 146,
+        "text": "return isItemDisplay(str, \"sound_effects\");"
+      },
+      {
+        "at": 154,
+        "text": "java.lang.String str = \"PartnerSettingsConfig\\n:tv-settings-configs.xml\\n\";"
+      },
+      {
+        "at": 155,
+        "text": "for (java.lang.String str2 : mSettingsList.keySet()) {"
+      },
+      {
+        "at": 157,
+        "text": "java.util.Iterator<java.lang.String> it = mSettingsList.get(str2).iterator();"
+      },
+      {
+        "at": 221,
+        "text": "countryConfigEntry.audio_lang = getContentByKey(element, \"audio_lang\");"
+      },
+      {
+        "at": 222,
+        "text": "countryConfigEntry.audio_lang_2nd = getContentByKey(element, \"audio_lang_2nd\");"
+      }
+    ],
+    "totalLines": 323
+  },
+  "com/android/tv/settings/partnercustomizer/sound/equalizerdetail/EqualizerDetailFragment.java": {
+    "matches": [
+      {
+        "at": 1,
+        "text": "package com.android.tv.settings.partnercustomizer.sound.equalizerdetail;"
+      },
+      {
+        "at": 5,
+        "text": "private static final java.lang.String TAG = \"EqualizerDetailFragment\";"
+      },
+      {
+        "at": 6,
+        "text": "private com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtils mPreferenceConfigUtils;"
+      },
+      {
+        "at": 14,
+        "text": "setPreferencesFromResource(com.android.tv.settings.R.xml.partner_black_pref, null);"
+      },
+      {
+        "at": 15,
+        "text": "this.mPreferenceConfigUtils = com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtils.getInstance(getPreferenceManager().getContext());"
+      },
+      {
+        "at": 22,
+        "text": "this.mPreferenceConfigUtils.updatePreferenceChanged(this, preference, obj);"
+      },
+      {
+        "at": 26,
+        "text": "@Override // com.android.tv.settings.SettingsPreferenceFragment, androidx.fragment.app.Fragment"
+      },
+      {
+        "at": 32,
+        "text": "preferenceScreen.getPreference(i).setSummary(java.lang.String.valueOf(com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtils.getSettingValueInt(getContext().getContentResolver(), preferenceScreen.getPreference(i).getKey())));"
+      },
+      {
+        "at": 38,
+        "text": "if (preference instanceof com.android.tv.settings.partnercustomizer.utils.ProgressDialogPreference) {"
+      },
+      {
+        "at": 40,
+        "text": "android.content.Intent intent = new android.content.Intent(getActivity(), (java.lang.Class<?>) com.android.tv.settings.partnercustomizer.utils.ProgressDialogActivity.class);"
+      },
+      {
+        "at": 50,
+        "text": "preferenceScreen.setTitle(com.android.tv.settings.R.string.device_sound_equalizer_detail);"
+      },
+      {
+        "at": 52,
+        "text": "java.util.ArrayList<java.lang.String> settingsList = com.mediatek.wwtv.tvcenter.util.PartnerSettingsConfig.getSettingsList(\"sound_equalizer_detail\");"
+      },
+      {
+        "at": 53,
+        "text": "if (settingsList == null) {"
+      },
+      {
+        "at": 56,
+        "text": "for (java.lang.String str : settingsList) {"
+      },
+      {
+        "at": 61,
+        "text": "if (str.equals(com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_EQUALIZER_DETAIL_120HZ)) {"
+      },
+      {
+        "at": 62,
+        "text": "preferenceScreen.addPreference(this.mPreferenceConfigUtils.createProgressDialogPreferenceTrans(this, str, \"120\"));"
+      },
+      {
+        "at": 63,
+        "text": "} else if (str.equals(com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_EQUALIZER_DETAIL_500HZ)) {"
+      },
+      {
+        "at": 64,
+        "text": "preferenceScreen.addPreference(this.mPreferenceConfigUtils.createProgressDialogPreferenceTrans(this, str, \"500\"));"
+      },
+      {
+        "at": 65,
+        "text": "} else if (str.equals(com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_EQUALIZER_DETAIL_1500HZ)) {"
+      },
+      {
+        "at": 66,
+        "text": "preferenceScreen.addPreference(this.mPreferenceConfigUtils.createProgressDialogPreferenceTrans(this, str, \"1500\"));"
+      },
+      {
+        "at": 67,
+        "text": "} else if (str.equals(com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_EQUALIZER_DETAIL_5000HZ)) {"
+      },
+      {
+        "at": 68,
+        "text": "preferenceScreen.addPreference(this.mPreferenceConfigUtils.createProgressDialogPreferenceTrans(this, str, \"5000\"));"
+      },
+      {
+        "at": 69,
+        "text": "} else if (str.equals(com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_EQUALIZER_DETAIL_10000HZ)) {"
+      },
+      {
+        "at": 70,
+        "text": "preferenceScreen.addPreference(this.mPreferenceConfigUtils.createProgressDialogPreferenceTrans(this, str, \"10000\"));"
+      }
+    ],
+    "totalLines": 74
+  }
+}
