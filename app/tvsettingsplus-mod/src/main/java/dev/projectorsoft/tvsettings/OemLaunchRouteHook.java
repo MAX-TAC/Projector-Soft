@@ -33,7 +33,7 @@ public final class OemLaunchRouteHook {
         }
         try {
             Method switchPage=null;
-            for (Method m=a.getClass().getDeclaredMethods()) {
+            for (Method m : a.getClass().getDeclaredMethods()) {
                 if (!m.getName().equals("switchPage")) continue;
                 Class<?>[] params=m.getParameterTypes();
                 if (params.length==2 && params[0]==int.class &&
