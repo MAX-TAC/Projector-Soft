@@ -75,6 +75,9 @@ public final class OemInlinePreferencesHook {
             String volume=vendorKey("KEY_SOUND_AUTO_VOLUME_CONTROL");
             if (volume!=null) addSwitchIfPresent(category,preference,context,
                     "projectorsoft_autovolume","Автоматическая громкость",volume,216);
+            // Native Android TV seekbars: exact limits read from factory layout XML.
+            // They remain hidden until the OEM Settings.Global value exists.
+            OemInlineSlidersHook.install(context,category,preference);
         } catch(Throwable e) {
             Log.w(TAG,"OEM quick controls unavailable; keep original settings",e);
         }
