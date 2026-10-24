@@ -1,5 +1,14 @@
 # Projector-Soft
 
+## Актуальный экспериментальный TvSettingsPlus MOD v16 (RUIOS 8052)
+
+- [**Подписанный APK v16 для 8052**](https://github.com/MAX-TAC/Projector-Soft/actions/runs/40129257332/artifacts/12573961443) — прошёл статическую проверку CI, не тестировался на проекторе.
+- [**Отчёт v16: HDMI-CEC, выбор источника при включении, eARC и оставшиеся зависимости**](docs/TVSETTINGSPLUS_V16_PROGRESS_2026-10-24.md).
+- Заводской HDMI-CEC через `CompatibleApis`, с выключением eARC/автовыключения вместе с CEC; **при требовании OEM power-confirmation сохраняется штатный экран, прямой переключатель скрывается**.
+- Источник при включении через `persist.trd.source_id` и реальные TV Input IDs, только для подтверждённых физических портов; три полноценные Android TV категории, пять полос EQ 120/500/1500/5000/10000 Гц, исходные ползунки изображения и звука, HDR/MEMC при поддержке, EDID, ярлык «Настройки».
+- **НЕ ГОТОВО к передаче владельцу как финальная сборка.** Остаточные прямые ссылки на KuSettings, watchdog KuSourceRJ, HDMI конфигурации 8054 и аппаратные испытания остаются критическими.
+
+
 ## Актуальная экспериментальная TvSettingsPlus MOD v13 (8052)
 
 - [**Подписанный APK v13 — GitHub Actions Artifact**](https://github.com/MAX-TAC/Projector-Soft/actions/runs/40119913189/artifacts/12570675887).
