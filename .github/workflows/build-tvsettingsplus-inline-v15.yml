@@ -1,13 +1,5 @@
 name: Build TvSettingsPlus v15 board-gated source-on-boot, EDID and native EQ
 on:
-  push:
-    paths:
-      - '.github/workflows/build-tvsettingsplus-inline-v15.yml'
-      - 'app/tvsettingsplus-mod/src/main/java/**'
-      - 'tools/compose_brightness_v3_apk.py'
-      - 'tools/patch_aosp_root_menu_smali.py'
-      - 'tools/patch_axml_compat_aliases.py'
-      - 'tools/patch_customer0_lightmode_smali.py'
   workflow_dispatch:
 concurrency:
   group: tvsettings-v15-inline-build
