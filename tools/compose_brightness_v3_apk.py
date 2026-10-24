@@ -16,7 +16,7 @@ def main():
  p.add_argument("compiled_dex",type=Path)
  p.add_argument("patch_report",type=Path)
  p.add_argument("output",type=Path)
- p.add_argument("--version-code",type=int,default=3,choices=(3,4,5,6,7,8,9,10,11,12,13,14,15))
+ p.add_argument("--version-code",type=int,default=3,choices=(3,4,5,6,7,8,9,10,11,12,13,14,15,16))
  a=p.parse_args()
  meta=json.loads(a.patch_report.read_text())
  modified=set(meta["edited_dex"])
