@@ -1,11 +1,5 @@
 name: Build experimental TvSettingsPlus v3 inline brightness MOD
 on:
-  push:
-    paths:
-      - ".github/workflows/build-tvsettingsplus-inline-brightness-v3.yml"
-      - "tools/patch_customer0_lightmode_smali.py"
-      - "tools/compose_brightness_v3_apk.py"
-      - "app/tvsettingsplus-mod/src/main/java/**"
   workflow_dispatch:
 concurrency:
   group: tvsettings-v3-build
