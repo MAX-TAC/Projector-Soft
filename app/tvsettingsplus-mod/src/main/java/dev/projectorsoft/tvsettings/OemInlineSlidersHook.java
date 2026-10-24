@@ -51,12 +51,19 @@ public final class OemInlineSlidersHook {
     private OemInlineSlidersHook() {}
 
     public static void install(Context context,Object category,Class<?> prefClass) {
-        if (context == null || category == null || prefClass == null) return;
+        install(context,category,category,prefClass);
+    }
+
+    /** Native OEM sound and picture settings live in separate AOSP categories. */
+    public static void install(Context context,Object pictureCategory,
+                               Object soundCategory,Class<?> prefClass) {
+        if (context == null || pictureCategory == null
+                || soundCategory == null || prefClass == null) return;
         for (Spec spec:CONTROLS) {
             try {
-                attach(context,category,prefClass,spec);
+                Object dest=spec.key.startsWith("sound_")?soundCategory:pictureCategory;
+                attach(context,dest,prefClass,spec);
             } catch (Exception exception) {
-                // An unsupported setting should not break the entire OEM menu.
                 Log.w(TAG,"Skipping unavailable OEM slider "+spec.key,exception);
             }
         }
