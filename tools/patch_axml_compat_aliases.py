@@ -149,7 +149,7 @@ def patch_manifest(data):
     # Existing manifest should declare all referenced target activities. Parse actual name attrs.
     uridx=lookup["http://schemas.android.com/apk/res/android"]
     nameidx=lookup["name"]
-    declared=set();existing_actions=set();application_icon=None
+    declared=set();existing_actions=set();application_icon=None;application_banner=None;application_label=None
     for kind,ch in chunks:
         if kind!=START:continue
         tag=pool.values[u32(ch,20)]
@@ -160,10 +160,13 @@ def patch_manifest(data):
             if nsidx==uridx and ai==nameidx and raw!=NO:
                 if tag=="activity":declared.add(pool.values[raw])
                 elif tag=="action":existing_actions.add(pool.values[raw])
-            if tag=="application" and nsidx==uridx and pool.values[ai]=="icon":
+            if tag=="application" and nsidx==uridx and pool.values[ai] in ("icon","banner","label"):
                 vtype=ch[o+15]
                 if vtype==TYPE_REFERENCE:
-                    application_icon=u32(ch,o+16)
+                    rid=u32(ch,o+16)
+                    if pool.values[ai]=="icon": application_icon=rid
+                    elif pool.values[ai]=="banner": application_banner=rid
+                    elif pool.values[ai]=="label": application_label=rid
     for _,target,_ in ALIASES:
         if target not in declared and ("."+target.split(".")[-1]) not in declared:
             raise ValueError("original target activity missing: "+target)
@@ -205,18 +208,24 @@ def patch_manifest(data):
     launcher_attrs=[
         attr(uridx,nameidx,launcher_alias),
         attr(uridx,target_idx,pool.index("com.android.tv.settings.MainSettings")),
-        attr(uridx,enabled,True),attr(uridx,exported,True),
-        attr(uridx,label_name,launcher_label)]
-    if application_icon is not None:
-        iconidx=pool.index("icon")
-        launcher_attrs.append(refattr(uridx,iconidx,application_icon))
+        attr(uridx,enabled,True),attr(uridx,exported,True)]
+    # Reuse the original localized application label instead of a Russian-only
+    # literal. Existing ru resources already translate Settings to Настройки.
+    launcher_attrs.append(refattr(uridx,label_name,application_label) if application_label
+                          else attr(uridx,label_name,launcher_label))
+    # Original 8052 resources.arsc contains a Settings gear and TV banner.
+    # Fail closed on an incompatible manifest rather than inserting dead icons.
+    if application_icon != 0x7f0802cb or application_banner != 0x7f080142:
+        raise ValueError("Unexpected 8052 launcher assets; do not patch icons")
+    launcher_attrs.append(refattr(uridx,pool.index("icon"),0x7f08022e))
+    launcher_attrs.append(refattr(uridx,pool.index("banner"),application_banner))
     fragment+=startnode(tag_alias,launcher_attrs)
     fragment+=startnode(tag_filter)
     fragment+=startnode(tag_action,[attr(uridx,nameidx,main_action)])+endnode(tag_action)
     for category in (regular,leanback):
         fragment+=startnode(tag_category,[attr(uridx,nameidx,category)])+endnode(tag_category)
     fragment+=endnode(tag_filter)+endnode(tag_alias)
-    print("Inserted Settings launcher alias for Android TV and standard launchers; icon from application:",hex(application_icon) if application_icon is not None else "inherited")
+    print("Inserted Android TV Settings launcher: localized label, settings gear icon 0x7f08022e, banner",hex(application_banner))
     rebuilt=[]
     for i,(kind,ch) in enumerate(chunks):
         if i==app_close:rebuilt.append(fragment)
