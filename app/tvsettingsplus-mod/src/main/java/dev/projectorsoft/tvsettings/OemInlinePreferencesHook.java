@@ -93,6 +93,8 @@ public final class OemInlinePreferencesHook {
                 addList(category,preference,context,"projectorsoft_memc",
                         "MEMC (OEM)",mjcKey,effects,ids,Integer.parseInt(mjcRaw),231);
             }
+            // Stock ProjectorManager orientation codes, not calibration/keystone.
+            OemProjectorOrientationHook.install(context,category,preference);
         } catch(Throwable e) {
             Log.w(TAG,"OEM quick controls unavailable; keep original settings",e);
         }
