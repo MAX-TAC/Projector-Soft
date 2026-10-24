@@ -8,7 +8,7 @@ from pathlib import Path
 from patch_axml_version import change_version_code
 
 XML=0x0003; STRINGS=0x0001; START=0x0102; END=0x0103; NO=0xffffffff
-RESMAP=0x0180; TYPE_STRING=0x03; TYPE_BOOL=0x12
+RESMAP=0x0180; TYPE_REFERENCE=0x01; TYPE_STRING=0x03; TYPE_BOOL=0x12
 
 ALIASES=[
   ("legacy.SettingsAlias","com.android.tv.settings.MainSettings","android.settings.SETTINGS"),
@@ -114,6 +114,9 @@ def attr(nsi,name,value):
         return struct.pack("<IIIHBBI",nsi,name,NO,8,0,TYPE_BOOL,NO if value else 0)
     return struct.pack("<IIIHBBI",nsi,name,value,8,0,TYPE_STRING,value)
 
+def refattr(nsi,name,ref):
+    return struct.pack("<IIIHBBI",nsi,name,NO,8,0,TYPE_REFERENCE,ref)
+
 def startnode(tag,attrs=None,ns=NO):
     entries=attrs or []
     head=struct.pack("<HHIIII",START,16,36+20*len(entries),0,NO,ns)
@@ -146,7 +149,7 @@ def patch_manifest(data):
     # Existing manifest should declare all referenced target activities. Parse actual name attrs.
     uridx=lookup["http://schemas.android.com/apk/res/android"]
     nameidx=lookup["name"]
-    declared=set();existing_actions=set()
+    declared=set();existing_actions=set();application_icon=None
     for kind,ch in chunks:
         if kind!=START:continue
         tag=pool.values[u32(ch,20)]
@@ -157,6 +160,10 @@ def patch_manifest(data):
             if nsidx==uridx and ai==nameidx and raw!=NO:
                 if tag=="activity":declared.add(pool.values[raw])
                 elif tag=="action":existing_actions.add(pool.values[raw])
+            if tag=="application" and nsidx==uridx and pool.values[ai]=="icon":
+                vtype=ch[o+15]
+                if vtype==TYPE_REFERENCE:
+                    application_icon=u32(ch,o+16)
     for _,target,_ in ALIASES:
         if target not in declared and ("."+target.split(".")[-1]) not in declared:
             raise ValueError("original target activity missing: "+target)
@@ -186,6 +193,30 @@ def patch_manifest(data):
         fragment+=endnode(tag_filter)+endnode(tag_alias)
         added.append(action)
     if len(added)<5:raise ValueError("too few compatibility intent actions")
+    # One exported launcher alias for both Android TV and conventional Android
+    # launchers. Exact explicit MainSettings target avoids OEM KuSettings launch.
+    # This is *not* a pinned desktop item: the active launcher owns placement.
+    launcher_alias=pool.index("com.android.tv.settings.mod.SettingsLauncher")
+    launcher_label=pool.index("Настройки")
+    main_action=pool.index("android.intent.action.MAIN")
+    leanback=pool.index("android.intent.category.LEANBACK_LAUNCHER")
+    regular=pool.index("android.intent.category.LAUNCHER")
+    label_name=pool.index("label")
+    launcher_attrs=[
+        attr(uridx,nameidx,launcher_alias),
+        attr(uridx,target_idx,pool.index("com.android.tv.settings.MainSettings")),
+        attr(uridx,enabled,True),attr(uridx,exported,True),
+        attr(uridx,label_name,launcher_label)]
+    if application_icon is not None:
+        iconidx=pool.index("icon")
+        launcher_attrs.append(refattr(uridx,iconidx,application_icon))
+    fragment+=startnode(tag_alias,launcher_attrs)
+    fragment+=startnode(tag_filter)
+    fragment+=startnode(tag_action,[attr(uridx,nameidx,main_action)])+endnode(tag_action)
+    for category in (regular,leanback):
+        fragment+=startnode(tag_category,[attr(uridx,nameidx,category)])+endnode(tag_category)
+    fragment+=endnode(tag_filter)+endnode(tag_alias)
+    print("Inserted Settings launcher alias for Android TV and standard launchers; icon from application:",hex(application_icon) if application_icon is not None else "inherited")
     rebuilt=[]
     for i,(kind,ch) in enumerate(chunks):
         if i==app_close:rebuilt.append(fragment)
