@@ -1,0 +1,34 @@
+name: Discover verified OEM eARC HDR MEMC and HDMI settings keys
+on:
+  push:
+    paths:
+      - "tools/audit_extended_oem_mode_keys.py"
+      - ".github/workflows/audit-extended-oem-keys.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare JADX
+        run: |
+          curl -fsSL --retry 3 https://github.com/skylot/jadx/releases/download/v1.5.6/jadx-1.5.6.zip -o /tmp/jadx.zip
+          mkdir -p /tmp/jadx
+          unzip -q /tmp/jadx.zip -d /tmp/jadx
+      - name: Audit exact OEM settings property constants
+        run: |
+          /tmp/jadx/bin/jadx --no-res --no-imports --threads-count 2 -d /tmp/ext vendor/reference/8052/APK/TvSettingsPlus.apk >/tmp/jadx.log 2>&1 || true
+          python3 tools/audit_extended_oem_mode_keys.py /tmp/ext research/oem-apps/Native_Controllers_8052/extended_keys.json
+      - name: Commit native key inventory
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research/oem-apps/Native_Controllers_8052/extended_keys.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Record verified OEM sound HDR MEMC and HDMI key values"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
