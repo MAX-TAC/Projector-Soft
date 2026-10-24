@@ -60,6 +60,14 @@ public final class OemInlinePreferencesHook {
             Object placementCategory=addCategory(screen,preference,categoryClass,
                     context,"projectorsoft_placement_category","Проекция · Проектор",250);
             if(placementCategory==null)return;
+            Object hdmiCategory=addCategory(screen,preference,categoryClass,
+                    context,"projectorsoft_hdmi_category","HDMI · Проектор",270);
+            if(hdmiCategory!=null && !OemHdmiEdidHook.install(context,hdmiCategory,preference)) {
+                // In factory firmware EDID cannot be edited unless current
+                // input is HDMI. Don't leave an empty category in the TV UI.
+                screen.getClass().getMethod("removePreference",preference)
+                        .invoke(screen,hdmiCategory);
+            }
 
             // All values below mirror known OEM SettingsUtil.putGlobalValueInt.
             addList(pictureCategory,preference,context,"projectorsoft_picture_mode",
