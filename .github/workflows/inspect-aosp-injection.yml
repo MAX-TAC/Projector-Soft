@@ -1,0 +1,24 @@
+name: Inspect AOSP two-panel MainSettings injection spots
+on:
+  push:
+    paths:
+      - "tools/inspect_aosp_injection_spots.py"
+      - ".github/workflows/inspect-aosp-injection.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare JADX
+        run: |
+          curl -fsSL --retry 3 https://github.com/skylot/jadx/releases/download/v1.5.6/jadx-1.5.6.zip -o /tmp/jadx.zip
+          mkdir -p /tmp/jadx
+          unzip -q /tmp/jadx.zip -d /tmp/jadx
+      - name: Print only required application navigation sources to build log
+        run: |
+          /tmp/jadx/bin/jadx --no-res --no-imports --threads-count 2 -d /tmp/nav vendor/reference/8052/APK/TvSettingsPlus.apk >/tmp/jadx.log 2>&1 || true
+          python3 tools/inspect_aosp_injection_spots.py /tmp/nav
