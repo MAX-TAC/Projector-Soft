@@ -1,0 +1,30 @@
+name: Audit exact OEM slider XML limits
+on:
+  push:
+    paths:
+      - "tools/audit_slider_layout_bounds.py"
+      - ".github/workflows/audit-slider-layout-bounds.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apktool
+        run: |
+          curl -fsSL --retry 3 https://github.com/iBotPeaches/Apktool/releases/download/v2.11.1/apktool_2.11.1.jar -o /tmp/apktool.jar
+          java -jar /tmp/apktool.jar d -f -s vendor/reference/8052/APK/TvSettingsPlus.apk -o /tmp/xml
+          python3 tools/audit_slider_layout_bounds.py /tmp/xml research/oem-apps/Native_Controllers_8052/slider_layout_bounds.json
+      - name: Save slider XML metadata
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research/oem-apps/Native_Controllers_8052/slider_layout_bounds.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Record exact OEM slider XML min and max limits"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
