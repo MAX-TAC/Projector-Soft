@@ -61,11 +61,12 @@ public final class OemInlinePreferencesHook {
                     context,"projectorsoft_placement_category","Проекция · Проектор",250);
             if(placementCategory==null)return;
             Object hdmiCategory=addCategory(screen,preference,categoryClass,
-                    context,"projectorsoft_hdmi_category","HDMI · Проектор",270);
+                    context,"projectorsoft_hdmi_category","Источники · Проектор",270);
             if(hdmiCategory!=null) {
                 boolean hasEdid=OemHdmiEdidHook.install(context,hdmiCategory,preference);
                 boolean hasAutoplay=OemHdmiAutoPlayHook.install(context,hdmiCategory,preference);
-                if(!hasEdid && !hasAutoplay) {
+                boolean hasBootSource=OemPowerOnSourceHook.install(context,hdmiCategory,preference);
+                if(!hasEdid && !hasAutoplay && !hasBootSource) {
                     // Never present an empty category or unsupported HDMI options.
                     screen.getClass().getMethod("removePreference",preference)
                             .invoke(screen,hdmiCategory);
