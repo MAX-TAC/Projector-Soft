@@ -48,3 +48,9 @@
 - [Отчёт о переносе OEM-функций, реальных экранах и ограничениях](docs/OEM_MIGRATION_IMPLEMENTATION_REPORT_2026-10-23.md)
 - [Аудит существующих заводских контроллеров](docs/OEM_MENU_CONTROLLER_AUDIT_2026-10-23.md)
 - [Собранная и подписанная APK v3 (GitHub Actions Artifacts)](https://github.com/MAX-TAC/Projector-Soft/actions/runs/39997799927/artifacts/12519724074): исправление customer-0 яркости в правой панели, скрытие пункта BT-колонки, неизменность системных сервисов и калибровки. **Не тестировалась на железе, KuSettings не отключать.**
+
+## Экспериментальная TvSettingsPlus MOD v4 (8052)
+
+- [Отчёт о переносе OEM разделов в AOSP MainSettings](docs/TVSETTINGSPLUS_V4_IMPLEMENTATION_2026-10-24.md)
+- [Успешно собранная и подписанная v4 APK](https://github.com/MAX-TAC/Projector-Soft/actions/runs/40111124603/artifacts/12565973499): 5 новых пунктов в стандартном меню Android TV с переходом к штатным OEM-разделам внутри TvSettingsPlus. Это промежуточная навигация через OEM Activity, не окончательное встраивание контента в двухпанельный AOSP экран.
+- **Не проверено на проекторе; KuSettings пока не отключать.**
