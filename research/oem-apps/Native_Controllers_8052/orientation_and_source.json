@@ -1,0 +1,517 @@
+{
+  "com/android/tv/settings/uicustom/floatmenu/controller/projector/ProjectionModeSecondaryController.java": [
+    {
+      "method": "initData",
+      "line": 31,
+      "keys": [
+        "rjpj.msg.test.autoreverse"
+      ],
+      "calls": [
+        "getInstance",
+        "getInt",
+        "getProjectorMirrorMode",
+        "initData"
+      ]
+    },
+    {
+      "method": "initView",
+      "line": 36,
+      "keys": [],
+      "calls": [
+        "0",
+        "Runnable",
+        "findViewById",
+        "initCheck",
+        "initListener",
+        "initView",
+        "post",
+        "run",
+        "setSwitchEnable"
+      ]
+    },
+    {
+      "method": "initCheck",
+      "line": 61,
+      "keys": [],
+      "calls": [
+        "check",
+        "initCheck"
+      ]
+    },
+    {
+      "method": "onAttach",
+      "line": 16,
+      "keys": [],
+      "calls": [
+        "initData",
+        "initView",
+        "onAttach"
+      ]
+    },
+    {
+      "method": "initListener",
+      "line": 79,
+      "keys": [
+        "rjpj.msg.test.autoreverse"
+      ],
+      "calls": [
+        "OnCheckedChangeListener",
+        "OnFocusChangeListener",
+        "getInstance",
+        "initListener",
+        "onCheckedChanged",
+        "onFocusChange",
+        "onSwitchChangeListener",
+        "onTitleSwitchListener",
+        "set",
+        "setImageResource",
+        "setOnCheckedChangeListener",
+        "setOnFocusChangeListener",
+        "setOnTitleSwitchListener",
+        "setProjectorMirrorMode",
+        "setVisibility"
+      ]
+    }
+  ],
+  "com/android/tv/settings/uicustom/floatmenu/controller/source/SourceSubMenuController.java": [
+    {
+      "method": "initData",
+      "line": 83,
+      "keys": [
+        "persist.rjpj.hdmiplug.autoplay",
+        "tv_input_hdmi_edid_version"
+      ],
+      "calls": [
+        "getContentResolver",
+        "getEdidVersion",
+        "getGlobalValueInt",
+        "getInt",
+        "getResources",
+        "getString",
+        "getStringArray",
+        "initBoardConfig",
+        "initData",
+        "isHdmiCecAutoDeviceOffEnabled",
+        "isHdmiCecControlEnabled",
+        "validateEdidVersion"
+      ]
+    },
+    {
+      "method": "initView",
+      "line": 139,
+      "keys": [],
+      "calls": [
+        "0",
+        "1",
+        "10",
+        "11",
+        "12",
+        "13",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "OnClickListener",
+        "checkBluetoothSpeakerPackage",
+        "findViewById",
+        "initView",
+        "onClick",
+        "onSwitchChangeListener",
+        "onTitleSwitchListener",
+        "setContextText",
+        "setDisableFocus",
+        "setHdmiCecAutoDeviceOffEnabled",
+        "setOnClickListener",
+        "setOnTitleSwitchListener",
+        "setSwitchEnable",
+        "setTitle",
+        "setVisibility",
+        "updateEdidEnableState",
+        "updatePowerOnSourceAndApp"
+      ]
+    },
+    {
+      "method": "onClick",
+      "line": 192,
+      "keys": [],
+      "calls": [
+        "0",
+        "onClick"
+      ]
+    },
+    {
+      "method": "onClick",
+      "line": 198,
+      "keys": [],
+      "calls": [
+        "1",
+        "onClick"
+      ]
+    },
+    {
+      "method": "onClick",
+      "line": 204,
+      "keys": [],
+      "calls": [
+        "2",
+        "onClick"
+      ]
+    },
+    {
+      "method": "onClick",
+      "line": 210,
+      "keys": [],
+      "calls": [
+        "3",
+        "onClick"
+      ]
+    },
+    {
+      "method": "onClick",
+      "line": 216,
+      "keys": [],
+      "calls": [
+        "4",
+        "onClick"
+      ]
+    },
+    {
+      "method": "onClick",
+      "line": 222,
+      "keys": [],
+      "calls": [
+        "5",
+        "onClick"
+      ]
+    },
+    {
+      "method": "onClick",
+      "line": 228,
+      "keys": [],
+      "calls": [
+        "6",
+        "onClick"
+      ]
+    },
+    {
+      "method": "onClick",
+      "line": 234,
+      "keys": [],
+      "calls": [
+        "7",
+        "onClick"
+      ]
+    },
+    {
+      "method": "onClick",
+      "line": 240,
+      "keys": [],
+      "calls": [
+        "8",
+        "onClick"
+      ]
+    },
+    {
+      "method": "onClick",
+      "line": 246,
+      "keys": [],
+      "calls": [
+        "9",
+        "onClick"
+      ]
+    },
+    {
+      "method": "onAttach",
+      "line": 44,
+      "keys": [],
+      "calls": [
+        "CompatibleApis",
+        "getInstance",
+        "initData",
+        "initView",
+        "onAttach"
+      ]
+    }
+  ],
+  "com/android/tv/settings/uicustom/fragment/source/SourceFragment.java": [
+    {
+      "method": "initData",
+      "line": 43,
+      "keys": [
+        "persist.rjpj.hdmiplug.autoplay",
+        "tv_input_hdmi_edid_version"
+      ],
+      "calls": [
+        "CompatibleApis",
+        "getActivity",
+        "getGlobalValueInt",
+        "getInstance",
+        "getInt",
+        "getResources",
+        "getString",
+        "getStringArray",
+        "initBoardConfig",
+        "initData",
+        "isHdmiCecAutoDeviceOffEnabled",
+        "isHdmiCecControlEnabled"
+      ]
+    },
+    {
+      "method": "initView",
+      "line": 63,
+      "keys": [],
+      "calls": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "OnClickListener",
+        "checkBluetoothSpeakerPackage",
+        "findViewById",
+        "initView",
+        "onClick",
+        "onSwitchChangeListener",
+        "onTitleSwitchListener",
+        "setContextText",
+        "setDisableFocus",
+        "setHdmiCecAutoDeviceOffEnabled",
+        "setOnClickListener",
+        "setOnTitleSwitchListener",
+        "setSwitchEnable",
+        "setTitle",
+        "setVisibility",
+        "updatePowerOnSourceAndApp"
+      ]
+    },
+    {
+      "method": "onClick",
+      "line": 94,
+      "keys": [],
+      "calls": [
+        "0",
+        "onClick"
+      ]
+    },
+    {
+      "method": "onClick",
+      "line": 100,
+      "keys": [],
+      "calls": [
+        "1",
+        "onClick"
+      ]
+    },
+    {
+      "method": "onClick",
+      "line": 106,
+      "keys": [],
+      "calls": [
+        "2",
+        "onClick"
+      ]
+    },
+    {
+      "method": "onClick",
+      "line": 112,
+      "keys": [],
+      "calls": [
+        "3",
+        "onClick"
+      ]
+    },
+    {
+      "method": "onClick",
+      "line": 118,
+      "keys": [],
+      "calls": [
+        "4",
+        "onClick"
+      ]
+    },
+    {
+      "method": "onClick",
+      "line": 124,
+      "keys": [],
+      "calls": [
+        "5",
+        "onClick"
+      ]
+    },
+    {
+      "method": "onClick",
+      "line": 130,
+      "keys": [],
+      "calls": [
+        "6",
+        "onClick"
+      ]
+    }
+  ],
+  "com/android/tv/settings/uicustom/floatmenu/controller/projector/ProjectorSubMenuController.java": [
+    {
+      "method": "initData",
+      "line": 54,
+      "keys": [],
+      "calls": [
+        "getInstance",
+        "getProjectorMirrorMode",
+        "getResources",
+        "getStringArray",
+        "initData"
+      ]
+    },
+    {
+      "method": "initView",
+      "line": 62,
+      "keys": [
+        "rjpj.action.keystone.DIGITAL_ZOOM",
+        "rjpj.action.keystone.FOUR_CORNER",
+        "rjpj.action.keystone.HV"
+      ],
+      "calls": [
+        "OnClickListener",
+        "findViewById",
+        "getContext",
+        "getInstance",
+        "initView",
+        "jumpByAction",
+        "onClick",
+        "openSecondaryInterface",
+        "setContextText",
+        "setOnClickListener",
+        "setVisibility",
+        "showResetDialog",
+        "startAutoFocus",
+        "startAutoKeystone"
+      ]
+    },
+    {
+      "method": "onClick",
+      "line": 77,
+      "keys": [],
+      "calls": [
+        "getContext",
+        "getInstance",
+        "onClick",
+        "openSecondaryInterface"
+      ]
+    },
+    {
+      "method": "onClick",
+      "line": 83,
+      "keys": [],
+      "calls": [
+        "onClick",
+        "startAutoFocus"
+      ]
+    },
+    {
+      "method": "onClick",
+      "line": 89,
+      "keys": [],
+      "calls": [
+        "getContext",
+        "getInstance",
+        "onClick",
+        "openSecondaryInterface"
+      ]
+    },
+    {
+      "method": "onClick",
+      "line": 95,
+      "keys": [],
+      "calls": [
+        "onClick",
+        "startAutoKeystone"
+      ]
+    },
+    {
+      "method": "onClick",
+      "line": 101,
+      "keys": [
+        "rjpj.action.keystone.DIGITAL_ZOOM"
+      ],
+      "calls": [
+        "getContext",
+        "getInstance",
+        "jumpByAction",
+        "onClick"
+      ]
+    },
+    {
+      "method": "onClick",
+      "line": 107,
+      "keys": [
+        "rjpj.action.keystone.FOUR_CORNER"
+      ],
+      "calls": [
+        "getContext",
+        "getInstance",
+        "jumpByAction",
+        "onClick"
+      ]
+    },
+    {
+      "method": "onClick",
+      "line": 113,
+      "keys": [
+        "rjpj.action.keystone.HV"
+      ],
+      "calls": [
+        "getContext",
+        "getInstance",
+        "jumpByAction",
+        "onClick"
+      ]
+    },
+    {
+      "method": "onClick",
+      "line": 119,
+      "keys": [],
+      "calls": [
+        "getContext",
+        "getInstance",
+        "onClick",
+        "openSecondaryInterface"
+      ]
+    },
+    {
+      "method": "onClick",
+      "line": 125,
+      "keys": [],
+      "calls": [
+        "onClick",
+        "showResetDialog"
+      ]
+    },
+    {
+      "method": "onClick",
+      "line": 175,
+      "keys": [],
+      "calls": [
+        "0",
+        "onClick"
+      ]
+    },
+    {
+      "method": "onAttach",
+      "line": 26,
+      "keys": [],
+      "calls": [
+        "initData",
+        "initView",
+        "onAttach"
+      ]
+    }
+  ]
+}
