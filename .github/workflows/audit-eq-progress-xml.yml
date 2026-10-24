@@ -1,0 +1,36 @@
+name: Check original equalizer progress dialog scale from APK
+on:
+  push:
+    paths:
+      - tools/audit_eq_progress_xml.py
+      - .github/workflows/audit-eq-progress-xml.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare APK tools
+        run: |
+          curl -fsSL --retry 3 https://github.com/skylot/jadx/releases/download/v1.5.6/jadx-1.5.6.zip -o /tmp/jadx.zip
+          curl -fsSL --retry 3 https://github.com/iBotPeaches/Apktool/releases/download/v2.11.1/apktool_2.11.1.jar -o /tmp/apktool.jar
+          mkdir -p /tmp/jadx
+          unzip -q /tmp/jadx.zip -d /tmp/jadx
+      - name: Inspect original EQ range and progress layout
+        run: |
+          /tmp/jadx/bin/jadx --no-res --no-imports --threads-count 3 -d /tmp/java vendor/reference/8052/APK/TvSettingsPlus.apk >/tmp/jadx.log 2>&1 || true
+          java -jar /tmp/apktool.jar d -f -s vendor/reference/8052/APK/TvSettingsPlus.apk -o /tmp/xml
+          python3 tools/audit_eq_progress_xml.py /tmp/java /tmp/xml research/oem-apps/Native_Controllers_8052/eq_progress_range.json
+      - name: Persist bounds evidence
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research/oem-apps/Native_Controllers_8052/eq_progress_range.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Validate 5-band factory equalizer progress bar scale"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
