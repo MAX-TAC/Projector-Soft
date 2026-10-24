@@ -67,9 +67,74 @@ public final class OemInlinePreferencesHook {
                     TEMP_TITLES,TEMP_VALUES,2,212);
             addList(category,preference,context,"projectorsoft_sound_mode",
                     "Режим звука","sound_style",SOUND_TITLES,SOUND_VALUES,1,213);
+            addSwitchIfPresent(category,preference,context,
+                    "projectorsoft_surround","Объёмное звучание","sound_sound_surround",214);
+            String earc=vendorKey("KEY_SOUND_EARC");
+            if (earc!=null) addSwitchIfPresent(category,preference,context,
+                    "projectorsoft_earc","HDMI eARC",earc,215);
+            String volume=vendorKey("KEY_SOUND_AUTO_VOLUME_CONTROL");
+            if (volume!=null) addSwitchIfPresent(category,preference,context,
+                    "projectorsoft_autovolume","Автоматическая громкость",volume,216);
         } catch(Throwable e) {
             Log.w(TAG,"OEM quick controls unavailable; keep original settings",e);
         }
+    }
+
+
+    private static String vendorKey(String fieldName) {
+        try {
+            Class<?> cls=Class.forName(
+                "com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase");
+            java.lang.reflect.Field field=cls.getDeclaredField(fieldName);
+            field.setAccessible(true);
+            Object value=field.get(null);
+            return value instanceof String && !((String)value).isEmpty() ? (String)value : null;
+        } catch(Exception e) {
+            Log.w(TAG,"OEM key not accessible: "+fieldName);
+            return null;
+        }
+    }
+
+    /**
+     * Conservative native switch: only expose controls which already have an
+     * actual 0/1 value persisted by the original OEM application.
+     * This avoids displaying eARC/auto-volume toggles on boards with no HAL.
+     */
+    private static void addSwitchIfPresent(Object category,Class<?> pref,Context context,
+                                           String uiKey,String label,String oemKey,
+                                           int order) throws Exception {
+        ContentResolver resolver=context.getContentResolver();
+        String initial=Settings.Global.getString(resolver,oemKey);
+        if (!"0".equals(initial) && !"1".equals(initial)) return;
+        Class<?> switchType=Class.forName("androidx.preference.SwitchPreference");
+        Object item=switchType.getConstructor(Context.class).newInstance(context);
+        pref.getMethod("setKey",String.class).invoke(item,uiKey);
+        pref.getMethod("setTitle",CharSequence.class).invoke(item,label);
+        pref.getMethod("setOrder",int.class).invoke(item,order);
+        pref.getMethod("setPersistent",boolean.class).invoke(item,false);
+        switchType.getMethod("setChecked",boolean.class).invoke(item,"1".equals(initial));
+        Class<?> listener=Class.forName("androidx.preference.Preference$OnPreferenceChangeListener");
+        InvocationHandler callback=(proxy,method,args)-> {
+            if (method.getName().equals("onPreferenceChange") && args!=null && args.length>=2) {
+                try {
+                    if (!(args[1] instanceof Boolean)) return false;
+                    int target=(Boolean)args[1]?1:0;
+                    if (!Settings.Global.putInt(resolver,oemKey,target)) return false;
+                    return Settings.Global.getInt(resolver,oemKey,-999)==target;
+                } catch(Exception e) {
+                    Log.w(TAG,"OEM toggle rejected "+oemKey,e);
+                    return false;
+                }
+            }
+            if (method.getName().equals("toString")) return "OemToggle:"+oemKey;
+            if (method.getName().equals("hashCode")) return System.identityHashCode(proxy);
+            if (method.getName().equals("equals")) return proxy==args[0];
+            return false;
+        };
+        Object fn=Proxy.newProxyInstance(listener.getClassLoader(),
+                new Class<?>[]{listener},callback);
+        pref.getMethod("setOnPreferenceChangeListener",listener).invoke(item,fn);
+        category.getClass().getMethod("addPreference",pref).invoke(category,item);
     }
 
     private static void addList(Object category,Class<?> pref,Context context,
