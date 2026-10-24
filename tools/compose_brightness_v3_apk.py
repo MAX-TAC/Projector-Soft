@@ -16,6 +16,7 @@ def main():
  p.add_argument("compiled_dex",type=Path)
  p.add_argument("patch_report",type=Path)
  p.add_argument("output",type=Path)
+ p.add_argument("--version-code",type=int,default=3,choices=(3,4))
  a=p.parse_args()
  meta=json.loads(a.patch_report.read_text())
  modified=set(meta["edited_dex"])
@@ -27,7 +28,7 @@ def main():
   if not a.compiled_dex.read_bytes().startswith(b"dex\n"):
    raise ValueError("Bad Android classes17 DEX")
   manifest,actions=patch_manifest(src.read("AndroidManifest.xml"))
-  manifest=change_version_code(manifest,2,3)
+  manifest=change_version_code(manifest,2,a.version_code)
   a.output.parent.mkdir(parents=True,exist_ok=True)
   with zipfile.ZipFile(a.output,"w",allowZip64=True) as result:
    for i in src.infolist():
