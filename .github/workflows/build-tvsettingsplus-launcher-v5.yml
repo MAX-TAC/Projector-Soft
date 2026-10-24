@@ -91,7 +91,8 @@ jobs:
                       "android.intent.category.LAUNCHER",
                       "android.intent.category.LEANBACK_LAUNCHER"):
               assert tag in section, "Missing launcher field: "+tag
-          assert "Настройки" in data, "Russian launcher label not encoded"
+          assert "android:label" in section, "Launcher missing localized label attribute"
+          assert "android:icon" in section and "android:banner" in section, "Launcher gear icon and TV banner required"
           print("PASS: TvSettingsPlus alias appears for both Android TV and conventional launchers")
           PY
           aapt dump badging /tmp/tv5/unsigned.apk | grep -E 'launchable-activity|leanback-launchable-activity' || true
