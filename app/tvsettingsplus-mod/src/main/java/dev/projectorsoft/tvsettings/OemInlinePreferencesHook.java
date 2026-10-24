@@ -78,6 +78,21 @@ public final class OemInlinePreferencesHook {
             // Native Android TV seekbars: exact limits read from factory layout XML.
             // They remain hidden until the OEM Settings.Global value exists.
             OemInlineSlidersHook.install(context,category,preference);
+            // OEM controller AdvanceSettingsSecondaryController provides
+            // explicit 0/1 HDR and 0..3 MEMC options. No guessed HAL APIs.
+            // Hide them until the factory settings provider already holds state.
+            String hdrKey="picture_list_hdr";
+            addSwitchIfPresent(category,preference,context,
+                    "projectorsoft_hdr","HDR (OEM)",hdrKey,230);
+
+            String mjcKey="tv_picture_advance_video_mjc_effect";
+            String mjcRaw=Settings.Global.getString(context.getContentResolver(),mjcKey);
+            if (mjcRaw != null && mjcRaw.matches("[0-3]")) {
+                String[] effects={"Выключено","Низкий","Средний","Высокий"};
+                int[] ids={0,1,2,3};
+                addList(category,preference,context,"projectorsoft_memc",
+                        "MEMC (OEM)",mjcKey,effects,ids,Integer.parseInt(mjcRaw),231);
+            }
         } catch(Throwable e) {
             Log.w(TAG,"OEM quick controls unavailable; keep original settings",e);
         }
