@@ -1,0 +1,1132 @@
+{
+  "com/android/tv/settings/uicustom/floatmenu/controller/source/SourceSubMenuController.java": [
+    {
+      "line": 1,
+      "snippet": "package com.android.tv.settings.uicustom.floatmenu.controller.source;"
+    },
+    {
+      "line": 2,
+      "snippet": ""
+    },
+    {
+      "line": 3,
+      "snippet": "/* JADX INFO: loaded from: classes14.dex */"
+    },
+    {
+      "line": 4,
+      "snippet": "public class SourceSubMenuController extends com.android.tv.settings.uicustom.floatmenu.controller.BaseSubMenuController {"
+    },
+    {
+      "line": 5,
+      "snippet": "private static final java.lang.String BLUETOOTH_SPEAKER_PACKAGE = \"com.rjpj.bluetoothspeaker\";"
+    },
+    {
+      "line": 6,
+      "snippet": "private static final java.lang.String INPUT_SERVICE_PREFIX = \"com.mediatek.tvinput/.tuner.TunerInputService/\";"
+    },
+    {
+      "line": 7,
+      "snippet": "private static final java.lang.String TAG = \"SourceSubMenuController\";"
+    },
+    {
+      "line": 8,
+      "snippet": "private java.lang.String[] edidVersionArrays;"
+    },
+    {
+      "line": 9,
+      "snippet": "private boolean isAvEnabled;"
+    },
+    {
+      "line": 10,
+      "snippet": "private com.mediatek.support.androidversioncompatiblelib.CompatibleApis mCompatibleApis;"
+    },
+    {
+      "line": 11,
+      "snippet": "private com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtils mPreferenceConfigUtils;"
+    },
+    {
+      "line": 12,
+      "snippet": "private int portCount;"
+    },
+    {
+      "line": 13,
+      "snippet": "private java.lang.String[] powerOnSourceArrays;"
+    },
+    {
+      "line": 14,
+      "snippet": "private com.android.tv.settings.uicustom.view.TitleContentIconView tciv_source_av;"
+    },
+    {
+      "line": 15,
+      "snippet": "private com.android.tv.settings.uicustom.view.TitleContentIconView tciv_source_bluetooth_speaker;"
+    },
+    {
+      "line": 16,
+      "snippet": "private com.android.tv.settings.uicustom.view.TitleContentIconView tciv_source_edid_version;"
+    },
+    {
+      "line": 17,
+      "snippet": "private com.android.tv.settings.uicustom.view.TitleContentIconView tciv_source_hdmi;"
+    },
+    {
+      "line": 18,
+      "snippet": "private com.android.tv.settings.uicustom.view.TitleContentIconView tciv_source_hdmi2;"
+    },
+    {
+      "line": 19,
+      "snippet": "private com.android.tv.settings.uicustom.view.TitleContentIconView tciv_source_hdmi3;"
+    },
+    {
+      "line": 20,
+      "snippet": "private com.android.tv.settings.uicustom.view.TitleContentIconView tciv_source_hdmi4;"
+    },
+    {
+      "line": 21,
+      "snippet": "private com.android.tv.settings.uicustom.view.TitleContentIconView tciv_source_power_on;"
+    },
+    {
+      "line": 22,
+      "snippet": "private com.android.tv.settings.uicustom.view.TitleContentIconView tciv_source_power_on_app;"
+    },
+    {
+      "line": 23,
+      "snippet": "private com.android.tv.settings.uicustom.view.TitleContentIconView tciv_source_usb;"
+    },
+    {
+      "line": 24,
+      "snippet": "private com.android.tv.settings.uicustom.view.TitleSwitchView tsv_hdmi_cec_control;"
+    },
+    {
+      "line": 25,
+      "snippet": "private com.android.tv.settings.uicustom.view.TitleSwitchView tsv_hdmi_device_auto_off;"
+    },
+    {
+      "line": 26,
+      "snippet": "private com.android.tv.settings.uicustom.view.TitleSwitchView tsv_hdmi_low_latency_game;"
+    },
+    {
+      "line": 27,
+      "snippet": "private com.android.tv.settings.uicustom.view.TitleSwitchView tsv_source_plug_and_play;"
+    },
+    {
+      "line": 28,
+      "snippet": "private int curEdidVersion = 0;"
+    },
+    {
+      "line": 29,
+      "snippet": "private int mEdidSupportVersion = 0;"
+    },
+    {
+      "line": 30,
+      "snippet": "private boolean isEnableLowLatencyGame = false;"
+    },
+    {
+      "line": 31,
+      "snippet": "private boolean isEnablePlugPlayHdmi = false;"
+    },
+    {
+      "line": 32,
+      "snippet": "private boolean isEnableCEC = false;"
+    },
+    {
+      "line": 33,
+      "snippet": "private boolean isEnableDeviceAutoOff = false;"
+    },
+    {
+      "line": 34,
+      "snippet": "private java.lang.String hdmi1Port = \"HW5\";"
+    },
+    {
+      "line": 35,
+      "snippet": "private java.lang.String hdmi2Port = \"HW6\";"
+    },
+    {
+      "line": 36,
+      "snippet": "private java.lang.String hdmi1Name = \"HDMI1\";"
+    },
+    {
+      "line": 37,
+      "snippet": "private java.lang.String hdmi2Name = \"HDMI2\";"
+    },
+    {
+      "line": 38,
+      "snippet": "private java.lang.String hdmi3Port = \"HW7\";"
+    },
+    {
+      "line": 39,
+      "snippet": "private java.lang.String hdmi3Name = \"HDMI3\";"
+    },
+    {
+      "line": 40,
+      "snippet": "private java.lang.String hdmi4Port = \"HW8\";"
+    },
+    {
+      "line": 41,
+      "snippet": "private java.lang.String hdmi4Name = \"HDMI4\";"
+    },
+    {
+      "line": 42,
+      "snippet": ""
+    },
+    {
+      "line": 43,
+      "snippet": "@Override // com.android.tv.settings.uicustom.floatmenu.controller.BaseSubMenuController, com.android.tv.settings.uicustom.floatmenu.controller.ISubMenuController"
+    },
+    {
+      "line": 44,
+      "snippet": "public void onAttach(android.view.View view) {"
+    },
+    {
+      "line": 45,
+      "snippet": "super.onAttach(view);"
+    },
+    {
+      "line": 46,
+      "snippet": "this.mCompatibleApis = new com.mediatek.support.androidversioncompatiblelib.CompatibleApis(this.mContext);"
+    },
+    {
+      "line": 47,
+      "snippet": "this.mPreferenceConfigUtils = com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtils.getInstance(this.mContext);"
+    },
+    {
+      "line": 48,
+      "snippet": "initData();"
+    },
+    {
+      "line": 49,
+      "snippet": "initView(view);"
+    },
+    {
+      "line": 50,
+      "snippet": "}"
+    },
+    {
+      "line": 51,
+      "snippet": ""
+    },
+    {
+      "line": 52,
+      "snippet": "@Override // com.android.tv.settings.uicustom.floatmenu.controller.ISubMenuController"
+    },
+    {
+      "line": 53,
+      "snippet": "public void onResume() {"
+    },
+    {
+      "line": 54,
+      "snippet": "super.onResume();"
+    },
+    {
+      "line": 55,
+      "snippet": "updatePowerOnSourceAndApp();"
+    },
+    {
+      "line": 56,
+      "snippet": "int edidVersion = getEdidVersion();"
+    },
+    {
+      "line": 57,
+      "snippet": "this.mEdidSupportVersion = edidVersion;"
+    },
+    {
+      "line": 58,
+      "snippet": "if (edidVersion == 2) {"
+    },
+    {
+      "line": 59,
+      "snippet": "this.edidVersionArrays = this.mContext.getResources().getStringArray(com.android.tv.settings.R.array.input_hdmi_edid_version_auto_entries);"
+    },
+    {
+      "line": 60,
+      "snippet": "} else {"
+    },
+    {
+      "line": 61,
+      "snippet": "this.edidVersionArrays = this.mContext.getResources().getStringArray(com.android.tv.settings.R.array.input_hdmi_edid_version_entries);"
+    },
+    {
+      "line": 62,
+      "snippet": "}"
+    },
+    {
+      "line": 63,
+      "snippet": "int iValidateEdidVersion = validateEdidVersion(com.android.tv.settings.uicustom.util.SettingsUtil.getGlobalValueInt(this.mContext.getContentResolver(), \"tv_input_hdmi_edid_version\", 0));"
+    },
+    {
+      "line": 64,
+      "snippet": "this.curEdidVersion = iValidateEdidVersion;"
+    },
+    {
+      "line": 65,
+      "snippet": "this.tciv_source_edid_version.setContextText(this.edidVersionArrays[iValidateEdidVersion]);"
+    },
+    {
+      "line": 66,
+      "snippet": "updateEdidEnableState();"
+    },
+    {
+      "line": 67,
+      "snippet": "initBoardConfig();"
+    },
+    {
+      "line": 68,
+      "snippet": "initSource();"
+    },
+    {
+      "line": 69,
+      "snippet": "}"
+    },
+    {
+      "line": 70,
+      "snippet": ""
+    },
+    {
+      "line": 71,
+      "snippet": "@Override // com.android.tv.settings.uicustom.floatmenu.controller.ISubMenuController"
+    },
+    {
+      "line": 72,
+      "snippet": "public boolean onKey(android.view.View view, int i, android.view.KeyEvent keyEvent) {"
+    },
+    {
+      "line": 73,
+      "snippet": "if (keyEvent.getAction() != 0) {"
+    },
+    {
+      "line": 74,
+      "snippet": "return false;"
+    },
+    {
+      "line": 75,
+      "snippet": "}"
+    },
+    {
+      "line": 76,
+      "snippet": "if (i != 21 && i != 4) {"
+    },
+    {
+      "line": 77,
+      "snippet": "return false;"
+    },
+    {
+      "line": 78,
+      "snippet": "}"
+    },
+    {
+      "line": 79,
+      "snippet": "com.android.tv.settings.uicustom.floatmenu.FloatMenuManager.getInstance(view.getContext()).backToMainMenu();"
+    },
+    {
+      "line": 80,
+      "snippet": "return true;"
+    },
+    {
+      "line": 81,
+      "snippet": "}"
+    },
+    {
+      "line": 82,
+      "snippet": ""
+    },
+    {
+      "line": 83,
+      "snippet": "private void initData() {"
+    },
+    {
+      "line": 84,
+      "snippet": "this.powerOnSourceArrays = new java.lang.String[]{this.mContext.getString(com.android.tv.settings.R.string.str_off), this.mContext.getString(com.android.tv.settings.R.string.source_av), this.mContext.getString(com.android.tv.settings.R.string.source_hdmi), this.mContext.getString(com.android.tv.settings.R.string.source_hdmi_2), this.mContext.getString(com.android.tv.settings.R.string.source_hdmi_3), this.mContext.getString(com.android.tv.settings.R.string.source_hdmi_4), this.mContext.getString(com.android.tv.settings.R.string.source_usb)};"
+    },
+    {
+      "line": 85,
+      "snippet": "int edidVersion = getEdidVersion();"
+    },
+    {
+      "line": 86,
+      "snippet": "this.mEdidSupportVersion = edidVersion;"
+    },
+    {
+      "line": 87,
+      "snippet": "if (edidVersion == 2) {"
+    },
+    {
+      "line": 88,
+      "snippet": "this.edidVersionArrays = this.mContext.getResources().getStringArray(com.android.tv.settings.R.array.input_hdmi_edid_version_auto_entries);"
+    },
+    {
+      "line": 89,
+      "snippet": "} else {"
+    },
+    {
+      "line": 90,
+      "snippet": "this.edidVersionArrays = this.mContext.getResources().getStringArray(com.android.tv.settings.R.array.input_hdmi_edid_version_entries);"
+    },
+    {
+      "line": 91,
+      "snippet": "}"
+    },
+    {
+      "line": 92,
+      "snippet": "this.curEdidVersion = validateEdidVersion(com.android.tv.settings.uicustom.util.SettingsUtil.getGlobalValueInt(this.mContext.getContentResolver(), \"tv_input_hdmi_edid_version\", 0));"
+    },
+    {
+      "line": 93,
+      "snippet": "this.isEnableLowLatencyGame = com.android.tv.settings.uicustom.util.SettingsUtil.getGlobalValueInt(this.mContext.getContentResolver(), com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_PICTURE_ADVANCE_VIDEO_GAME_MODE, 0) == 1;"
+    },
+    {
+      "line": 94,
+      "snippet": "this.isEnablePlugPlayHdmi = android.os.SystemProperties.getInt(\"persist.rjpj.hdmiplug.autoplay\", 0) == 1;"
+    },
+    {
+      "line": 95,
+      "snippet": "this.isEnableCEC = this.mCompatibleApis.isHdmiCecControlEnabled();"
+    },
+    {
+      "line": 96,
+      "snippet": "this.isEnableDeviceAutoOff = this.mCompatibleApis.isHdmiCecAutoDeviceOffEnabled();"
+    },
+    {
+      "line": 97,
+      "snippet": "initBoardConfig();"
+    },
+    {
+      "line": 98,
+      "snippet": "}"
+    },
+    {
+      "line": 99,
+      "snippet": ""
+    },
+    {
+      "line": 100,
+      "snippet": "private void initBoardConfig() {"
+    },
+    {
+      "line": 101,
+      "snippet": "java.lang.String str = android.os.Build.A_RJ_HDMI_PORTS;"
+    },
+    {
+      "line": 102,
+      "snippet": "int i = android.os.Build.A_RJ_HDMI_PORT_COUNT;"
+    },
+    {
+      "line": 103,
+      "snippet": "this.portCount = i == 0 ? 4 : i;"
+    },
+    {
+      "line": 104,
+      "snippet": "this.isAvEnabled = android.os.Build.A_RJ_SUPPORT_SETTINGS_SHOW_AV == 1;"
+    },
+    {
+      "line": 105,
+      "snippet": "if (i <= 0 || str.isEmpty()) {"
+    },
+    {
+      "line": 106,
+      "snippet": "return;"
+    },
+    {
+      "line": 107,
+      "snippet": "}"
+    },
+    {
+      "line": 108,
+      "snippet": "java.lang.String[] strArrSplit = str.split(\",\");"
+    },
+    {
+      "line": 109,
+      "snippet": "if (strArrSplit.length >= 1) {"
+    },
+    {
+      "line": 110,
+      "snippet": "java.lang.String[] strArrSplit2 = strArrSplit[0].split(\":\");"
+    },
+    {
+      "line": 111,
+      "snippet": "if (strArrSplit2.length == 2) {"
+    },
+    {
+      "line": 112,
+      "snippet": "this.hdmi1Port = strArrSplit2[0].trim();"
+    },
+    {
+      "line": 113,
+      "snippet": "this.hdmi1Name = strArrSplit2[1].trim();"
+    },
+    {
+      "line": 114,
+      "snippet": "}"
+    },
+    {
+      "line": 115,
+      "snippet": "}"
+    },
+    {
+      "line": 116,
+      "snippet": "if (strArrSplit.length >= 2) {"
+    },
+    {
+      "line": 117,
+      "snippet": "java.lang.String[] strArrSplit3 = strArrSplit[1].split(\":\");"
+    },
+    {
+      "line": 118,
+      "snippet": "if (strArrSplit3.length == 2) {"
+    },
+    {
+      "line": 119,
+      "snippet": "this.hdmi2Port = strArrSplit3[0].trim();"
+    },
+    {
+      "line": 120,
+      "snippet": "this.hdmi2Name = strArrSplit3[1].trim();"
+    },
+    {
+      "line": 121,
+      "snippet": "}"
+    },
+    {
+      "line": 122,
+      "snippet": "}"
+    },
+    {
+      "line": 123,
+      "snippet": "if (strArrSplit.length >= 3) {"
+    },
+    {
+      "line": 124,
+      "snippet": "java.lang.String[] strArrSplit4 = strArrSplit[2].split(\":\");"
+    },
+    {
+      "line": 125,
+      "snippet": "if (strArrSplit4.length == 2) {"
+    },
+    {
+      "line": 126,
+      "snippet": "this.hdmi3Port = strArrSplit4[0].trim();"
+    },
+    {
+      "line": 127,
+      "snippet": "this.hdmi3Name = strArrSplit4[1].trim();"
+    },
+    {
+      "line": 128,
+      "snippet": "}"
+    },
+    {
+      "line": 129,
+      "snippet": "}"
+    },
+    {
+      "line": 130,
+      "snippet": "if (strArrSplit.length >= 4) {"
+    },
+    {
+      "line": 131,
+      "snippet": "java.lang.String[] strArrSplit5 = strArrSplit[3].split(\":\");"
+    },
+    {
+      "line": 132,
+      "snippet": "if (strArrSplit5.length == 2) {"
+    },
+    {
+      "line": 133,
+      "snippet": "this.hdmi4Port = strArrSplit5[0].trim();"
+    },
+    {
+      "line": 134,
+      "snippet": "this.hdmi4Name = strArrSplit5[1].trim();"
+    },
+    {
+      "line": 135,
+      "snippet": "}"
+    },
+    {
+      "line": 344,
+      "snippet": "com.android.tv.settings.uicustom.util.SettingsUtil.putGlobalValueInt(this.mContext.getContentResolver(), com.android.tv.settings.uicustom.common.Constant.SETTINGS_KEY_HDMI_CEC, z ? 1 : 0);"
+    },
+    {
+      "line": 345,
+      "snippet": "if (com.mediatek.wwtv.tvcenter.util.DataSeparaterUtil.getInstance().isSupportPowerConfirmed()) {"
+    },
+    {
+      "line": 346,
+      "snippet": "showCecEnergyDialog(z);"
+    },
+    {
+      "line": 398,
+      "snippet": "private void showCecEnergyDialog(boolean z) {"
+    }
+  ],
+  "com/android/tv/settings/uicustom/fragment/source/SourceFragment.java": [
+    {
+      "line": 1,
+      "snippet": "package com.android.tv.settings.uicustom.fragment.source;"
+    },
+    {
+      "line": 2,
+      "snippet": ""
+    },
+    {
+      "line": 3,
+      "snippet": "/* JADX INFO: loaded from: classes14.dex */"
+    },
+    {
+      "line": 4,
+      "snippet": "public class SourceFragment extends com.android.tv.settings.uicustom.fragment.BaseFragment {"
+    },
+    {
+      "line": 5,
+      "snippet": "private static final java.lang.String BLUETOOTH_SPEAKER_PACKAGE = \"com.rjpj.bluetoothspeaker\";"
+    },
+    {
+      "line": 6,
+      "snippet": "private static final java.lang.String INPUT_SERVICE_PREFIX = \"com.mediatek.tvinput/.tuner.TunerInputService/\";"
+    },
+    {
+      "line": 7,
+      "snippet": "private java.lang.String[] edidVersionArrays;"
+    },
+    {
+      "line": 8,
+      "snippet": "private boolean isSingleHdmiBoard;"
+    },
+    {
+      "line": 9,
+      "snippet": "private com.mediatek.support.androidversioncompatiblelib.CompatibleApis mCompatibleApis;"
+    },
+    {
+      "line": 10,
+      "snippet": "private com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtils mPreferenceConfigUtils;"
+    },
+    {
+      "line": 11,
+      "snippet": "private java.lang.String[] powerOnSourceArrays;"
+    },
+    {
+      "line": 12,
+      "snippet": "private com.android.tv.settings.uicustom.view.TitleContentIconView tciv_source_bluetooth_speaker;"
+    },
+    {
+      "line": 13,
+      "snippet": "private com.android.tv.settings.uicustom.view.TitleContentIconView tciv_source_edid_version;"
+    },
+    {
+      "line": 14,
+      "snippet": "private com.android.tv.settings.uicustom.view.TitleContentIconView tciv_source_hdmi;"
+    },
+    {
+      "line": 15,
+      "snippet": "private com.android.tv.settings.uicustom.view.TitleContentIconView tciv_source_hdmi2;"
+    },
+    {
+      "line": 16,
+      "snippet": "private com.android.tv.settings.uicustom.view.TitleContentIconView tciv_source_power_on;"
+    },
+    {
+      "line": 17,
+      "snippet": "private com.android.tv.settings.uicustom.view.TitleContentIconView tciv_source_power_on_app;"
+    },
+    {
+      "line": 18,
+      "snippet": "private com.android.tv.settings.uicustom.view.TitleContentIconView tciv_source_usb;"
+    },
+    {
+      "line": 19,
+      "snippet": "private com.android.tv.settings.uicustom.view.TitleSwitchView tsv_hdmi_cec_control;"
+    },
+    {
+      "line": 20,
+      "snippet": "private com.android.tv.settings.uicustom.view.TitleSwitchView tsv_hdmi_device_auto_off;"
+    },
+    {
+      "line": 21,
+      "snippet": "private com.android.tv.settings.uicustom.view.TitleSwitchView tsv_source_plug_and_play;"
+    },
+    {
+      "line": 22,
+      "snippet": "private int curEdidVersion = 0;"
+    },
+    {
+      "line": 23,
+      "snippet": "private boolean isEnablePlugPlayHdmi = false;"
+    },
+    {
+      "line": 24,
+      "snippet": "private boolean isEnableCEC = false;"
+    },
+    {
+      "line": 25,
+      "snippet": "private boolean isEnableDeviceAutoOff = false;"
+    },
+    {
+      "line": 26,
+      "snippet": "private java.lang.String hdmi1Port = \"HW6\";"
+    },
+    {
+      "line": 27,
+      "snippet": "private java.lang.String hdmi2Port = \"HW7\";"
+    },
+    {
+      "line": 28,
+      "snippet": ""
+    },
+    {
+      "line": 29,
+      "snippet": "@Override // com.android.tv.settings.uicustom.fragment.BaseFragment"
+    },
+    {
+      "line": 30,
+      "snippet": "protected int getLayoutResId() {"
+    },
+    {
+      "line": 31,
+      "snippet": "return com.android.tv.settings.R.layout.fragment_source;"
+    },
+    {
+      "line": 32,
+      "snippet": "}"
+    },
+    {
+      "line": 33,
+      "snippet": ""
+    },
+    {
+      "line": 34,
+      "snippet": "@Override // com.android.tv.settings.uicustom.fragment.BaseFragment"
+    },
+    {
+      "line": 35,
+      "snippet": "protected void onFirstLoad() {"
+    },
+    {
+      "line": 36,
+      "snippet": "}"
+    },
+    {
+      "line": 37,
+      "snippet": ""
+    },
+    {
+      "line": 38,
+      "snippet": "@Override // com.android.tv.settings.uicustom.fragment.BaseFragment"
+    },
+    {
+      "line": 39,
+      "snippet": "public void refreshTexts() {"
+    },
+    {
+      "line": 40,
+      "snippet": "}"
+    },
+    {
+      "line": 41,
+      "snippet": ""
+    },
+    {
+      "line": 42,
+      "snippet": "@Override // com.android.tv.settings.uicustom.fragment.BaseFragment"
+    },
+    {
+      "line": 43,
+      "snippet": "protected void initData(android.os.Bundle bundle) {"
+    },
+    {
+      "line": 44,
+      "snippet": "this.mCompatibleApis = new com.mediatek.support.androidversioncompatiblelib.CompatibleApis(getActivity());"
+    },
+    {
+      "line": 45,
+      "snippet": "this.mPreferenceConfigUtils = com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtils.getInstance(this.mContext);"
+    },
+    {
+      "line": 46,
+      "snippet": "this.powerOnSourceArrays = new java.lang.String[]{this.mContext.getString(com.android.tv.settings.R.string.str_off), this.mContext.getString(com.android.tv.settings.R.string.source_av), this.mContext.getString(com.android.tv.settings.R.string.source_hdmi), this.mContext.getString(com.android.tv.settings.R.string.source_hdmi_2), this.mContext.getString(com.android.tv.settings.R.string.source_usb)};"
+    },
+    {
+      "line": 47,
+      "snippet": "this.edidVersionArrays = this.mContext.getResources().getStringArray(com.android.tv.settings.R.array.input_hdmi_edid_version_entries);"
+    },
+    {
+      "line": 48,
+      "snippet": "this.curEdidVersion = com.android.tv.settings.uicustom.util.SettingsUtil.getGlobalValueInt(this.mContentResolver, \"tv_input_hdmi_edid_version\", 0);"
+    },
+    {
+      "line": 49,
+      "snippet": "this.isEnablePlugPlayHdmi = android.os.SystemProperties.getInt(\"persist.rjpj.hdmiplug.autoplay\", 0) == 1;"
+    },
+    {
+      "line": 50,
+      "snippet": "this.isEnableCEC = this.mCompatibleApis.isHdmiCecControlEnabled();"
+    },
+    {
+      "line": 51,
+      "snippet": "this.isEnableDeviceAutoOff = this.mCompatibleApis.isHdmiCecAutoDeviceOffEnabled();"
+    },
+    {
+      "line": 52,
+      "snippet": "initBoardConfig();"
+    },
+    {
+      "line": 53,
+      "snippet": "}"
+    },
+    {
+      "line": 54,
+      "snippet": ""
+    },
+    {
+      "line": 55,
+      "snippet": "private void initBoardConfig() {"
+    },
+    {
+      "line": 56,
+      "snippet": "if (android.os.Build.A_RJ_BOARD_ID == 0) {"
+    },
+    {
+      "line": 57,
+      "snippet": "this.isSingleHdmiBoard = true;"
+    },
+    {
+      "line": 58,
+      "snippet": "this.hdmi1Port = \"HW6\";"
+    },
+    {
+      "line": 59,
+      "snippet": "}"
+    },
+    {
+      "line": 60,
+      "snippet": "}"
+    },
+    {
+      "line": 61,
+      "snippet": ""
+    },
+    {
+      "line": 62,
+      "snippet": "@Override // com.android.tv.settings.uicustom.fragment.BaseFragment"
+    },
+    {
+      "line": 63,
+      "snippet": "protected void initView(android.view.View view) {"
+    },
+    {
+      "line": 64,
+      "snippet": "this.tciv_source_hdmi = (com.android.tv.settings.uicustom.view.TitleContentIconView) view.findViewById(com.android.tv.settings.R.id.tciv_source_hdmi);"
+    },
+    {
+      "line": 65,
+      "snippet": "this.tciv_source_hdmi2 = (com.android.tv.settings.uicustom.view.TitleContentIconView) view.findViewById(com.android.tv.settings.R.id.tciv_source_hdmi2);"
+    },
+    {
+      "line": 66,
+      "snippet": "this.tciv_source_usb = (com.android.tv.settings.uicustom.view.TitleContentIconView) view.findViewById(com.android.tv.settings.R.id.tciv_source_usb);"
+    },
+    {
+      "line": 67,
+      "snippet": "this.tciv_source_bluetooth_speaker = (com.android.tv.settings.uicustom.view.TitleContentIconView) view.findViewById(com.android.tv.settings.R.id.tciv_source_bluetooth_speaker);"
+    },
+    {
+      "line": 68,
+      "snippet": "this.tciv_source_power_on = (com.android.tv.settings.uicustom.view.TitleContentIconView) view.findViewById(com.android.tv.settings.R.id.tciv_source_power_on);"
+    },
+    {
+      "line": 69,
+      "snippet": "this.tciv_source_power_on_app = (com.android.tv.settings.uicustom.view.TitleContentIconView) view.findViewById(com.android.tv.settings.R.id.tciv_source_power_on_app);"
+    },
+    {
+      "line": 70,
+      "snippet": "this.tsv_source_plug_and_play = (com.android.tv.settings.uicustom.view.TitleSwitchView) view.findViewById(com.android.tv.settings.R.id.tsv_source_plug_and_play);"
+    },
+    {
+      "line": 71,
+      "snippet": "this.tciv_source_edid_version = (com.android.tv.settings.uicustom.view.TitleContentIconView) view.findViewById(com.android.tv.settings.R.id.tciv_source_edid_version);"
+    },
+    {
+      "line": 72,
+      "snippet": "this.tsv_hdmi_cec_control = (com.android.tv.settings.uicustom.view.TitleSwitchView) view.findViewById(com.android.tv.settings.R.id.tsv_hdmi_cec_control);"
+    },
+    {
+      "line": 73,
+      "snippet": "this.tsv_hdmi_device_auto_off = (com.android.tv.settings.uicustom.view.TitleSwitchView) view.findViewById(com.android.tv.settings.R.id.tsv_hdmi_device_auto_off);"
+    },
+    {
+      "line": 74,
+      "snippet": "this.tciv_source_edid_version.setContextText(this.edidVersionArrays[this.curEdidVersion]);"
+    },
+    {
+      "line": 75,
+      "snippet": "this.tsv_source_plug_and_play.setSwitchEnable(this.isEnablePlugPlayHdmi);"
+    },
+    {
+      "line": 76,
+      "snippet": "this.tsv_hdmi_cec_control.setSwitchEnable(this.isEnableCEC);"
+    },
+    {
+      "line": 77,
+      "snippet": "updatePowerOnSourceAndApp();"
+    },
+    {
+      "line": 78,
+      "snippet": "if (this.isEnableCEC) {"
+    },
+    {
+      "line": 79,
+      "snippet": "this.tsv_hdmi_device_auto_off.setSwitchEnable(this.isEnableDeviceAutoOff);"
+    },
+    {
+      "line": 80,
+      "snippet": "this.tsv_hdmi_device_auto_off.setDisableFocus(false);"
+    },
+    {
+      "line": 81,
+      "snippet": "} else {"
+    },
+    {
+      "line": 82,
+      "snippet": "this.isEnableDeviceAutoOff = false;"
+    },
+    {
+      "line": 83,
+      "snippet": "this.tsv_hdmi_device_auto_off.setSwitchEnable(false);"
+    },
+    {
+      "line": 84,
+      "snippet": "this.tsv_hdmi_device_auto_off.setDisableFocus(true);"
+    },
+    {
+      "line": 85,
+      "snippet": "this.mCompatibleApis.setHdmiCecAutoDeviceOffEnabled(false);"
+    },
+    {
+      "line": 86,
+      "snippet": "}"
+    },
+    {
+      "line": 87,
+      "snippet": "checkBluetoothSpeakerPackage();"
+    },
+    {
+      "line": 88,
+      "snippet": "if (this.isSingleHdmiBoard) {"
+    },
+    {
+      "line": 89,
+      "snippet": "this.tciv_source_hdmi.setTitle(com.android.tv.settings.R.string.source_hdmi);"
+    },
+    {
+      "line": 90,
+      "snippet": "this.tciv_source_hdmi2.setVisibility(8);"
+    },
+    {
+      "line": 91,
+      "snippet": "}"
+    },
+    {
+      "line": 92,
+      "snippet": "this.tciv_source_hdmi.setOnClickListener(new android.view.View.OnClickListener() { // from class: com.android.tv.settings.uicustom.fragment.source.SourceFragment$$ExternalSyntheticLambda0"
+    },
+    {
+      "line": 93,
+      "snippet": "@Override // android.view.View.OnClickListener"
+    },
+    {
+      "line": 94,
+      "snippet": "public final void onClick(android.view.View view2) {"
+    },
+    {
+      "line": 95,
+      "snippet": "this.f$0.lambda$initView$0(view2);"
+    },
+    {
+      "line": 96,
+      "snippet": "}"
+    },
+    {
+      "line": 97,
+      "snippet": "});"
+    },
+    {
+      "line": 98,
+      "snippet": "this.tciv_source_hdmi2.setOnClickListener(new android.view.View.OnClickListener() { // from class: com.android.tv.settings.uicustom.fragment.source.SourceFragment$$ExternalSyntheticLambda1"
+    },
+    {
+      "line": 99,
+      "snippet": "@Override // android.view.View.OnClickListener"
+    },
+    {
+      "line": 100,
+      "snippet": "public final void onClick(android.view.View view2) {"
+    },
+    {
+      "line": 101,
+      "snippet": "this.f$0.lambda$initView$1(view2);"
+    },
+    {
+      "line": 102,
+      "snippet": "}"
+    },
+    {
+      "line": 103,
+      "snippet": "});"
+    },
+    {
+      "line": 104,
+      "snippet": "this.tciv_source_usb.setOnClickListener(new android.view.View.OnClickListener() { // from class: com.android.tv.settings.uicustom.fragment.source.SourceFragment$$ExternalSyntheticLambda2"
+    },
+    {
+      "line": 105,
+      "snippet": "@Override // android.view.View.OnClickListener"
+    },
+    {
+      "line": 106,
+      "snippet": "public final void onClick(android.view.View view2) {"
+    },
+    {
+      "line": 107,
+      "snippet": "this.f$0.lambda$initView$2(view2);"
+    },
+    {
+      "line": 108,
+      "snippet": "}"
+    },
+    {
+      "line": 109,
+      "snippet": "});"
+    },
+    {
+      "line": 110,
+      "snippet": "this.tciv_source_bluetooth_speaker.setOnClickListener(new android.view.View.OnClickListener() { // from class: com.android.tv.settings.uicustom.fragment.source.SourceFragment$$ExternalSyntheticLambda3"
+    },
+    {
+      "line": 111,
+      "snippet": "@Override // android.view.View.OnClickListener"
+    },
+    {
+      "line": 112,
+      "snippet": "public final void onClick(android.view.View view2) {"
+    },
+    {
+      "line": 113,
+      "snippet": "this.f$0.lambda$initView$3(view2);"
+    },
+    {
+      "line": 114,
+      "snippet": "}"
+    },
+    {
+      "line": 115,
+      "snippet": "});"
+    },
+    {
+      "line": 116,
+      "snippet": "this.tciv_source_power_on.setOnClickListener(new android.view.View.OnClickListener() { // from class: com.android.tv.settings.uicustom.fragment.source.SourceFragment$$ExternalSyntheticLambda4"
+    },
+    {
+      "line": 117,
+      "snippet": "@Override // android.view.View.OnClickListener"
+    },
+    {
+      "line": 118,
+      "snippet": "public final void onClick(android.view.View view2) {"
+    },
+    {
+      "line": 119,
+      "snippet": "this.f$0.lambda$initView$4(view2);"
+    },
+    {
+      "line": 120,
+      "snippet": "}"
+    },
+    {
+      "line": 121,
+      "snippet": "});"
+    },
+    {
+      "line": 122,
+      "snippet": "this.tciv_source_power_on_app.setOnClickListener(new android.view.View.OnClickListener() { // from class: com.android.tv.settings.uicustom.fragment.source.SourceFragment$$ExternalSyntheticLambda5"
+    },
+    {
+      "line": 123,
+      "snippet": "@Override // android.view.View.OnClickListener"
+    },
+    {
+      "line": 124,
+      "snippet": "public final void onClick(android.view.View view2) {"
+    },
+    {
+      "line": 125,
+      "snippet": "this.f$0.lambda$initView$5(view2);"
+    },
+    {
+      "line": 126,
+      "snippet": "}"
+    },
+    {
+      "line": 127,
+      "snippet": "});"
+    },
+    {
+      "line": 128,
+      "snippet": "this.tciv_source_edid_version.setOnClickListener(new android.view.View.OnClickListener() { // from class: com.android.tv.settings.uicustom.fragment.source.SourceFragment$$ExternalSyntheticLambda6"
+    },
+    {
+      "line": 129,
+      "snippet": "@Override // android.view.View.OnClickListener"
+    },
+    {
+      "line": 130,
+      "snippet": "public final void onClick(android.view.View view2) {"
+    },
+    {
+      "line": 131,
+      "snippet": "this.f$0.lambda$initView$6(view2);"
+    },
+    {
+      "line": 132,
+      "snippet": "}"
+    },
+    {
+      "line": 133,
+      "snippet": "});"
+    },
+    {
+      "line": 134,
+      "snippet": "this.tsv_source_plug_and_play.setOnTitleSwitchListener(new com.android.tv.settings.uicustom.view.TitleSwitchView.onTitleSwitchListener() { // from class: com.android.tv.settings.uicustom.fragment.source.SourceFragment$$ExternalSyntheticLambda7"
+    },
+    {
+      "line": 135,
+      "snippet": "@Override // com.android.tv.settings.uicustom.view.TitleSwitchView.onTitleSwitchListener"
+    },
+    {
+      "line": 204,
+      "snippet": "com.android.tv.settings.uicustom.util.SettingsUtil.putGlobalValueInt(this.mContentResolver, com.android.tv.settings.uicustom.common.Constant.SETTINGS_KEY_HDMI_CEC, z ? 1 : 0);"
+    },
+    {
+      "line": 205,
+      "snippet": "if (com.mediatek.wwtv.tvcenter.util.DataSeparaterUtil.getInstance().isSupportPowerConfirmed()) {"
+    },
+    {
+      "line": 206,
+      "snippet": "showCecEnergyDialog(z);"
+    },
+    {
+      "line": 234,
+      "snippet": "private void showCecEnergyDialog(boolean z) {"
+    }
+  ],
+  "com/android/tv/settings/uicustom/common/Constant.java": [
+    {
+      "line": 22,
+      "snippet": "public static final java.lang.String SETTINGS_KEY_HDMI_CEC = \"Settings.Global.HDMI_CONTROL_ENABLED\";"
+    },
+    {
+      "line": 40,
+      "snippet": "public static final java.lang.String SETTINGS_KEY_SOUND_SPEAKERS = \"Settings.Global.HDMI_ARC_CONTROL_ENABLED\";"
+    },
+    {
+      "line": 44,
+      "snippet": "public static final java.lang.String SETTINGS_KEY_TV_HDMI_EDID_VERSION = \"tv_input_hdmi_edid_version\";"
+    }
+  ]
+}
