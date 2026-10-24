@@ -44,7 +44,7 @@ def main():
  j=hook_return_method(j,
    "onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;",
    "return-object",
-   "invoke-static {p0}, Ldev/projectorsoft/tvsettings/OemRootMenuHook;->install(Ljava/lang/Object;)V")
+   "invoke-static {p0}, Ldev/projectorsoft/tvsettings/OemRootMenuHook;->install(Ljava/lang/Object;)V\n    invoke-static {p0}, Ldev/projectorsoft/tvsettings/OemInlinePreferencesHook;->install(Ljava/lang/Object;)V")
  main_fragment.write_text(j)
 
  z=activity.read_text()
