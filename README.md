@@ -1,5 +1,15 @@
 # Projector-Soft
 
+## Актуальная экспериментальная TvSettingsPlus MOD v12 (8052)
+
+- [**Подписанный APK v12 — GitHub Actions Artifact**](https://github.com/MAX-TAC/Projector-Soft/actions/runs/40119416058/artifacts/12569253832).
+- [**Отчёт об OEM-функциях и оставшихся проблемах v12**](docs/TVSETTINGSPLUS_V12_PROGRESS_2026-10-24.md).
+- Настоящие 5 полос заводского эквалайзера: **120, 500, 1500, 5000, 10000 Гц**, исходные DSP ключи и проверки OEM `PartnerSettingsConfig`, в родных Android TV SeekBarPreferences.
+- Три категории «Изображение», «Звук», «Проекция», все 10 заводских image/RGB/bass/treble ползунков, режимы изображения и звука, HDR/MEMC (при аппаратной поддержке), режимы установки.
+- Штатный Android TV ярлык «Настройки» и доступ к заводским OEM-разделам при сохранении калибровки.
+- **Не финальный.** Нужны корректные HDMI/CEC/EDID обработчики, закрытие связей с KuSettings, оригинальная 8054-база и аппаратные испытания. KuSettings пока не отключать.
+
+
 ## Текущая экспериментальная сборка TvSettingsPlus MOD v10 (8052)
 
 - [Подписанный APK v10 — GitHub Actions Artifact](https://github.com/MAX-TAC/Projector-Soft/actions/runs/40117262170/artifacts/12569741437) — только для будущих контролируемых испытаний.
