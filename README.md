@@ -1,5 +1,14 @@
 # Projector-Soft
 
+## Текущая экспериментальная сборка: TvSettingsPlus MOD v7 (8052)
+
+- [**APK v7, собран и подписан в GitHub Actions**](https://github.com/MAX-TAC/Projector-Soft/actions/runs/40113864365/artifacts/12567458244).
+- [**Подробный отчёт по v7, включая отсутствующие функции**](docs/TVSETTINGSPLUS_V7_PROGRESS_2026-10-24.md).
+- Настоящий TV-ярлык «Настройки»: gear icon, TV banner, MAIN / LEANBACK_LAUNCHER, открывает com.android.tv.settings.MainSettings, не KuSettings.
+- Актуальный AOSP MainFragment: пять переходов к OEM-разделам и **три прямых ListPreference** (изображение, цветовая температура, режим звука), **три SwitchPreference** (surround, HDMI eARC, автовыравнивание громкости при наличии OEM параметров).
+- Статус: **не финальный**, не испытан на проекторе, не устанавливать на 8054, не отключать KuSettings. Остальные OEM функции ещё в процессе интеграции в AOSP UI.
+
+
 Отдельный репозиторий кастомных Android TV приложений для проекторов Everycom CineLux, FlixTone D11 Master и совместимых 1LCD моделей.
 
 ## TvSettingsPlus MOD (в разработке)
