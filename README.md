@@ -1,5 +1,14 @@
 # Projector-Soft
 
+## Актуальная экспериментальная TvSettingsPlus MOD v13 (8052)
+
+- [**Подписанный APK v13 — GitHub Actions Artifact**](https://github.com/MAX-TAC/Projector-Soft/actions/runs/40119913189/artifacts/12570675887).
+- [**Подробный отчёт о v13 и оставшихся системных зависимостях**](docs/TVSETTINGSPLUS_V13_PROGRESS_2026-10-24.md).
+- Пять **настоящих** заводских полос EQ: **120/500/1500/5000/10000 Гц**; выбор источника совместимости HDMI EDID 1.4/2.0/Auto/2.1 с OEM-гейтами; 10 ползунков изображения/цвета/баса и ВЧ, HDR/MEMC, четыре положения проектора.
+- Native Android TV группы «Изображение», «Звук», «Проекция», «HDMI», launcher alias «Настройки», маршруты к остальным штатным OEM экраном.
+- **Не финальный для неподготовленного тестировщика.** Необходимо завершить HDMI CEC/eARC, связи с KuSettings, OEM watchdog и аппаратные испытания. Не устанавливать APK 8052 на 8054.
+
+
 ## Актуальная экспериментальная TvSettingsPlus MOD v12 (8052)
 
 - [**Подписанный APK v12 — GitHub Actions Artifact**](https://github.com/MAX-TAC/Projector-Soft/actions/runs/40119416058/artifacts/12569253832).
