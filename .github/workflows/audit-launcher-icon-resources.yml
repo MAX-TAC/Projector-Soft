@@ -1,0 +1,25 @@
+name: Audit original TV Settings launcher icon resources
+on:
+  push:
+    paths:
+      - ".github/workflows/audit-launcher-icon-resources.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect resources with built-in Android SDK
+        run: |
+          set -euo pipefail
+          SDK=$(find "$ANDROID_HOME/build-tools" -name aapt -type f | sort -V | tail -1)
+          echo "aapt=$SDK"
+          "$SDK" dump badging vendor/reference/8052/APK/TvSettingsPlus.apk | grep -E 'application:|launchable-activity:|leanback-launchable-activity:|application-label' | head -n 20 || true
+          "$SDK" dump resources vendor/reference/8052/APK/TvSettingsPlus.apk > /tmp/resources.txt
+          grep -Ei 'resource 0x[0-9a-f]+.*(drawable|mipmap).*[:/](ic_settings|settings_icon|ic_launcher|ic_gear|ic_settings_app|settings|ic_launcher_settings|ic_app)' /tmp/resources.txt | head -n 90 || true
+          echo "Other gear/icon candidates:"
+          grep -Ei 'resource 0x[0-9a-f]+.*(settings|gear|launcher_icon)' /tmp/resources.txt | head -n 100 || true
+          echo "Original application AndroidManifest portion:"
+          "$SDK" dump xmltree vendor/reference/8052/APK/TvSettingsPlus.apk AndroidManifest.xml | grep -E -A 15 'E: application ' | head -n 24
