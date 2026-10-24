@@ -94,6 +94,9 @@ public final class OemInlinePreferencesHook {
             // is safely transferred.
             // Stock ProjectorManager orientation codes, not calibration/keystone.
             OemProjectorOrientationHook.install(context,category,preference);
+            // Five genuine OEM bands via stock PartnerSettingsConfig only.
+            // Uses original ProgressDialog scale but native TV SeekBar widgets.
+            OemFiveBandEqualizerHook.install(context,category,preference);
         } catch(Throwable e) {
             Log.w(TAG,"OEM quick controls unavailable; keep original settings",e);
         }
