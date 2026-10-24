@@ -1,0 +1,154 @@
+name: Build experimental TvSettingsPlus v6 inline OEM mode controls and launcher
+on:
+  push:
+    paths:
+      - ".github/workflows/build-tvsettingsplus-inline-v6.yml"
+      - "tools/patch_axml_compat_aliases.py"
+      - "tools/patch_aosp_root_menu_smali.py"
+      - "tools/patch_customer0_lightmode_smali.py"
+      - "tools/compose_brightness_v3_apk.py"
+      - "tools/patch_customer0_lightmode_smali.py"
+      - "app/tvsettingsplus-mod/src/main/java/**"
+  workflow_dispatch:
+concurrency:
+  group: tvsettings-v6-inline-build
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Prepare OEM decode and Android SDK tools
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/tv6 /tmp/tv6/classes /tmp/tv6/dex /tmp/tv6/keys
+          curl -fsSL --retry 3 https://github.com/iBotPeaches/Apktool/releases/download/v2.11.1/apktool_2.11.1.jar -o /tmp/tv6/apktool.jar
+          printf '#!/bin/sh\nexec java -jar /tmp/tv6/apktool.jar "$@"\n' > /tmp/tv6/apktool
+          chmod +x /tmp/tv6/apktool
+          echo "/tmp/tv6" >> "$GITHUB_PATH"
+          if [ ! -f "$ANDROID_HOME/platforms/android-33/android.jar" ] || [ ! -x "$ANDROID_HOME/build-tools/33.0.3/d8" ]; then
+            SDK_MANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | head -n 1)"
+            yes | "$SDK_MANAGER" "platforms;android-33" "build-tools;33.0.3" || true
+          fi
+          test -f "$ANDROID_HOME/platforms/android-33/android.jar"
+          test -x "$ANDROID_HOME/build-tools/33.0.3/d8"
+          echo "$ANDROID_HOME/build-tools/33.0.3" >> "$GITHUB_PATH"
+          echo 'e4184a13fbf56fa069effc6a40ea50c0da7e9190321b389f59ba34700a80d0a1  vendor/reference/8052/APK/TvSettingsPlus.apk' | sha256sum -c -
+      - name: Compile Android 13 OEM-aware right-pane bridge
+        run: |
+          set -euo pipefail
+          ANDROID_JAR="$ANDROID_HOME/platforms/android-33/android.jar"
+          javac -source 8 -target 8 -cp "$ANDROID_JAR" -d /tmp/tv6/classes \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/*.java
+          find /tmp/tv6/classes -name '*.class' -print0 | xargs -0 "$ANDROID_HOME/build-tools/33.0.3/d8" \
+            --lib "$ANDROID_JAR" --min-api 33 --output /tmp/tv6/dex
+          test -s /tmp/tv6/dex/classes.dex
+          strings /tmp/tv6/dex/classes.dex | grep -q 'LegacyBrightnessUiHook'
+          strings /tmp/tv6/dex/classes.dex | grep -q 'OemRootMenuHook'
+          strings /tmp/tv6/dex/classes.dex | grep -q 'OemLaunchRouteHook'
+          strings /tmp/tv6/dex/classes.dex | grep -q 'OemInlinePreferencesHook'
+      - name: Patch only existing OEM brightness controller and routing
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/tv6/framework
+          apktool if vendor/reference/8052/APK/framework-res.apk -p /tmp/tv6/framework
+          apktool d -f -r -p /tmp/tv6/framework vendor/reference/8052/APK/TvSettingsPlus.apk -o /tmp/tv6/decoded
+          python3 tools/patch_customer0_lightmode_smali.py /tmp/tv6/decoded /tmp/tv6/brightness_report.json
+          python3 tools/patch_aosp_root_menu_smali.py /tmp/tv6/decoded /tmp/tv6/navigation_report.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          path=Path("/tmp/tv6")
+          b=json.loads((path/"brightness_report.json").read_text())
+          n=json.loads((path/"navigation_report.json").read_text())
+          b["edited_smali"]=sorted(set(b["edited_smali"]+n["edited_smali"]))
+          b["edited_dex"]=sorted(set(b["edited_dex"]+n["edited_dex"]))
+          assert set(b["edited_dex"])=={"classes13.dex","classes14.dex"},b
+          assert len(b["edited_smali"])==6,b
+          (path/"patch_report.json").write_text(json.dumps(b,indent=2)+"\n")
+          print("Edited OEM classes:",b["edited_smali"])
+          PY
+          apktool b -p /tmp/tv6/framework /tmp/tv6/decoded -o /tmp/tv6/rebuilt.apk
+          python3 tools/compose_brightness_v3_apk.py \
+             vendor/reference/8052/APK/TvSettingsPlus.apk /tmp/tv6/rebuilt.apk \
+             /tmp/tv6/dex/classes.dex /tmp/tv6/patch_report.json /tmp/tv6/unsigned.apk --version-code 6
+          aapt dump badging /tmp/tv6/unsigned.apk | grep "name='com.android.tv.settings' versionCode='6'"
+          aapt dump xmltree /tmp/tv6/unsigned.apk AndroidManifest.xml > /tmp/tv6/manifest-tree.txt
+          python3 - <<'PY'
+          from pathlib import Path
+          data=Path("/tmp/tv6/manifest-tree.txt").read_text()
+          marker='com.android.tv.settings.mod.SettingsLauncher'
+          assert marker in data, "Launcher alias not in AndroidManifest"
+          section=data[data.index(marker):]
+          for tag in ("com.android.tv.settings.MainSettings",
+                      "android.intent.action.MAIN",
+                      "android.intent.category.LAUNCHER",
+                      "android.intent.category.LEANBACK_LAUNCHER"):
+              assert tag in section, "Missing launcher field: "+tag
+          assert "android:label" in section, "Launcher missing localized label attribute"
+          assert "android:icon" in section and "android:banner" in section, "Launcher gear icon and TV banner required"
+          print("PASS: TvSettingsPlus alias appears for both Android TV and conventional launchers")
+          PY
+          aapt dump badging /tmp/tv6/unsigned.apk | grep -E 'launchable-activity|leanback-launchable-activity' || true
+          for action in android.settings.SETTINGS android.settings.WIFI_SETTINGS android.settings.BLUETOOTH_SETTINGS \
+             android.settings.AUTO_BLUETOOTH android.settings.PROJECTABOUT_SETTINGS; do
+            grep -Fq "$action" /tmp/tv6/manifest-tree.txt
+          done
+      - name: Cert-verified platform signing and archive integrity
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 3 https://raw.githubusercontent.com/aosp-mirror/platform_build/master/target/product/security/platform.x509.pem -o /tmp/tv6/keys/platform.x509.pem
+          curl -fsSL --retry 3 https://raw.githubusercontent.com/aosp-mirror/platform_build/master/target/product/security/platform.pk8 -o /tmp/tv6/keys/platform.pk8
+          ORIGINAL="$(apksigner verify --print-certs vendor/reference/8052/APK/TvSettingsPlus.apk | grep 'Signer #1 certificate SHA-256 digest:' | head -1 | awk '{print $NF}')"
+          PLATFORM="$(openssl x509 -in /tmp/tv6/keys/platform.x509.pem -noout -fingerprint -sha256 | cut -d= -f2 | tr -d : | tr '[:upper:]' '[:lower:]')"
+          test "$ORIGINAL" = "$PLATFORM"
+          zipalign -f -p 4 /tmp/tv6/unsigned.apk /tmp/tv6/aligned.apk
+          apksigner sign --key /tmp/tv6/keys/platform.pk8 --cert /tmp/tv6/keys/platform.x509.pem \
+            --v1-signing-enabled true --v2-signing-enabled true --out /tmp/tv6/TvSettingsPlus-8052-v6-INLINE-MODES-LAUNCHER-EXPERIMENTAL.apk /tmp/tv6/aligned.apk
+          apksigner verify --verbose --print-certs /tmp/tv6/TvSettingsPlus-8052-v6-INLINE-MODES-LAUNCHER-EXPERIMENTAL.apk
+          aapt dump badging /tmp/tv6/TvSettingsPlus-8052-v6-INLINE-MODES-LAUNCHER-EXPERIMENTAL.apk | grep "name='com.android.tv.settings' versionCode='6'"
+          sha256sum /tmp/tv6/TvSettingsPlus-8052-v6-INLINE-MODES-LAUNCHER-EXPERIMENTAL.apk
+      - name: Experimental-only metadata
+        if: always()
+        run: |
+          mkdir -p /tmp/tv6/report
+          cat > /tmp/tv6/report/README.txt <<'EOF'
+          WARNING: EXPERIMENTAL. Not tested on actual projector; DO NOT install as production.
+          TvSettingsPlus 8052 platform-signature-matched v5.
+          Android TV launcher icon: exported activity-alias SettingsLauncher
+          ACTION_MAIN plus LEANBACK_LAUNCHER and LAUNCHER, explicit target
+          com.android.tv.settings.MainSettings; no KuSettings dependency.
+          Launcher decides whether to show/pin system app icon on home.
+          The physical device and OEM launcher filtering are untested.
+          Added five projector settings links into Android TV MainFragment:
+          Projection, Sources, Picture, Sound and General OEM settings.
+          Each link currently launches a known-good OEM MainActivity tab within
+          com.android.tv.settings. This is an intermediate navigation bridge:
+          the OEM page itself is a separate Activity, not embedded into the
+          AOSP two-panel right side yet.
+          Preserves focus/keystone calibration classes and OEM resources,
+          retains customer-specific light mode, hides Bluetooth speaker menu
+          entry, and keeps nine legacy settings Intents.
+          For customerId=0 with reachable OEM BrightReceiver and readable
+          persist.bright.model, switch to in-pane four-option receiver UI.
+          Other customers retain original MtkUtil three-option control.
+          If receiver/property inaccessible, original fullscreen remains as fallback.
+          This is NOT complete KuSettings migration and KuSettings must remain installed.
+          EOF
+          cp /tmp/tv6/patch_report.json /tmp/tv6/report/patch_report.json 2>/dev/null || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tvsettingsplus-8052-v6-inline-modes-launcher-experimental
+          path: |
+            /tmp/tv6/TvSettingsPlus-8052-v6-INLINE-MODES-LAUNCHER-EXPERIMENTAL.apk
+            /tmp/tv6/report/
+          retention-days: 14
+          if-no-files-found: warn
