@@ -1,0 +1,171 @@
+name: Build TvSettingsPlus v14 native HDMI autoplay EDID and OEM five-band EQ
+on:
+  push:
+    paths:
+      - '.github/workflows/build-tvsettingsplus-inline-v14.yml'
+      - 'app/tvsettingsplus-mod/src/main/java/**'
+      - 'tools/compose_brightness_v3_apk.py'
+      - 'tools/patch_aosp_root_menu_smali.py'
+      - 'tools/patch_axml_compat_aliases.py'
+      - 'tools/patch_customer0_lightmode_smali.py'
+  workflow_dispatch:
+concurrency:
+  group: tvsettings-v14-inline-build
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Prepare OEM decode and Android SDK tools
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/tv14 /tmp/tv14/classes /tmp/tv14/dex /tmp/tv14/keys
+          curl -fsSL --retry 3 https://github.com/iBotPeaches/Apktool/releases/download/v2.11.1/apktool_2.11.1.jar -o /tmp/tv14/apktool.jar
+          printf '#!/bin/sh\nexec java -jar /tmp/tv14/apktool.jar "$@"\n' > /tmp/tv14/apktool
+          chmod +x /tmp/tv14/apktool
+          echo "/tmp/tv14" >> "$GITHUB_PATH"
+          if [ ! -f "$ANDROID_HOME/platforms/android-33/android.jar" ] || [ ! -x "$ANDROID_HOME/build-tools/33.0.3/d8" ]; then
+            SDK_MANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | head -n 1)"
+            yes | "$SDK_MANAGER" "platforms;android-33" "build-tools;33.0.3" || true
+          fi
+          test -f "$ANDROID_HOME/platforms/android-33/android.jar"
+          test -x "$ANDROID_HOME/build-tools/33.0.3/d8"
+          echo "$ANDROID_HOME/build-tools/33.0.3" >> "$GITHUB_PATH"
+          echo 'e4184a13fbf56fa069effc6a40ea50c0da7e9190321b389f59ba34700a80d0a1  vendor/reference/8052/APK/TvSettingsPlus.apk' | sha256sum -c -
+      - name: Compile Android 13 OEM-aware right-pane bridge
+        run: |
+          set -euo pipefail
+          ANDROID_JAR="$ANDROID_HOME/platforms/android-33/android.jar"
+          javac -source 8 -target 8 -cp "$ANDROID_JAR" -d /tmp/tv14/classes \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/*.java
+          find /tmp/tv14/classes -name '*.class' -print0 | xargs -0 "$ANDROID_HOME/build-tools/33.0.3/d8" \
+            --lib "$ANDROID_JAR" --min-api 33 --output /tmp/tv14/dex
+          test -s /tmp/tv14/dex/classes.dex
+          strings /tmp/tv14/dex/classes.dex | grep -q 'LegacyBrightnessUiHook'
+          strings /tmp/tv14/dex/classes.dex | grep -q 'OemRootMenuHook'
+          strings /tmp/tv14/dex/classes.dex | grep -q 'OemLaunchRouteHook'
+          strings /tmp/tv14/dex/classes.dex | grep -q 'OemInlinePreferencesHook'
+          strings /tmp/tv14/dex/classes.dex | grep -q 'OemInlineSlidersHook'
+          strings /tmp/tv14/dex/classes.dex | grep -q 'OemProjectorOrientationHook'
+          strings /tmp/tv14/dex/classes.dex | grep -q 'OemFiveBandEqualizerHook'
+          strings /tmp/tv14/dex/classes.dex | grep -q 'OemHdmiEdidHook'
+          strings /tmp/tv14/dex/classes.dex | grep -q 'OemHdmiAutoPlayHook'
+          strings /tmp/tv14/dex/classes.dex | grep -q 'persist.rjpj.hdmiplug.autoplay'
+          strings /tmp/tv14/dex/classes.dex | grep -q 'tv_input_hdmi_edid_version'
+          for key in sound_equalizer_detail_120hz sound_equalizer_detail_500hz \
+                     sound_equalizer_detail_1500hz sound_equalizer_detail_5000hz \
+                     sound_equalizer_detail_10000hz; do
+            strings /tmp/tv14/dex/classes.dex | grep -Fq "$key"
+          done
+          grep -Fq '"Изображение · Проектор"' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemInlinePreferencesHook.java
+          grep -Fq '"Звук · Проектор"' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemInlinePreferencesHook.java
+          ! grep -Fq '"projectorsoft_hdmi_gamemode"' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemInlinePreferencesHook.java
+      - name: Patch only existing OEM brightness controller and routing
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/tv14/framework
+          apktool if vendor/reference/8052/APK/framework-res.apk -p /tmp/tv14/framework
+          apktool d -f -r -p /tmp/tv14/framework vendor/reference/8052/APK/TvSettingsPlus.apk -o /tmp/tv14/decoded
+          python3 tools/patch_customer0_lightmode_smali.py /tmp/tv14/decoded /tmp/tv14/brightness_report.json
+          python3 tools/patch_aosp_root_menu_smali.py /tmp/tv14/decoded /tmp/tv14/navigation_report.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          path=Path("/tmp/tv14")
+          b=json.loads((path/"brightness_report.json").read_text())
+          n=json.loads((path/"navigation_report.json").read_text())
+          b["edited_smali"]=sorted(set(b["edited_smali"]+n["edited_smali"]))
+          b["edited_dex"]=sorted(set(b["edited_dex"]+n["edited_dex"]))
+          assert set(b["edited_dex"])=={"classes13.dex","classes14.dex"},b
+          assert len(b["edited_smali"])==6,b
+          (path/"patch_report.json").write_text(json.dumps(b,indent=2)+"\n")
+          print("Edited OEM classes:",b["edited_smali"])
+          PY
+          apktool b -p /tmp/tv14/framework /tmp/tv14/decoded -o /tmp/tv14/rebuilt.apk
+          python3 tools/compose_brightness_v3_apk.py \
+             vendor/reference/8052/APK/TvSettingsPlus.apk /tmp/tv14/rebuilt.apk \
+             /tmp/tv14/dex/classes.dex /tmp/tv14/patch_report.json /tmp/tv14/unsigned.apk --version-code 14
+          aapt dump badging /tmp/tv14/unsigned.apk | grep "name='com.android.tv.settings' versionCode='14'"
+          aapt dump xmltree /tmp/tv14/unsigned.apk AndroidManifest.xml > /tmp/tv14/manifest-tree.txt
+          python3 - <<'PY'
+          from pathlib import Path
+          data=Path("/tmp/tv14/manifest-tree.txt").read_text()
+          marker='com.android.tv.settings.mod.SettingsLauncher'
+          assert marker in data, "Launcher alias not in AndroidManifest"
+          section=data[data.index(marker):]
+          for tag in ("com.android.tv.settings.MainSettings",
+                      "android.intent.action.MAIN",
+                      "android.intent.category.LAUNCHER",
+                      "android.intent.category.LEANBACK_LAUNCHER"):
+              assert tag in section, "Missing launcher field: "+tag
+          assert "android:label" in section, "Launcher missing localized label attribute"
+          assert "android:icon" in section and "android:banner" in section, "Launcher gear icon and TV banner required"
+          print("PASS: TvSettingsPlus alias appears for both Android TV and conventional launchers")
+          PY
+          aapt dump badging /tmp/tv14/unsigned.apk | grep -E 'launchable-activity|leanback-launchable-activity' || true
+          for action in android.settings.SETTINGS android.settings.WIFI_SETTINGS android.settings.BLUETOOTH_SETTINGS \
+             android.settings.AUTO_BLUETOOTH android.settings.PROJECTABOUT_SETTINGS; do
+            grep -Fq "$action" /tmp/tv14/manifest-tree.txt
+          done
+      - name: Cert-verified platform signing and archive integrity
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 3 https://raw.githubusercontent.com/aosp-mirror/platform_build/master/target/product/security/platform.x509.pem -o /tmp/tv14/keys/platform.x509.pem
+          curl -fsSL --retry 3 https://raw.githubusercontent.com/aosp-mirror/platform_build/master/target/product/security/platform.pk8 -o /tmp/tv14/keys/platform.pk8
+          ORIGINAL="$(apksigner verify --print-certs vendor/reference/8052/APK/TvSettingsPlus.apk | grep 'Signer #1 certificate SHA-256 digest:' | head -1 | awk '{print $NF}')"
+          PLATFORM="$(openssl x509 -in /tmp/tv14/keys/platform.x509.pem -noout -fingerprint -sha256 | cut -d= -f2 | tr -d : | tr '[:upper:]' '[:lower:]')"
+          test "$ORIGINAL" = "$PLATFORM"
+          zipalign -f -p 4 /tmp/tv14/unsigned.apk /tmp/tv14/aligned.apk
+          apksigner sign --key /tmp/tv14/keys/platform.pk8 --cert /tmp/tv14/keys/platform.x509.pem \
+            --v1-signing-enabled true --v2-signing-enabled true --out /tmp/tv14/TvSettingsPlus-8052-v14-HDMI-AUTOPLAY-EXPERIMENTAL.apk /tmp/tv14/aligned.apk
+          apksigner verify --verbose --print-certs /tmp/tv14/TvSettingsPlus-8052-v14-HDMI-AUTOPLAY-EXPERIMENTAL.apk
+          aapt dump badging /tmp/tv14/TvSettingsPlus-8052-v14-HDMI-AUTOPLAY-EXPERIMENTAL.apk | grep "name='com.android.tv.settings' versionCode='14'"
+          sha256sum /tmp/tv14/TvSettingsPlus-8052-v14-HDMI-AUTOPLAY-EXPERIMENTAL.apk
+      - name: Experimental-only metadata
+        if: always()
+        run: |
+          mkdir -p /tmp/tv14/report
+          cat > /tmp/tv14/report/README.txt <<'EOF'
+          WARNING: EXPERIMENTAL. Not tested on actual projector; DO NOT install as production.
+          TvSettingsPlus 8052 platform-signature-matched v8.
+          Adds AOSP SeekBarPreferences for factory picture brightness,
+          contrast, saturation, hue, sharpness, RGB gains, bass and treble.
+          Exact OEM XML min/max limits verified; absent keys hidden.
+          Android TV launcher icon: exported activity-alias SettingsLauncher
+          ACTION_MAIN plus LEANBACK_LAUNCHER and LAUNCHER, explicit target
+          com.android.tv.settings.MainSettings; no KuSettings dependency.
+          Launcher decides whether to show/pin system app icon on home.
+          The physical device and OEM launcher filtering are untested.
+          Added five projector settings links into Android TV MainFragment:
+          Projection, Sources, Picture, Sound and General OEM settings.
+          Each link currently launches a known-good OEM MainActivity tab within
+          com.android.tv.settings. This is an intermediate navigation bridge:
+          the OEM page itself is a separate Activity, not embedded into the
+          AOSP two-panel right side yet.
+          Preserves focus/keystone calibration classes and OEM resources,
+          retains customer-specific light mode, hides Bluetooth speaker menu
+          entry, and keeps nine legacy settings Intents.
+          For customerId=0 with reachable OEM BrightReceiver and readable
+          persist.bright.model, switch to in-pane four-option receiver UI.
+          Other customers retain original MtkUtil three-option control.
+          If receiver/property inaccessible, original fullscreen remains as fallback.
+          This is NOT complete KuSettings migration and KuSettings must remain installed.
+          EOF
+          cp /tmp/tv14/patch_report.json /tmp/tv14/report/patch_report.json 2>/dev/null || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tvsettingsplus-8052-v14-hdmi-autoplay-experimental
+          path: |
+            /tmp/tv14/TvSettingsPlus-8052-v14-HDMI-AUTOPLAY-EXPERIMENTAL.apk
+            /tmp/tv14/report/
+          retention-days: 14
+          if-no-files-found: warn
