@@ -1,13 +1,5 @@
 name: Build experimental TvSettingsPlus v4 AOSP root OEM integration
 on:
-  push:
-    paths:
-      - ".github/workflows/build-tvsettingsplus-oem-root-v4.yml"
-      - "tools/patch_aosp_root_menu_smali.py"
-      - "tools/patch_customer0_lightmode_smali.py"
-      - "tools/compose_brightness_v3_apk.py"
-      - "tools/patch_customer0_lightmode_smali.py"
-      - "app/tvsettingsplus-mod/src/main/java/**"
   workflow_dispatch:
 concurrency:
   group: tvsettings-v4-root-build
