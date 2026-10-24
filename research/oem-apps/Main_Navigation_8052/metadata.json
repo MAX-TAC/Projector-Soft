@@ -1,0 +1,605 @@
+{
+  "com/android/tv/settings/MainSettings.java": {
+    "path": "com/android/tv/settings/MainSettings.java",
+    "methods": {
+      "onCreate": [],
+      "onCreatePreferences": [],
+      "onViewCreated": [],
+      "onPreferenceTreeClick": [],
+      "onResume": [],
+      "init": [],
+      "onStart": []
+    },
+    "resource_names": [],
+    "intent_literals": [],
+    "fragment_names": []
+  },
+  "com/android/tv/settings/uicustom/MainActivity.java": {
+    "path": "com/android/tv/settings/uicustom/MainActivity.java",
+    "methods": {
+      "onCreate": [
+        {
+          "line": 111,
+          "body_lines": 9,
+          "calls": [
+            "getWindow",
+            "initData",
+            "initMenuEvents",
+            "initPageManager",
+            "initView",
+            "onCreate",
+            "setContentView",
+            "setSoftInputMode"
+          ]
+        }
+      ],
+      "initView": [
+        {
+          "line": 175,
+          "body_lines": 58,
+          "calls": [
+            "equals",
+            "findViewById",
+            "if",
+            "initView",
+            "isEmpty",
+            "requestFocus",
+            "setHasChildFocus",
+            "switchPage"
+          ]
+        }
+      ],
+      "onNewIntent": [],
+      "onResume": [
+        {
+          "line": 122,
+          "body_lines": 4,
+          "calls": [
+            "onResume",
+            "start"
+          ]
+        }
+      ],
+      "onKeyDown": [
+        {
+          "line": 293,
+          "body_lines": 57,
+          "calls": [
+            "forceRefresh",
+            "getCurStat",
+            "getFragmentById",
+            "hasChildWithFocus",
+            "i",
+            "if",
+            "intValue",
+            "isAttachedToWindow",
+            "isEmpty",
+            "noticeLastFocusedChildRequestFocus",
+            "onKeyDown",
+            "pop",
+            "requestFocus",
+            "requestFocusToFirstFragmentItem",
+            "resetExitTimer",
+            "setVisibilityView",
+            "shouldExecute",
+            "size",
+            "switchPage",
+            "switchPage2"
+          ]
+        }
+      ],
+      "initData": [
+        {
+          "line": 167,
+          "body_lines": 7,
+          "calls": [
+            "getAction",
+            "getConfiguration",
+            "getIntent",
+            "getResources",
+            "if",
+            "initData"
+          ]
+        }
+      ],
+      "onClick": []
+    },
+    "resource_names": [
+      "activity_main",
+      "content_container",
+      "item_bluetooth",
+      "item_general",
+      "item_picture",
+      "item_projector",
+      "item_sound",
+      "item_source",
+      "item_system",
+      "item_wifi",
+      "main_container",
+      "view_menu_bar"
+    ],
+    "intent_literals": [
+      "android.settings.BLUETOOTH_SETTINGS",
+      "android.settings.DEVICE_INFO_SETTINGS",
+      "android.settings.NETWORK_SETTINGS",
+      "android.settings.PICTURE_SETTINGS",
+      "android.settings.SETTINGS",
+      "android.settings.SOUND_SETTINGS",
+      "android.settings.WIFI_SETTINGS"
+    ],
+    "fragment_names": [
+      "MainActivity"
+    ]
+  },
+  "com/android/tv/settings/uicustom/floatmenu/FloatMenuManager.java": {
+    "path": "com/android/tv/settings/uicustom/floatmenu/FloatMenuManager.java",
+    "methods": {
+      "openSecondaryInterface": [
+        {
+          "line": 365,
+          "body_lines": 60,
+          "calls": [
+            "SecondaryInterfaceInfo",
+            "catch",
+            "findFirstFocusable",
+            "findFocus",
+            "from",
+            "getId",
+            "getVisibility",
+            "if",
+            "inflate",
+            "isEmpty",
+            "newInstance",
+            "onAttach",
+            "openSecondaryInterface",
+            "peek",
+            "printStackTrace",
+            "push",
+            "removeAllViews",
+            "requestFocus",
+            "setVisibility"
+          ]
+        }
+      ],
+      "jumpToExternalActivity": [
+        {
+          "line": 340,
+          "body_lines": 21,
+          "calls": [
+            "Intent",
+            "addFlags",
+            "findFocus",
+            "getId",
+            "getName",
+            "getSelectedPosition",
+            "hideMenu",
+            "if",
+            "isEmpty",
+            "jumpToExternalActivity",
+            "peek",
+            "putExtra",
+            "startActivity",
+            "stopAutoHideTimer"
+          ]
+        }
+      ],
+      "init": [],
+      "show": []
+    },
+    "resource_names": [
+      "fragment_bluetooth",
+      "fragment_general",
+      "fragment_picture",
+      "fragment_projector",
+      "fragment_sound",
+      "fragment_source",
+      "fragment_system",
+      "fragment_wifi_new",
+      "layout_float_menu",
+      "main_menu_container",
+      "menu_container",
+      "menu_item_bluetooth_settings",
+      "menu_item_general_settings",
+      "menu_item_picture_settings",
+      "menu_item_projector_settings",
+      "menu_item_sound_settings",
+      "menu_item_source_settings",
+      "menu_item_system_settings",
+      "menu_item_wifi_settings",
+      "rv_main_menu",
+      "secondary_interface_container",
+      "sub_menu_container"
+    ],
+    "intent_literals": [],
+    "fragment_names": []
+  },
+  "com/android/tv/settings/uicustom/fragment/general/GeneralFragment.java": {
+    "path": "com/android/tv/settings/uicustom/fragment/general/GeneralFragment.java",
+    "methods": {
+      "onCreate": [],
+      "onViewCreated": [],
+      "initView": [
+        {
+          "line": 60,
+          "body_lines": 71,
+          "calls": [
+            "Bundle",
+            "ComponentName",
+            "Intent",
+            "OnClickListener",
+            "addFlags",
+            "findViewById",
+            "fontScaleToContentResId",
+            "getCurBrightnessModeResId",
+            "getInstance",
+            "if",
+            "initView",
+            "onClick",
+            "onSwitchChangeListener",
+            "onTitleSwitchListener",
+            "putElectricityBoot",
+            "putInt",
+            "sendEventToActivity",
+            "setComponent",
+            "setContextText",
+            "setOnClickListener",
+            "setOnTitleSwitchListener",
+            "setSwitchEnable",
+            "startActivity"
+          ]
+        }
+      ]
+    },
+    "resource_names": [
+      "fragment_general",
+      "general_font_size_large",
+      "general_font_size_medium",
+      "general_font_size_small",
+      "general_font_size_xlarge",
+      "general_projection_brightness_mode_auto",
+      "general_projection_brightness_mode_eco",
+      "general_projection_brightness_mode_highlight",
+      "general_projection_brightness_mode_standard",
+      "system_language",
+      "tciv_general_date_time",
+      "tciv_general_font_size",
+      "tciv_general_language_settings",
+      "tciv_general_projection_brightness_mode",
+      "tciv_general_screensaver_settings",
+      "tsv_general_power_on_up"
+    ],
+    "intent_literals": [
+      "android.settings.BRIGHT_SETTINGS",
+      "com.coolux.source",
+      "com.coolux.source.activity.BrightActivity"
+    ],
+    "fragment_names": [
+      "GeneralFragment"
+    ]
+  },
+  "com/android/tv/settings/uicustom/fragment/picture/PictureFragment.java": {
+    "path": "com/android/tv/settings/uicustom/fragment/picture/PictureFragment.java",
+    "methods": {
+      "onCreate": [],
+      "onViewCreated": [],
+      "initView": [
+        {
+          "line": 45,
+          "body_lines": 20,
+          "calls": [
+            "findViewById",
+            "initCheck",
+            "initListener",
+            "initView"
+          ]
+        }
+      ]
+    },
+    "resource_names": [
+      "fragment_picture",
+      "rjRadioGroup_color_temperature",
+      "rjRadioGroup_picture_mode",
+      "rjscrollView",
+      "rtv_color_temp_cool",
+      "rtv_color_temp_custom",
+      "rtv_color_temp_standard",
+      "rtv_color_temp_warm",
+      "rtv_picture_mode_energy_saving",
+      "rtv_picture_mode_game",
+      "rtv_picture_mode_movie",
+      "rtv_picture_mode_sport",
+      "rtv_picture_mode_standard",
+      "rtv_picture_mode_user",
+      "rtv_picture_mode_vivid",
+      "sound_reset_to_default",
+      "str_confirm",
+      "tciv_picture_advanced_settings",
+      "tciv_picture_reset"
+    ],
+    "intent_literals": [],
+    "fragment_names": [
+      "PictureFragment"
+    ]
+  },
+  "com/android/tv/settings/uicustom/fragment/source/SourceFragment.java": {
+    "path": "com/android/tv/settings/uicustom/fragment/source/SourceFragment.java",
+    "methods": {
+      "onCreate": [],
+      "onViewCreated": [],
+      "initView": [
+        {
+          "line": 63,
+          "body_lines": 90,
+          "calls": [
+            "OnClickListener",
+            "checkBluetoothSpeakerPackage",
+            "findViewById",
+            "if",
+            "initView",
+            "lambda$initView$0",
+            "lambda$initView$1",
+            "lambda$initView$2",
+            "lambda$initView$3",
+            "lambda$initView$4",
+            "lambda$initView$5",
+            "lambda$initView$6",
+            "lambda$initView$7",
+            "lambda$initView$8",
+            "lambda$initView$9",
+            "onClick",
+            "onSwitchChangeListener",
+            "onTitleSwitchListener",
+            "setContextText",
+            "setDisableFocus",
+            "setHdmiCecAutoDeviceOffEnabled",
+            "setOnClickListener",
+            "setOnTitleSwitchListener",
+            "setSwitchEnable",
+            "setTitle",
+            "setVisibility",
+            "updatePowerOnSourceAndApp"
+          ]
+        }
+      ]
+    },
+    "resource_names": [
+      "fragment_source",
+      "source_av",
+      "source_hdmi",
+      "source_hdmi_1",
+      "source_hdmi_2",
+      "source_usb",
+      "str_off",
+      "tciv_source_bluetooth_speaker",
+      "tciv_source_edid_version",
+      "tciv_source_hdmi",
+      "tciv_source_hdmi2",
+      "tciv_source_power_on",
+      "tciv_source_power_on_app",
+      "tciv_source_usb",
+      "tsv_hdmi_cec_control",
+      "tsv_hdmi_device_auto_off",
+      "tsv_source_plug_and_play"
+    ],
+    "intent_literals": [],
+    "fragment_names": [
+      "SourceFragment"
+    ]
+  },
+  "com/android/tv/settings/uicustom/fragment/sound/SoundFragment.java": {
+    "path": "com/android/tv/settings/uicustom/fragment/sound/SoundFragment.java",
+    "methods": {
+      "onCreate": [],
+      "onViewCreated": [],
+      "initView": [
+        {
+          "line": 52,
+          "body_lines": 17,
+          "calls": [
+            "findViewById",
+            "initCheck",
+            "initListener",
+            "initView"
+          ]
+        }
+      ]
+    },
+    "resource_names": [
+      "fragment_sound",
+      "rjRadioGroup",
+      "rtv_sound_mode_custom",
+      "rtv_sound_mode_movie",
+      "rtv_sound_mode_music",
+      "rtv_sound_mode_news",
+      "rtv_sound_mode_sports",
+      "rtv_sound_mode_standard",
+      "rtv_sound_mode_vivid",
+      "sound_reset_to_default",
+      "str_confirm",
+      "tsv_sound_auto_volume",
+      "tsv_sound_earc",
+      "tsv_sound_surround",
+      "tsv_source_key_tone",
+      "tvic_sound_reset"
+    ],
+    "intent_literals": [],
+    "fragment_names": [
+      "SoundFragment"
+    ]
+  },
+  "com/android/tv/settings/uicustom/fragment/projector/ProjectorFragment.java": {
+    "path": "com/android/tv/settings/uicustom/fragment/projector/ProjectorFragment.java",
+    "methods": {
+      "onCreate": [],
+      "onViewCreated": [],
+      "initView": [
+        {
+          "line": 49,
+          "body_lines": 74,
+          "calls": [
+            "Bundle",
+            "OnClickListener",
+            "findViewById",
+            "initView",
+            "jumpActivityByAction",
+            "onClick",
+            "putInt",
+            "sendEventToActivity",
+            "setContextText",
+            "setOnClickListener",
+            "setVisibility",
+            "showResetDialog",
+            "startAutoFocus",
+            "startAutoKeystone"
+          ]
+        }
+      ]
+    },
+    "resource_names": [
+      "fragment_projector",
+      "projector_keystone_correction_reset",
+      "str_cancel",
+      "str_confirm",
+      "tciv_projector_auto_focus",
+      "tciv_projector_auto_keystone",
+      "tciv_projector_focus_settings",
+      "tciv_projector_four_point_keystone",
+      "tciv_projector_hv_keystone",
+      "tciv_projector_keystone_settings",
+      "tciv_projector_mode",
+      "tciv_projector_reset_keystone",
+      "tciv_projector_screen_zoom"
+    ],
+    "intent_literals": [],
+    "fragment_names": [
+      "ProjectorFragment"
+    ]
+  },
+  "com/android/tv/settings/uicustom/floatmenu/controller/general/GeneralSubMenuController.java": {
+    "path": "com/android/tv/settings/uicustom/floatmenu/controller/general/GeneralSubMenuController.java",
+    "methods": {
+      "initView": [
+        {
+          "line": 86,
+          "body_lines": 18,
+          "calls": [
+            "findViewById",
+            "fontScaleToContentResId",
+            "getCurBrightnessModeResId",
+            "if",
+            "initListeners",
+            "initView",
+            "setContextText",
+            "setSwitchEnable"
+          ]
+        }
+      ],
+      "onClick": [
+        {
+          "line": 108,
+          "body_lines": 3,
+          "calls": [
+            "getContext",
+            "getInstance",
+            "onClick",
+            "openSecondaryInterface"
+          ]
+        },
+        {
+          "line": 114,
+          "body_lines": 3,
+          "calls": [
+            "getContext",
+            "getInstance",
+            "onClick",
+            "openSecondaryInterface"
+          ]
+        },
+        {
+          "line": 120,
+          "body_lines": 3,
+          "calls": [
+            "getContext",
+            "getInstance",
+            "onClick",
+            "openSecondaryInterface"
+          ]
+        },
+        {
+          "line": 126,
+          "body_lines": 3,
+          "calls": [
+            "getContext",
+            "getInstance",
+            "onClick",
+            "openSecondaryInterface"
+          ]
+        }
+      ]
+    },
+    "resource_names": [
+      "fragment_general_brightness_mode_settins",
+      "fragment_general_date_time",
+      "fragment_general_font_size_settings",
+      "fragment_general_language_settings",
+      "fragment_general_screensaver",
+      "general_font_size_large",
+      "general_font_size_medium",
+      "general_font_size_small",
+      "general_font_size_xlarge",
+      "general_projection_brightness_mode_auto",
+      "general_projection_brightness_mode_eco",
+      "general_projection_brightness_mode_highlight",
+      "general_projection_brightness_mode_standard",
+      "tciv_general_date_time",
+      "tciv_general_font_size",
+      "tciv_general_language_settings",
+      "tciv_general_projection_brightness_mode",
+      "tciv_general_screensaver_settings",
+      "tsv_general_power_on_up"
+    ],
+    "intent_literals": [
+      "android.settings.BRIGHT_SETTINGS",
+      "com.coolux.source",
+      "com.coolux.source.activity.BrightActivity"
+    ],
+    "fragment_names": [
+      "GeneralSubMenuController"
+    ]
+  },
+  "com/android/tv/settings/uicustom/floatmenu/FloatMenuService.java": {
+    "path": "com/android/tv/settings/uicustom/floatmenu/FloatMenuService.java",
+    "methods": {
+      "onCreate": [
+        {
+          "line": 14,
+          "body_lines": 5,
+          "calls": [
+            "HomeKeyReceiver",
+            "IntentFilter",
+            "onCreate",
+            "registerReceiver"
+          ]
+        }
+      ],
+      "onStartCommand": [
+        {
+          "line": 21,
+          "body_lines": 26,
+          "calls": [
+            "getBooleanExtra",
+            "getInstance",
+            "getIntExtra",
+            "getStringExtra",
+            "if",
+            "onStartCommand",
+            "showMenu"
+          ]
+        }
+      ]
+    },
+    "resource_names": [],
+    "intent_literals": [],
+    "fragment_names": []
+  }
+}
