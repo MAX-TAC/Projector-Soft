@@ -1,0 +1,173 @@
+{
+  "com/android/tv/settings/uicustom/floatmenu/controller/source/SourceSubMenuController.java": [
+    {
+      "declaration": "private void initBoardConfig() {",
+      "line": 100,
+      "string_literals": [],
+      "calls": [
+        "initBoardConfig",
+        "isEmpty",
+        "split",
+        "trim"
+      ]
+    },
+    {
+      "declaration": "public static /* synthetic */ void lambda$initView$8(android.view.View view) {",
+      "line": 317,
+      "string_literals": [],
+      "calls": [
+        "getContext",
+        "getInstance",
+        "lambda$initView$8",
+        "openSecondaryInterface"
+      ]
+    },
+    {
+      "declaration": "public static /* synthetic */ void lambda$initView$9(android.view.View view) {",
+      "line": 322,
+      "string_literals": [],
+      "calls": [
+        "getContext",
+        "getInstance",
+        "lambda$initView$9",
+        "openSecondaryInterface"
+      ]
+    },
+    {
+      "declaration": "public /* synthetic */ void lambda$initView$10(boolean z) {",
+      "line": 327,
+      "string_literals": [],
+      "calls": [
+        "getContentResolver",
+        "lambda$initView$10",
+        "putGlobalValueInt",
+        "resetTrapezoid"
+      ]
+    },
+    {
+      "declaration": "public /* synthetic */ void lambda$initView$11(boolean z) {",
+      "line": 336,
+      "string_literals": [
+        "persist.rjpj.hdmiplug.autoplay"
+      ],
+      "calls": [
+        "lambda$initView$11",
+        "set"
+      ]
+    },
+    {
+      "declaration": "public /* synthetic */ void lambda$initView$12(boolean z) {",
+      "line": 342,
+      "string_literals": [],
+      "calls": [
+        "MtkTvCecAnBase",
+        "getContentResolver",
+        "getInstance",
+        "isSupportEARC",
+        "isSupportPowerConfirmed",
+        "lambda$initView$12",
+        "printStackTrace",
+        "putGlobalValueInt",
+        "putInt",
+        "setDisableFocus",
+        "setEarcEnable",
+        "setHdmiCecAutoDeviceOffEnabled",
+        "setHdmiCecControlEnabled",
+        "setSwitchEnable",
+        "showCecEnergyDialog"
+      ]
+    },
+    {
+      "declaration": "public /* synthetic */ void lambda$initView$13(boolean z) {",
+      "line": 369,
+      "string_literals": [],
+      "calls": [
+        "lambda$initView$13",
+        "setHdmiCecAutoDeviceOffEnabled"
+      ]
+    },
+    {
+      "declaration": "private int getEdidVersion() {",
+      "line": 374,
+      "string_literals": [],
+      "calls": [
+        "MtkTvVideoInfoBase",
+        "d",
+        "getEdidVersion",
+        "getInstance",
+        "getU8EdidIndex",
+        "getVideoInfoData"
+      ]
+    },
+    {
+      "declaration": "private int validateEdidVersion(int i) {",
+      "line": 380,
+      "string_literals": [],
+      "calls": [
+        "validateEdidVersion"
+      ]
+    },
+    {
+      "declaration": "private void updateEdidEnableState() {",
+      "line": 385,
+      "string_literals": [],
+      "calls": [
+        "StringBuilder",
+        "append",
+        "d",
+        "isHDMISource",
+        "setDisableFocus",
+        "toString",
+        "updateEdidEnableState"
+      ]
+    }
+  ],
+  "com/android/tv/settings/uicustom/fragment/source/SourceFragment.java": [
+    {
+      "declaration": "private void initBoardConfig() {",
+      "line": 55,
+      "string_literals": [],
+      "calls": [
+        "initBoardConfig"
+      ]
+    },
+    {
+      "declaration": "public /* synthetic */ void lambda$initView$8(boolean z) {",
+      "line": 202,
+      "string_literals": [],
+      "calls": [
+        "MtkTvCecAnBase",
+        "getInstance",
+        "isSupportEARC",
+        "isSupportPowerConfirmed",
+        "lambda$initView$8",
+        "printStackTrace",
+        "putGlobalValueInt",
+        "putInt",
+        "setDisableFocus",
+        "setEarcEnable",
+        "setHdmiCecAutoDeviceOffEnabled",
+        "setHdmiCecControlEnabled",
+        "setSwitchEnable",
+        "showCecEnergyDialog"
+      ]
+    },
+    {
+      "declaration": "public /* synthetic */ void lambda$initView$9(boolean z) {",
+      "line": 229,
+      "string_literals": [],
+      "calls": [
+        "lambda$initView$9",
+        "setHdmiCecAutoDeviceOffEnabled"
+      ]
+    }
+  ],
+  "com/android/tv/settings/uicustom/util/MtkUtil.java": [],
+  "eq_named_classes": [
+    {
+      "app": "TvSettingsPlus",
+      "class": "com/android/tv/settings/partnercustomizer/sound/equalizerdetail/EqualizerDetailFragment.java",
+      "methods": []
+    }
+  ]
+}
