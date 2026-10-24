@@ -1,14 +1,5 @@
 name: Build experimental TvSettingsPlus v7 native picture color sound toggles and launcher
 on:
-  push:
-    paths:
-      - ".github/workflows/build-tvsettingsplus-inline-v7.yml"
-      - "tools/patch_axml_compat_aliases.py"
-      - "tools/patch_aosp_root_menu_smali.py"
-      - "tools/patch_customer0_lightmode_smali.py"
-      - "tools/compose_brightness_v3_apk.py"
-      - "tools/patch_customer0_lightmode_smali.py"
-      - "app/tvsettingsplus-mod/src/main/java/**"
   workflow_dispatch:
 concurrency:
   group: tvsettings-v7-inline-build
