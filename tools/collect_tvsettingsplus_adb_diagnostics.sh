@@ -90,6 +90,12 @@ capture "activity/brightness_receiver_resolution.txt" 'cmd package query-receive
 capture "activity/brightness_receiver_manifest.txt" 'dumpsys package com.coolux.source | grep -E -C 6 "BrightReceiver|com.action.brightReceiver|brightModel" | head -n 180'
 capture "activity/boot_source_service.txt" 'dumpsys package com.coolux.source | grep -E -C 3 "BOOT_COMPLETED|TimeService|BootupReceiver" | head -n 150'
 
+capture "status/hdmi_boot_source.txt" 'for p in persist.trd.source_id persist.rjpj.hdmiplug.autoplay ro.rjpj.machine.id; do echo "$p=$(getprop "$p")"; done'
+capture "system/tv_input_manager.txt" 'dumpsys tv_input 2>&1 | head -n 500'
+capture "system/hdmi_cec_state.txt" 'dumpsys hdmi_control 2>&1 | head -n 450'
+capture "status/oem_cec_and_eq.txt" 'for key in "Settings.Global.HDMI_CONTROL_ENABLED" "sound_equalizer_detail_120hz" "sound_equalizer_detail_500hz" "sound_equalizer_detail_1500hz" "sound_equalizer_detail_5000hz" "sound_equalizer_detail_10000hz" "tv_input_hdmi_edid_version"; do printf "%s=" "$key"; settings get global "$key" 2>&1; done'
+
+
 capture "system/xtzm_setting.txt" 'if [ -r /system/etc/xtzm_setting.txt ]; then cat /system/etc/xtzm_setting.txt; else echo "not readable"; fi'
 capture "system/whaletv_config.json" 'if [ -r /system/menu_config_xml/whaletv_config.json ]; then cat /system/menu_config_xml/whaletv_config.json; else echo "not readable"; fi'
 capture "system/oem_paths.txt" 'ls -ld /system/app/KuSettings /system/app/KuSetupWizard /system_ext/priv-app/TvSettingsPlus /system/etc/xtzm_setting.txt /system/menu_config_xml/whaletv_config.json 2>&1'
@@ -120,7 +126,7 @@ packages = package enabled state, exported receivers, services, permissions;
 activity = running KuSourceRJ TimeService, KuSettings watchdog, current focus;
 ui = active Settings screen after user optionally opened via remote;
 system = currently installed OEM settingApps and launcher config;
-status = hardware version, command diagnostics.
+status = hardware version, HDMI source-on-boot and EQ/CEC read-only diagnostics.
 Some commands may be unsupported by the OEM shell; examine status/commands.log.
 Check ZIP for device-specific identifiers or private data before forwarding.
 MSG
