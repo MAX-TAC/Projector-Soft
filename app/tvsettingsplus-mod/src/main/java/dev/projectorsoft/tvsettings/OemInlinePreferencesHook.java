@@ -93,6 +93,13 @@ public final class OemInlinePreferencesHook {
                 addList(category,preference,context,"projectorsoft_memc",
                         "MEMC (OEM)",mjcKey,effects,ids,Integer.parseInt(mjcRaw),231);
             }
+            // HDMI gaming mode is actually used by OEM SourceSubMenuController.
+            // Uses the same PreferenceConfigUtilsBase constant and requires
+            // an existing factory setting; no hidden vendor APIs bypassed.
+            String gameKey=vendorKey("KEY_PICTURE_ADVANCE_VIDEO_GAME_MODE");
+            if (gameKey != null) addSwitchIfPresent(category,preference,context,
+                    "projectorsoft_hdmi_gamemode","Низкая задержка HDMI",gameKey,232);
+
             // Stock ProjectorManager orientation codes, not calibration/keystone.
             OemProjectorOrientationHook.install(context,category,preference);
         } catch(Throwable e) {
