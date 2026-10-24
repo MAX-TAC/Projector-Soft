@@ -1,0 +1,113 @@
+{
+  "com/android/tv/settings/partnercustomizer/utils/ProgressBarDialog.java": [
+    {
+      "method": "setData",
+      "line": 282,
+      "signature": "public void setData(java.lang.CharSequence charSequence, java.lang.String str, boolean z) {",
+      "literals": [
+        "ForceSpkVolAdj=false",
+        "ForceSpkVolAdj=true",
+        "current = "
+      ],
+      "nums": []
+    },
+    {
+      "method": "setProgressBar",
+      "line": 530,
+      "signature": "public void setProgressBar(int i, boolean z) {",
+      "literals": [
+        "isShowEnergyMessage1 = ",
+        "isShowEnergyMessage3 = "
+      ],
+      "nums": []
+    },
+    {
+      "method": "onCreate",
+      "line": 425,
+      "signature": "protected void onCreate(android.os.Bundle bundle) {",
+      "literals": [
+        "ibtn_down.setOnClickListener",
+        "language=",
+        "onCreate ."
+      ],
+      "nums": []
+    },
+    {
+      "method": "getCurrentValue",
+      "line": 278,
+      "signature": "public int getCurrentValue() {",
+      "literals": [],
+      "nums": []
+    }
+  ],
+  "com/android/tv/settings/partnercustomizer/tvsettingservice/util/PreferenceConfigUtils.java": [
+    {
+      "method": "createProgressDialogPreferenceTrans",
+      "line": 97,
+      "signature": "public com.android.tv.settings.partnercustomizer.utils.ProgressDialogPreference createProgressDialogPreferenceTrans(androidx.leanback.preference.LeanbackPreferenceFragmentCompat leanbackPreferenceFragmentCompat, java.lang.String str, java.lang.String str2) {",
+      "literals": [],
+      "nums": []
+    },
+    {
+      "method": "createProgressDialogPreference",
+      "line": 253,
+      "signature": "public com.android.tv.settings.partnercustomizer.utils.ProgressDialogPreference createProgressDialogPreference(androidx.leanback.preference.LeanbackPreferenceFragmentCompat leanbackPreferenceFragmentCompat, java.lang.String str, int i, java.lang.String str2) {",
+      "literals": [
+        "ForceSpkVolAdj=false",
+        "ForceSpkVolAdj=true",
+        "audio"
+      ],
+      "nums": []
+    },
+    {
+      "method": "getSettingValueInt",
+      "line": 283,
+      "signature": "public static int getSettingValueInt(android.content.ContentResolver contentResolver, java.lang.String str) {",
+      "literals": [
+        "  value = ",
+        "getSettingValueInt : settingKey = "
+      ],
+      "nums": []
+    },
+    {
+      "method": "getSettingValueInt",
+      "line": 289,
+      "signature": "public static int getSettingValueInt(android.content.ContentResolver contentResolver, java.lang.String str, int i) {",
+      "literals": [
+        "  value = ",
+        " def = ",
+        "getSettingValueInt : settingKey = "
+      ],
+      "nums": []
+    },
+    {
+      "method": "putSettingValueInt",
+      "line": 295,
+      "signature": "public static void putSettingValueInt(android.content.ContentResolver contentResolver, java.lang.String str, int i) {",
+      "literals": [
+        " settingValue = ",
+        "putSettingValueInt : settingKey = "
+      ],
+      "nums": []
+    },
+    {
+      "method": "onPreferenceValueChange",
+      "line": 309,
+      "signature": "public int onPreferenceValueChange(androidx.preference.Preference preference, java.lang.Object obj) {",
+      "literals": [
+        "    ",
+        ",i :",
+        ",mEntryValues[i] ",
+        ",mEntrys===",
+        ",mEntrys[i]",
+        "1",
+        "key:",
+        "mEntryValues==",
+        "onPreferenceValueChange unknow value type",
+        "type==NewProgressPreference==",
+        "type==ProgressDialogPreference=="
+      ],
+      "nums": []
+    }
+  ]
+}
