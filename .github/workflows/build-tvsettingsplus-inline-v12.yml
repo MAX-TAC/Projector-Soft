@@ -1,13 +1,5 @@
 name: Build TvSettingsPlus v12 organized Android TV Picture Sound Projection and five-band EQ
 on:
-  push:
-    paths:
-      - '.github/workflows/build-tvsettingsplus-inline-v12.yml'
-      - 'app/tvsettingsplus-mod/src/main/java/**'
-      - 'tools/compose_brightness_v3_apk.py'
-      - 'tools/patch_aosp_root_menu_smali.py'
-      - 'tools/patch_axml_compat_aliases.py'
-      - 'tools/patch_customer0_lightmode_smali.py'
   workflow_dispatch:
 concurrency:
   group: tvsettings-v12-inline-build
