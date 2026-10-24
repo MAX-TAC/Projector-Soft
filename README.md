@@ -1,5 +1,13 @@
 # Projector-Soft
 
+## Текущая экспериментальная сборка TvSettingsPlus MOD v10 (8052)
+
+- [Подписанный APK v10 — GitHub Actions Artifact](https://github.com/MAX-TAC/Projector-Soft/actions/runs/40117262170/artifacts/12569741437) — только для будущих контролируемых испытаний.
+- [Подробный отчёт v10](docs/TVSETTINGSPLUS_V10_PROGRESS_2026-10-24.md) — 10 настоящих OEM ползунков, HDR, MEMC, четыре режима установки проектора, TV ярлык, ранее перенесённые режимы/переключатели.
+- В заводском APK изменены только 2 DEX из 16; фокус, трапеция, сервисы моторного управления и калибровочные экраны сохранены.
+- **Ни одна версия MOD не испытана на физическом проекторе, 8054 пока без отдельной APK, KuSettings не отключать.**
+
+
 ## Текущая экспериментальная сборка: TvSettingsPlus MOD v7 (8052)
 
 - [**APK v7, собран и подписан в GitHub Actions**](https://github.com/MAX-TAC/Projector-Soft/actions/runs/40113864365/artifacts/12567458244).
