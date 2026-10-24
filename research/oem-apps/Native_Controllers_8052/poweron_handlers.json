@@ -1,0 +1,131 @@
+{
+  "lambda$initListener$1": [
+    {
+      "line": 306,
+      "signature": "public /* synthetic */ void lambda$initListener$1(android.view.View view) {",
+      "properties": [
+        "HOME"
+      ],
+      "calls": [
+        "set",
+        "setChecked"
+      ]
+    }
+  ],
+  "lambda$initListener$2": [
+    {
+      "line": 312,
+      "signature": "public /* synthetic */ void lambda$initListener$2(android.view.View view) {",
+      "properties": [],
+      "calls": [
+        "set",
+        "setChecked"
+      ]
+    }
+  ],
+  "lambda$initListener$3": [
+    {
+      "line": 318,
+      "signature": "public /* synthetic */ void lambda$initListener$3(android.view.View view) {",
+      "properties": [],
+      "calls": [
+        "getHdmiInputId",
+        "set",
+        "setChecked"
+      ]
+    }
+  ],
+  "lambda$initListener$4": [
+    {
+      "line": 324,
+      "signature": "public /* synthetic */ void lambda$initListener$4(android.view.View view) {",
+      "properties": [],
+      "calls": [
+        "getHdmiInputId",
+        "set",
+        "setChecked"
+      ]
+    }
+  ],
+  "lambda$initListener$5": [
+    {
+      "line": 330,
+      "signature": "public /* synthetic */ void lambda$initListener$5(android.view.View view) {",
+      "properties": [],
+      "calls": [
+        "getHdmiInputId",
+        "set",
+        "setChecked"
+      ]
+    }
+  ],
+  "lambda$initListener$6": [
+    {
+      "line": 336,
+      "signature": "public /* synthetic */ void lambda$initListener$6(android.view.View view) {",
+      "properties": [],
+      "calls": [
+        "getHdmiInputId",
+        "set",
+        "setChecked"
+      ]
+    }
+  ],
+  "lambda$initListener$7": [
+    {
+      "line": 342,
+      "signature": "public /* synthetic */ void lambda$initListener$7(android.view.View view) {",
+      "properties": [
+        "USB"
+      ],
+      "calls": [
+        "set",
+        "setChecked"
+      ]
+    }
+  ],
+  "lambda$initListener$8": [],
+  "getHdmiInputId": [
+    {
+      "line": 115,
+      "signature": "private java.lang.String getHdmiInputId(android.content.Context context, java.lang.String str) {",
+      "properties": [],
+      "calls": [
+        "endsWith",
+        "getHdmiInputId",
+        "getId",
+        "getSystemService",
+        "getTvInputList",
+        "getType"
+      ]
+    }
+  ],
+  "initBoardConfig": [
+    {
+      "line": 52,
+      "signature": "private void initBoardConfig() {",
+      "properties": [],
+      "calls": [
+        "initBoardConfig",
+        "isEmpty",
+        "split",
+        "trim"
+      ]
+    }
+  ],
+  "systemToLocal": [
+    {
+      "line": 91,
+      "signature": "private java.lang.String systemToLocal(java.lang.String str) {",
+      "properties": [
+        "HOME",
+        "USB"
+      ],
+      "calls": [
+        "endsWith",
+        "equals",
+        "systemToLocal"
+      ]
+    }
+  ]
+}
