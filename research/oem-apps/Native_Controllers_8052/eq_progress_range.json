@@ -1,0 +1,14 @@
+{
+  "java_max_calls": [
+    "this.progressBar.setMax(this.mMaxValue)"
+  ],
+  "java_min_calls": [
+    "this.progressBar.setMin(this.mMinValue)"
+  ],
+  "constants": [
+    "10",
+    "100",
+    "50"
+  ],
+  "layout_found": true
+}
