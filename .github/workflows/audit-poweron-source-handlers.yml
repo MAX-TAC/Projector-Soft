@@ -1,0 +1,34 @@
+name: Audit PowerOnSource actual OEM click handlers
+on:
+  push:
+    paths:
+      - tools/audit_poweron_source_handlers.py
+      - .github/workflows/audit-poweron-source-handlers.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare JADX
+        run: |
+          curl -fsSL --retry 3 https://github.com/skylot/jadx/releases/download/v1.5.6/jadx-1.5.6.zip -o /tmp/jadx.zip
+          mkdir -p /tmp/jadx
+          unzip -q /tmp/jadx.zip -d /tmp/jadx
+      - name: Trace each native boot source click
+        run: |
+          /tmp/jadx/bin/jadx --no-res --no-imports --threads-count 2 -d /tmp/oem vendor/reference/8052/APK/TvSettingsPlus.apk >/tmp/jadx.log 2>&1 || true
+          python3 tools/audit_poweron_source_handlers.py /tmp/oem research/oem-apps/Native_Controllers_8052/poweron_handlers.json
+      - name: Commit safe method metadata
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research/oem-apps/Native_Controllers_8052/poweron_handlers.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Confirm real native power-on source property and board-aware input IDs"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
