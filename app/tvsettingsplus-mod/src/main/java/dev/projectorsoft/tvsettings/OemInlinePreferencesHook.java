@@ -66,7 +66,8 @@ public final class OemInlinePreferencesHook {
                 boolean hasEdid=OemHdmiEdidHook.install(context,hdmiCategory,preference);
                 boolean hasAutoplay=OemHdmiAutoPlayHook.install(context,hdmiCategory,preference);
                 boolean hasBootSource=OemPowerOnSourceHook.install(context,hdmiCategory,preference);
-                if(!hasEdid && !hasAutoplay && !hasBootSource) {
+                boolean hasCec=OemHdmiCecHook.install(context,hdmiCategory,preference);
+                if(!hasEdid && !hasAutoplay && !hasBootSource && !hasCec) {
                     // Never present an empty category or unsupported HDMI options.
                     screen.getClass().getMethod("removePreference",preference)
                             .invoke(screen,hdmiCategory);
