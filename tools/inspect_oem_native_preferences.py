@@ -7,8 +7,8 @@ from pathlib import Path
 root=Path(sys.argv[1])/"sources";out=Path(sys.argv[2]);out.parent.mkdir(parents=True,exist_ok=True)
 targets=[
  ("com/android/tv/settings/uicustom/util/MtkUtil.java",("getLightMode","putLightMode","getPictureMode","setPictureMode","getColorTemperature","setColorTemperature","getSoundMode","setSoundMode")),
- ("com/android/tv/settings/uicustom/fragment/picture/PictureFragment.java",("initCheck","initListener","onRadioCheckedChanged","onCheckedChanged")),
- ("com/android/tv/settings/uicustom/fragment/sound/SoundFragment.java",("initCheck","initListener","onCheckedChanged")),
+ ("com/android/tv/settings/uicustom/fragment/picture/PictureFragment.java",("initData","initCheck","initListener","onRadioCheckedChanged","onCheckedChanged")),
+ ("com/android/tv/settings/uicustom/fragment/sound/SoundFragment.java",("initData","initCheck","initListener","onCheckedChanged")),
  ("com/android/tv/settings/uicustom/floatmenu/controller/picture/PictureModeValueSecondaryController.java",("initView","initCheck","initListener")),
  ("com/android/tv/settings/uicustom/floatmenu/controller/picture/ColorTempValueSecondaryController.java",("initView","initCheck","initListener")),
  ("com/android/tv/settings/uicustom/floatmenu/controller/sound/SoundModeValueSecondaryController.java",("initView","initCheck","initListener")),
@@ -34,6 +34,8 @@ for rel,methods in targets:
  if not path.is_file():
   print("MISSING",rel);continue
  s=path.read_text(errors="replace");entries={}
+ if rel.endswith(("PictureFragment.java","SoundFragment.java")):
+  print("### CLASS FIELDS",rel,"\n","\n".join(s.splitlines()[:112]),flush=True)
  signatures=sorted(set(re.findall(r"(?m)^\s*(?:public|private|protected)\s+(?:static\s+)?[\w.$<>\[\],? ]+\s+\w+\([^)]*\)\s*(?:throws [^{]+)?\{",s)))
  for meth in methods:
   parts=method_blocks(s,meth)
