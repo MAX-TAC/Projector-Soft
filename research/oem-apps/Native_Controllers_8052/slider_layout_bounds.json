@@ -1,0 +1,107 @@
+{
+  "res/layout/fragment_picture_mode_velue.xml": [
+    {
+      "android:id": "@id/tsbv_picture_brightness",
+      "android:layout_width": "fill_parent",
+      "android:layout_height": "@dimen/dp_45",
+      "{http://schemas.android.com/apk/res-auto}currentValue": "50",
+      "{http://schemas.android.com/apk/res-auto}maxValue": "100",
+      "{http://schemas.android.com/apk/res-auto}minValue": "0",
+      "{http://schemas.android.com/apk/res-auto}title": "@string/picture_brightness"
+    },
+    {
+      "android:id": "@id/tsbv_picture_contrast",
+      "android:layout_width": "fill_parent",
+      "android:layout_height": "@dimen/dp_45",
+      "{http://schemas.android.com/apk/res-auto}currentValue": "50",
+      "{http://schemas.android.com/apk/res-auto}maxValue": "100",
+      "{http://schemas.android.com/apk/res-auto}minValue": "0",
+      "{http://schemas.android.com/apk/res-auto}title": "@string/picture_contrast"
+    },
+    {
+      "android:id": "@id/tsbv_picture_saturation",
+      "android:layout_width": "fill_parent",
+      "android:layout_height": "@dimen/dp_45",
+      "{http://schemas.android.com/apk/res-auto}currentValue": "50",
+      "{http://schemas.android.com/apk/res-auto}maxValue": "100",
+      "{http://schemas.android.com/apk/res-auto}minValue": "0",
+      "{http://schemas.android.com/apk/res-auto}title": "@string/picture_saturation"
+    },
+    {
+      "android:id": "@id/tsbv_picture_hue",
+      "android:layout_width": "fill_parent",
+      "android:layout_height": "@dimen/dp_45",
+      "{http://schemas.android.com/apk/res-auto}currentValue": "50",
+      "{http://schemas.android.com/apk/res-auto}maxValue": "50",
+      "{http://schemas.android.com/apk/res-auto}minValue": "-50",
+      "{http://schemas.android.com/apk/res-auto}title": "@string/picture_hue"
+    },
+    {
+      "android:id": "@id/tsbv_picture_sharpness",
+      "android:layout_width": "fill_parent",
+      "android:layout_height": "@dimen/dp_45",
+      "{http://schemas.android.com/apk/res-auto}currentValue": "12",
+      "{http://schemas.android.com/apk/res-auto}maxValue": "20",
+      "{http://schemas.android.com/apk/res-auto}minValue": "0",
+      "{http://schemas.android.com/apk/res-auto}title": "@string/picture_sharpness"
+    }
+  ],
+  "res/layout/fragment_sound_mode_velue.xml": [
+    {
+      "android:id": "@id/tsbv_sound_mode_value_bass",
+      "android:layout_width": "fill_parent",
+      "android:layout_height": "@dimen/dp_45",
+      "{http://schemas.android.com/apk/res-auto}currentValue": "50",
+      "{http://schemas.android.com/apk/res-auto}maxValue": "100",
+      "{http://schemas.android.com/apk/res-auto}minValue": "0",
+      "{http://schemas.android.com/apk/res-auto}title": "@string/sound_bass"
+    },
+    {
+      "android:id": "@id/tsbv_sound_mode_value_treble",
+      "android:layout_width": "fill_parent",
+      "android:layout_height": "@dimen/dp_45",
+      "{http://schemas.android.com/apk/res-auto}currentValue": "50",
+      "{http://schemas.android.com/apk/res-auto}maxValue": "100",
+      "{http://schemas.android.com/apk/res-auto}minValue": "0",
+      "{http://schemas.android.com/apk/res-auto}title": "@string/sound_treble"
+    },
+    {
+      "android:id": "@id/tsbv_sound_mode_value_balance",
+      "android:layout_width": "fill_parent",
+      "android:layout_height": "@dimen/dp_45",
+      "{http://schemas.android.com/apk/res-auto}currentValue": "50",
+      "{http://schemas.android.com/apk/res-auto}maxValue": "100",
+      "{http://schemas.android.com/apk/res-auto}minValue": "0",
+      "{http://schemas.android.com/apk/res-auto}title": "@string/sound_balance"
+    }
+  ],
+  "res/layout/fragment_picture_color_temp_velue.xml": [
+    {
+      "android:id": "@id/tsbv_color_temp_red",
+      "android:layout_width": "fill_parent",
+      "android:layout_height": "@dimen/dp_45",
+      "{http://schemas.android.com/apk/res-auto}currentValue": "0",
+      "{http://schemas.android.com/apk/res-auto}maxValue": "100",
+      "{http://schemas.android.com/apk/res-auto}minValue": "-100",
+      "{http://schemas.android.com/apk/res-auto}title": "@string/picture_color_temperature_red_gain"
+    },
+    {
+      "android:id": "@id/tsbv_color_temp_green",
+      "android:layout_width": "fill_parent",
+      "android:layout_height": "@dimen/dp_45",
+      "{http://schemas.android.com/apk/res-auto}currentValue": "0",
+      "{http://schemas.android.com/apk/res-auto}maxValue": "100",
+      "{http://schemas.android.com/apk/res-auto}minValue": "-100",
+      "{http://schemas.android.com/apk/res-auto}title": "@string/picture_color_temperature_green_gain"
+    },
+    {
+      "android:id": "@id/tsbv_color_temp_blue",
+      "android:layout_width": "fill_parent",
+      "android:layout_height": "@dimen/dp_45",
+      "{http://schemas.android.com/apk/res-auto}currentValue": "0",
+      "{http://schemas.android.com/apk/res-auto}maxValue": "100",
+      "{http://schemas.android.com/apk/res-auto}minValue": "-100",
+      "{http://schemas.android.com/apk/res-auto}title": "@string/picture_color_temperature_blue_gain"
+    }
+  ]
+}
