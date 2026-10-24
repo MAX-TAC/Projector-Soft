@@ -7,7 +7,7 @@ import re,json,sys
 root=Path(sys.argv[1])/"sources"
 out=Path(sys.argv[2]);out.parent.mkdir(parents=True,exist_ok=True)
 classes={
-"com/android/tv/settings/partnercustomizer/utils/ProgressBarDialog.java":["setData","setProgressBar","initView","initViews","onCreate","getCurrentValue","onKeyDown","setOnProgressChanged"],
+"com/android/tv/settings/partnercustomizer/utils/ProgressBarDialog.java":["setData","setProgressBar","initView","initViews","initData","getACFGId","setCurrentValue","onCreate","getCurrentValue","onKeyDown","setOnProgressChanged"],
 "com/android/tv/settings/partnercustomizer/tvsettingservice/util/PreferenceConfigUtils.java":["createProgressDialogPreferenceTrans","createProgressDialogPreference","getSettingValueInt","putSettingValueInt","onPreferenceValueChange"]
 }
 result={}
