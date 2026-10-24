@@ -1,0 +1,336 @@
+{
+  "com/android/tv/settings/uicustom/util/MtkUtil.java": {
+    "methods": {
+      "getLightMode": [
+        {
+          "line": 10,
+          "declaration": "public int getLightMode() {",
+          "method_calls": [
+            "getLightMode"
+          ]
+        }
+      ],
+      "putLightMode": [
+        {
+          "line": 26,
+          "declaration": "public void putLightMode(int i) {",
+          "method_calls": [
+            "putLightMode"
+          ]
+        }
+      ],
+      "getPictureMode": [],
+      "setPictureMode": [],
+      "getColorTemperature": [],
+      "setColorTemperature": [
+        {
+          "line": 29,
+          "declaration": "public void setColorTemperature(int i) {",
+          "method_calls": [
+            "setColorTemperature"
+          ]
+        }
+      ],
+      "getSoundMode": [],
+      "setSoundMode": [
+        {
+          "line": 151,
+          "declaration": "public void setSoundMode(int i) {",
+          "method_calls": [
+            "i",
+            "setSoundMode"
+          ]
+        }
+      ]
+    },
+    "declarations": [
+      "\n    private void svcCommand(int i) {",
+      "\n    public boolean isElectricityBoot() {",
+      "\n    public int getLightMode() {",
+      "\n    public int getProjectorMode() {",
+      "\n    public int getPwmDutyStep() {",
+      "\n    public int getSPDif() {",
+      "\n    public static com.android.tv.settings.uicustom.util.MtkUtil getInstance() {",
+      "\n    public void putElectricityBoot(boolean z) {",
+      "\n    public void putLightMode(int i) {",
+      "\n    public void setColorTemperature(int i) {",
+      "\n    public void setProjectorMode(int i) {",
+      "\n    public void setPwmDutyStep(int i) {",
+      "\n    public void setSPDif(int i) {",
+      "\n    public void setSoundMode(int i) {",
+      "\n    public void setTimezone() {",
+      "    public static int getCustomerFileMirror() throws java.lang.Throwable {"
+    ]
+  },
+  "com/android/tv/settings/uicustom/fragment/picture/PictureFragment.java": {
+    "methods": {
+      "initCheck": [
+        {
+          "line": 113,
+          "declaration": "public void initCheck() {",
+          "method_calls": [
+            "check",
+            "initCheck"
+          ]
+        }
+      ],
+      "initListener": [
+        {
+          "line": 151,
+          "declaration": "private void initListener() {",
+          "method_calls": [
+            "Bundle",
+            "Handler",
+            "OnClickListener",
+            "Runnable",
+            "initListener",
+            "onClick",
+            "postDelayed",
+            "putGlobalValueInt",
+            "putInt",
+            "run",
+            "sendEventToActivity",
+            "setChecked",
+            "setOnClickListener",
+            "showRestDialog"
+          ]
+        }
+      ],
+      "onRadioCheckedChanged": [],
+      "onCheckedChanged": []
+    },
+    "declarations": [
+      "\n    private void initListener() {",
+      "                    public void run() {",
+      "            public void onClick(android.view.View view) {",
+      "    protected int getLayoutResId() {",
+      "    protected void initData(android.os.Bundle bundle) {",
+      "    protected void initView(android.view.View view) {",
+      "    protected void onFirstLoad() {",
+      "    protected void onReLoad() {",
+      "    public void handleActivityEvent(int i, android.os.Bundle bundle) {",
+      "    public void initCheck() {",
+      "    public void refreshTexts() {",
+      "    public void resetPicture() {",
+      "    public void showRestDialog() {"
+    ]
+  },
+  "com/android/tv/settings/uicustom/fragment/sound/SoundFragment.java": {
+    "methods": {
+      "initCheck": [
+        {
+          "line": 80,
+          "declaration": "public void initCheck() {",
+          "method_calls": [
+            "check",
+            "initCheck",
+            "setSwitchEnable"
+          ]
+        }
+      ],
+      "initListener": [
+        {
+          "line": 106,
+          "declaration": "private void initListener() {",
+          "method_calls": [
+            "Bundle",
+            "Handler",
+            "OnClickListener",
+            "Runnable",
+            "initListener",
+            "onClick",
+            "onSwitchChangeListener",
+            "onTitleSwitchListener",
+            "postDelayed",
+            "putGlobalValueInt",
+            "putInt",
+            "putSystemValueInt",
+            "refreshSurroundState",
+            "run",
+            "sendEventToActivity",
+            "setChecked",
+            "setOnClickListener",
+            "setOnTitleSwitchListener",
+            "showRestDialog"
+          ]
+        }
+      ],
+      "onCheckedChanged": []
+    },
+    "declarations": [
+      "\n    private void initListener() {",
+      "                    public void run() {",
+      "            public void onClick(android.view.View view) {",
+      "            public void onSwitchChangeListener(boolean z) {",
+      "            public void run() {",
+      "    protected int getLayoutResId() {",
+      "    protected void initData(android.os.Bundle bundle) {",
+      "    protected void initView(android.view.View view) {",
+      "    protected void onFirstLoad() {",
+      "    protected void onReLoad() {",
+      "    public void handleActivityEvent(int i, android.os.Bundle bundle) {",
+      "    public void initCheck() {",
+      "    public void refreshSurroundState() {",
+      "    public void refreshTexts() {",
+      "    public void restSound() {",
+      "    public void showRestDialog() {"
+    ]
+  },
+  "com/android/tv/settings/uicustom/floatmenu/controller/picture/PictureModeValueSecondaryController.java": {
+    "methods": {
+      "initView": [
+        {
+          "line": 57,
+          "declaration": "private void initView() {",
+          "method_calls": [
+            "OnValueChangeListener",
+            "Runnable",
+            "findViewById",
+            "initView",
+            "lambda$initView$0",
+            "onValueChanged",
+            "post",
+            "putGlobalValueInt",
+            "run",
+            "setOnValueChangeListener",
+            "setValue"
+          ]
+        }
+      ],
+      "initCheck": [],
+      "initListener": []
+    },
+    "declarations": [
+      "\n    private void initData() {",
+      "\n    private void initView() {",
+      "            public final void run() {",
+      "            public void onValueChanged(int i) {",
+      "    public boolean onKey(android.view.View view, int i, android.view.KeyEvent keyEvent) {",
+      "    public void onAttach(android.view.View view) {",
+      "    public void onResume() {"
+    ]
+  },
+  "com/android/tv/settings/uicustom/floatmenu/controller/picture/ColorTempValueSecondaryController.java": {
+    "methods": {
+      "initView": [
+        {
+          "line": 47,
+          "declaration": "private void initView() {",
+          "method_calls": [
+            "OnValueChangeListener",
+            "Runnable",
+            "findViewById",
+            "initView",
+            "lambda$initView$0",
+            "onValueChanged",
+            "post",
+            "putGlobalValueInt",
+            "run",
+            "setOnValueChangeListener",
+            "setValue"
+          ]
+        }
+      ],
+      "initCheck": [],
+      "initListener": []
+    },
+    "declarations": [
+      "\n    private void initData() {",
+      "\n    private void initView() {",
+      "            public final void run() {",
+      "            public void onValueChanged(int i) {",
+      "    public boolean onKey(android.view.View view, int i, android.view.KeyEvent keyEvent) {",
+      "    public void onAttach(android.view.View view) {",
+      "    public void onResume() {"
+    ]
+  },
+  "com/android/tv/settings/uicustom/floatmenu/controller/sound/SoundModeValueSecondaryController.java": {
+    "methods": {
+      "initView": [
+        {
+          "line": 42,
+          "declaration": "private void initView() {",
+          "method_calls": [
+            "OnValueChangeListener",
+            "Runnable",
+            "findViewById",
+            "initView",
+            "lambda$initView$0",
+            "onValueChanged",
+            "post",
+            "putGlobalValueInt",
+            "run",
+            "setOnValueChangeListener",
+            "setValue"
+          ]
+        }
+      ],
+      "initCheck": [],
+      "initListener": []
+    },
+    "declarations": [
+      "\n    private void initData() {",
+      "\n    private void initView() {",
+      "            public final void run() {",
+      "            public void onValueChanged(int i) {",
+      "    public boolean onKey(android.view.View view, int i, android.view.KeyEvent keyEvent) {",
+      "    public void onAttach(android.view.View view) {",
+      "    public void onResume() {"
+    ]
+  },
+  "com/android/tv/settings/uicustom/floatmenu/controller/picture/AdvanceSettingsSecondaryController.java": {
+    "methods": {
+      "initView": [
+        {
+          "line": 60,
+          "declaration": "private void initView() {",
+          "method_calls": [
+            "MenuMjcDemoDialog",
+            "OnClickListener",
+            "Runnable",
+            "check",
+            "findViewById",
+            "initCheck",
+            "initView",
+            "lambda$initView$0",
+            "onClick",
+            "post",
+            "putInt",
+            "run",
+            "setOnClickListener",
+            "show",
+            "updateDemoPartitionEnabled"
+          ]
+        }
+      ],
+      "initCheck": [
+        {
+          "line": 207,
+          "declaration": "private void initCheck() {",
+          "method_calls": [
+            "check",
+            "initCheck"
+          ]
+        }
+      ],
+      "initListener": []
+    },
+    "declarations": [
+      "\n        private void initData() {",
+      "\n    private void initCheck() {",
+      "\n    private void initData() {",
+      "\n    private void initView() {",
+      "                public void onDismiss(android.content.DialogInterface dialogInterface) {",
+      "            public final void run() {",
+      "            public void onClick(android.view.View view) {",
+      "        protected void onCreate(android.os.Bundle bundle) {",
+      "        protected void onStart() {",
+      "        protected void onStop() {",
+      "        public void onDetachedFromWindow() {",
+      "    public boolean onKey(android.view.View view, int i, android.view.KeyEvent keyEvent) {",
+      "    public void onAttach(android.view.View view) {",
+      "    public void onResume() {",
+      "    public void updateDemoPartitionEnabled() {"
+    ]
+  }
+}
