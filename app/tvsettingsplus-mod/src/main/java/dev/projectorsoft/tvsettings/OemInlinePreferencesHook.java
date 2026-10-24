@@ -67,14 +67,9 @@ public final class OemInlinePreferencesHook {
                     TEMP_TITLES,TEMP_VALUES,2,212);
             addList(category,preference,context,"projectorsoft_sound_mode",
                     "Режим звука","sound_style",SOUND_TITLES,SOUND_VALUES,1,213);
-            addSwitchIfPresent(category,preference,context,
-                    "projectorsoft_surround","Объёмное звучание","sound_sound_surround",214);
-            String earc=vendorKey("KEY_SOUND_EARC");
-            if (earc!=null) addSwitchIfPresent(category,preference,context,
-                    "projectorsoft_earc","HDMI eARC",earc,215);
-            String volume=vendorKey("KEY_SOUND_AUTO_VOLUME_CONTROL");
-            if (volume!=null) addSwitchIfPresent(category,preference,context,
-                    "projectorsoft_autovolume","Автоматическая громкость",volume,216);
+            // Sound surround/eARC/automatic volume must not bypass OEM
+            // audio and CEC HAL. Until corresponding OEM callbacks are
+            // migrated they remain accessible through the native sound screen.
             // Native Android TV seekbars: exact limits read from factory layout XML.
             // They remain hidden until the OEM Settings.Global value exists.
             OemInlineSlidersHook.install(context,category,preference);
@@ -93,13 +88,10 @@ public final class OemInlinePreferencesHook {
                 addList(category,preference,context,"projectorsoft_memc",
                         "MEMC (OEM)",mjcKey,effects,ids,Integer.parseInt(mjcRaw),231);
             }
-            // HDMI gaming mode is actually used by OEM SourceSubMenuController.
-            // Uses the same PreferenceConfigUtilsBase constant and requires
-            // an existing factory setting; no hidden vendor APIs bypassed.
-            String gameKey=vendorKey("KEY_PICTURE_ADVANCE_VIDEO_GAME_MODE");
-            if (gameKey != null) addSwitchIfPresent(category,preference,context,
-                    "projectorsoft_hdmi_gamemode","Низкая задержка HDMI",gameKey,232);
-
+            // HDMI game mode is intentionally NOT a raw Settings.Global toggle.
+            // SourceSubMenuController triggers resetTrapezoid() when enabled;
+            // keep its original handler until the complete side-effect chain
+            // is safely transferred.
             // Stock ProjectorManager orientation codes, not calibration/keystone.
             OemProjectorOrientationHook.install(context,category,preference);
         } catch(Throwable e) {
