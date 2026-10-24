@@ -1,0 +1,111 @@
+{
+  "com/android/tv/settings/uicustom/floatmenu/controller/source/EdidSourceSecondaryController.java": {
+    "lines": 146,
+    "keys": [
+      "tv_input_hdmi_edid_version"
+    ],
+    "methods": [
+      "getAction(",
+      "getContentResolver(",
+      "getContext(",
+      "getEdidVersion(",
+      "getGlobalValueInt(",
+      "getInstance(",
+      "getU8EdidIndex(",
+      "getVideoInfoData(",
+      "getVisibility(",
+      "putGlobalValueInt(",
+      "setChecked(",
+      "setOnClickListener(",
+      "setVisibility("
+    ]
+  },
+  "com/android/tv/settings/uicustom/floatmenu/controller/source/PowerOnSourceSecondaryController.java": {
+    "lines": 346,
+    "keys": [
+      "HDMI1",
+      "HDMI2",
+      "HDMI3",
+      "HDMI4",
+      "persist.trd.source_id",
+      "tv_input"
+    ],
+    "methods": [
+      "getAction(",
+      "getContext(",
+      "getHdmiInputId(",
+      "getId(",
+      "getInstance(",
+      "getSystemService(",
+      "getTvInputList(",
+      "getType(",
+      "setChecked(",
+      "setOnClickListener(",
+      "setRadioText(",
+      "setVisibility("
+    ]
+  },
+  "com/android/tv/settings/uicustom/floatmenu/controller/source/SourceSubMenuController.java": {
+    "lines": 571,
+    "keys": [
+      "HDMI1",
+      "HDMI2",
+      "HDMI3",
+      "HDMI4",
+      "SourceSubMenuController",
+      "android.intent.action.VIEW",
+      "com.mediatek.tvinput",
+      "com.rjpj.bluetoothspeaker",
+      "com.rjpj.tcorrection",
+      "com.rjpj.tcorrection.TCorrectionBroadcastReceiver",
+      "persist.rjpj.hdmiplug.autoplay",
+      "persist.trd.source_id",
+      "rjpj.action.manager.FILE",
+      "tv_input",
+      "tv_input_hdmi_edid_version"
+    ],
+    "methods": [
+      "getAction(",
+      "getAppInfoByPackageName(",
+      "getClassName(",
+      "getContentResolver(",
+      "getContext(",
+      "getDisplayTitle(",
+      "getEdidVersion(",
+      "getGlobalValueInt(",
+      "getId(",
+      "getInstance(",
+      "getInt(",
+      "getLaunchIntentForPackage(",
+      "getPackageInfo(",
+      "getPackageManager(",
+      "getResources(",
+      "getRunningTasks(",
+      "getString(",
+      "getStringArray(",
+      "getSystemService(",
+      "getTvInputList(",
+      "getType(",
+      "getU8EdidIndex(",
+      "getVideoInfoData(",
+      "putExtra(",
+      "putGlobalValueInt(",
+      "putInt(",
+      "setAction(",
+      "setComponent(",
+      "setContextText(",
+      "setData(",
+      "setDisableFocus(",
+      "setEarcEnable(",
+      "setFlags(",
+      "setHdmiCecAutoDeviceOffEnabled(",
+      "setHdmiCecControlEnabled(",
+      "setOnClickListener(",
+      "setOnTitleSwitchListener(",
+      "setPackage(",
+      "setSwitchEnable(",
+      "setTitle(",
+      "setVisibility("
+    ]
+  }
+}
