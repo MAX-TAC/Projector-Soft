@@ -30,3 +30,5 @@ jobs:
             git commit -m "Map factory eARC surround and auto-volume HAL callbacks"
             git pull --rebase origin main
             git push origin HEAD:main
+
+          fi
