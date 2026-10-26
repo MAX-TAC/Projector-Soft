@@ -74,21 +74,23 @@ public final class KuSourceRecoveryService extends Service {
                 Log.w(TAG,"No reliable running services snapshot; recovery skipped");
                 return;
             }
-            boolean sawOtherPackages=false;
+            boolean targetPackageVisible=false;
             for(ActivityManager.RunningServiceInfo current:services) {
                 if(current.service==null)continue;
-                if(TARGET_SERVICE.equals(current.service.getClassName()))return;
-                if(!getPackageName().equals(current.service.getPackageName()))
-                    sawOtherPackages=true;
+                if(TARGET_SERVICE.equals(current.service.getClassName())
+                        && TARGET_PACKAGE.equals(current.service.getPackageName()))return;
+                if(TARGET_PACKAGE.equals(current.service.getPackageName()))
+                    targetPackageVisible=true;
             }
-            if(!sawOtherPackages) {
-                // Android 8+ may restrict service enumeration to own package.
-                // Do not blindly restart KuSourceRJ every minute.
-                Log.w(TAG,"OS filters external running services; cannot verify health");
+            if(!targetPackageVisible) {
+                // Seeing a random third-party service proves NOTHING about
+                // whether Android lets us enumerate com.coolux.source services.
+                // Fail closed; service must not be restarted on guessed absence.
+                Log.w(TAG,"KuSourceRJ service visibility unproven; OEM recovery skipped");
                 return;
             }
             long now=android.os.SystemClock.uptimeMillis();
-            if(!KuSourceRecoveryPolicy.shouldRecover(true,sawOtherPackages,false,
+            if(!KuSourceRecoveryPolicy.shouldRecover(true,targetPackageVisible,false,
                     lastAttemptUptime,now))return;
             lastAttemptUptime=now;
             Intent target=new Intent();
