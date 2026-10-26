@@ -56,6 +56,22 @@ public final class OemSystemInfoHook {
         group.getClass().getMethod("addPreference",prefClass).invoke(group,p);
     }
 
+    /**
+     * Read-only status. The package state is NOT proof that thermal fan
+     * monitoring is actually running; this UI must never claim it is.
+     */
+    private static String thermalWatchdogConfiguration(Context context) {
+        try {
+            int state=context.getPackageManager()
+                    .getApplicationEnabledSetting("com.my.settings");
+            if(KuSourceRecoveryActivationPolicy.explicitlyDisabled(state))
+                return "KuSettings явно отключён; резервный монитор требует проверки";
+            return "KuSettings не отключён; работа штатного монитора не проверена";
+        }catch(Exception e){
+            return "Состояние KuSettings неизвестно; резервный монитор не подтверждён";
+        }
+    }
+
     public static boolean install(Context context,Object category,Class<?> prefClass) {
         try {
             int count=0;
@@ -76,6 +92,10 @@ public final class OemSystemInfoHook {
                         "Количество HDMI по конфигурации платы",hdmi,284);
                 count++;
             }
+            entry(category,prefClass,context,"projectorsoft_thermal_monitor_status",
+                    "Контроль охлаждения (конфигурация)",
+                    thermalWatchdogConfiguration(context),285);
+            count++;
             return count>0;
         }catch(Exception e){
             Log.w(TAG,"OEM info unavailable",e);
