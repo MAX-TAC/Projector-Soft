@@ -1,0 +1,158 @@
+{
+  "com/android/tv/settings/uicustom/floatmenu/controller/sound/SoundSubMenuController.java": [
+    {
+      "method": "private void initView() {",
+      "line": 66,
+      "calls": [
+        "findViewById",
+        "initCheck",
+        "initListener",
+        "initView"
+      ],
+      "key_literals": []
+    },
+    {
+      "method": "public void initCheck() {",
+      "line": 85,
+      "calls": [
+        "check",
+        "initCheck",
+        "setSwitchEnable"
+      ],
+      "key_literals": []
+    },
+    {
+      "method": "private void initListener() {",
+      "line": 111,
+      "calls": [
+        "OnClickListener",
+        "getContext",
+        "getInstance",
+        "initListener",
+        "onClick",
+        "onSwitchChangeListener",
+        "onTitleSwitchListener",
+        "openSecondaryInterface",
+        "putGlobalValueInt",
+        "putSystemValueInt",
+        "refreshSurroundState",
+        "setChecked",
+        "setOnClickListener",
+        "setOnTitleSwitchListener",
+        "showRestDialog"
+      ],
+      "key_literals": [
+        "sound_sound_surround",
+        "sound_style"
+      ]
+    }
+  ],
+  "com/android/tv/settings/uicustom/fragment/sound/SoundFragment.java": [
+    {
+      "method": "protected void initView(android.view.View view) {",
+      "line": 52,
+      "calls": [
+        "findViewById",
+        "initCheck",
+        "initListener",
+        "initView"
+      ],
+      "key_literals": []
+    },
+    {
+      "method": "public void initCheck() {",
+      "line": 80,
+      "calls": [
+        "check",
+        "initCheck",
+        "setSwitchEnable"
+      ],
+      "key_literals": []
+    },
+    {
+      "method": "private void initListener() {",
+      "line": 106,
+      "calls": [
+        "Bundle",
+        "Handler",
+        "OnClickListener",
+        "Runnable",
+        "initListener",
+        "onClick",
+        "onSwitchChangeListener",
+        "onTitleSwitchListener",
+        "postDelayed",
+        "putGlobalValueInt",
+        "putInt",
+        "putSystemValueInt",
+        "refreshSurroundState",
+        "run",
+        "sendEventToActivity",
+        "setChecked",
+        "setOnClickListener",
+        "setOnTitleSwitchListener",
+        "showRestDialog"
+      ],
+      "key_literals": [
+        "page_id",
+        "sound_sound_surround",
+        "sound_style"
+      ]
+    }
+  ],
+  "com/android/tv/settings/uicustom/floatmenu/controller/source/SourceSubMenuController.java": [
+    {
+      "method": "private void initView(android.view.View view) {",
+      "line": 139,
+      "calls": [
+        "OnClickListener",
+        "checkBluetoothSpeakerPackage",
+        "findViewById",
+        "initView",
+        "onClick",
+        "onSwitchChangeListener",
+        "onTitleSwitchListener",
+        "setContextText",
+        "setDisableFocus",
+        "setHdmiCecAutoDeviceOffEnabled",
+        "setOnClickListener",
+        "setOnTitleSwitchListener",
+        "setSwitchEnable",
+        "setTitle",
+        "setVisibility",
+        "updateEdidEnableState",
+        "updatePowerOnSourceAndApp"
+      ],
+      "key_literals": []
+    },
+    {
+      "method": "public /* synthetic */ void lambda$initView$12(boolean z) {",
+      "line": 342,
+      "calls": [
+        "MtkTvCecAnBase",
+        "getContentResolver",
+        "getInstance",
+        "isSupportEARC",
+        "isSupportPowerConfirmed",
+        "printStackTrace",
+        "putGlobalValueInt",
+        "putInt",
+        "setDisableFocus",
+        "setEarcEnable",
+        "setHdmiCecAutoDeviceOffEnabled",
+        "setHdmiCecControlEnabled",
+        "setSwitchEnable",
+        "showCecEnergyDialog"
+      ],
+      "key_literals": []
+    },
+    {
+      "method": "public /* synthetic */ void lambda$initView$13(boolean z) {",
+      "line": 369,
+      "calls": [
+        "setHdmiCecAutoDeviceOffEnabled"
+      ],
+      "key_literals": []
+    }
+  ]
+}
