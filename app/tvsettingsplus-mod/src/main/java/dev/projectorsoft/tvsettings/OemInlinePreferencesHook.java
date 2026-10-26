@@ -73,7 +73,9 @@ public final class OemInlinePreferencesHook {
                 boolean hasAutoplay=OemHdmiAutoPlayHook.install(context,hdmiCategory,preference);
                 boolean hasBootSource=OemPowerOnSourceHook.install(context,hdmiCategory,preference);
                 boolean hasCec=OemHdmiCecHook.install(context,hdmiCategory,preference);
-                if(!hasEdid && !hasAutoplay && !hasBootSource && !hasCec) {
+                boolean hasOemLinks=OemHardwareDelegatedSettings.installSourceLinks(
+                        context,hdmiCategory,preference,hasCec);
+                if(!hasEdid && !hasAutoplay && !hasBootSource && !hasCec && !hasOemLinks) {
                     // Never present an empty category or unsupported HDMI options.
                     screen.getClass().getMethod("removePreference",preference)
                             .invoke(screen,hdmiCategory);
@@ -127,6 +129,8 @@ public final class OemInlinePreferencesHook {
             // is safely transferred.
             // Stock ProjectorManager orientation codes, not calibration/keystone.
             OemProjectorOrientationHook.install(context,placementCategory,preference);
+            OemHardwareDelegatedSettings.installProjectionLinks(
+                    context,placementCategory,preference);
             // Five genuine OEM bands via stock PartnerSettingsConfig only.
             // Uses original ProgressDialog scale but native TV SeekBar widgets.
             OemFiveBandEqualizerHook.install(context,soundCategory,preference);
