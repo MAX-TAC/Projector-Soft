@@ -2,7 +2,7 @@
 
 ## Текущая экспериментальная TvSettingsPlus MOD v18 (8052, 26.10.2026)
 
-- [**TvSettingsPlus v18 — подписанный APK, GitHub Actions**](https://github.com/MAX-TAC/Projector-Soft/actions/runs/40331509840/artifacts/12654538151).
+- [**TvSettingsPlus v18 — подписанный APK, GitHub Actions**](https://github.com/MAX-TAC/Projector-Soft/actions/runs/40332001444/artifacts/12655213059).
 - [**Отчёт v18: восстановление KuSourceRJ.TimeService и технические ограничения**](docs/TVSETTINGSPLUS_V18_PROGRESS_2026-10-26.md).
 - Добавлен **условный** сервис контроля наличия `KuSourceRJ.TimeService`. При включённом штатном `KuSettings` он не работает; после намеренного отключения старого пакета и перезагрузки может восстанавливать исходную службу, если Android позволяет корректно контролировать её состояние.
 - Все прежние OEM-настройки сохранены: 5-band EQ 120–10000 Гц, видео/RGB, HDMI CEC/EDID/boot-source, установка проектора, System Info, телевизионный ярлык.
