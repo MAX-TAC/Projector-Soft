@@ -1,0 +1,219 @@
+{
+  "com/android/tv/settings/partnercustomizer/utils/SoundEARCReceiver.java": [
+    {
+      "line": 16,
+      "statement": "integer = android.provider.Settings.Global.getInt(context.getContentResolver(), com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_SOUND_EARC);",
+      "calls": [
+        "getInt(",
+        "getContentResolver("
+      ]
+    },
+    {
+      "line": 23,
+      "statement": "new com.mediatek.twoworlds.tv.MtkTvCecAnBase().setEarcEnable(integer == 0);",
+      "calls": [
+        "setEarcEnable("
+      ]
+    }
+  ],
+  "com/android/tv/settings/partnercustomizer/sound/AudioResetActivity.java": [
+    {
+      "line": 86,
+      "statement": "com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtils.putSettingValueInt(getContext().getContentResolver(), com.android.tv.settings.partnercustomizer.tvsettingservice.u",
+      "calls": [
+        "putSettingValueInt(",
+        "getContext(",
+        "getContentResolver("
+      ]
+    }
+  ],
+  "com/android/tv/settings/partnercustomizer/sound/EarcFragment.java": [
+    {
+      "line": 99,
+      "statement": "setEarcEnable(java.lang.Integer.parseInt(this.mEntriesValues[i]) == 0);",
+      "calls": [
+        "setEarcEnable("
+      ]
+    },
+    {
+      "line": 113,
+      "statement": "private void setEarcEnable(boolean z) {",
+      "calls": [
+        "setEarcEnable("
+      ]
+    },
+    {
+      "line": 116,
+      "statement": "android.util.Log.e(TAG, \"setEarcEnable value same ? \" + settingValueInt + \" : \" + i);",
+      "calls": []
+    },
+    {
+      "line": 119,
+      "statement": "new com.mediatek.twoworlds.tv.MtkTvCecAnBase().setEarcEnable(z);",
+      "calls": [
+        "setEarcEnable("
+      ]
+    }
+  ],
+  "com/android/tv/settings/uicustom/fragment/source/SourceFragment.java": [
+    {
+      "line": 209,
+      "statement": "if (com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtils.isSupportEARC() && !z) {",
+      "calls": [
+        "isSupportEARC("
+      ]
+    },
+    {
+      "line": 211,
+      "statement": "android.provider.Settings.Global.putInt(this.mContentResolver, com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_SOUND_EARC, 1);",
+      "calls": [
+        "putInt("
+      ]
+    },
+    {
+      "line": 212,
+      "statement": "new com.mediatek.twoworlds.tv.MtkTvCecAnBase().setEarcEnable(false);",
+      "calls": [
+        "setEarcEnable("
+      ]
+    },
+    {
+      "line": 242,
+      "statement": "if (!com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtils.isSupportEARC() || z) {",
+      "calls": [
+        "isSupportEARC("
+      ]
+    },
+    {
+      "line": 246,
+      "statement": "android.provider.Settings.Global.putInt(this.mContentResolver, com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_SOUND_EARC, 1);",
+      "calls": [
+        "putInt("
+      ]
+    },
+    {
+      "line": 247,
+      "statement": "new com.mediatek.twoworlds.tv.MtkTvCecAnBase().setEarcEnable(false);",
+      "calls": [
+        "setEarcEnable("
+      ]
+    }
+  ],
+  "com/android/tv/settings/uicustom/fragment/sound/SoundFragment.java": [
+    {
+      "line": 46,
+      "statement": "this.isEnableEarc = com.android.tv.settings.uicustom.util.SettingsUtil.getGlobalValueInt(this.mContentResolver, com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBas",
+      "calls": [
+        "getGlobalValueInt("
+      ]
+    },
+    {
+      "line": 203,
+      "statement": "com.android.tv.settings.uicustom.util.SettingsUtil.putGlobalValueInt(((com.android.tv.settings.uicustom.fragment.BaseFragment) com.android.tv.settings.uicustom.fragment.sound.SoundFragment.this).mCont",
+      "calls": [
+        "putGlobalValueInt("
+      ]
+    },
+    {
+      "line": 256,
+      "statement": "soundFragment3.isEnableEarc = com.android.tv.settings.uicustom.util.SettingsUtil.getGlobalValueInt(((com.android.tv.settings.uicustom.fragment.BaseFragment) soundFragment3).mContentResolver, com.andro",
+      "calls": [
+        "getGlobalValueInt("
+      ]
+    },
+    {
+      "line": 279,
+      "statement": "com.android.tv.settings.uicustom.util.SettingsUtil.putGlobalValueInt(this.mContentResolver, com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_SOUND_EARC, th",
+      "calls": [
+        "putGlobalValueInt(",
+        "getResources(",
+        "getInteger("
+      ]
+    }
+  ],
+  "com/android/tv/settings/uicustom/floatmenu/controller/source/SourceSubMenuController.java": [
+    {
+      "line": 349,
+      "statement": "if (com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtils.isSupportEARC() && !z) {",
+      "calls": [
+        "isSupportEARC("
+      ]
+    },
+    {
+      "line": 351,
+      "statement": "android.provider.Settings.Global.putInt(this.mContext.getContentResolver(), com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_SOUND_EARC, 1);",
+      "calls": [
+        "putInt(",
+        "getContentResolver("
+      ]
+    },
+    {
+      "line": 352,
+      "statement": "new com.mediatek.twoworlds.tv.MtkTvCecAnBase().setEarcEnable(false);",
+      "calls": [
+        "setEarcEnable("
+      ]
+    },
+    {
+      "line": 407,
+      "statement": "if (!com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtils.isSupportEARC() || z) {",
+      "calls": [
+        "isSupportEARC("
+      ]
+    },
+    {
+      "line": 411,
+      "statement": "android.provider.Settings.Global.putInt(this.mContext.getContentResolver(), com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_SOUND_EARC, 1);",
+      "calls": [
+        "putInt(",
+        "getContentResolver("
+      ]
+    },
+    {
+      "line": 412,
+      "statement": "new com.mediatek.twoworlds.tv.MtkTvCecAnBase().setEarcEnable(false);",
+      "calls": [
+        "setEarcEnable("
+      ]
+    }
+  ],
+  "com/android/tv/settings/uicustom/floatmenu/controller/sound/SoundSubMenuController.java": [
+    {
+      "line": 40,
+      "statement": "this.isEnableEarc = com.android.tv.settings.uicustom.util.SettingsUtil.getGlobalValueInt(this.mContentResolver, com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBas",
+      "calls": [
+        "getGlobalValueInt("
+      ]
+    },
+    {
+      "line": 61,
+      "statement": "this.isEnableEarc = com.android.tv.settings.uicustom.util.SettingsUtil.getGlobalValueInt(this.mContentResolver, com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBas",
+      "calls": [
+        "getGlobalValueInt("
+      ]
+    },
+    {
+      "line": 201,
+      "statement": "com.android.tv.settings.uicustom.util.SettingsUtil.putGlobalValueInt(com.android.tv.settings.uicustom.floatmenu.controller.sound.SoundSubMenuController.this.mContentResolver, com.android.tv.settings.p",
+      "calls": [
+        "putGlobalValueInt("
+      ]
+    },
+    {
+      "line": 254,
+      "statement": "soundSubMenuController3.isEnableEarc = com.android.tv.settings.uicustom.util.SettingsUtil.getGlobalValueInt(soundSubMenuController3.mContentResolver, com.android.tv.settings.partnercustomizer.tvsettin",
+      "calls": [
+        "getGlobalValueInt("
+      ]
+    },
+    {
+      "line": 298,
+      "statement": "com.android.tv.settings.uicustom.util.SettingsUtil.putGlobalValueInt(this.mContentResolver, com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtilsBase.KEY_SOUND_EARC, th",
+      "calls": [
+        "putGlobalValueInt(",
+        "getResources(",
+        "getInteger("
+      ]
+    }
+  ]
+}
