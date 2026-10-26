@@ -3,7 +3,6 @@ package dev.projectorsoft.tvsettings;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.util.Log;
 
@@ -16,20 +15,21 @@ public final class KuSourceRecoveryBootReceiver extends BroadcastReceiver {
     private static final String TAG="TvSettingsPlusMOD";
     private static final String LEGACY="com.my.settings";
 
+    /**
+     * A missing/hidden PackageManager entry is NOT proof of package disablement.
+     * Android 11+ app-visibility filtering can otherwise produce a false
+     * NameNotFoundException and start a competing thermal-service monitor.
+     */
     static boolean needsReplacement(Context context) {
         try {
             PackageManager pm=context.getPackageManager();
-            int explicit=pm.getApplicationEnabledSetting(LEGACY);
-            if (explicit==PackageManager.COMPONENT_ENABLED_STATE_DISABLED
-                    || explicit==PackageManager.COMPONENT_ENABLED_STATE_DISABLED_USER
-                    || explicit==PackageManager.COMPONENT_ENABLED_STATE_DISABLED_UNTIL_USED)
-                return true;
-            ApplicationInfo app=pm.getApplicationInfo(LEGACY,0);
-            return !app.enabled;
-        }catch(PackageManager.NameNotFoundException e){
-            return true;
+            int state=pm.getApplicationEnabledSetting(LEGACY);
+            return KuSourceRecoveryActivationPolicy.explicitlyDisabled(state);
+        }catch(IllegalArgumentException e){
+            Log.w(TAG,"Legacy KuSettings not queryable; replacement disabled",e);
+            return false;
         }catch(Exception e){
-            Log.w(TAG,"Cannot determine legacy watchdog state; leaving OEM in control",e);
+            Log.w(TAG,"KuSettings state not verifiable; original watchdog assumed",e);
             return false;
         }
     }
