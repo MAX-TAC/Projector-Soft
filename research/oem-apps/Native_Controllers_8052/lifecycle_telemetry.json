@@ -1,0 +1,251 @@
+{
+  "TvSettingsPlus/com/android/tv/settings/uicustom/floatmenu/controller/system/SystemInfoSecondaryController.java": {
+    "lines": 224,
+    "methods": [
+      "handleMessage",
+      "onAttach",
+      "onResume",
+      "onKey",
+      "onDetach",
+      "initData",
+      "initView",
+      "run",
+      "run",
+      "getModelName",
+      "getAndroidVersion",
+      "getSystemVersion",
+      "getMac",
+      "getWifiMacAddr",
+      "getEthMac",
+      "getDefaultMac",
+      "getMacFromHardware",
+      "convertToMac",
+      "updateTemperatureUi"
+    ],
+    "property_strings": [],
+    "service_refs": []
+  },
+  "TvSettingsPlus/com/android/tv/settings/uicustom/floatmenu/controller/system/SystemSubMenuController.java": {
+    "lines": 119,
+    "methods": [
+      "onAttach",
+      "onKey",
+      "initView",
+      "initListeners",
+      "onClick",
+      "onClick",
+      "onClick",
+      "onClick",
+      "showFactoryResetDialog",
+      "onClick",
+      "factoryReset",
+      "intentComponent",
+      "isKuleshiOta"
+    ],
+    "property_strings": [
+      "ro.rjpj.support.otayun"
+    ],
+    "service_refs": []
+  },
+  "TvSettingsPlus/com/android/tv/settings/partnercustomizer/tvsettingservice/TvBootupReceiver.java": {
+    "lines": 10,
+    "methods": [
+      "onReceive"
+    ],
+    "property_strings": [],
+    "service_refs": [
+      "TvBootupReceiver"
+    ]
+  },
+  "KuSourceRJ/com/coolux/source/service/TimeService.java": {
+    "lines": 1179,
+    "methods": [
+      "handleMessage",
+      "onReceive",
+      "onBind",
+      "onStartCommand",
+      "registerTimeTick",
+      "defaultBright",
+      "isReduceFS",
+      "brightReduce",
+      "actualHighFirstBrightThread",
+      "run",
+      "startHighFirstBrightReduce",
+      "actualHighSecondBrightThread",
+      "run",
+      "startHighSecondBrightReduce",
+      "actualHighThirdBrightThread",
+      "run",
+      "startHighThirdBrightReduce",
+      "actualStanderFirstBrightThread",
+      "run",
+      "startStanderFirstBrightReduce",
+      "actualStanderBrightSecondThread",
+      "run",
+      "startStanderBrightSecondReduce",
+      "actualIHighTemThread",
+      "run",
+      "startHighTemReduce",
+      "startThreadTemperatureError",
+      "run",
+      "temperatureError",
+      "startThreadReduce",
+      "run",
+      "startThreadFanDetection",
+      "run",
+      "fanDetection",
+      "startReduce",
+      "startThreadReduce518",
+      "run",
+      "startReduce518",
+      "defaultData",
+      "dustproof",
+      "myHttp",
+      "onTagComplete"
+    ],
+    "property_strings": [],
+    "service_refs": [
+      "TimeService"
+    ]
+  },
+  "KuSourceRJ/com/coolux/source/receiver/BootupReceiver.java": {
+    "lines": 56,
+    "methods": [
+      "onReceive",
+      "defaultBright",
+      "defaultInit",
+      "agingTest",
+      "rebootStart"
+    ],
+    "property_strings": [],
+    "service_refs": [
+      "MyBootupReceiver"
+    ]
+  },
+  "KuSourceRJ/com/coolux/source/utils/IntentUtils.java": {
+    "lines": 245,
+    "methods": [
+      "prepareTest",
+      "getInstance",
+      "startHdmi",
+      "startAllApp",
+      "startCalibration",
+      "startCamera",
+      "authorizationIntent",
+      "autoApp",
+      "highTemperatureIntent",
+      "fanDetectionIntent",
+      "automaticAdmissionIntent",
+      "startDustproofPublic",
+      "startMy",
+      "startMenu",
+      "startInterfaceTest",
+      "startClearTime",
+      "setTime",
+      "startTestCast",
+      "startWifiSn",
+      "startMacSn",
+      "dlpTest",
+      "projectModelTest",
+      "interfaceTest",
+      "whiteBalanceTest",
+      "audioVideoTest",
+      "leftRightVideo",
+      "agingTest",
+      "agingVideoTest",
+      "rebootNumTest",
+      "printTest",
+      "customBright",
+      "otherTest",
+      "startAgingIntent",
+      "myWifi",
+      "myBluetooth",
+      "setMain",
+      "startUSB",
+      "startMiracast",
+      "startAirplay",
+      "keystoneIntent",
+      "fourPointIntent",
+      "intentAction",
+      "doStartApplicationWithPackageName",
+      "startPak"
+    ],
+    "property_strings": [],
+    "service_refs": []
+  },
+  "KuSettings/com/my/service/MySetTimeService.java": {
+    "lines": 33,
+    "methods": [
+      "onReceive",
+      "onBind",
+      "onStartCommand",
+      "registerTimeTick"
+    ],
+    "property_strings": [],
+    "service_refs": [
+      "MySetTimeService"
+    ]
+  },
+  "KuSettings/com/my/service/BootupReceiver.java": {
+    "lines": 17,
+    "methods": [
+      "onReceive"
+    ],
+    "property_strings": [],
+    "service_refs": [
+      "MyBootupReceiver"
+    ]
+  },
+  "KuSettings/com/my/utils/IntentUtils.java": {
+    "lines": 272,
+    "methods": [
+      "getInstance",
+      "myWifi",
+      "myBluetooth",
+      "autoBluetooth",
+      "myDateTime",
+      "myLanguage",
+      "languageLocal",
+      "timeZone",
+      "screenshot",
+      "projectAbout",
+      "brightIntent",
+      "voiceIntent",
+      "startOta",
+      "restoreIntent",
+      "startTest",
+      "bootSoure",
+      "poweron",
+      "projectModel",
+      "mircastIntent",
+      "airplayIntent",
+      "keystoneIntent",
+      "imageDigitalIntent",
+      "provisionBluetoothIntent",
+      "provisionWifiIntent",
+      "provisionMenuIntent",
+      "warnIntent",
+      "startUniversalKJ",
+      "startKJTest",
+      "startOtaKJ",
+      "intentAction",
+      "intentAction",
+      "doStartApplicationWithPackageName",
+      "startPak",
+      "startTime",
+      "run",
+      "isServiceStart",
+      "startMyTimeService",
+      "startSourceService",
+      "run",
+      "isSourceServiceStart",
+      "startSourceTimeService"
+    ],
+    "property_strings": [],
+    "service_refs": [
+      "com.coolux.source.service.TimeService",
+      "com.my.service.MySetTimeService",
+      "startSourceTimeService"
+    ]
+  }
+}
