@@ -14,7 +14,7 @@ for rel in targets:
  lines=p.read_text(errors="replace").splitlines()
  found=[]
  for i,line in enumerate(lines):
-  if not re.search(r"\b(?:lambda\\$|initCheck|initView|initListener|setEarc|isSupportEARC)[\\w$]*\\s*\\(",line):continue
+  if not re.search(r"\b(?:lambda\$|initCheck|initView|initListener|setEarc|isSupportEARC)[\w$]*\s*\(",line):continue
   if not re.search(r"(public|private|protected)",line):continue
   depth=0;start=False;j=i
   for j in range(i,min(i+160,len(lines))):
@@ -25,7 +25,7 @@ for rel in targets:
   if re.search(r"EARC|earc|surround|volume|setEarc|setHdmiCec|isSupport",b,re.I):
    print("OEM",rel,"line",i+1,"\n",b[:11500],flush=True)
    found.append({"method":line.strip(),"line":i+1,
-     "calls":sorted(set(re.findall(r"\b([A-Za-z_]\\w*)\\(",b)))[:100],
+     "calls":sorted(set(re.findall(r"\b([A-Za-z_]\w*)\(",b)))[:100],
      "key_literals":sorted(set(re.findall(r'"([^"]{3,90})"',b)))[:65]})
  result[rel]=found
 out.write_text(json.dumps(result,indent=2,ensure_ascii=False)+"\n")
