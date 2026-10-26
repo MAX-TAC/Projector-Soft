@@ -29,7 +29,6 @@ public final class KuSourceRecoveryService extends Service {
     private static final String TARGET_PACKAGE="com.coolux.source";
     private static final String TARGET_SERVICE="com.coolux.source.service.TimeService";
     private static final long INITIAL_DELAY_MS=90000L;
-    private static final long MIN_RESTART_INTERVAL_MS=60000L;
     private final Handler handler=new Handler(Looper.getMainLooper());
     private long lastAttemptUptime=Long.MIN_VALUE;
     private boolean registered=false;
@@ -89,8 +88,8 @@ public final class KuSourceRecoveryService extends Service {
                 return;
             }
             long now=android.os.SystemClock.uptimeMillis();
-            if(lastAttemptUptime!=Long.MIN_VALUE &&
-                    now-lastAttemptUptime < MIN_RESTART_INTERVAL_MS)return;
+            if(!KuSourceRecoveryPolicy.shouldRecover(true,sawOtherPackages,false,
+                    lastAttemptUptime,now))return;
             lastAttemptUptime=now;
             Intent target=new Intent();
             target.setComponent(new ComponentName(TARGET_PACKAGE,TARGET_SERVICE));
