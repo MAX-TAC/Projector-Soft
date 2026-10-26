@@ -2,7 +2,7 @@
 
 **Дата:** 26 октября 2026. **База:** заводской `TvSettingsPlus.apk` RUIOS **8052** / Android 13 / MT9660. **Статус:** экспериментальная подписанная APK, без установки на реальное устройство.
 
-[GitHub Actions v18 — success](https://github.com/MAX-TAC/Projector-Soft/actions/runs/40331509840) · [APK и результаты сборки](https://github.com/MAX-TAC/Projector-Soft/actions/runs/40331509840/artifacts/12654538151).
+[GitHub Actions v18 — success](https://github.com/MAX-TAC/Projector-Soft/actions/runs/40332001444) · [APK и результаты сборки](https://github.com/MAX-TAC/Projector-Soft/actions/runs/40332001444/artifacts/12655213059).
 
 ## 1. Причина появления нового кода
 
@@ -43,6 +43,7 @@
 - `com.android.tv.settings`, `versionCode 18`.
 - Из исходных 16 DEX изменены только `classes13.dex` и `classes14.dex`; добавлен `classes17.dex`, включая код мониторинга.
 - `resources.arsc`, другие DEX, JNI и остальные файлы OEM проверены как неизменные.
+- Дополнительная проверка подтверждает штатное разрешение `android.permission.RECEIVE_BOOT_COMPLETED` и в оригинале, и в обновлённом APK.
 - JVM-тесты `KuSourceRecoveryPolicyTest` и `BootSourceMappingTest` проверяют отрицательные случаи и схемы 8052/8054.
 
 **Это доказывает только корректную упаковку и статическую проверку**, не реальное восстановление вентилятора/термозащиты или функционирование интерфейса на MT9660.
