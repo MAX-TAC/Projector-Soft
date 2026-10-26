@@ -108,6 +108,8 @@ jobs:
              /tmp/tv18/dex/classes.dex /tmp/tv18/patch_report.json /tmp/tv18/unsigned.apk --version-code 18
           aapt dump badging /tmp/tv18/unsigned.apk | grep "name='com.android.tv.settings' versionCode='18'"
           aapt dump xmltree /tmp/tv18/unsigned.apk AndroidManifest.xml > /tmp/tv18/manifest-tree.txt
+          aapt dump permissions vendor/reference/8052/APK/TvSettingsPlus.apk | grep -F 'android.permission.RECEIVE_BOOT_COMPLETED'
+          aapt dump permissions /tmp/tv18/unsigned.apk | grep -F 'android.permission.RECEIVE_BOOT_COMPLETED'
           python3 - <<'PY'
           from pathlib import Path
           data=Path("/tmp/tv18/manifest-tree.txt").read_text()
