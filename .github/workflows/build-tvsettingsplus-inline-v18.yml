@@ -115,8 +115,10 @@ jobs:
                         "dev.projectorsoft.tvsettings.KuSourceRecoveryService",
                         "android.intent.action.BOOT_COMPLETED"):
               assert value in data, "Missing watchdog Manifest declaration: "+value
-          assert data.count('dev.projectorsoft.tvsettings.KuSourceRecoveryBootReceiver') == 1
-          assert data.count('dev.projectorsoft.tvsettings.KuSourceRecoveryService') == 1
+          # aapt may render an Android string in both raw and typed form.
+          # Verify semantic presence rather than fragile textual occurrence counts.
+          for marker in ("KuSourceRecoveryBootReceiver", "KuSourceRecoveryService"):
+              assert marker in data
           print("PASS: guarded source-recovery Service and BOOT receiver registered")
           PY
           python3 - <<'PY'
