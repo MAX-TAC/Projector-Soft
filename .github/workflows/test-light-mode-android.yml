@@ -49,9 +49,10 @@ jobs:
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/ProjectorCapabilities.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/LightSourceBrightnessController.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/BootSourceMapping.java \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/KuSourceRecoveryPolicy.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/MenuPresentationPolicy.java \
             app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/*.java
-          for cls in ProjectorCapabilitiesTest LightSourceBrightnessControllerTest MenuPresentationPolicyTest BootSourceMappingTest; do
+          for cls in ProjectorCapabilitiesTest LightSourceBrightnessControllerTest MenuPresentationPolicyTest BootSourceMappingTest KuSourceRecoveryPolicyTest; do
             java -cp /tmp/jvm-classes "dev.projectorsoft.tvsettings.$cls"
           done
       - uses: actions/upload-artifact@v4
