@@ -26,7 +26,7 @@
 
 1. `KuSettings/com.my.service.BootupReceiver` реагирует только на `BOOT_COMPLETED` и запускает `MySetTimeService` через `IntentUtils.startTime()`, если служба не обнаружена.
 2. `MySetTimeService` по `TIME_TICK` (раз в минуту) вызывает `IntentUtils.startSourceService()`. Тот проверяет наличие `com.coolux.source.service.TimeService` и при необходимости запускает её через явный ComponentName. Системное время сервис **не синхронизирует**.
-3. `KuSourceRJ` уже имеет собственный `BootupReceiver` и `TimeService`. Поэтому базовые BootupReceiver и MySetTimeService из KuSettings **не переносим как есть**. Резервный контроль доступности KuSourceRJ TimeService понадобится только если тесты с отключённым KuSettings выявят сбои после аварийного завершения OEM-службы.
+3. `KuSourceRJ` уже имеет собственный `BootupReceiver` и `TimeService`, но **это не гарантирует восстановление после сбоя**. Новый статический аудит (26.10.2026) подтвердил: `KuSourceRJ.TimeService.onStartCommand()` регистрирует `TIME_TICK` и возвращает `START_NOT_STICKY` (2). При аварийном завершении Android может не перезапустить сервис, отвечающий в том числе за контроль перегрева и вентиляторов. `KuSettings.MySetTimeService` действительно каждые 60 секунд проверяет его присутствие и повторно запускает. **До отключения KuSettings обязателен замещающий и аппаратно испытанный watchdog**. См. [отчёт v17](TVSETTINGSPLUS_V17_PROGRESS_2026-10-26.md).
 4. `ScreenServices` выполняет периодический захват экрана через `com.android.systemui.screenshot.TakeScreenshotService`; перенос **запрещён по решению проекта**.
 5. Старый `android.settings.AUTO_BLUETOOTH` обрабатывается `KuSettings/MyAutoBluetoothActivity`, а TvSettingsPlus без MOD его не объявляет. В framework `services.jar` и WFDSinkTest `PhoneWindowManager` распознаёт старое имя Activity для предотвращения повторного запуска; реальная навигация использует implicit Intent. Следовательно, добавляем совместимый Intent-фильтр в TvSettingsPlus, **а не** механически патчим имя в WFDSinkTest.
 6. Полный read-only-скан обнаружил строки KuSettings в `system/etc/xtzm_setting.txt`, `system/menu_config_xml/whaletv_config.json` и `services.jar`. До полной ликвидации зависимости проверить назначение этих записей и runtime intent resolution. В рамках APK-проекта разделы system не переписывать.
@@ -38,7 +38,7 @@
 | OEM компонент | Статус | Как заменить |
 |---|---|---|
 | `BootupReceiver` | При BOOT_COMPLETED запускает MySetTimeService | Не копировать; KuSourceRJ имеет независимый BOOT_COMPLETED receiver |
-| `MySetTimeService` | Каждую минуту проверяет KuSourceRJ TimeService и запускает при отсутствии | Не копировать; проверить устойчивость собственной службы KuSourceRJ без watchdog |
+| `MySetTimeService` | Каждую минуту проверяет KuSourceRJ TimeService и запускает при отсутствии | **Критично сохранить эквивалентный механизм восстановления; исходный TimeService возвращает START_NOT_STICKY, собственный BootupReceiver не заменяет мониторинг при сбое** |
 | `ScreenServices` | **Не переносить в TvSettingsPlus по решению проекта** | Проверить входящие вызовы и жизненный цикл; после отключения KuSettings не должен оставаться необходимым |
 | `KuSourceRJ` | Сохраняется | Адаптер источников Android/HDMI, проверить косвенные зависимости от KuSettings |
 | `RuiAutoFocus`, `KeystoneCorrection`, `trdservice`, `trdmiddle` | Сохраняются | Проверенные Intent/SDK/Binder, никакого сырого I²C до аппаратной верификации |
