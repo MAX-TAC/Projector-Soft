@@ -51,20 +51,21 @@ public final class OemHardwareDelegatedSettings {
         }
     }
 
-    public static void installSourceLinks(Context context,Object sourceCategory,
+    public static boolean installSourceLinks(Context context,Object sourceCategory,
                                           Class<?> preferenceClass,boolean nativeCec) {
         if(context==null||sourceCategory==null||preferenceClass==null||!hdmiExists())
-            return;
-        add(context,sourceCategory,preferenceClass,
+            return false;
+        boolean added=add(context,sourceCategory,preferenceClass,
             "projectorsoft_hdmi_game_oem","Игровой режим HDMI",
             "Заводская настройка с сохранением коррекции трапеции",
             SOURCE_ACTION,276);
         if(!nativeCec) {
-            add(context,sourceCategory,preferenceClass,
+            added=add(context,sourceCategory,preferenceClass,
                 "projectorsoft_hdmi_cec_oem","HDMI-CEC · расширенные настройки",
                 "Заводской экран подтверждения и управления HDMI-устройствами",
-                SOURCE_ACTION,277);
+                SOURCE_ACTION,277) || added;
         }
+        return added;
     }
 
     public static void installProjectionLinks(Context context,Object projectionCategory,
