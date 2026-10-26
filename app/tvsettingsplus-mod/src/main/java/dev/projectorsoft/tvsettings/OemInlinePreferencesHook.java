@@ -88,9 +88,21 @@ public final class OemInlinePreferencesHook {
                     TEMP_TITLES,TEMP_VALUES,2,212);
             addList(soundCategory,preference,context,"projectorsoft_sound_mode",
                     "Режим звука","sound_style",SOUND_TITLES,SOUND_VALUES,1,213);
-            // Sound surround/eARC/automatic volume must not bypass OEM
-            // audio and CEC HAL. Until corresponding OEM callbacks are
-            // migrated they remain accessible through the native sound screen.
+            // Factory SoundFragment and SoundSubMenuController implement
+            // Surround and Auto-Volume as plain Settings.Global 0/1 writes.
+            // Expose those two only when the OEM already saved a 0/1 value.
+            addSwitchIfPresent(soundCategory,preference,context,
+                    "projectorsoft_surround","Объёмное звучание",
+                    "sound_sound_surround",217);
+            String autoVolume=vendorKey("KEY_SOUND_AUTO_VOLUME_CONTROL");
+            if(autoVolume!=null) addSwitchIfPresent(soundCategory,preference,context,
+                    "projectorsoft_auto_volume","Автоматическая громкость",
+                    autoVolume,218);
+            // Do NOT expose eARC as a raw toggle. Two factory screens disagree
+            // about KEY_SOUND_EARC polarity and the real audio API requires CEC.
+            // Keep original OEM sound control accessible as a safe fallback.
+            OemEarcDelegatedPreference.install(context,soundCategory,preference);
+
             // Native Android TV seekbars: exact limits read from factory layout XML.
             // They remain hidden until the OEM Settings.Global value exists.
             OemInlineSlidersHook.install(context,pictureCategory,soundCategory,preference);
