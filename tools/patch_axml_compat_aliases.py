@@ -226,6 +226,28 @@ def patch_manifest(data):
         fragment+=startnode(tag_category,[attr(uridx,nameidx,category)])+endnode(tag_category)
     fragment+=endnode(tag_filter)+endnode(tag_alias)
     print("Inserted Android TV Settings launcher: localized label, settings gear icon 0x7f08022e, banner",hex(application_banner))
+
+    # Recovery is cold-boot activated ONLY IF the stock KuSettings package was
+    # already explicitly disabled by the device owner. It leaves the original
+    # KuSourceRJ fan/overheat TimeService untouched. Components are private.
+    boot_receiver=pool.index("dev.projectorsoft.tvsettings.KuSourceRecoveryBootReceiver")
+    recovery_service=pool.index("dev.projectorsoft.tvsettings.KuSourceRecoveryService")
+    boot_action=pool.index("android.intent.action.BOOT_COMPLETED")
+    receiver_tag=pool.index("receiver")
+    service_tag=pool.index("service")
+    component_attrs=[
+        attr(uridx,enabled,True),
+        attr(uridx,exported,False)]
+    fragment+=startnode(receiver_tag,[
+        attr(uridx,nameidx,boot_receiver),*component_attrs])
+    fragment+=startnode(tag_filter)
+    fragment+=startnode(tag_action,[
+        attr(uridx,nameidx,boot_action)])+endnode(tag_action)
+    fragment+=endnode(tag_filter)+endnode(receiver_tag)
+    fragment+=startnode(service_tag,[
+        attr(uridx,nameidx,recovery_service),*component_attrs])
+    fragment+=endnode(service_tag)
+    print("Registered guarded, non-exported source-safety boot recovery components")
     rebuilt=[]
     for i,(kind,ch) in enumerate(chunks):
         if i==app_close:rebuilt.append(fragment)
