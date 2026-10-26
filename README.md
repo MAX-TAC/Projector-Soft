@@ -1,5 +1,14 @@
 # Projector-Soft
 
+## Актуальная экспериментальная сборка: TvSettingsPlus MOD v19 (8052)
+
+- [**Подписанный APK v19**](https://github.com/MAX-TAC/Projector-Soft/actions/runs/40375223763/artifacts/12674936670) — успешно пройдены Java/D8, заводской DEX/repack, platform test-key и JVM-тесты безопасного запуска мониторинга.
+- [**Отчёт о новых исправлениях и ограничениях v19**](docs/TVSETTINGSPLUS_V19_PROGRESS_2026-10-26.md).
+- Исправлена критическая ложная активация резервного watchdog при ограниченной Android 13 видимости `KuSettings`; восстановление `KuSourceRJ.TimeService` теперь консервативнее и не полагается на присутствие посторонних служб.
+- В Android TV «Система · Проектор» добавлена read-only строка о конфигурации контроля охлаждения. Всё, что было в v18, сохранено.
+- **Сборка только для RUIOS 8052; не прошла испытаний на железе, НЕ готова для 8054, НЕ отключать KuSettings.**
+
+
 ## Текущая экспериментальная TvSettingsPlus MOD v18 (8052, 26.10.2026)
 
 - [**TvSettingsPlus v18 — подписанный APK, GitHub Actions**](https://github.com/MAX-TAC/Projector-Soft/actions/runs/40332001444/artifacts/12655213059).
