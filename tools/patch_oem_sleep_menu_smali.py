@@ -18,16 +18,16 @@ def locate(root, suffix):
 
 def patch_one(path, source_register):
     original=path.read_text()
-    blocks=list(re.finditer(r"(?ms)^\\.method[^\\n]*\\n.*?^\\.end method",original))
-    target=[m for m in blocks if re.search(r"\\binitView\\(",m.group().splitlines()[0])]
+    blocks=list(re.finditer(r"(?ms)^\.method[^\n]*\n.*?^\.end method",original))
+    target=[m for m in blocks if re.search(r"\binitView\(",m.group().splitlines()[0])]
     if len(target)!=1:
         raise ValueError("Expected one initView in "+str(path))
     match=target[0]
     body=match.group()
     if HOOK in body:raise ValueError("Hook already present")
-    returns=list(re.finditer(r"(?m)^    return-void\\s*$",body))
+    returns=list(re.finditer(r"(?m)^    return-void\s*$",body))
     if len(returns)!=1:raise ValueError("Cannot safely hook initView: "+str(path))
-    insertion="    invoke-static {"+source_register+"}, "+HOOK+"\\n"
+    insertion="    invoke-static {"+source_register+"}, "+HOOK+"\n"
     body=body[:returns[0].start()]+insertion+body[returns[0].start():]
     path.write_text(original[:match.start()]+body+original[match.end():])
     return {"class":str(path),"register":source_register}
@@ -53,7 +53,7 @@ def main():
       "protection":"original OEM sleep controllers and fan HAL unchanged"
     }
     args.report.parent.mkdir(parents=True,exist_ok=True)
-    args.report.write_text(json.dumps(result,indent=2)+"\\n")
+    args.report.write_text(json.dumps(result,indent=2)+"\n")
     print(json.dumps(result,indent=2))
 if __name__=="__main__":
     main()
