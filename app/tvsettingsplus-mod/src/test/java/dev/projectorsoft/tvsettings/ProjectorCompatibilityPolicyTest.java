@@ -5,8 +5,10 @@ public final class ProjectorCompatibilityPolicyTest {
         if(!condition)throw new AssertionError(message);
     }
     public static void main(String[] args) {
-        check(ProjectorCompatibilityPolicy.boardWarning("8054",2).contains("несовместимость"),
+        check(ProjectorCompatibilityPolicy.boardWarning("8054",2).contains("не проверены"),
               "Never advertise an 8052 APK as verified on 8054");
+        check(ProjectorCompatibilityPolicy.boardWarning("8054",1).contains("не подтверждено"),
+              "8054 HDMI board mismatch must fail closed");
         check(ProjectorCompatibilityPolicy.boardWarning("8052",2).contains("не соответствует"),
               "Reject board port mismatch on 8052");
         check(ProjectorCompatibilityPolicy.boardWarning("8052",null).contains("Нужна проверка"),
