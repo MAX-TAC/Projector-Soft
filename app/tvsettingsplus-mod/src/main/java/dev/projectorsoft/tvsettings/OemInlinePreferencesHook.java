@@ -73,6 +73,13 @@ public final class OemInlinePreferencesHook {
                             .invoke(screen,systemCategory);
                 }
             }
+            Object powerCategory=addCategory(screen,preference,categoryClass,
+                    context,"projectorsoft_power_category","Питание · Проектор",260);
+            if(powerCategory!=null && !OemAcPowerBootHook.install(
+                    context,powerCategory,preference)) {
+                screen.getClass().getMethod("removePreference",preference)
+                    .invoke(screen,powerCategory);
+            }
             Object hdmiCategory=addCategory(screen,preference,categoryClass,
                     context,"projectorsoft_hdmi_category","Источники · Проектор",270);
             if(hdmiCategory!=null) {
