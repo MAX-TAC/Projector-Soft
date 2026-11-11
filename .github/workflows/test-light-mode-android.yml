@@ -49,6 +49,7 @@ jobs:
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/ProjectorCapabilities.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/LightSourceBrightnessController.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/BootSourceMapping.java \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/ProjectorCompatibilityPolicy.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/KuSourceRecoveryPolicy.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemEarcPolicy.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/KuSourceRecoveryActivationPolicy.java \
