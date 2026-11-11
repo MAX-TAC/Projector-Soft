@@ -8,8 +8,12 @@ public final class ProjectorCompatibilityPolicy {
     private ProjectorCompatibilityPolicy() {}
 
     public static String boardWarning(String firmwareId,Integer hdmiPorts) {
-        if("8054".equals(firmwareId))
-            return "ВНИМАНИЕ: ревизия 8054. Этот APK создан из прошивки 8052, несовместимость не исключена.";
+        if("8054".equals(firmwareId)) {
+            if(hdmiPorts==null || hdmiPorts.intValue()!=2)
+                return "8054 определён, но количество HDMI не подтверждено. Функции MOD нельзя считать совместимыми.";
+            return "8054.1.0.1: заводской TvSettingsPlus совпадает с 8052.1.0.4 по SHA-256. " +
+                    "Аппаратные функции MOD на 8054 не проверены; KuSettings не отключать.";
+        }
         if(!"8052".equals(firmwareId))
             return "Ревизия не подтверждена. Не устанавливайте эту сборку как рабочую.";
         if(hdmiPorts==null || hdmiPorts.intValue()!=1)
