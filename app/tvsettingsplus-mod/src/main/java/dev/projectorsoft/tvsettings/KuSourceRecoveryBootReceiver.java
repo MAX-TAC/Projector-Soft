@@ -36,6 +36,9 @@ public final class KuSourceRecoveryBootReceiver extends BroadcastReceiver {
 
     @Override public void onReceive(Context context,Intent intent) {
         if(intent==null || !Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction()))return;
+        // Always enforce no automatic screen blank/sleep at boot, irrespective
+        // of whether KuSettings is enabled. Recovery service remains guarded.
+        OemScreenTimeoutSafetyHook.ensureNever(context);
         if(!needsReplacement(context))return;
         try {
             Intent svc=new Intent(context,KuSourceRecoveryService.class);

@@ -43,6 +43,9 @@ public final class OemInlinePreferencesHook {
             Object ctx=fragment.getClass().getMethod("getContext").invoke(fragment);
             if (!(ctx instanceof Context)) return;
             Context context=(Context)ctx;
+            // Enforce the projector no-black-screen policy even when native
+            // preferences have already been inserted during fragment recreation.
+            OemScreenTimeoutSafetyHook.ensureNever(context);
             Class<?> preference=Class.forName("androidx.preference.Preference");
             Class<?> categoryClass=Class.forName("androidx.preference.PreferenceCategory");
             Method find=fragment.getClass().getMethod("findPreference",CharSequence.class);
@@ -68,7 +71,9 @@ public final class OemInlinePreferencesHook {
                         context,systemCategory,preference);
                 boolean firmware=OemHardwareDelegatedSettings.installSystemLinks(
                         context,systemCategory,preference);
-                if(!info && !preflight && !firmware) {
+                boolean screenStatus=OemScreenTimeoutSafetyHook.installStatus(
+                        context,systemCategory,preference);
+                if(!info && !preflight && !firmware && !screenStatus) {
                     screen.getClass().getMethod("removePreference",preference)
                             .invoke(screen,systemCategory);
                 }

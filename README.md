@@ -1,3 +1,5 @@
+> **TvSettingsPlus MOD v31 — безопасность экрана:** скрыты заводские пункты сна/заставки. При загрузке и входе в настройки выставляется Never для Android screen/sleep timeouts и отключается Android Dream; статус виден только для чтения. [Отчёт v31](docs/TVSETTINGSPLUS_V31_SCREEN_SAFETY.md). KuSettings и управление охлаждением не изменены. Без адаптации под 8054.
+
 > **TvSettingsPlus MOD v30 — программный этап:** native «Размер текста» 85/100/115/130% по заводским настройкам; сохранены native power/key tone/boot app. [Отчёт v30](docs/TVSETTINGSPLUS_V30_FONT_SCALE.md). 8054 только после завершения программных проверок.
 
 > **TvSettingsPlus MOD v29 — программный этап переноса:** выбор приложения при включении теперь в нативном Android TV списке, а не только в OEM Activity; выбор разрешён лишь для реально запускаемых пакетов и проверяется обратным чтением. [Отчёт v29](docs/TVSETTINGSPLUS_V29_POWERON_APP.md). 8054 пока не адаптируется.
