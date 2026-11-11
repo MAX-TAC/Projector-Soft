@@ -61,12 +61,14 @@ public final class OemInlinePreferencesHook {
                     context,"projectorsoft_placement_category","Проекция · Проектор",250);
             if(placementCategory==null)return;
             Object systemCategory=addCategory(screen,preference,categoryClass,
-                    context,"projectorsoft_system_category","Система · Проектор",280);
+                    context,"projectorsoft_system_category","Об устройстве · Проектор",280);
             if(systemCategory!=null) {
                 boolean info=OemSystemInfoHook.install(context,systemCategory,preference);
                 boolean preflight=OemCompatibilityDiagnosticsHook.install(
                         context,systemCategory,preference);
-                if(!info && !preflight) {
+                boolean firmware=OemHardwareDelegatedSettings.installSystemLinks(
+                        context,systemCategory,preference);
+                if(!info && !preflight && !firmware) {
                     screen.getClass().getMethod("removePreference",preference)
                             .invoke(screen,systemCategory);
                 }
