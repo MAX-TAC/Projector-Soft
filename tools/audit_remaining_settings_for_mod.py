@@ -21,8 +21,12 @@ targets={
   "com/android/tv/settings/uicustom/fragment/general/GeneralFragment.java",
   "com/android/tv/settings/uicustom/floatmenu/controller/general/GeneralSubMenuController.java",
   "com/android/tv/settings/system/TimeZoneFragment.java",
+  "com/android/tv/settings/uicustom/floatmenu/controller/general/ScreensaverSecondaryController.java",
+  "com/android/tv/settings/uicustom/floatmenu/controller/general/FontSizeSettingsSecondaryController.java",
+  "com/android/tv/settings/uicustom/floatmenu/controller/source/PowerOnAppSecondaryController.java",
+  "com/android/tv/settings/uicustom/common/Constant.java",
  ]}
-pattern=re.compile(r"(?i)(onSwitchChange|Keypress|isEnableKeypress|tsv_source_key_tone|putSystemValueInt|getSystemValueInt|keyTone|key_tone|sound_effect|BluetoothReconnect|connectDevice|connectFinsh|autoConnect|connectGatt|connect\(|bluetooth|time_zone|timeZone|zonePicker|SCREEN_OFF_TIMEOUT|screensaver|font_scale|PowerOnUp|putElectricityBoot|Settings\.Global|Settings\.System|updateLocale|setTimeZone|locale|showScreenSaver)")
+pattern=re.compile(r"(?i)(onSwitchChange|Keypress|isEnableKeypress|tsv_source_key_tone|putSystemValueInt|getSystemValueInt|setPowerOnApp|getPowerOnApp|PowerOnApp|Screensaver|screensaver|screen_saver|setDream|isDream|font_scale|putFloat|getFloat|keyTone|key_tone|sound_effect|BluetoothReconnect|connectDevice|connectFinsh|autoConnect|connectGatt|connect\(|bluetooth|time_zone|timeZone|zonePicker|SCREEN_OFF_TIMEOUT|screensaver|font_scale|PowerOnUp|putElectricityBoot|Settings\.Global|Settings\.System|updateLocale|setTimeZone|locale|showScreenSaver)")
 output={}
 for package,paths in targets.items():
  for rel in paths:
