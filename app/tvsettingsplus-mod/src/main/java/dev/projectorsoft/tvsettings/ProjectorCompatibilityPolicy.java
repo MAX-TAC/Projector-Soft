@@ -11,8 +11,9 @@ public final class ProjectorCompatibilityPolicy {
         if("8054".equals(firmwareId)) {
             if(hdmiPorts==null || hdmiPorts.intValue()!=2)
                 return "8054 определён, но количество HDMI не подтверждено. Функции MOD нельзя считать совместимыми.";
-            return "8054.1.0.1: заводской TvSettingsPlus совпадает с 8052.1.0.4 по SHA-256. " +
-                    "Аппаратные функции MOD на 8054 не проверены; KuSettings не отключать.";
+            return "По архивному сравнению: заводской TvSettingsPlus из 8054.1.0.1 " +
+                    "совпадал с 8052.1.0.4 по SHA-256. Текущая прошивка и аппаратные " +
+                    "функции MOD на 8054 не проверены; KuSettings не отключать.";
         }
         if(!"8052".equals(firmwareId))
             return "Ревизия не подтверждена. Не устанавливайте эту сборку как рабочую.";
