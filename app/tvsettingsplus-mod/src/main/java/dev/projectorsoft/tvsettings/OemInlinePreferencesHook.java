@@ -51,6 +51,20 @@ public final class OemInlinePreferencesHook {
 
             Object screen=fragment.getClass().getMethod("getPreferenceScreen").invoke(fragment);
             if (screen==null) return;
+            // Experimental native controls are 8054-only, Android 13-only.
+            // Keep the stock Android TV menu and read-only diagnostics when
+            // physical board identity/HDMI count cannot be corroborated.
+            if(!OemAlpha8054Gate.allowNativeControls()) {
+                if(find.invoke(fragment,"projectorsoft_system_category") != null)return;
+                Object safeCategory=addCategory(screen,preference,categoryClass,
+                    context,"projectorsoft_system_category","Об устройстве · Проектор",280);
+                if(safeCategory!=null) {
+                    OemAlpha8054Gate.installStatus(context,safeCategory,preference);
+                    OemSystemInfoHook.install(context,safeCategory,preference);
+                    OemCompatibilityDiagnosticsHook.install(context,safeCategory,preference);
+                }
+                return;
+            }
             Object pictureCategory=addCategory(screen,preference,categoryClass,
                     context,CATEGORY_KEY,"Изображение · Проектор",210);
             if(pictureCategory==null)return;
@@ -63,6 +77,7 @@ public final class OemInlinePreferencesHook {
             Object systemCategory=addCategory(screen,preference,categoryClass,
                     context,"projectorsoft_system_category","Об устройстве · Проектор",280);
             if(systemCategory!=null) {
+                OemAlpha8054Gate.installStatus(context,systemCategory,preference);
                 boolean info=OemSystemInfoHook.install(context,systemCategory,preference);
                 boolean preflight=OemCompatibilityDiagnosticsHook.install(
                         context,systemCategory,preference);

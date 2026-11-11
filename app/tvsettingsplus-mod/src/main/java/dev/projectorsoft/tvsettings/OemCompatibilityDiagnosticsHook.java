@@ -106,8 +106,12 @@ public final class OemCompatibilityDiagnosticsHook {
         sb.append("KuSourceRJ: ").append(brightnessReceiver(context)).append("\n");
         sb.append("TimeService/вентиляторы: работа не подтверждена этой проверкой\n");
         sb.append("HDMI-CEC/eARC/MEMC/DSP: требуется аппаратное тестирование\n\n");
-        sb.append("ВАЖНО: не отключайте KuSettings и не устанавливайте сборку 8052 ");
-        sb.append("на проектор 8054. Диагностика ничего не изменяет.");
+        sb.append("АЛЬФА 8054 — ПРОВЕРКА\n");
+        sb.append(OemAlpha8054Gate.report()).append("\n\n");
+        sb.append("ВАЖНО: тестовый APK собран из заводского TvSettingsPlus, совпадавшего ");
+        sb.append("по SHA-256 в исследованных образах 8052 и 8054. ");
+        sb.append("Это НЕ подтверждает установленную сейчас прошивку и работу аппаратных функций. ");
+        sb.append("KuSettings не отключать. Диагностика ничего не изменяет.");
         return sb.toString();
     }
 
