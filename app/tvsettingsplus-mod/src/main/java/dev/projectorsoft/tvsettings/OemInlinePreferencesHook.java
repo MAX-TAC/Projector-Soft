@@ -114,6 +114,11 @@ public final class OemInlinePreferencesHook {
             if(autoVolume!=null) addSwitchIfPresent(soundCategory,preference,context,
                     "projectorsoft_auto_volume","Автоматическая громкость",
                     autoVolume,218);
+            // Stock SoundFragment uses Settings.System
+            // Constant.SETTINGS_KEY_SOUND_EFFECTS_ENABLED with boolean 0/1.
+            // Keep the exact OEM key and verify the persisted value.
+            OemKeyToneHook.install(context,soundCategory,preference);
+
             // Do NOT expose eARC as a raw toggle. Two factory screens disagree
             // about KEY_SOUND_EARC polarity and the real audio API requires CEC.
             // Keep original OEM sound control accessible as a safe fallback.

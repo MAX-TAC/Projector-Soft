@@ -1,3 +1,5 @@
+> **TvSettingsPlus MOD v28 (8052 software-stage):** native keypress sound toggle with exact OEM Settings.System key and verified readback; v27 electricity-boot toggle retained. [v28 report](docs/TVSETTINGSPLUS_V28_KEYTONE.md). No 8054 adaptation until software regression is complete.
+
 > **TvSettingsPlus MOD v27 — продолжение переноса, без адаптации 8054:** нативный переключатель автозапуска после подачи питания с заводским MtkUtil и проверкой записи. [Отчёт v27](docs/TVSETTINGSPLUS_V27_NATIVE_POWER.md). KuSettings не отключать.
 
 > **TvSettingsPlus v25 (экспериментально):** перенесены доступные из Android TV переходы к заводскому обновлению прошивки и выбору приложения при включении; [отчёт](docs/TVSETTINGSPLUS_V25_KUSETTINGS_ROUTES.md). KuSettings и оригинальные OTA/тепловые службы сохраняются.
