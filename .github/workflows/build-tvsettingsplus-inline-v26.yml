@@ -1,4 +1,4 @@
-name: Build TvSettingsPlus v26 OEM board-parity preflight and native controls
+name: Build TvSettingsPlus 8054 ALPHA1 v26 (gated hardware controls)
 on:
   push:
     paths:
@@ -237,7 +237,7 @@ jobs:
           mkdir -p /tmp/tv26/report
           cat > /tmp/tv26/report/README.txt <<'EOF'
           WARNING: EXPERIMENTAL. Not tested on actual projector; DO NOT install as production.
-          TvSettingsPlus 8052 platform-signature-matched v26.
+          TvSettingsPlus 8054 ALPHA1 v26; archived 8052/8054 base APK hashes matched.
           v26: Opens factory update UI through the existing OEM System page,
           retaining original online/local OTA confirmation handling.
           v26: Opens OEM app-on-boot selector through original Source page,
@@ -249,7 +249,7 @@ jobs:
           Adds read-only Compatibility Diagnostics in System / Projector with
           a simple one-click copy report: ROM board, HDMI count, firmware, OEM
           KuSettings state, brightness receiver. No settings are modified.
-          For 8054 the build clearly warns it is an unsupported 8052 base.
+          Installed 8054 stock APK must be SHA-verified before installing MOD.
           Watchdog safety fix: start MOD thermal recovery ONLY IF KuSettings
           has explicitly disabled PackageManager state. Never infer disabled
           from package visibility errors, not-found or disabled-until-used.
@@ -285,7 +285,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: tvsettingsplus-8052-v26-8054-alpha1-experimental
+          name: tvsettingsplus-8054-alpha1-experimental
           path: |
             /tmp/tv26/TvSettingsPlus-8054-ALPHA1-v26.apk
             /tmp/tv26/install-8054-alpha.cmd
