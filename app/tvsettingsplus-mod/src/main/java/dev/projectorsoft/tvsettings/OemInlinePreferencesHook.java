@@ -86,10 +86,12 @@ public final class OemInlinePreferencesHook {
                 boolean hasEdid=OemHdmiEdidHook.install(context,hdmiCategory,preference);
                 boolean hasAutoplay=OemHdmiAutoPlayHook.install(context,hdmiCategory,preference);
                 boolean hasBootSource=OemPowerOnSourceHook.install(context,hdmiCategory,preference);
+                boolean hasBootApp=OemPowerOnAppHook.install(context,hdmiCategory,preference);
                 boolean hasCec=OemHdmiCecHook.install(context,hdmiCategory,preference);
                 boolean hasOemLinks=OemHardwareDelegatedSettings.installSourceLinks(
-                        context,hdmiCategory,preference,hasCec);
-                if(!hasEdid && !hasAutoplay && !hasBootSource && !hasCec && !hasOemLinks) {
+                        context,hdmiCategory,preference,hasCec,hasBootApp);
+                if(!hasEdid && !hasAutoplay && !hasBootSource && !hasBootApp
+                        && !hasCec && !hasOemLinks) {
                     // Never present an empty category or unsupported HDMI options.
                     screen.getClass().getMethod("removePreference",preference)
                             .invoke(screen,hdmiCategory);

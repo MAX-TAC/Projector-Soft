@@ -1,3 +1,5 @@
+> **TvSettingsPlus MOD v29 — программный этап переноса:** выбор приложения при включении теперь в нативном Android TV списке, а не только в OEM Activity; выбор разрешён лишь для реально запускаемых пакетов и проверяется обратным чтением. [Отчёт v29](docs/TVSETTINGSPLUS_V29_POWERON_APP.md). 8054 пока не адаптируется.
+
 > **TvSettingsPlus MOD v28 (8052 software-stage):** native keypress sound toggle with exact OEM Settings.System key and verified readback; v27 electricity-boot toggle retained. [v28 report](docs/TVSETTINGSPLUS_V28_KEYTONE.md). No 8054 adaptation until software regression is complete.
 
 > **TvSettingsPlus MOD v27 — продолжение переноса, без адаптации 8054:** нативный переключатель автозапуска после подачи питания с заводским MtkUtil и проверкой записи. [Отчёт v27](docs/TVSETTINGSPLUS_V27_NATIVE_POWER.md). KuSettings не отключать.

@@ -78,12 +78,12 @@ public final class OemHardwareDelegatedSettings {
     }
 
     public static boolean installSourceLinks(Context context,Object sourceCategory,
-                                          Class<?> preferenceClass,boolean nativeCec) {
+                                          Class<?> preferenceClass,boolean nativeCec,boolean nativeBootApp) {
         if(context==null||sourceCategory==null||preferenceClass==null)return false;
         // App-on-boot is a factory source-page feature even on a board with
         // zero confirmed HDMI ports. Do not hide it behind HDMI gating.
         boolean added=false;
-        if(OemDelegatedMenuPolicy.exposePowerOnApp(
+        if(!nativeBootApp && OemDelegatedMenuPolicy.exposePowerOnApp(
                 hasOriginalControl(context,"tciv_source_power_on_app"))) {
             added=add(context,sourceCategory,preferenceClass,
                 "projectorsoft_boot_application_oem","Приложение при включении",

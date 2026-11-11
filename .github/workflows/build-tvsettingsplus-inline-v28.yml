@@ -1,13 +1,5 @@
 name: Build TvSettingsPlus v28 OEM board-parity preflight and native controls
 on:
-  push:
-    paths:
-      - '.github/workflows/build-tvsettingsplus-inline-v28.yml'
-      - 'app/tvsettingsplus-mod/src/main/java/**'
-      - 'tools/compose_brightness_v3_apk.py'
-      - 'tools/patch_aosp_root_menu_smali.py'
-      - 'tools/patch_axml_compat_aliases.py'
-      - 'tools/patch_customer0_lightmode_smali.py'
   workflow_dispatch:
 concurrency:
   group: tvsettings-v28-inline-build
