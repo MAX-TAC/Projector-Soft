@@ -73,6 +73,13 @@ public final class OemInlinePreferencesHook {
                             .invoke(screen,systemCategory);
                 }
             }
+            Object interfaceCategory=addCategory(screen,preference,categoryClass,
+                    context,"projectorsoft_interface_category","Интерфейс · Проектор",255);
+            if(interfaceCategory!=null && !OemFontScaleHook.install(
+                    context,interfaceCategory,preference)) {
+                screen.getClass().getMethod("removePreference",preference)
+                    .invoke(screen,interfaceCategory);
+            }
             Object powerCategory=addCategory(screen,preference,categoryClass,
                     context,"projectorsoft_power_category","Питание · Проектор",260);
             if(powerCategory!=null && !OemAcPowerBootHook.install(
