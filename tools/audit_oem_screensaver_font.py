@@ -16,9 +16,10 @@ for p in root.glob("res/values*/*.xml"):
   arrays.setdefault(name,[]).append({"source":str(p.relative_to(root)),
       "items":["".join(it.itertext()).strip() for it in item]})
 controllers={}
-for name in ("ScreensaverSecondaryController","FontSizeSettingsSecondaryController"):
+for name in ("ScreensaverSecondaryController","FontSizeSettingsSecondaryController","SettingsUtil"):
  matches=list(decompile.rglob(name+".java"))
- preferred=[p for p in matches if "uicustom/floatmenu/controller/general" in str(p)]
+ preferred=[p for p in matches if ("uicustom/util" if name=="SettingsUtil"
+            else "uicustom/floatmenu/controller/general") in str(p)]
  p=preferred[0] if len(preferred)==1 else matches[0] if len(matches)==1 else None
  if not p:
   controllers[name]={"found":False,"candidates":[str(p) for p in matches[:5]]}
@@ -28,6 +29,9 @@ for name in ("ScreensaverSecondaryController","FontSizeSettingsSecondaryControll
   lines=[(i+1,line.strip()) for i,line in enumerate(source) if
     (i+1 in range(85,134) or i+1 in range(142,163))
     and re.search(r"(?i)(setDream|getDream|curScreensaver|Integer.parseInt|SettingsUtil|screen_off_timeout|sleep_timeout|\.length|setValueText|setValueArrays|setCurValue)",line)]
+ elif name=="SettingsUtil":
+  lines=[(i+1,line.strip()) for i,line in enumerate(source) if
+    re.search(r"(?i)(getSystemValueInt|putSystemValueInt|Settings.System|Settings.Secure|return.*getInt|return.*putInt)",line)]
  else:
   lines=[(i+1,line.strip()) for i,line in enumerate(source) if
     re.search(r"(?i)(font_scale|fontScale|setFont|float|0\\.\\d+|1\\.\\d+|Settings.System|onClick|setOn)",line)]
