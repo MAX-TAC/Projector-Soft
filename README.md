@@ -1,3 +1,5 @@
+> **TvSettingsPlus v24 (экспериментально, 11.11.2026):** новая read-only страница «Температура и охлаждение» (CPU/GPU/RPM + состояние Android). [Технический отчёт v24](docs/TVSETTINGSPLUS_V24_THERMAL_TELEMETRY.md). Защита охлаждения не меняется; KuSettings сохраняется.
+
 # Projector-Soft
 
 ## Актуальная экспериментальная сборка TvSettingsPlus MOD v23 — 11.11.2026
