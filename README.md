@@ -1,5 +1,3 @@
-> **TvSettingsPlus MOD — 8054 ALPHA1 v26:** экспериментальная APK со строгой проверкой RUIOS 8054/Android 13/2×HDMI, безопасными OEM fallback и проверяющим установщиком. [Инструкция для альфа-тестирования](docs/TVSETTINGSPLUS_8054_ALPHA1.md). KuSettings **не отключать**; аппаратные функции пока не испытаны.
-
 > **TvSettingsPlus v25 (экспериментально):** перенесены доступные из Android TV переходы к заводскому обновлению прошивки и выбору приложения при включении; [отчёт](docs/TVSETTINGSPLUS_V25_KUSETTINGS_ROUTES.md). KuSettings и оригинальные OTA/тепловые службы сохраняются.
 
 > **TvSettingsPlus v24 (экспериментально, 11.11.2026):** новая read-only страница «Температура и охлаждение» (CPU/GPU/RPM + состояние Android). [Технический отчёт v24](docs/TVSETTINGSPLUS_V24_THERMAL_TELEMETRY.md). Защита охлаждения не меняется; KuSettings сохраняется.
