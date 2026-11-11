@@ -1,6 +1,6 @@
-# KuSettings — актуальная карта переноса (TvSettingsPlus MOD v32)
+# KuSettings — актуальная карта переноса (TvSettingsPlus MOD v33)
 
-База: заводская 8052. Дата статического аудита 11.11.2026. Текущее состояние — программный этап без физического тестирования. **Версия 8054 ещё не делается.**
+База: заводская 8052. Дата статического аудита 11.11.2026. Текущее состояние — программный этап без физического тестирования. В v33 добавлена runtime-проверка девяти implicit intent handlers через PackageManager. **Версия 8054 ещё не делается.**
 
 ## Из 16 AndroidManifest компонентов
 
@@ -25,7 +25,7 @@
 
 ## Ещё не закрытые зависимости вне этих 16 компонентов
 
-1. `xtzm_setting.txt` содержит `settingApps: ["com.my.settings"]`; исполнитель конфигурации неизвестен.
+1. Девять совместимых implicit Intent-ов проверяются в диагностике v33. Конкурирующие default handlers / явные `ComponentName(com.my.settings, ...)` остаются возможными. `xtzm_setting.txt` содержит `settingApps: ["com.my.settings"]`; исполнитель конфигурации неизвестен.
 2. Системный `services.jar`/WFDSinkTest знает имя старой `MyAutoBluetoothActivity`; MOD зарегистрировал action, но явные проверки имени могут вести себя иначе.
 3. `whaletv_config.json` включает `com.my.settings` в white_list. Это не доказывает необходимость запуска, нужно установить назначение.
 4. OEM `KuSourceRJ.TimeService`, `KuSetupWizard`, `RuiAutoFocus`, `KeystoneCorrection`, `RuiYunOta` остаются заводскими сервисами (не относятся к удаляемому интерфейсу KuSettings).

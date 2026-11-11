@@ -59,12 +59,13 @@ jobs:
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemScreenTimeoutPolicy.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemBluetoothRemotePolicy.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemKuSourceServicePolicy.java \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemLegacyIntentPolicy.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/KuSourceRecoveryPolicy.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemEarcPolicy.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/KuSourceRecoveryActivationPolicy.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/MenuPresentationPolicy.java \
             app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/*.java
-          for cls in ProjectorCapabilitiesTest LightSourceBrightnessControllerTest MenuPresentationPolicyTest BootSourceMappingTest KuSourceRecoveryPolicyTest KuSourceRecoveryActivationPolicyTest OemEarcPolicyTest ThermalTelemetryPolicyTest OemDelegatedMenuPolicyTest OemAcPowerBootPolicyTest OemKeyTonePolicyTest OemPowerOnAppPolicyTest OemFontScalePolicyTest OemScreenTimeoutPolicyTest OemBluetoothRemotePolicyTest OemKuSourceServicePolicyTest; do
+          for cls in ProjectorCapabilitiesTest LightSourceBrightnessControllerTest MenuPresentationPolicyTest BootSourceMappingTest KuSourceRecoveryPolicyTest KuSourceRecoveryActivationPolicyTest OemEarcPolicyTest ThermalTelemetryPolicyTest OemDelegatedMenuPolicyTest OemAcPowerBootPolicyTest OemKeyTonePolicyTest OemPowerOnAppPolicyTest OemFontScalePolicyTest OemScreenTimeoutPolicyTest OemBluetoothRemotePolicyTest OemKuSourceServicePolicyTest OemLegacyIntentPolicyTest; do
             java -cp /tmp/jvm-classes "dev.projectorsoft.tvsettings.$cls"
           done
       - uses: actions/upload-artifact@v4
