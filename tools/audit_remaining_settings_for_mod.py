@@ -22,7 +22,7 @@ targets={
   "com/android/tv/settings/uicustom/floatmenu/controller/general/GeneralSubMenuController.java",
   "com/android/tv/settings/system/TimeZoneFragment.java",
  ]}
-pattern=re.compile(r"(?i)(onSwitchChange|Keypress|keyTone|key_tone|sound_effect|BluetoothReconnect|connectDevice|connectFinsh|autoConnect|connectGatt|connect\(|bluetooth|time_zone|timeZone|zonePicker|SCREEN_OFF_TIMEOUT|screensaver|font_scale|PowerOnUp|putElectricityBoot|Settings\.Global|Settings\.System|updateLocale|setTimeZone|locale|showScreenSaver)")
+pattern=re.compile(r"(?i)(onSwitchChange|Keypress|isEnableKeypress|tsv_source_key_tone|putSystemValueInt|getSystemValueInt|keyTone|key_tone|sound_effect|BluetoothReconnect|connectDevice|connectFinsh|autoConnect|connectGatt|connect\(|bluetooth|time_zone|timeZone|zonePicker|SCREEN_OFF_TIMEOUT|screensaver|font_scale|PowerOnUp|putElectricityBoot|Settings\.Global|Settings\.System|updateLocale|setTimeZone|locale|showScreenSaver)")
 output={}
 for package,paths in targets.items():
  for rel in paths:
@@ -30,8 +30,16 @@ for package,paths in targets.items():
   if not p.exists():
    candidate=list((root/package/"sources").rglob(Path(rel).name))
    if len(candidate)!=1:
-    output[package+":"+rel]={"found":False,"matches":len(candidate)}
-    continue
+    # Decompiled OEM files have obfuscated package prefixes; select by
+    # their stable uicustom/fragment/controller tail, never by filename alone.
+    tail="/".join(Path(rel).parts[-4:])
+    narrowed=[x for x in candidate if str(x).replace("\\\\","/").endswith(tail)]
+    if len(narrowed)==1:
+     candidate=narrowed
+    else:
+     output[package+":"+rel]={"found":False,"matches":len(candidate),
+                              "candidate_paths":[str(x.relative_to(root)) for x in candidate[:8]]}
+     continue
    p=candidate[0]
   lines=p.read_text(errors="replace").splitlines()
   hits=[]
@@ -42,5 +50,5 @@ for package,paths in targets.items():
     hits.append([i+1,excerpt[:440]])
   strings=sorted(set(re.findall(r'"([A-Za-z][\w.:-]{2,100})"', "\n".join(lines))))
   output[package+":"+rel]={"found":True,"line_count":len(lines),
-     "matches":hits[:100],"literals":[x for x in strings if pattern.search(x)][:55]}
+     "matches":hits[:220],"literals":[x for x in strings if pattern.search(x)][:55]}
 print(json.dumps(output,indent=2,ensure_ascii=False))
