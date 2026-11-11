@@ -1,6 +1,15 @@
 # Projector-Soft
 
-## Актуальная экспериментальная сборка: TvSettingsPlus MOD v19 (8052)
+## Актуальная экспериментальная сборка TvSettingsPlus MOD v23 — 11.11.2026
+
+- [**Подписанный APK v23 (GitHub Actions)**](https://github.com/MAX-TAC/Projector-Soft/actions/runs/43084120101/artifacts/13884564673) — выполнены Android 13 компиляция, оригинальная подписная идентичность платформы, OEM DEX repack, AndroidManifest, JVM-тесты и сверка неизменённых ресурсов.
+- [**Отчёт v23**](docs/TVSETTINGSPLUS_V23_PROGRESS_2026-11-11.md) — новая read-only диагностика совместимости в меню «Система · Проектор», копирование сводки одной кнопкой, статическое сравнение исходного TvSettingsPlus APK 8052/8054.
+- Старые сборки v2–v22 — **архивные**, приведены ниже для истории разработки. v23 не является финальной проверенной сборкой для владельца.
+- Заводские APK **RUIOS.8052.1.0.4** и **RUIOS.8054.1.0.1** совпали побайтово: SHA-256 `e4184a13fbf56fa069effc6a40ea50c0da7e9190321b389f59ba34700a80d0a1`. Но аппаратная совместимость MOD на 8054 **не подтверждена** и оригинальный APK текущей установленной прошивки владельца ещё требуется сверить.
+- **Не отключать KuSettings, не отключать термозащиту и не передавать экспериментальный APK неопытному владельцу без плана отката.**
+
+
+## Архив: TvSettingsPlus MOD v19 (8052)
 
 - [**Подписанный APK v19**](https://github.com/MAX-TAC/Projector-Soft/actions/runs/40375223763/artifacts/12674936670) — успешно пройдены Java/D8, заводской DEX/repack, platform test-key и JVM-тесты безопасного запуска мониторинга.
 - [**Отчёт о новых исправлениях и ограничениях v19**](docs/TVSETTINGSPLUS_V19_PROGRESS_2026-10-26.md).
@@ -9,7 +18,7 @@
 - **Сборка только для RUIOS 8052; не прошла испытаний на железе, НЕ готова для 8054, НЕ отключать KuSettings.**
 
 
-## Текущая экспериментальная TvSettingsPlus MOD v18 (8052, 26.10.2026)
+## Архив: TvSettingsPlus MOD v18 (8052, 26.10.2026)
 
 - [**TvSettingsPlus v18 — подписанный APK, GitHub Actions**](https://github.com/MAX-TAC/Projector-Soft/actions/runs/40332001444/artifacts/12655213059).
 - [**Отчёт v18: восстановление KuSourceRJ.TimeService и технические ограничения**](docs/TVSETTINGSPLUS_V18_PROGRESS_2026-10-26.md).
@@ -18,7 +27,7 @@
 - **Не финальный релиз:** нельзя отключать `KuSettings` до аппаратного теста поведения термозащиты/сторожевого сервиса. Не устанавливать базовый APK 8052 на ревизию 8054.
 
 
-## Актуальный экспериментальный TvSettingsPlus MOD v16 (RUIOS 8052)
+## Архив: TvSettingsPlus MOD v16 (RUIOS 8052)
 
 - [**Подписанный APK v16 для 8052**](https://github.com/MAX-TAC/Projector-Soft/actions/runs/40129257332/artifacts/12573961443) — прошёл статическую проверку CI, не тестировался на проекторе.
 - [**Отчёт v16: HDMI-CEC, выбор источника при включении, eARC и оставшиеся зависимости**](docs/TVSETTINGSPLUS_V16_PROGRESS_2026-10-24.md).
@@ -27,7 +36,7 @@
 - **НЕ ГОТОВО к передаче владельцу как финальная сборка.** Остаточные прямые ссылки на KuSettings, watchdog KuSourceRJ, HDMI конфигурации 8054 и аппаратные испытания остаются критическими.
 
 
-## Актуальная экспериментальная TvSettingsPlus MOD v13 (8052)
+## Архив: TvSettingsPlus MOD v13 (8052)
 
 - [**Подписанный APK v13 — GitHub Actions Artifact**](https://github.com/MAX-TAC/Projector-Soft/actions/runs/40119913189/artifacts/12570675887).
 - [**Подробный отчёт о v13 и оставшихся системных зависимостях**](docs/TVSETTINGSPLUS_V13_PROGRESS_2026-10-24.md).
@@ -36,7 +45,7 @@
 - **Не финальный для неподготовленного тестировщика.** Необходимо завершить HDMI CEC/eARC, связи с KuSettings, OEM watchdog и аппаратные испытания. Не устанавливать APK 8052 на 8054.
 
 
-## Актуальная экспериментальная TvSettingsPlus MOD v12 (8052)
+## Архив: TvSettingsPlus MOD v12 (8052)
 
 - [**Подписанный APK v12 — GitHub Actions Artifact**](https://github.com/MAX-TAC/Projector-Soft/actions/runs/40119416058/artifacts/12569253832).
 - [**Отчёт об OEM-функциях и оставшихся проблемах v12**](docs/TVSETTINGSPLUS_V12_PROGRESS_2026-10-24.md).
@@ -46,7 +55,7 @@
 - **Не финальный.** Нужны корректные HDMI/CEC/EDID обработчики, закрытие связей с KuSettings, оригинальная 8054-база и аппаратные испытания. KuSettings пока не отключать.
 
 
-## Текущая экспериментальная сборка TvSettingsPlus MOD v10 (8052)
+## Архив: сборка TvSettingsPlus MOD v10 (8052)
 
 - [Подписанный APK v10 — GitHub Actions Artifact](https://github.com/MAX-TAC/Projector-Soft/actions/runs/40117262170/artifacts/12569741437) — только для будущих контролируемых испытаний.
 - [Подробный отчёт v10](docs/TVSETTINGSPLUS_V10_PROGRESS_2026-10-24.md) — 10 настоящих OEM ползунков, HDR, MEMC, четыре режима установки проектора, TV ярлык, ранее перенесённые режимы/переключатели.
@@ -54,7 +63,7 @@
 - **Ни одна версия MOD не испытана на физическом проекторе, 8054 пока без отдельной APK, KuSettings не отключать.**
 
 
-## Текущая экспериментальная сборка: TvSettingsPlus MOD v7 (8052)
+## Архив: сборка: TvSettingsPlus MOD v7 (8052)
 
 - [**APK v7, собран и подписан в GitHub Actions**](https://github.com/MAX-TAC/Projector-Soft/actions/runs/40113864365/artifacts/12567458244).
 - [**Подробный отчёт по v7, включая отсутствующие функции**](docs/TVSETTINGSPLUS_V7_PROGRESS_2026-10-24.md).
