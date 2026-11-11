@@ -15,7 +15,7 @@ public final class OemBluetoothRemotePolicyTest {
             "blank fallback");
         ok("Remote One".equals(OemBluetoothRemotePolicy.safeName("Remote\nOne")),
             "control chars not displayed");
-        ok(OemBluetoothRemotePolicy.safeName(new String(new char[120]).replace("\\0","x")).length()==64,
+        ok(OemBluetoothRemotePolicy.safeName(new String(new char[120]).replace('\0','x')).length()==64,
             "bounded input label");
         ok(OemBluetoothRemotePolicy.summary(true,true,true,2)
             .contains("не подтверждено"),"bonded != connected");
