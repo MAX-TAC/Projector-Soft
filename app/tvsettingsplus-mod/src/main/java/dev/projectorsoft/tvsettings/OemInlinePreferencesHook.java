@@ -60,6 +60,13 @@ public final class OemInlinePreferencesHook {
             Object soundCategory=addCategory(screen,preference,categoryClass,
                     context,"projectorsoft_sound_category","Звук · Проектор",230);
             if(soundCategory==null)return;
+            Object remoteCategory=addCategory(screen,preference,categoryClass,
+                    context,"projectorsoft_remote_category","Bluetooth · Проектор",242);
+            if(remoteCategory!=null && !OemBluetoothRemoteHook.install(
+                    context,remoteCategory,preference)) {
+                screen.getClass().getMethod("removePreference",preference)
+                    .invoke(screen,remoteCategory);
+            }
             Object placementCategory=addCategory(screen,preference,categoryClass,
                     context,"projectorsoft_placement_category","Проекция · Проектор",250);
             if(placementCategory==null)return;

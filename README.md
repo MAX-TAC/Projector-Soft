@@ -1,3 +1,5 @@
+> **TvSettingsPlus MOD v32 — этап переноса на базе 8052:** нативный статус сопряжённых HID-пультов и переход к штатному сопряжению плюс read-only проверка `KuSourceRJ.TimeService`/OEM watchdog. Не заменяет автоматическое OEM подключение. [Отчёт v32](docs/TVSETTINGSPLUS_V32_BLUETOOTH_KUSOURCE_DIAG.md) · [Что осталось от KuSettings](docs/KUSETTINGS_V32_GAP_REPORT.md).
+
 > **TvSettingsPlus MOD v31 — безопасность экрана:** скрыты заводские пункты сна/заставки. При загрузке и входе в настройки выставляется Never для Android screen/sleep timeouts и отключается Android Dream; статус виден только для чтения. [Отчёт v31](docs/TVSETTINGSPLUS_V31_SCREEN_SAFETY.md). KuSettings и управление охлаждением не изменены. Без адаптации под 8054.
 
 > **TvSettingsPlus MOD v30 — программный этап:** native «Размер текста» 85/100/115/130% по заводским настройкам; сохранены native power/key tone/boot app. [Отчёт v30](docs/TVSETTINGSPLUS_V30_FONT_SCALE.md). 8054 только после завершения программных проверок.
