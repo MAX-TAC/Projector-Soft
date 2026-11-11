@@ -228,7 +228,7 @@ jobs:
           b["edited_smali"]=sorted(set(b["edited_smali"]+n["edited_smali"]+s["edited_smali"]))
           b["edited_dex"]=sorted(set(b["edited_dex"]+n["edited_dex"]+s["edited_dex"]))
           assert {"classes13.dex","classes14.dex"}.issubset(set(b["edited_dex"])),b
-          assert all(re.fullmatch(r"classes(?:[1-9]|1[0-6])?\\.dex", item) for item in b["edited_dex"]),b
+          assert all(re.fullmatch(r"classes(?:[1-9]|1[0-6])?\.dex", item) for item in b["edited_dex"]),b
           assert len(b["edited_smali"])==8,b
           assert s["hides"]==["tciv_general_screensaver_settings"],s
           (path/"patch_report.json").write_text(json.dumps(b,indent=2)+"\n")
