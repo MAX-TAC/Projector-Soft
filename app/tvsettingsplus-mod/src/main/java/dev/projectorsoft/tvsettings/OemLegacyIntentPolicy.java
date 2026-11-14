@@ -10,6 +10,7 @@ public final class OemLegacyIntentPolicy {
 
     public enum State {
         MOD_DEFAULT,
+        MOD_DEFAULT_WITH_COMPETITOR,
         OEM_DEFAULT,
         COMPETING_HANDLERS,
         MOD_NOT_VISIBLE,
@@ -22,8 +23,9 @@ public final class OemLegacyIntentPolicy {
         if(!modVisible)return State.MOD_NOT_VISIBLE;
         if(kuVisible && KUSETTINGS.equals(preferredPackage))
             return State.OEM_DEFAULT;
+        if(MOD.equals(preferredPackage))
+            return kuVisible ? State.MOD_DEFAULT_WITH_COMPETITOR : State.MOD_DEFAULT;
         if(kuVisible)return State.COMPETING_HANDLERS;
-        if(MOD.equals(preferredPackage))return State.MOD_DEFAULT;
         return State.DEFAULT_UNKNOWN;
     }
 
@@ -31,6 +33,8 @@ public final class OemLegacyIntentPolicy {
         switch(state){
             case MOD_DEFAULT:
                 return "TvSettingsPlus выбран системой";
+            case MOD_DEFAULT_WITH_COMPETITOR:
+                return "TvSettingsPlus выбран системой; KuSettings тоже зарегистрирован";
             case OEM_DEFAULT:
                 return "KuSettings выбран системой";
             case COMPETING_HANDLERS:
@@ -44,5 +48,8 @@ public final class OemLegacyIntentPolicy {
 
     public static boolean confirmedWithoutOldPackage(State state){
         return state==State.MOD_DEFAULT;
+    }
+    public static boolean chosenByAndroid(State state){
+        return state==State.MOD_DEFAULT || state==State.MOD_DEFAULT_WITH_COMPETITOR;
     }
 }

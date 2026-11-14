@@ -4,7 +4,7 @@
 
 ## Из 16 AndroidManifest компонентов
 
-| № | Компонент | Статус на v32 | Что осталось |
+| № | Компонент | Статус на v33 | Что осталось |
 |---:|---|---|---|
 | 1 | SettingActivity | Заменён вход в `MainSettings`; launcher alias | Проверка всех пультовых/системных вызовов, не все OEM страницы встроены |
 | 2 | MyWifiActivity | AOSP NetworkActivity/алиас | Проверка Wi-Fi, Ethernet и возврата |

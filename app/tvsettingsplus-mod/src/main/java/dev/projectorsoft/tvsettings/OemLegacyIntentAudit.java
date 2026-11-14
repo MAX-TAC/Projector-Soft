@@ -33,7 +33,8 @@ public final class OemLegacyIntentAudit {
         StringBuilder report=new StringBuilder("LEGACY INTENT — KuSettings → TvSettingsPlus\n");
         try {
             PackageManager pm=context.getPackageManager();
-            int confirmed=0;
+            int selected=0;
+            int withoutLegacy=0;
             for(String action:ACTIONS){
                 Intent request=new Intent(action);
                 request.addCategory(Intent.CATEGORY_DEFAULT);
@@ -54,13 +55,16 @@ public final class OemLegacyIntentAudit {
                     ? resolved.activityInfo.packageName:null;
                 OemLegacyIntentPolicy.State state=OemLegacyIntentPolicy.evaluate(
                     mod,ku,preferred);
-                if(OemLegacyIntentPolicy.confirmedWithoutOldPackage(state))confirmed++;
+                if(OemLegacyIntentPolicy.chosenByAndroid(state))selected++;
+                if(OemLegacyIntentPolicy.confirmedWithoutOldPackage(state))withoutLegacy++;
                 String shortAction=action.substring(action.lastIndexOf('.')+1);
                 report.append(shortAction).append(": ")
                     .append(OemLegacyIntentPolicy.describe(state)).append("\n");
             }
-            report.append("Подтверждено: ").append(confirmed)
-                .append("/").append(ACTIONS.length).append(" системных переходов\n");
+            report.append("TvSettingsPlus выбран Android: ").append(selected)
+                .append("/").append(ACTIONS.length).append(" переходов\n");
+            report.append("Без конкурирующего KuSettings: ").append(withoutLegacy)
+                .append("/").append(ACTIONS.length).append(" переходов\n");
         }catch(Exception | LinkageError e){
             Log.w(TAG,"Cannot inspect legacy implicit intents",e);
             report.append("Android ограничил диагностику Intents. Достоверного вывода нет.\n");

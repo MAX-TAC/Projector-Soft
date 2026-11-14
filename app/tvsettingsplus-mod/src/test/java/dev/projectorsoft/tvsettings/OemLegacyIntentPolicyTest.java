@@ -12,8 +12,17 @@ public final class OemLegacyIntentPolicyTest {
             true,true,OemLegacyIntentPolicy.KUSETTINGS);
         ok(old==OemLegacyIntentPolicy.State.OEM_DEFAULT,"old settings preferred");
         ok(!OemLegacyIntentPolicy.confirmedWithoutOldPackage(old),"not yet migrated");
-        ok(OemLegacyIntentPolicy.evaluate(true,true,OemLegacyIntentPolicy.MOD)
-            ==OemLegacyIntentPolicy.State.COMPETING_HANDLERS,"competing handlers");
+        OemLegacyIntentPolicy.State selectedDespiteCompetition=
+            OemLegacyIntentPolicy.evaluate(true,true,OemLegacyIntentPolicy.MOD);
+        ok(selectedDespiteCompetition==OemLegacyIntentPolicy.State.MOD_DEFAULT_WITH_COMPETITOR,
+            "Android selects MOD while KuSettings also handles the action");
+        ok(OemLegacyIntentPolicy.chosenByAndroid(selectedDespiteCompetition),
+            "count actual default even with competitor");
+        ok(!OemLegacyIntentPolicy.confirmedWithoutOldPackage(selectedDespiteCompetition),
+            "not yet independent of KuSettings");
+        ok(OemLegacyIntentPolicy.evaluate(true,true,null)
+            ==OemLegacyIntentPolicy.State.COMPETING_HANDLERS,"unresolved competing handlers");
+        ok(OemLegacyIntentPolicy.chosenByAndroid(mod),"selected MOD without competitor");
         ok(OemLegacyIntentPolicy.evaluate(false,true,OemLegacyIntentPolicy.KUSETTINGS)
             ==OemLegacyIntentPolicy.State.MOD_NOT_VISIBLE,"mod handler missing");
         ok(OemLegacyIntentPolicy.evaluate(true,false,null)
