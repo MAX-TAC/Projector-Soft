@@ -4,6 +4,8 @@ on:
     paths:
       - '.github/workflows/build-tvsettingsplus-inline-v33.yml'
       - 'app/tvsettingsplus-mod/src/main/java/**'
+      - 'app/tvsettingsplus-mod/src/test/java/**'
+      - 'tools/patch_oem_sleep_menu_smali.py'
       - 'tools/compose_brightness_v3_apk.py'
       - 'tools/patch_aosp_root_menu_smali.py'
       - 'tools/patch_axml_compat_aliases.py'
