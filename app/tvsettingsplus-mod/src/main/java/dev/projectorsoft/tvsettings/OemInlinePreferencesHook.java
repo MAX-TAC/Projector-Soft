@@ -43,6 +43,9 @@ public final class OemInlinePreferencesHook {
             Object ctx=fragment.getClass().getMethod("getContext").invoke(fragment);
             if (!(ctx instanceof Context)) return;
             Context context=(Context)ctx;
+            // Enforce the projector no-black-screen policy even when native
+            // preferences have already been inserted during fragment recreation.
+            OemScreenTimeoutSafetyHook.ensureNever(context);
             Class<?> preference=Class.forName("androidx.preference.Preference");
             Class<?> categoryClass=Class.forName("androidx.preference.PreferenceCategory");
             Method find=fragment.getClass().getMethod("findPreference",CharSequence.class);
@@ -57,19 +60,44 @@ public final class OemInlinePreferencesHook {
             Object soundCategory=addCategory(screen,preference,categoryClass,
                     context,"projectorsoft_sound_category","Звук · Проектор",230);
             if(soundCategory==null)return;
+            Object remoteCategory=addCategory(screen,preference,categoryClass,
+                    context,"projectorsoft_remote_category","Bluetooth · Проектор",242);
+            if(remoteCategory!=null && !OemBluetoothRemoteHook.install(
+                    context,remoteCategory,preference)) {
+                screen.getClass().getMethod("removePreference",preference)
+                    .invoke(screen,remoteCategory);
+            }
             Object placementCategory=addCategory(screen,preference,categoryClass,
                     context,"projectorsoft_placement_category","Проекция · Проектор",250);
             if(placementCategory==null)return;
             Object systemCategory=addCategory(screen,preference,categoryClass,
-                    context,"projectorsoft_system_category","Система · Проектор",280);
+                    context,"projectorsoft_system_category","Об устройстве · Проектор",280);
             if(systemCategory!=null) {
                 boolean info=OemSystemInfoHook.install(context,systemCategory,preference);
                 boolean preflight=OemCompatibilityDiagnosticsHook.install(
                         context,systemCategory,preference);
-                if(!info && !preflight) {
+                boolean firmware=OemHardwareDelegatedSettings.installSystemLinks(
+                        context,systemCategory,preference);
+                boolean screenStatus=OemScreenTimeoutSafetyHook.installStatus(
+                        context,systemCategory,preference);
+                if(!info && !preflight && !firmware && !screenStatus) {
                     screen.getClass().getMethod("removePreference",preference)
                             .invoke(screen,systemCategory);
                 }
+            }
+            Object interfaceCategory=addCategory(screen,preference,categoryClass,
+                    context,"projectorsoft_interface_category","Интерфейс · Проектор",255);
+            if(interfaceCategory!=null && !OemFontScaleHook.install(
+                    context,interfaceCategory,preference)) {
+                screen.getClass().getMethod("removePreference",preference)
+                    .invoke(screen,interfaceCategory);
+            }
+            Object powerCategory=addCategory(screen,preference,categoryClass,
+                    context,"projectorsoft_power_category","Питание · Проектор",260);
+            if(powerCategory!=null && !OemAcPowerBootHook.install(
+                    context,powerCategory,preference)) {
+                screen.getClass().getMethod("removePreference",preference)
+                    .invoke(screen,powerCategory);
             }
             Object hdmiCategory=addCategory(screen,preference,categoryClass,
                     context,"projectorsoft_hdmi_category","Источники · Проектор",270);
@@ -77,10 +105,12 @@ public final class OemInlinePreferencesHook {
                 boolean hasEdid=OemHdmiEdidHook.install(context,hdmiCategory,preference);
                 boolean hasAutoplay=OemHdmiAutoPlayHook.install(context,hdmiCategory,preference);
                 boolean hasBootSource=OemPowerOnSourceHook.install(context,hdmiCategory,preference);
+                boolean hasBootApp=OemPowerOnAppHook.install(context,hdmiCategory,preference);
                 boolean hasCec=OemHdmiCecHook.install(context,hdmiCategory,preference);
                 boolean hasOemLinks=OemHardwareDelegatedSettings.installSourceLinks(
-                        context,hdmiCategory,preference,hasCec);
-                if(!hasEdid && !hasAutoplay && !hasBootSource && !hasCec && !hasOemLinks) {
+                        context,hdmiCategory,preference,hasCec,hasBootApp);
+                if(!hasEdid && !hasAutoplay && !hasBootSource && !hasBootApp
+                        && !hasCec && !hasOemLinks) {
                     // Never present an empty category or unsupported HDMI options.
                     screen.getClass().getMethod("removePreference",preference)
                             .invoke(screen,hdmiCategory);
@@ -105,6 +135,11 @@ public final class OemInlinePreferencesHook {
             if(autoVolume!=null) addSwitchIfPresent(soundCategory,preference,context,
                     "projectorsoft_auto_volume","Автоматическая громкость",
                     autoVolume,218);
+            // Stock SoundFragment uses Settings.System
+            // Constant.SETTINGS_KEY_SOUND_EFFECTS_ENABLED with boolean 0/1.
+            // Keep the exact OEM key and verify the persisted value.
+            OemKeyToneHook.install(context,soundCategory,preference);
+
             // Do NOT expose eARC as a raw toggle. Two factory screens disagree
             // about KEY_SOUND_EARC polarity and the real audio API requires CEC.
             // Keep original OEM sound control accessible as a safe fallback.

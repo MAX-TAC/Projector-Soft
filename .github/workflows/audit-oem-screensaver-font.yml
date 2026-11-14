@@ -1,0 +1,38 @@
+name: Audit native screensaver and font scale resource mappings
+on:
+  push:
+    paths:
+      - 'tools/audit_oem_screensaver_font.py'
+      - '.github/workflows/audit-oem-screensaver-font.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Decompile stock OEM resource arrays and relevant controllers
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/oem-settings-audit
+          curl -fsSL --retry 3 https://github.com/iBotPeaches/Apktool/releases/download/v2.11.1/apktool_2.11.1.jar -o /tmp/oem-settings-audit/apktool.jar
+          java -jar /tmp/oem-settings-audit/apktool.jar if vendor/reference/8052/APK/framework-res.apk -p /tmp/oem-settings-audit/framework
+          java -jar /tmp/oem-settings-audit/apktool.jar d -f -s -p /tmp/oem-settings-audit/framework \
+             vendor/reference/8052/APK/TvSettingsPlus.apk -o /tmp/oem-settings-audit/res
+          curl -fsSL --retry 3 https://github.com/skylot/jadx/releases/download/v1.5.6/jadx-1.5.6.zip -o /tmp/oem-settings-audit/jadx.zip
+          mkdir -p /tmp/oem-settings-audit/jadx
+          unzip -q /tmp/oem-settings-audit/jadx.zip -d /tmp/oem-settings-audit/jadx
+          /tmp/oem-settings-audit/jadx/bin/jadx --no-res --no-imports --threads-count 3 --deobf \
+             -d /tmp/oem-settings-audit/java vendor/reference/8052/APK/TvSettingsPlus.apk >/tmp/oem-settings-audit/jadx.log 2>&1 || true
+          python3 tools/audit_oem_screensaver_font.py /tmp/oem-settings-audit/res /tmp/oem-settings-audit/java \
+              > /tmp/oem-settings-audit/behavior.json
+          python3 -m json.tool /tmp/oem-settings-audit/behavior.json >/dev/null
+          cat /tmp/oem-settings-audit/behavior.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: oem-screensaver-font-metadata
+          path: /tmp/oem-settings-audit/behavior.json
+          retention-days: 7

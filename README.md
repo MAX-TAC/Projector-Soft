@@ -1,3 +1,23 @@
+> **Ревизия 14.11.2026:** экспериментальный TvSettingsPlus MOD v33 успешно собран программно ([GitHub Actions](https://github.com/MAX-TAC/Projector-Soft/actions/runs/43598704910)); полный аудит на оборудовании НЕ проведён. [Предварительный аудит v33](docs/TVSETTINGSPLUS_V33_PRELIMINARY_AUDIT_2026-11-14.md) · [оставшиеся функции KuSettings](docs/KUSETTINGS_V33_GAP_REPORT.md).
+
+> **TvSettingsPlus MOD v33:** реальная диагностика всех 9 старых KuSettings implicit Intents — кто выбран Android, где конфликт обработчиков, где отсутствует MOD. [Документ v33](docs/TVSETTINGSPLUS_V33_LEGACY_INTENTS.md) · [Что осталось от KuSettings](docs/KUSETTINGS_V33_GAP_REPORT.md). Это программный этап 8052, без альфы 8054.
+
+> **TvSettingsPlus MOD v32 — этап переноса на базе 8052:** нативный статус сопряжённых HID-пультов и переход к штатному сопряжению плюс read-only проверка `KuSourceRJ.TimeService`/OEM watchdog. Не заменяет автоматическое OEM подключение. [Отчёт v32](docs/TVSETTINGSPLUS_V32_BLUETOOTH_KUSOURCE_DIAG.md) · [Что осталось от KuSettings](docs/KUSETTINGS_V32_GAP_REPORT.md).
+
+> **TvSettingsPlus MOD v31 — безопасность экрана:** скрыты заводские пункты сна/заставки. При загрузке и входе в настройки выставляется Never для Android screen/sleep timeouts и отключается Android Dream; статус виден только для чтения. [Отчёт v31](docs/TVSETTINGSPLUS_V31_SCREEN_SAFETY.md). KuSettings и управление охлаждением не изменены. Без адаптации под 8054.
+
+> **TvSettingsPlus MOD v30 — программный этап:** native «Размер текста» 85/100/115/130% по заводским настройкам; сохранены native power/key tone/boot app. [Отчёт v30](docs/TVSETTINGSPLUS_V30_FONT_SCALE.md). 8054 только после завершения программных проверок.
+
+> **TvSettingsPlus MOD v29 — программный этап переноса:** выбор приложения при включении теперь в нативном Android TV списке, а не только в OEM Activity; выбор разрешён лишь для реально запускаемых пакетов и проверяется обратным чтением. [Отчёт v29](docs/TVSETTINGSPLUS_V29_POWERON_APP.md). 8054 пока не адаптируется.
+
+> **TvSettingsPlus MOD v28 (8052 software-stage):** native keypress sound toggle with exact OEM Settings.System key and verified readback; v27 electricity-boot toggle retained. [v28 report](docs/TVSETTINGSPLUS_V28_KEYTONE.md). No 8054 adaptation until software regression is complete.
+
+> **TvSettingsPlus MOD v27 — продолжение переноса, без адаптации 8054:** нативный переключатель автозапуска после подачи питания с заводским MtkUtil и проверкой записи. [Отчёт v27](docs/TVSETTINGSPLUS_V27_NATIVE_POWER.md). KuSettings не отключать.
+
+> **TvSettingsPlus v25 (экспериментально):** перенесены доступные из Android TV переходы к заводскому обновлению прошивки и выбору приложения при включении; [отчёт](docs/TVSETTINGSPLUS_V25_KUSETTINGS_ROUTES.md). KuSettings и оригинальные OTA/тепловые службы сохраняются.
+
+> **TvSettingsPlus v24 (экспериментально, 11.11.2026):** новая read-only страница «Температура и охлаждение» (CPU/GPU/RPM + состояние Android). [Технический отчёт v24](docs/TVSETTINGSPLUS_V24_THERMAL_TELEMETRY.md). Защита охлаждения не меняется; KuSettings сохраняется.
+
 # Projector-Soft
 
 ## Актуальная экспериментальная сборка TvSettingsPlus MOD v23 — 11.11.2026
