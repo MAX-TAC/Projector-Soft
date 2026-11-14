@@ -1,3 +1,5 @@
+> **Ревизия 14.11.2026:** экспериментальный TvSettingsPlus MOD v33 успешно собран программно ([GitHub Actions](https://github.com/MAX-TAC/Projector-Soft/actions/runs/43598704910)); полный аудит на оборудовании НЕ проведён. [Предварительный аудит v33](docs/TVSETTINGSPLUS_V33_PRELIMINARY_AUDIT_2026-11-14.md) · [оставшиеся функции KuSettings](docs/KUSETTINGS_V33_GAP_REPORT.md).
+
 > **TvSettingsPlus MOD v33:** реальная диагностика всех 9 старых KuSettings implicit Intents — кто выбран Android, где конфликт обработчиков, где отсутствует MOD. [Документ v33](docs/TVSETTINGSPLUS_V33_LEGACY_INTENTS.md) · [Что осталось от KuSettings](docs/KUSETTINGS_V33_GAP_REPORT.md). Это программный этап 8052, без альфы 8054.
 
 > **TvSettingsPlus MOD v32 — этап переноса на базе 8052:** нативный статус сопряжённых HID-пультов и переход к штатному сопряжению плюс read-only проверка `KuSourceRJ.TimeService`/OEM watchdog. Не заменяет автоматическое OEM подключение. [Отчёт v32](docs/TVSETTINGSPLUS_V32_BLUETOOTH_KUSOURCE_DIAG.md) · [Что осталось от KuSettings](docs/KUSETTINGS_V32_GAP_REPORT.md).

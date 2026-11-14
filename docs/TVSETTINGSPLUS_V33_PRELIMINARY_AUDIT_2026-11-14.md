@@ -4,7 +4,14 @@
 
 ## Вердикт
 
-**RELEASE BLOCKED** — запрещено объявлять `KuSettings` полностью заменённым или отключать `com.my.settings`. Последний успешный OEM APK build — v30 (11 ноября), workflow v31/v32/v33 на 14 ноября **queued**. Подписанная и проверенная v33 APK не подтверждена. Нельзя утверждать, что было выполнено полное программное тестирование v33.
+**RELEASE BLOCKED** — запрещено объявлять `KuSettings` полностью заменённым или отключать `com.my.settings`. **Последняя успешно собранная версия — v33 (14.11.2026).** GitHub Actions [run #43598704910](https://github.com/MAX-TAC/Projector-Soft/actions/runs/43598704910) завершён SUCCESS; доступны итоговая экспериментальная APK, сертификатная проверка, smali/DEX/resource checks и JVM-тесты в том же workflow. Артефакт `tvsettingsplus-8052-v33-native-controls-experimental` (ID `14115975183`). Это программная проверка, **не полный функциональный аудит на проекторе**.
+
+## Последний CI-вердикт
+
+- **PASS (14.11.2026):** [TvSettingsPlus v33 APK build](https://github.com/MAX-TAC/Projector-Soft/actions/runs/43598704910), artifact `tvsettingsplus-8052-v33-native-controls-experimental`.
+- **PASS:** [Android javac / D8 + JVM тесты](https://github.com/MAX-TAC/Projector-Soft/actions/runs/43598673048), [capability tests](https://github.com/MAX-TAC/Projector-Soft/actions/runs/43598672988).
+- Предыдущее падение pure-JVM теста заставки было ошибкой подготовки тестовых данных (параметр уже равнялся 0 и обновление не выполнялось); исправлено, тест повторён. Реализация сохранения Never не была причиной данного отказа.
+- **NOT TESTED:** реальные системные маршруты, OEM аппаратные эффекты, пульт, TimeService, запуск после перезагрузки и восстановление оригинального Settings APK. KuSettings отключать нельзя.
 
 ## Что подтверждено источниками
 
@@ -18,16 +25,16 @@
 | Sleep/Screen-off | v31 скрывает два OEM интерфейса и пишет Never через System/Secure | Build ещё не завершён. AOSP/сторонние/OEM power UI отдельно не проверены. Нельзя гарантировать, что оптический движок никогда не гаснет |
 | Запуск настроек системными Intent | Nine aliases и v33 PackageManager audit | Не перехватывает explicit ComponentName, `xtzm_setting.txt.settingApps` или OEM whitelist |
 | Дизайн единой правой панели | Частично перенесён | `OemRootMenuHook` всё ещё открывает отдельную `uicustom.MainActivity`; аппаратные OEM экраны сохраняются |
-| OEM APK integrity / signing | v30 verified, v33 pending | Нет подтверждённого `apksigner verify` / regression для v33 |
+| OEM APK integrity / signing | **v33 CI SUCCESS** | Android javac/D8, OEM smali-patch, unchanged OEM DEX/resources, package/versionCode, platform signing + apksigner checks пройдены в run 43598704910 |
 | Реальное устройство | NOT TESTED | Cold boot, BT pairing/reconnect, TimeService, HDMI, USB, фокус, трапеция, звук, OTA, откат |
 
 ## Конкретный дефект, найденный при проверке v33
 
-`OemLegacyIntentPolicy.evaluate()` классифицировал режим **`preferredPackage=com.android.tv.settings` при видимых обоих обработчиках** как `COMPETING_HANDLERS`, не сообщая, что Android действительно выбрал TvSettingsPlus. Исправлено в коде и JVM-тестах: теперь `MOD_DEFAULT_WITH_COMPETITOR`, раздельный счётчик default route и реальной независимости от KuSettings. **После коммита требуется повторная CI-проверка.**
+`OemLegacyIntentPolicy.evaluate()` классифицировал режим **`preferredPackage=com.android.tv.settings` при видимых обоих обработчиках** как `COMPETING_HANDLERS`, не сообщая, что Android действительно выбрал TvSettingsPlus. Исправлено в коде и JVM-тестах: теперь `MOD_DEFAULT_WITH_COMPETITOR`, раздельный счётчик default route и реальной независимости от KuSettings. **После исправления повторные CI-проверки прошли**: Android javac/D8 run 43598673048, весь APK build run 43598704910.
 
 ## Дефицит тестового покрытия до завершённого аудита
 
-1. Подписанная APK v33: javac/D8, смали-патч всех ожидаемых классов, неизменность остальных 16 OEM DEX/resources, AndroidManifest alias/receiver, сертификат оригинала и результата, чистая установка/обновление и rollback.
+1. **Часть закрыта CI v33:** javac/D8, OEM smali-патч, неизменность остальных OEM DEX/resources, AndroidManifest alias/receiver и подпись APK подтверждены. **Осталось:** установка на базовую модель, поведение при обновлении системного пакета и испытанный rollback.
 2. Непосредственно на устройстве: boot/reboot, отсутствие ANR/crashes/VerifyError, правильные переходы пульта, все аппаратные секции, HDMI/CEC/eARC/EDID/источник, матрица/оптика, системные энергополитики и тепловой watchdog.
 3. Bluetooth: поиск/сопряжение/повторное подключение OEM-пульта, сценарии после перезагрузки и потери связи.
 4. TimeService: остановка/восстановление под защитой от ложных повторных запусков, наблюдение охлаждения и температур, не отключая заводской пакет на непроверенной системе.
@@ -36,7 +43,7 @@
 
 ## Минимальные критерии готовности к адаптации 8054
 
-- CI v33 или следующая ревизия полностью GREEN, реальные APK и результаты проверки подписи доступны.
+- CI v33 **GREEN** (run 43598704910), APK и результаты проверки подписи доступны. Аппаратный функциональный тест всё ещё не проведён.
 - Проведены runtime smoke и rollback на базовой исследованной ревизии, с журналом.
 - Нет незакрытых критических сервисных зависимостей KuSettings/KuSourceRJ; перенос OEM BT и recovery проверен.
 - Зафиксированы расхождения двух портов HDMI, ToF и runtime capability matrix 8054.
