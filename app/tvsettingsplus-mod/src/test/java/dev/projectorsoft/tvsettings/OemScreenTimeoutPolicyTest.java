@@ -60,6 +60,10 @@ public final class OemScreenTimeoutPolicyTest {
         check(!partial.isComplete() && partial.failed.size()==1 && partial.updated==3,
              "partial failure is reported, other keys still attempted");
         blocked.denied.clear();
+        // The previous partial write already stored dream-disabled (0).
+        // Reset it to 1 so the test actually exercises a rejected readback,
+        // rather than testing the idempotent no-write path.
+        blocked.values.put("SECURE.screensaver_enabled","1");
         blocked.ineffective.add("SECURE.screensaver_enabled");
         check(!OemScreenTimeoutPolicy.inspectOrApply(blocked,true).isComplete(),
               "no phantom success when provider ignores update");
