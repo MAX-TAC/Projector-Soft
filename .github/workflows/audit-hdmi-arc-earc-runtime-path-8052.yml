@@ -1,0 +1,46 @@
+name: Audit 8052 factory ARC eARC driver routing and support gate
+on:
+  push:
+    paths:
+      - 'tools/audit_arc_earc_runtime_path.py'
+      - '.github/workflows/audit-hdmi-arc-earc-runtime-path-8052.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare read-only JADX inspection
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 3 https://github.com/skylot/jadx/releases/download/v1.5.6/jadx-1.5.6.zip -o /tmp/jadx.zip
+          mkdir -p /tmp/jadx /tmp/audit8052
+          unzip -q /tmp/jadx.zip -d /tmp/jadx
+          test -s vendor/reference/8052/APK/TvSettingsPlus.apk
+      - name: Analyze actual factory ARC eARC source and receiver registration
+        run: |
+          set -euo pipefail
+          /tmp/jadx/bin/jadx --no-res --no-imports --threads-count 3 \
+            -d /tmp/audit8052 vendor/reference/8052/APK/TvSettingsPlus.apk \
+            > /tmp/audit8052_jadx.log 2>&1 || true
+          test -f /tmp/audit8052/sources/com/android/tv/settings/partnercustomizer/sound/EarcFragment.java
+          python3 tools/audit_arc_earc_runtime_path.py /tmp/audit8052 /tmp/arc_earc_8052.json
+          python3 -m json.tool /tmp/arc_earc_8052.json >/dev/null
+          AAPT="$(find "$ANDROID_HOME/build-tools" -name aapt -type f | sort -V | tail -n 1)"
+          if [ -n "$AAPT" ]; then
+            "$AAPT" dump xmltree vendor/reference/8052/APK/TvSettingsPlus.apk AndroidManifest.xml > /tmp/arc_earc_manifest_xmltree.txt
+            grep -n -C 10 -E "SoundEARCReceiver|EarcFragment|SoundFragment|sound_earc" /tmp/arc_earc_manifest_xmltree.txt || true
+          else
+            printf 'aapt unavailable on runner\n' > /tmp/arc_earc_manifest_xmltree.txt
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: 8052-arc-earc-routing-audit
+          path: |
+            /tmp/arc_earc_8052.json
+            /tmp/arc_earc_manifest_xmltree.txt
+          retention-days: 14
