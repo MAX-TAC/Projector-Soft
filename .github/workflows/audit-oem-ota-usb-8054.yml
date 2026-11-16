@@ -1,0 +1,33 @@
+name: Audit factory OTA USB and online installation paths (8052 identical to live 8054)
+on:
+  push:
+    paths:
+      - 'tools/audit_oem_ota_usb_8054.py'
+      - '.github/workflows/audit-oem-ota-usb-8054.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install JADX for read-only APK analysis
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 3 https://github.com/skylot/jadx/releases/download/v1.5.6/jadx-1.5.6.zip -o /tmp/jadx.zip
+          mkdir -p /tmp/jadx /tmp/ota8054
+          unzip -q /tmp/jadx.zip -d /tmp/jadx
+      - name: Decompile original OEM updater and inspect code paths (never install)
+        run: |
+          set -euo pipefail
+          /tmp/jadx/bin/jadx --no-res --no-imports --threads-count 2 -d /tmp/ota8054 vendor/reference/8052/APK/RuiYunOta.apk > /tmp/ota8054-jadx.log 2>&1 || true
+          test -s /tmp/ota8054/sources/com/rjpj/yunota/AbUpdate.java
+          python3 tools/audit_oem_ota_usb_8054.py /tmp/ota8054 /tmp/ota8054-flow.json
+          python3 -m json.tool /tmp/ota8054-flow.json >/dev/null
+      - uses: actions/upload-artifact@v4
+        with:
+          name: oem-updater-read-only-code-paths
+          path: /tmp/ota8054-flow.json
+          retention-days: 14
