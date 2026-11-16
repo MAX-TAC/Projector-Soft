@@ -39,3 +39,7 @@ The following OEM services were running: com.coolux.source/.service.TimeService 
 3. Confirm which physical HDMI port supports ARC/eARC and whether the receiver reports ARC or eARC.
 4. Compare changed OEM APK code paths for 8054 before applying the 8052 TvSettingsPlus MOD.
 5. Keep sensitive partitions (eeprom_a, persist, tvcertificate, private, project_id, metadata, userdata) private; raw images are not equivalent to a signed installable factory PKG.
+
+## September 8054 setup-package difference
+
+The live build (2026-09-05) has /system_ext/priv-app/Provision/Provision.apk as package com.android.provision, with no KuSetupWizard in installed package list. In the previously analyzed factory 8054 PKG from 2026-09-30, KuSetupWizard replaced Provision. This is a material difference for first-boot setup and TvSettingsPlus/KuSettings migration; do not assume behavior parity across both 8054 builds.
