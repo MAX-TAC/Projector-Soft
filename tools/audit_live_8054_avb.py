@@ -35,6 +35,16 @@ for name,(digest,size) in expect.items():
         print("AVB public key SHA1:",hashlib.sha1(key).hexdigest())
         print("AVB public key SHA256:",hashlib.sha256(key).hexdigest())
         print("AVB public key length:",len(key))
+        pubtest=pathlib.Path("/tmp/aosp_testkey_rsa4096_pub.pem")
+        if pubtest.exists():
+            cmp=subprocess.run(["openssl","rsa","-pubin","-in",str(pubtest),"-noout","-modulus"],capture_output=True,text=True)
+            if cmp.returncode==0:
+                modulus=cmp.stdout.strip().split("=",1)[-1].lower().lstrip("0")
+                live=key[8:8+512].hex().lstrip("0")
+                print("AVB KEY MATCHES PUBLIC AOSP RSA4096 TEST KEY:",modulus==live)
+            else:
+                print("AOSP KEY COMPARISON ERROR:",cmp.stderr[:200])
+
         print("Algorithm type:",header.algorithm_type)
         print("Rollback index:",header.rollback_index)
         print("Flags:",header.flags)
@@ -53,4 +63,25 @@ for name,(digest,size) in expect.items():
                           capture_output=True,text=True)
         print("AVB footer check (may be absent):",p2.returncode,
               (p2.stdout+"\n"+p2.stderr)[:2000])
+
+print("\n### CHECK BOOT AND DTBO AGAINST SIGNED MAIN VBMETA")
+parser=avb.Avb()
+_,hdr,descs,_=parser._parse_image(avb.ImageHandler(str(root/"vbmeta_a.img"),read_only=True))
+for d in descs:
+    if not isinstance(d,avb.AvbHashDescriptor) or d.partition_name not in ("boot","dtbo"):
+        continue
+    img=root/(d.partition_name+"_a.img")
+    hasher=hashlib.new(d.hash_algorithm)
+    hasher.update(d.salt)
+    remaining=d.image_size
+    with img.open("rb") as f:
+        while remaining>0:
+            chunk=f.read(min(remaining,4*1024*1024))
+            if not chunk:raise RuntimeError("IMAGE TRUNCATED: "+str(img))
+            hasher.update(chunk)
+            remaining-=len(chunk)
+    verified=hasher.digest()==d.digest
+    print(d.partition_name,"signed vbmeta digest matches actual partition:",verified)
+    if not verified:raise RuntimeError("VERIFIED HASH DOES NOT MATCH "+d.partition_name)
+
 print("\nREAD ONLY: no firmware writes and no key materials exported",flush=True)

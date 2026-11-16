@@ -23,6 +23,7 @@ jobs:
              --repo MAX-TAC/FlixTone_8054_Backup --dir /tmp/live8054 \
              --pattern '*.img'
           curl -fsSL --retry 3 https://raw.githubusercontent.com/LineageOS/android_external_avb/lineage-22.2/avbtool.py -o /tmp/avbtool.py
+          curl -fsSL --retry 3 https://raw.githubusercontent.com/LineageOS/android_external_avb/lineage-22.2/test/data/testkey_rsa4096_pub.pem -o /tmp/aosp_testkey_rsa4096_pub.pem
           ls -lh /tmp/live8054
       - name: Cryptographically verify AVB headers; print sanitized characteristics
         run: |
