@@ -106,3 +106,19 @@ Do not expose ADB on the public internet. If `su 0 id` or `adb root` reports UID
 - Test install on disposable matching hardware, never on the only working projector before rollback is demonstrated.
 
 **Status: custom firmware technically plausible; custom ZIP installation on the locked live projector unverified.**
+
+## 2026-11-16: ROOT confirmed on real D11 8054
+
+The user executed `su 0 id` in an ADB shell and obtained `uid=0(root) gid=0(root) context=u:r:su:s0`. The built-in `su` uses `su [WHO [COMMAND...]]` syntax, **not** Magisk-style `su -c COMMAND`. Consequently `su -c id` returned `invalid uid/gid '-c'`, not a root denial.
+
+Other fresh results:
+- `ro.boot.vbmeta.device_state=locked`
+- `ro.boot.verifiedbootstate=green`
+- `ro.oem_unlock_supported` and `ro.boot.flash.locked` unset (not evidence of unlockability)
+- `ro.product.ab_ota_partitions`: `3rd_a,armfw,boot,bootdata,dtbo,factory_a,linux_rootfs_a,mboot,optee,product,system,system_ext,tvconfig,tvservice,vbmeta,vbmeta_system,vendor`
+- `/system/etc/security/otacerts.zip` exists (1089 bytes).
+- `/vendor/etc/update_engine` and `/system/etc/update_engine` directories absent. This alone is not a missing OTA engine; updater app has a direct `UpdateEngine` API flow.
+
+**Decision impact:** full read-only physical partition imaging is feasible without installing Magisk, unlocking, or rebooting, subject to successful raw stream test. First stream a small partition over `adb exec-out su 0 cat /dev/block/by-name/vbmeta_a` to a private Windows PC file, then `vbmeta_system_a`, `dtbo_a`, `boot_a` and collect `otacerts.zip`. Use `adb exec-out` with no PTY to preserve binary data. Check resulting lengths (1 MiB, 1 MiB, 8 MiB, 75 MiB respectively) and inspect AVB public keys before any further operation.
+
+Do not write any partitions, erase EEPROM or calibration data, invoke `update_engine` for tests, or publish unique partition images. Root privileges **do not** bypass AVB validation at next boot. Review bootloader and verified backup/restore path first.
