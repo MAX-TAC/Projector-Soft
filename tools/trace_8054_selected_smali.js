@@ -35,6 +35,8 @@ const targets=[
   {apk:'TvServices',cls:'Lcom/mediatek/tv/agent/TVMenuSettingsService$3;',method:'run()V',versions:['8054']},
   {apk:'TvServices',cls:'Lcom/mediatek/tv/agent/TVMenuSettingsService$1;',method:'run()V',versions:['8054']},
   {apk:'TvServices',cls:'Lcom/mediatek/tv/agent/TVMenuSettingsService;',method:'updateConfigData(Ljava/lang/String;Ljava/lang/String;)V',versions:['8054']},
+  {apk:'TvServices',cls:'Lcom/mediatek/tv/agent/TVMenuSettingsService$SettingObserver;',method:'onChange(ZLandroid/net/Uri;)V',versions:['8054']},
+  {apk:'TvServices',cls:'Lcom/mediatek/tv/agent/TVMenuSettingsService;',method:'access$200(Lcom/mediatek/tv/agent/TVMenuSettingsService;Ljava/lang/String;)Landroid/net/Uri;',versions:['8054']},
   {apk:'Factory',cls:'Lmediatek/tvsetting/factory/ui/ApiService;',method:'onStartCommand(Landroid/content/Intent;II)I',versions:['8054']},
   {apk:'Factory',cls:'Lmediatek/tvsetting/factory/ui/ProjectorManager;',method:'setProjectorMirrorMode(Landroid/content/Context;I)V',versions:['8052']},
   {apk:'Factory',cls:'Lmediatek/tvsetting/factory/ui/ProjectorManager;',method:'setProjectorMirrorMode(I)V',versions:['8054']},
