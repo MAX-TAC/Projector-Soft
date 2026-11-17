@@ -3,7 +3,7 @@
 Карта объединяет handoff и выбранные точные smali invoke из оригинальных APK. Имена владельцев/backend в матрице остаются гипотезами; статический вызов не доказывает исполнение на устройстве.
 
 Покрытие инвентаря: 88 APK, 1389 компонентов Manifest, 79 индикаторов DEX-строк, 96 функций.
-Статусы: UNKNOWN 75; BLOCKED 10; DEFERRED 11. Точных статических smali invoke 8054: 32; в Factory отчёте есть 4 прослеженных JADX-вызова.
+Статусы: UNKNOWN 73; BLOCKED 10; PARTIAL_STATIC_TRACE 2; DEFERRED 11. Точных статических smali invoke 8054: 32; в Factory отчёте есть 4 прослеженных JADX-вызова.
 
 Пустое exported в Manifest означает неизвестное значение. Каждая DEX-строка имеет статус DEX_STRING_ONLY.
 
@@ -56,7 +56,7 @@
 | SND13 | Bluetooth Speaker / A2DP sink | P2 | UNKNOWN | RJBluetoothSpeaker + TvSettingsPlus WirelessSpeakerServices | Проверить shared Bluetooth services и receiver |
 | HDMI01 | Активный источник HDMI 1 | P1 | UNKNOWN | KuSourceRJ / TvSettingsPlus.SourceSubMenuController / MtkTvInput.HDMIInputService | Различать HW6/HW7 с 4 зарегистрированными TV Input |
 | HDMI02 | Активный источник HDMI 2 | P1 | UNKNOWN | KuSourceRJ / TvSettingsPlus.SourceSubMenuController / MtkTvInput.HDMIInputService | Различать HW6/HW7 с 4 зарегистрированными TV Input |
-| HDMI03 | EDID version | P1 | UNKNOWN | TvSettingsPlus SourceSubMenuController | Установить значение входного параметра 6, валидировать HW6/HW7, readback HAL |
+| HDMI03 | EDID version | P1 | PARTIAL_STATIC_TRACE | TvSettingsPlus SourceSubMenuController | Установить значение входного параметра 6, валидировать HW6/HW7, readback HAL |
 | HDMI04 | HDMI-CEC | P1 | UNKNOWN | TvSettingsPlus SourceSubMenuController | Проверить включение и выключение с ARC |
 | HDMI05 | Game mode | P1 | UNKNOWN | TvSettingsPlus SourceSubMenuController | Найти CALLSITE точно и rollback keystone |
 | HDMI06 | HDMI Plug autoplay | P2 | UNKNOWN | TvSettingsPlus SourceSubMenuController | Проверить реальный reader свойства и hotplug |
@@ -64,7 +64,7 @@
 | HDMI08 | Приложение при старте | P1 | UNKNOWN | TvSettingsPlus.PowerOnAppSecondaryController | Проверить installed launchable apps/ package name and HOME |
 | HDMI09 | USB local media | P2 | UNKNOWN | KuSourceRJ/ MultiMediaPlayer | Проверить intent consumers и handles before removing OEM player |
 | HDMI10 | Аналоговые входы VGA/SCART/Tuner | BLOCK | BLOCKED | MtkTvInput | Проверить зависимости HDMI arbitration |
-| PRJ01 | Положение: Front/Rear/Ceiling | P0 | UNKNOWN | TvSettingsPlus / RuiAutoFocus / KeystoneCorrection | Восстановить точную реализацию 8054 и побочные действия, все Intent/HAL |
+| PRJ01 | Положение: Front/Rear/Ceiling | P0 | PARTIAL_STATIC_TRACE | TvSettingsPlus / RuiAutoFocus / KeystoneCorrection | Восстановить точную реализацию 8054 и побочные действия, все Intent/HAL |
 | PRJ02 | Автофокус при включении | P1 | UNKNOWN | TvSettingsPlus / RuiAutoFocus / KeystoneCorrection | Восстановить точную реализацию 8054 и побочные действия, все Intent/HAL |
 | PRJ03 | Автофокус при перемещении | P1 | UNKNOWN | TvSettingsPlus / RuiAutoFocus / KeystoneCorrection | Восстановить точную реализацию 8054 и побочные действия, все Intent/HAL |
 | PRJ04 | Ручная фокусировка | P0 | UNKNOWN | TvSettingsPlus / RuiAutoFocus / KeystoneCorrection | Восстановить точную реализацию 8054 и побочные действия, все Intent/HAL |

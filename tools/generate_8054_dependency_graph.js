@@ -65,10 +65,36 @@ function main(inputDir, outputDir) {
     rollback: item.rollback,
     risk: item.risk
   }));
+  const partialTrace = {
+    HDMI03: {
+      source_file:'smali_classes14/com/android/tv/settings/uicustom/floatmenu/controller/source/EdidSourceSecondaryController.smali',
+      class_method:'EdidSourceSecondaryController#getEdidVersion()I',
+      line_or_smali:'142-149', call_kind:'DEX_INVOKE',
+      target:'MtkTvAVModeBase#getVideoInfoData; MtkTvVideoInfoBase#getU8EdidIndex',
+      arguments:'first getVideoInfoData argument 0x6; new MtkTvVideoInfoBase',
+      precondition:'Getter path; caller, second physical HDMI mapping and setter remain untraced',
+      source_apk_sha256:'f8e0c6fe0f46e7eb8db651c31d85ef8b32a769b37e4dd0f96ed19a64725d74ee'
+    },
+    PRJ01: {
+      source_file:'TvSettingsPlus smali_classes14/.../ProjectorManager.smali; Factory smali/.../ApiService.smali and ProjectorManager.smali',
+      class_method:'TvSettingsPlus.ProjectorManager#setProjectorMirrorMode(Context,int) -> Factory.ApiService#onStartCommand -> Factory.ProjectorManager#setProjectorMirrorMode(int)',
+      line_or_smali:'TvSettingsPlus:263-304; Factory ApiService:53-100; Factory ProjectorManager:285-428',
+      call_kind:'DEX_INVOKE_CHAIN',
+      target:'explicit Factory ApiService; MtkTvConfig#setConfigValue; ProjectorManager#i2c; SystemProperties#set; MtkTvFApiDisplay#setMirrorMethod',
+      arguments:'Intent extra projector_mode_value; Factory default 0; mode switch 0..3; g_misc__mirror, g_misc__flip, persist.rjpj.projector.mode',
+      precondition:'Static path only; underlying I2C register writes and runtime permissions remain unverified',
+      source_apk_sha256:'TvSettingsPlus f8e0c6fe0f46e7eb8db651c31d85ef8b32a769b37e4dd0f96ed19a64725d74ee; Factory 2f0e2cbc133c97cb4b1383f7a4576fab78715dae72a8e590deb479a4196e0996'
+    }
+  };
+  for (const feature of features) if (partialTrace[feature.id]) {
+    Object.assign(feature, partialTrace[feature.id], {confidence:'DEX_INVOKE_STATIC',status:'PARTIAL_STATIC_TRACE'});
+    feature.evidence.push({kind:'EXACT_SMALI_TRACE', source:'Projector-Soft Actions run 44097233248',
+      report:'SELECTED_SMALI_TRACE_FINDINGS_8054.md'});
+  }
   const graph = {
     schema_version: 1,
     firmware: 'FlixTone D11 Master 8054 / MT9660 / Android TV 13',
-    provenance: 'Handoff metadata plus curated exact 8054 smali invoke instructions from original APKs in CI run 44094937995. Runtime behavior remains unverified.',
+    provenance: 'Handoff metadata, curated exact 8054 invokes from run 44094937995, selected method bodies from run 44097233248. Runtime behavior remains unverified.',
     evidence_rule: 'VERIFIED requires an exact APK hash, source method, line or smali instruction, call target and arguments, plus a reproducible read-only test.',
     apk_inventory: apk.map(x => ({partition:x.partition, apk_path:x.apk_path, package:x.package,
       cert_sha256:x.cert_sha256, shared_user_id:x.sharedUserId,

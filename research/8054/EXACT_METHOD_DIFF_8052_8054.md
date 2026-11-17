@@ -11,7 +11,7 @@ Source: [successful CI run 44094937995](https://github.com/MAX-TAC/Projector-Sof
 | Factory | 31164 | 31163 | 9 |
 | trdservice | 6233 | 6260 | 41 |
 
-The diff proves the Factory orientation method signature changed from `setProjectorMirrorMode(Context,int)` to `setProjectorMirrorMode(int)` and 8054 `ApiService#onStartCommand` invokes the new signature. This is Factory's class, distinct from TvSettingsPlus's homonymous class. KuSettings's auto Bluetooth view method changed. trdservice added an `IMotorCtrl` Binder interface and SDK. Optical and keystone method changes prevent blind 8052 porting.
+The diff proves the Factory orientation method signature changed from `setProjectorMirrorMode(Context,int)` to `setProjectorMirrorMode(int)` and 8054 `ApiService#onStartCommand` invokes the new signature. This is Factory's class, distinct from TvSettingsPlus's homonymous class. A focused trace in run 44097233248 shows KuSettings's changed Bluetooth view method changes only an image-selection version comparison; it does not prove a pairing change. The 8054 trdservice no longer starts a `checkSleep` thread in `onCreate` and adds an `IMotorCtrl` Binder interface and SDK. Optical and keystone method changes prevent blind 8052 porting.
 
 ## All changed method IDs
 

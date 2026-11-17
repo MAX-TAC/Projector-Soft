@@ -35,6 +35,15 @@ for (const item of graph.dex_literal_indicators) {
   if (item.confidence !== 'DEX_STRING_ONLY' || item.call_kind || item.source_method)
     throw new Error(`${item.id}: DEX literal cannot imply a call`);
 }
+const traced=graph.features.filter(x=>x.status==='PARTIAL_STATIC_TRACE');
+if (traced.map(x=>x.id).sort().join(',')!=='HDMI03,PRJ01')
+  throw new Error(`Unexpected partial static traces: ${traced.map(x=>x.id)}`);
+for(const item of traced) {
+  for(const field of ['source_file','class_method','line_or_smali','call_kind','target','arguments','source_apk_sha256'])
+    if(!item[field])throw new Error(`${item.id}: missing ${field}`);
+  if(item.confidence!=='DEX_INVOKE_STATIC'||!item.evidence.some(x=>x.kind==='EXACT_SMALI_TRACE'))
+    throw new Error(`${item.id}: missing exact static trace evidence`);
+}
 for (const item of graph.manifest_components) {
   if (item.confidence !== 'MANIFEST_DECLARATION_ONLY')
     throw new Error(`Manifest component ${item.name} has unsupported confidence`);
