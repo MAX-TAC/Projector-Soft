@@ -74,7 +74,12 @@ public final class OemFiveBandEqualizerHook {
             for (int i=0;i<KEYS.length;i++) {
                 String key=KEYS[i];
                 if (!supported.contains(key)) continue;
-                int current=Settings.Global.getInt(resolver,key,0);
+                // An absent OEM value is not evidence that this band is active.
+                String raw=Settings.Global.getString(resolver,key);
+                if (raw==null) continue;
+                final int current;
+                try { current=Integer.parseInt(raw); }
+                catch(NumberFormatException malformed) { continue; }
                 if(current<bounds[0]||current>bounds[1])continue;
                 Object item=seek.getConstructor(Context.class).newInstance(ctx);
                 preferenceClass.getMethod("setKey",String.class).invoke(item,
@@ -119,3 +124,5 @@ public final class OemFiveBandEqualizerHook {
         }
     }
 }
+
+
