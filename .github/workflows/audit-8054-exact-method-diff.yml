@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/audit-8054-exact-method-diff.yml'
       - 'tools/compare_8052_8054_smali.js'
+      - 'tools/trace_8054_selected_smali.js'
       - 'research/8054/apk_diff_config.json'
   workflow_dispatch:
 permissions:
@@ -63,6 +64,11 @@ jobs:
           set -euo pipefail
           node tools/compare_8052_8054_smali.js research/8054/apk_diff_config.json /tmp/apkdiff/report
           test -s /tmp/apkdiff/report/exact_apk_method_diff.json
+      - name: Trace selected original methods and arguments read only
+        run: |
+          set -euo pipefail
+          node tools/trace_8054_selected_smali.js research/8054/apk_diff_config.json /tmp/apkdiff/report
+          test -s /tmp/apkdiff/report/selected_smali_trace.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
