@@ -116,6 +116,33 @@ jobs:
                       raise RuntimeError('EDID key scan unexpectedly broad')
               print('EDID_KEY_COUNT', name, hits)
           PY
+      - name: Inventory TvServices itemIds consumers and MediaTek calls
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path('/tmp/apkdiff/TvServices/8054')
+          for file in sorted(root.rglob('TVMenuSettingsService*.smali')):
+              method = None
+              body = []
+              start = 0
+              for number, line in enumerate(file.read_text().splitlines(), 1):
+                  if line.startswith('.method '):
+                      method = line.split()[-1]
+                      body = [line]
+                      start = number
+                  elif method:
+                      body.append(line)
+                      if line.startswith('.end method'):
+                          if any('itemIds:' in value for value in body):
+                              print('ITEMIDS_METHOD', file.relative_to(root), method, start, number)
+                              for offset, value in enumerate(body):
+                                  if ('itemIds:' in value or 'MtkTvConfig;->' in value or
+                                      'MtkTvFApi' in value or 'Settings$Global;->' in value):
+                                      print('ITEMIDS_LINE', start + offset, value.strip())
+                          method = None
+                          body = []
+          PY
       - name: Inventory original 8054 AutoPair classes read only
         run: |
           set -euo pipefail
