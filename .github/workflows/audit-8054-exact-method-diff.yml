@@ -161,6 +161,35 @@ jobs:
                   'filled-new-array' in line or 'iput-object' in line and 'setting' in line.lower()):
                   print('EDID_OBSERVER_ARRAY', i + 1, line.strip())
           PY
+      - name: Inventory OEM picture sound and EQ key callsites
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          keys = ('picture_mode', 'picture_color_temperature', 'picture_brightness',
+                  'sound_style', 'sound_bass', 'sound_treble', 'sound_sound_surround',
+                  'sound_equalizer_detail_120hz', 'sound_equalizer_detail_500hz',
+                  'sound_equalizer_detail_1500hz', 'sound_equalizer_detail_5000hz',
+                  'sound_equalizer_detail_10000hz')
+          for name in ('TvSettingsPlus', 'TvServices'):
+              root = Path('/tmp/apkdiff') / name / '8054'
+              for file in sorted(root.rglob('*.smali')):
+                  contents = file.read_text()
+                  if not any('"' + key + '"' in contents for key in keys):
+                      continue
+                  lines = contents.splitlines()
+                  method = None
+                  for i, line in enumerate(lines):
+                      if line.startswith('.method '):
+                          method = line.split()[-1]
+                      elif line.startswith('.end method'):
+                          method = None
+                      elif method and any('"' + key + '"' in line for key in keys):
+                          print('AV_KEY', name, file.relative_to(root), method, i + 1, line.strip())
+                          for j in range(i + 1, min(i + 10, len(lines))):
+                              if lines[j].lstrip().startswith('invoke-'):
+                                  print('AV_NEAR_INVOKE', name, file.relative_to(root), method, j + 1, lines[j].strip())
+          PY
       - name: Inventory TvServices config and Settings observer callsites
         run: |
           set -euo pipefail
