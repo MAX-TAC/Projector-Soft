@@ -26,6 +26,8 @@ const targets=[
   {apk:'AutoPair',cls:'Lcom/mediatek/autopair/AutoPairBluetoothDevice;',method:'startScan()V',versions:['8054']},
   {apk:'TvServices',cls:'Lcom/mediatek/tv/agent/TVMenuSettingsService;',method:'<init>()V',versions:['8054']},
   {apk:'TvServices',cls:'Lcom/mediatek/tv/agent/TVMenuSettingsService;',method:'initMapdata()V',versions:['8054']},
+  {apk:'TvServices',cls:'Lcom/mediatek/tv/agent/TVMenuSettingsService;',method:'initAdvancedAudioSubMap()V',versions:['8054']},
+  {apk:'TvServices',cls:'Lcom/mediatek/tv/agent/TVMenuSettingsService;',method:'initSoundStyleMap()V',versions:['8054']},
   {apk:'TvServices',cls:'Lcom/mediatek/tv/agent/TVMenuSettingsService;',method:'formatSettingToConfigId(Ljava/lang/String;)Ljava/lang/String;',versions:['8054']},
   {apk:'TvServices',cls:'Lcom/mediatek/tv/agent/TVMenuSettingsService;',method:'syncConfigDataToSetting()V',versions:['8054']},
   {apk:'TvServices',cls:'Lcom/mediatek/tv/agent/TVMenuSettingsService;',method:'updateConfigDataChanged(Ljava/lang/String;)V',versions:['8054']},
@@ -58,6 +60,9 @@ const targets=[
   {apk:'TvSettingsPlus',cls:'Lcom/android/tv/settings/partnercustomizer/tvsettingservice/BluetoothReconnectService$6;',method:'onReceive(Landroid/content/Context;Landroid/content/Intent;)V',versions:['8054']},
   {apk:'TvSettingsPlus',cls:'Lcom/android/tv/settings/partnercustomizer/tvsettingservice/BluetoothReconnectService$7;',method:'onReceive(Landroid/content/Context;Landroid/content/Intent;)V',versions:['8054']},
   {apk:'TvSettingsPlus',cls:'Lcom/android/tv/settings/partnercustomizer/tvsettingservice/BluetoothReconnectService$8;',method:'handleMessage(Landroid/os/Message;)V',versions:['8054']},
+  {apk:'TvSettingsPlus',cls:'Lcom/android/tv/settings/partnercustomizer/sound/equalizerdetail/EqualizerDetailFragment;',method:'initPreferences()V',versions:['8054']},
+  {apk:'TvSettingsPlus',cls:'Lcom/android/tv/settings/partnercustomizer/utils/ProgressBarDialog;',method:'getACFGId(Ljava/lang/String;)Ljava/lang/String;',versions:['8054']},
+  {apk:'TvSettingsPlus',cls:'Lcom/android/tv/settings/partnercustomizer/utils/ProgressBarVerticalFragment;',method:'onPreferenceChange(Landroidx/preference/Preference;Ljava/lang/Object;)Z',versions:['8054']},
   {apk:'Factory',cls:'Lmediatek/tvsetting/factory/ui/ApiService;',method:'onStartCommand(Landroid/content/Intent;II)I',versions:['8054']},
   {apk:'Factory',cls:'Lmediatek/tvsetting/factory/ui/ProjectorManager;',method:'setProjectorMirrorMode(Landroid/content/Context;I)V',versions:['8052']},
   {apk:'Factory',cls:'Lmediatek/tvsetting/factory/ui/ProjectorManager;',method:'setProjectorMirrorMode(I)V',versions:['8054']},
@@ -95,12 +100,12 @@ function main(configFile,outputDir){
       const trace=extract(pair[version==='8052'?'original':'target'],t.cls,t.method);
       traces.push({apk:t.apk,version,class_method:t.cls+'->'+t.method,...trace});
       console.log('TRACE_METHOD '+t.apk+' '+version+' '+t.cls+'->'+t.method+' '+trace.source_file+':'+trace.start_line);
-      const keyLines=trace.lines.filter(x=>x.text.includes('tv_input_hdmi_edid_version')).map(x=>x.line);
+      const keyLines=trace.lines.filter(x=>/tv_input_hdmi_edid_version|sound_equalizer_detail_|sound_bass|sound_treble|sound_style|picture_brightness/.test(x.text)).map(x=>x.line);
       const logged=trace.lines.length>400 && keyLines.length
-        ? trace.lines.filter(x=>keyLines.some(n=>Math.abs(x.line-n)<=35))
+        ? trace.lines.filter(x=>keyLines.some(n=>Math.abs(x.line-n)<=16))
         : trace.lines;
       if(logged.length<trace.lines.length)
-        console.log('TRACE_WINDOW '+trace.lines.length+' total lines; showing EDID key context');
+        console.log('TRACE_WINDOW '+trace.lines.length+' total lines; showing selected key context');
       for(const line of logged)console.log('TRACE_LINE '+line.line+' '+line.text);
     }
   }
@@ -109,3 +114,4 @@ function main(configFile,outputDir){
 }
 if(require.main===module)main(process.argv[2],process.argv[3]);
 module.exports={extract};
+
