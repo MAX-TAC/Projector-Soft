@@ -28,6 +28,15 @@ public final class OemProjectorOrientationHook {
 
     private OemProjectorOrientationHook() {}
 
+    private static String machineId() {
+        try {
+            Class<?> properties=Class.forName("android.os.SystemProperties");
+            Object value=properties.getMethod("get",String.class,String.class)
+                    .invoke(null,"ro.rjpj.machine.id","");
+            return value instanceof String ? (String)value : "";
+        } catch(Exception e) {return "";}
+    }
+
     private static final class Gateway {
         final Object manager;
         final Method getter;
@@ -52,6 +61,7 @@ public final class OemProjectorOrientationHook {
     }
 
     public static void install(Context context,Object category,Class<?> prefClass) {
+        if(!ProjectorCompatibilityPolicy.mayOfferLegacyOrientation(machineId()))return;
         try {
             final Gateway gateway=new Gateway(context);
             int current=gateway.get();
@@ -107,3 +117,4 @@ public final class OemProjectorOrientationHook {
         }
     }
 }
+

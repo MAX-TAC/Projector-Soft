@@ -5,6 +5,12 @@ public final class ProjectorCompatibilityPolicyTest {
         if(!condition)throw new AssertionError(message);
     }
     public static void main(String[] args) {
+        check(ProjectorCompatibilityPolicy.mayOfferLegacyOrientation("8052"),
+              "Retain the existing 8052 orientation route");
+        check(!ProjectorCompatibilityPolicy.mayOfferLegacyOrientation("8054"),
+              "Hide unverified orientation writes on 8054");
+        check(!ProjectorCompatibilityPolicy.mayOfferLegacyOrientation(null),
+              "Unknown board must fail closed for orientation");
         check(ProjectorCompatibilityPolicy.boardWarning("8054",2).contains("не проверены"),
               "Never advertise an 8052 APK as verified on 8054");
         check(ProjectorCompatibilityPolicy.boardWarning("8054",1).contains("не подтверждено"),
@@ -28,3 +34,4 @@ public final class ProjectorCompatibilityPolicyTest {
         System.out.println("PASS: hardware gating and legacy safety diagnostics");
     }
 }
+

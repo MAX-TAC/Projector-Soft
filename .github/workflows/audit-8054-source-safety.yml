@@ -61,3 +61,4 @@ jobs:
           grep -Fq 'automaticRecoveryAllowed(' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/KuSourceRecoveryBootReceiver.java
           grep -Fq 'mayUseLegacySelector(machineId())' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemHdmiEdidHook.java
           grep -Fq 'return "8052".equals(machineId)' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/EdidPortPolicy.java
+          grep -Fq 'mayOfferLegacyOrientation(machineId())' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemProjectorOrientationHook.java

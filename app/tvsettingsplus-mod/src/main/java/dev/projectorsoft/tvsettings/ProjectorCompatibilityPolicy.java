@@ -7,6 +7,11 @@ package dev.projectorsoft.tvsettings;
 public final class ProjectorCompatibilityPolicy {
     private ProjectorCompatibilityPolicy() {}
 
+    /** The legacy orientation setter's 8054 side-effect chain is not validated. */
+    public static boolean mayOfferLegacyOrientation(String firmwareId) {
+        return "8052".equals(firmwareId);
+    }
+
     public static String boardWarning(String firmwareId,Integer hdmiPorts) {
         if("8054".equals(firmwareId)) {
             if(hdmiPorts==null || hdmiPorts.intValue()!=2)

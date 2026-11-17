@@ -12,6 +12,12 @@ Test: `KuSourceRecoveryActivationPolicyTest` checks disabled states on 8054 and 
 
 Test: `EdidPortPolicyTest` checks 8052, 8054 and unknown identifiers. This is a JVM policy test; no EDID write or HDMI negotiation has been attempted. Rollback: revert the C1 commit in source and use the stock OEM source page until a port-aware implementation passes bytecode and hardware validation.
 
+## C2 — legacy orientation gate
+
+`OemProjectorOrientationHook` now reads the board ID before creating the MOD's orientation selector. `ProjectorCompatibilityPolicy.mayOfferLegacyOrientation` keeps the existing 8052 path and hides the selector on 8054 or an unknown board. The stock OEM projection link remains in the right pane. This is a source safety gate: no I²C, calibration, Flinger, or optical command was sent.
+
+Test: `ProjectorCompatibilityPolicyTest` covers 8052, 8054 and an unknown ID; CI checks that the hook uses the gate. Rollback: revert the C2 source commit after tracing the exact 8054 TvSettingsPlus setter's arguments and side effects, and after an approved hardware test with a recorded original orientation. Factory's similarly named setter changed signature in 8054 and must not be confused with the TvSettingsPlus class.
+
 ## CI and remaining gates
 
 `audit-8054-source-safety.yml` validates the dependency evidence, compiles all Java against Android API 33 and runs pure JVM tests. Separate exact-8054 build run 44093893342 repacked, signed and verified an experimental APK from the original 8054 base; see `BUILD_STATUS_8054_AUDIT_2026-11-17.md`. Installed package/update compatibility, TV Input HW6/HW7, Bluetooth remote, audio/PQ HAL, optics and TimeService/fan behavior remain open. No 8054 hardware parity claim follows from CI.
