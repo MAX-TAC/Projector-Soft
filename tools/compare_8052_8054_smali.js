@@ -4,6 +4,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const os = require('os');
 
 function files(dir) {
   const result = [];
@@ -19,7 +20,7 @@ function methods(root) {
   for (const dir of fs.readdirSync(root).filter(x=>x==='smali'||x.startsWith('smali_classes'))) {
     for (const file of files(path.join(root,dir))) {
       const source = fs.readFileSync(file,'utf8');
-      const cls = source.match(/^\.class\s+[^\n]*?\s+(L[^;]+;)/m)?.[1];
+      const cls = source.match(/^\.class\s+[^\r\n]*?\s+(L[^;]+;)/m)?.[1];
       if (!cls) throw new Error(`Missing .class in ${file}`);
       const lines = source.split(/\r?\n/);
       let current = null, body = [], start = 0;
@@ -103,9 +104,28 @@ function main(configFile,outputDir) {
 }
 if (require.main===module) {
   if (process.argv[2]==='--self-test') {
-    const a=new Map([['LA;->x()V',{hash:'a'}]]),b=new Map([['LA;->x()V',{hash:'b'}],['LA;->y()V',{hash:'c'}]]);
-    if (compare(a,b).map(x=>x.change).join(',')!=='CHANGED,ADDED') throw new Error('compare self-test failed');
-    console.log('PASS method comparator self-test');
+    const temp=fs.mkdtempSync(path.join(os.tmpdir(),'apkdiff-fixture-'));
+    try {
+      const a=path.join(temp,'a','smali','com','example');
+      const b=path.join(temp,'b','smali','com','example');
+      fs.mkdirSync(a,{recursive:true});fs.mkdirSync(b,{recursive:true});
+      const head='.class public Lcom/example/A;\n.super Ljava/lang/Object;\n';
+      fs.writeFileSync(path.join(a,'A.smali'),head+
+        '.method public x()V\n    .locals 1\n    return-void\n.end method\n');
+      fs.writeFileSync(path.join(b,'A.smali'),head+
+        '.method public x()V\n    .locals 1\n    invoke-static {v0}, Lcom/coolux/source/service/TimeService;->start()V\n    return-void\n.end method\n'+
+        '.method public y()V\n    .locals 0\n    return-void\n.end method\n');
+      const before=methods(path.join(temp,'a')),after=methods(path.join(temp,'b'));
+      if (compare(before,after).map(x=>x.change).join(',')!=='CHANGED,ADDED')
+        throw new Error('compare self-test failed');
+      if (criticalCalls(after,'fixture').length!==1)
+        throw new Error('invoke parser self-test failed');
+      console.log('PASS method and invoke parser self-test');
+    } finally {
+      const allowed=path.resolve(os.tmpdir())+path.sep;
+      if (!path.resolve(temp).startsWith(allowed)) throw new Error('Unsafe fixture path');
+      fs.rmSync(temp,{recursive:true,force:true});
+    }
   } else main(process.argv[2],process.argv[3]);
 }
 module.exports={methods,compare,criticalCalls};
