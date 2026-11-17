@@ -24,6 +24,8 @@ const targets=[
   {apk:'AutoPair',cls:'Lcom/mediatek/autopair/AutoPairBluetoothDevice;',method:'createBond(Landroid/bluetooth/BluetoothDevice;)Z',versions:['8054']},
   {apk:'AutoPair',cls:'Lcom/mediatek/autopair/AutoPairBluetoothDevice;',method:'openConnection(Landroid/bluetooth/BluetoothDevice;)V',versions:['8054']},
   {apk:'AutoPair',cls:'Lcom/mediatek/autopair/AutoPairBluetoothDevice;',method:'startScan()V',versions:['8054']},
+  {apk:'TvServices',cls:'Lcom/mediatek/tv/agent/TVMenuSettingsService;',method:'<init>()V',versions:['8054']},
+  {apk:'TvServices',cls:'Lcom/mediatek/tv/agent/TVMenuSettingsService;',method:'initMapdata()V',versions:['8054']},
   {apk:'Factory',cls:'Lmediatek/tvsetting/factory/ui/ApiService;',method:'onStartCommand(Landroid/content/Intent;II)I',versions:['8054']},
   {apk:'Factory',cls:'Lmediatek/tvsetting/factory/ui/ProjectorManager;',method:'setProjectorMirrorMode(Landroid/content/Context;I)V',versions:['8052']},
   {apk:'Factory',cls:'Lmediatek/tvsetting/factory/ui/ProjectorManager;',method:'setProjectorMirrorMode(I)V',versions:['8054']},
@@ -61,7 +63,13 @@ function main(configFile,outputDir){
       const trace=extract(pair[version==='8052'?'original':'target'],t.cls,t.method);
       traces.push({apk:t.apk,version,class_method:t.cls+'->'+t.method,...trace});
       console.log('TRACE_METHOD '+t.apk+' '+version+' '+t.cls+'->'+t.method+' '+trace.source_file+':'+trace.start_line);
-      for(const line of trace.lines)console.log('TRACE_LINE '+line.line+' '+line.text);
+      const keyLines=trace.lines.filter(x=>x.text.includes('tv_input_hdmi_edid_version')).map(x=>x.line);
+      const logged=trace.lines.length>400 && keyLines.length
+        ? trace.lines.filter(x=>keyLines.some(n=>Math.abs(x.line-n)<=35))
+        : trace.lines;
+      if(logged.length<trace.lines.length)
+        console.log('TRACE_WINDOW '+trace.lines.length+' total lines; showing EDID key context');
+      for(const line of logged)console.log('TRACE_LINE '+line.line+' '+line.text);
     }
   }
   fs.mkdirSync(outputDir,{recursive:true});

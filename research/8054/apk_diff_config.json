@@ -51,6 +51,11 @@
       "apk": "AutoPair",
       "target_apk": "/tmp/flix8054_erofs/system_ext_a_tree/app/AutoPair/AutoPair.apk",
       "target": "/tmp/apkdiff/AutoPair/8054"
+    },
+    {
+      "apk": "TvServices",
+      "target_apk": "/tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvServices/TvServices.apk",
+      "target": "/tmp/apkdiff/TvServices/8054"
     }
   ]
 }
