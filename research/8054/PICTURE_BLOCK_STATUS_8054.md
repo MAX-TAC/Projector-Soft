@@ -1,29 +1,19 @@
-# Изображение: состояние блока
+# Изображение: граница реализации после review
 
-Source state: BUILT_UNTESTED (предыдущая сборка); review correction P1/P2 ожидает новый CI. Android compile и transaction tests: source-safety run 44139714268 success, OEM run 44139714347 success. Аппаратное состояние RUNTIME_TEST_REQUIRED. Exact-8054 APK CI 44139714534 и v33 CI 44139714405 success. APK не установлен. Статус относится к MOD пользовательским picture controls, не к заводской калибровке/PQ.
+Статус: BUILT_UNTESTED для MOD gate и OEM делегирования. RUNTIME_TEST_REQUIRED для фактической навигации и работы на 8054. Полный inline перенос и автоматический rollback не готовы.
 
-## Режим и источник
+| Путь | Текущая доступность |
+|---|---|
+| Штатная страница изображения | Ссылка PICTURE_SETTINGS на существующую com.android.tv.settings.uicustom.MainActivity с проверкой Activity |
+| MOD mode/temperature/sliders/HDR/MEMC | Скрыты, поскольку PQ profile + HDMI context не установлен |
+| Новые MOD picture writes | UNKNOWN блокируется до provider read и journal save |
+| Replay сохранённых picture значений | Недоступен при неизвестном контексте; кнопка отключена |
+| Старые UNKNOWN и legacy снимки | Сохраняются для диагностики, без replay/автоматического удаления/перезаписи |
 
-В сохранённом оригинальном 8054 TvServices `TVMenuSettingsService#updateConfigDataChanged(String)`, smali 5400–5412, событие `picture_mode` вызывает `updateSettingDB(itemIds)`. При `picture_color_temperature`, 5415–5427, вызывается `updateSettingDB(colorTempMap)`. Общий `updateSettingDB` асинхронно перечитывает config в Global. Источник: run 44123938819, exact method bodies, APK SHA-256 2934ca9334afd0a2af85786aa0593d27da216086c7eb9b0c9b801f412516b77d. Это подтверждает пересинхронизацию связанных параметров при смене режима. Точное хранение профилей в закрытом backend и привязка к каждому HDMI-порту не установлены; отсутствие порта в Global key не доказывает независимость от входа.
+Review 5944214002 P1 подтвердился: ранее UNKNOWN блокировал только restore. Теперь write также fail-closed. Core дополнительно не записывает picture_mode и picture_color_temperature как scalar значения. Даже known-context journal с чужим/старым UNKNOWN контекстом не перезаписывается новой записью.
 
-## Ограничение восстановления
+Причина контекстного ограничения уже установлена по сохранённым smali, без нового reverse: TVMenuSettingsService#updateConfigDataChanged (5400–5412) на picture_mode вызывает updateSettingDB(itemIds), а на picture_color_temperature (5415–5427) — updateSettingDB(colorTempMap). Источник run 44123938819, TvServices SHA-256 2934ca9334afd0a2af85786aa0593d27da216086c7eb9b0c9b801f412516b77d. HDMI/PQ profile ownership остаётся неизвестным.
 
-`OemPictureState` использует `PictureStateTransaction`: исходное значение сохраняется перед первой записью одним durable record с контекстом. Повторная запись не меняет original. Отсутствующее значение и отказ сохранения журнала блокируют запись. Для восстановления требуется совпадающий подтверждённый контекст режима И входа; неизвестный контекст и legacy records отклоняются. `picture_mode` никогда не воспроизводится обычным scalar restore, поскольку он запускает асинхронные групповые изменения. При частичной ошибке запись остаётся для повтора; успешные удаляются после readback. Совпадение readback означает только provider state.
+Тесты: OemPictureStateTest — повторное изменение, отсутствие original, partial restore/retry, восстановление логики с persisted journal, mode/input mismatch, UNKNOWN write без snapshot/provider mutation, journal failure и legacy quarantine. OemPictureAdapterTest компилирует настоящий OemPictureState.java с изолированными Android doubles и вызывает public write/restore при production verifiedContext=null; проверяет ноль provider writes и journal commits, сохранность UNKNOWN/legacy после нового Context. Это JVM тест adapter логики, не настоящий Android process/device test. Fixtures не включаются в production APK.
 
-В Android adapter verifiedContext пока возвращает null. Пункт «Сохранённые значения изображения» отключён с объяснением неизвестного профиля/HDMI. Даже прямой вызов restore возвращает false без записей. Полноценный откат изображения не заявлен. Существующие picture controls продолжают штатные Global записи; snapshot служит для диагностики. Полный откат не доказан и для HDR/MEMC, не охваченных snapshot.
-
-## Тесты
-
-`OemPictureStateTest` запускает тот же transaction core, что Android adapter: повторное изменение сохраняет original; отсутствие original; частичное восстановление и повтор; новый экземпляр с сохранённым journal (модель перезапуска приложения); смена picture mode; HDMI mismatch; неизвестный контекст; ошибка journal commit; legacy запись. Это JVM fake provider/journal, не Android process/device test. Android adapter проверяется компиляцией API33; аппаратная проверка остаётся отдельной.
-
-Граница завершения: исходники и тестируемая защитная логика готовы, восстановление намеренно недоступно до установления контекста. Следующий пользовательский блок — звук: использовать готовую карту Settings/TvServices и OEM диапазоны, добавить групповые тесты, не исследовать закрытый HAL как условие переноса.
-
-
-
-## Граница после review 5944214002
-
-Прямые MOD list/slider/HDR/MEMC контролы скрыты до проверки контекста; пользовательский доступ — ссылка android.settings.PICTURE_SETTINGS на штатную com.android.tv.settings.uicustom.MainActivity (с проверкой наличия Activity). Это OEM делегирование, а не завершённый inline перенос. Отдельный mayEdit gate не позволяет показать прямые контролы; core блокирует UNKNOWN ещё до чтения provider/создания snapshot. Старые UNKNOWN/legacy records сохраняются без replay или автоматического удаления; даже при известном контексте journal с другим контекстом блокирует новую запись. picture_mode и picture_color_temperature делегируются из-за асинхронных групповых эффектов.
-
-Production adapter test компилирует именно OemPictureState.java с изолированными Android test doubles и вызывает public write/restore: при реальном adapter verifiedContext=null нет provider writes и journal commits; старые UNKNOWN и legacy записи не меняются после нового Context. Это тест Android adapter логики, не устройства/реального SharedPreferences процесса.
-
-Доступно: штатная OEM страница изображения. Скрыто: прямые MOD режимы, цветовая температура, sliders, HDR/MEMC. Отключено: replay snapshot. BUILT_UNTESTED относится к собранному MOD gate/делегированию; RUNTIME_TEST_REQUIRED относится к навигации/штатной пользовательской работе на устройстве. Полноценный откат не готов.
+Новая проверка review correction: source-safety 44155206834 (core + production adapter + sound), общий Android/D8/JVM 44155206813, OEM 44155206851. v33 44155206940 и exact-8054 APK 44155208015 success на commit 4ab5dd5. APK SHA-256 063b65052e068b676a94ddf260087ef8569f78cb1687b802b319faf64d260fe6, artifact 14360098993. Ни одной записи на проекторе не было. Откат исходников — revert review correction commit; не replay неизвестного device snapshot.
