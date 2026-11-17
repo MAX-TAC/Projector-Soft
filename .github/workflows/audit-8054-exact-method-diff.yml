@@ -143,6 +143,24 @@ jobs:
                           method = None
                           body = []
           PY
+      - name: Inventory TvServices config and Settings observer callsites
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path('/tmp/apkdiff/TvServices/8054')
+          needles = ('->formatSettingToConfigId(', '->registerContentObserver(',
+                     '->setConifg(', '->setConfigValue', '->getConfigValueInt(')
+          for file in sorted(root.rglob('TVMenuSettingsService*.smali')):
+              method = None
+              for number, line in enumerate(file.read_text().splitlines(), 1):
+                  if line.startswith('.method '):
+                      method = line.split()[-1]
+                  elif line.startswith('.end method'):
+                      method = None
+                  elif method and line.lstrip().startswith('invoke-') and any(n in line for n in needles):
+                      print('CONFIG_CALL', file.relative_to(root), method, number, line.strip())
+          PY
       - name: Inventory original 8054 AutoPair classes read only
         run: |
           set -euo pipefail
