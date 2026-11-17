@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "firmware": "FlixTone D11 Master 8054 / MT9660 / Android TV 13",
-  "provenance": "Handoff metadata, curated exact 8054 invokes from run 44094937995, selected method bodies from runs 44097233248, 44098788358 and 44103425107. Runtime behavior remains unverified.",
+  "provenance": "Handoff metadata, curated exact 8054 invokes from run 44094937995, selected method bodies from runs 44097233248, 44098788358, 44103425107 and 44106214713. Runtime behavior remains unverified.",
   "evidence_rule": "VERIFIED requires an exact APK hash, source method, line or smali instruction, call target and arguments, plus a reproducible read-only test.",
   "apk_inventory": [
     {
@@ -19344,13 +19344,13 @@
       "entry_point_hint": "Source EDID",
       "backend_hint": "getVideoInfoData(6,instance), Global tv_input_hdmi_edid_version",
       "side_effects_hint": "Может требовать перезапуска HDMI handshake",
-      "source_file": "smali_classes14/com/android/tv/settings/uicustom/floatmenu/controller/source/EdidSourceSecondaryController.smali",
-      "class_method": "EdidSourceSecondaryController#getEdidVersion()I",
-      "line_or_smali": "142-149",
-      "call_kind": "DEX_INVOKE",
-      "target": "MtkTvAVModeBase#getVideoInfoData; MtkTvVideoInfoBase#getU8EdidIndex",
-      "arguments": "first getVideoInfoData argument 0x6; new MtkTvVideoInfoBase",
-      "precondition": "Getter path; caller, second physical HDMI mapping and setter remain untraced",
+      "source_file": "TvSettingsPlus smali_classes14/.../EdidSourceSecondaryController.smali, SourceSubMenuController.smali, EdidSourceSecondaryController$1..$4.smali, EdidSourceFragment$1..$4.smali",
+      "class_method": "EdidSourceSecondaryController#getEdidVersion; SourceSubMenuController#getEdidVersion; eight EDID radio onClick(View) handlers",
+      "line_or_smali": "getters:129-154 and 300-344; secondary onClick:57-74; fragment onClick:57-70",
+      "call_kind": "DEX_INVOKE_CHAINS",
+      "target": "MtkTvAVModeBase#getVideoInfoData; MtkTvVideoInfoBase#getU8EdidIndex; SettingsUtil#putGlobalValueInt",
+      "arguments": "getVideoInfoData first argument 0x6; Global key tv_input_hdmi_edid_version with values 0..3; no port argument in onClick handlers",
+      "precondition": "Radio row visible; Settings.Global observer, HW6/HW7 mapping and hotplug readback remain untraced",
       "confidence": "DEX_INVOKE_STATIC",
       "status": "PARTIAL_STATIC_TRACE",
       "evidence_hint": "S:V33;R:8054 HW6/HW7",
@@ -19362,7 +19362,7 @@
         },
         {
           "kind": "EXACT_SMALI_TRACE",
-          "source": "Projector-Soft Actions run 44097233248",
+          "source": "Projector-Soft Actions runs 44097233248 and 44106214713",
           "report": "SELECTED_SMALI_TRACE_FINDINGS_8054.md"
         }
       ],
