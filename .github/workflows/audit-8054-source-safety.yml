@@ -7,6 +7,7 @@ on:
       - '.github/workflows/audit-8054-source-safety.yml'
       - 'app/tvsettingsplus-mod/src/main/java/**'
       - 'app/tvsettingsplus-mod/src/test/java/**'
+      - 'app/tvsettingsplus-mod/src/testFixtures/java/**'
       - 'research/8054/**'
       - 'tools/validate_8054_graph.js'
   workflow_dispatch:
@@ -68,6 +69,14 @@ jobs:
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemSoundValuePolicy.java \
             app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/OemSoundValuePolicyTest.java
           java -cp /tmp/picture-state-tests dev.projectorsoft.tvsettings.OemSoundValuePolicyTest
+      - name: Test production picture adapter against isolated Android fakes
+        run: |
+          mkdir -p /tmp/picture-adapter-tests
+          javac -d /tmp/picture-adapter-tests \
+            $(find app/tvsettingsplus-mod/src/testFixtures/java -name '*.java') \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/PictureStateTransaction.java \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemPictureState.java
+          java -cp /tmp/picture-adapter-tests dev.projectorsoft.tvsettings.OemPictureAdapterTest
       - name: Check Android entry-point wiring remains conservative
         run: |
           set -euo pipefail

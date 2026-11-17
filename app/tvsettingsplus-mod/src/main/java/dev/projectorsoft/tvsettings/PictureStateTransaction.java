@@ -21,14 +21,19 @@ public final class PictureStateTransaction {
     }
     private String context() {
         String value=backend.verifiedContext();
-        return value==null?"UNKNOWN":value;
+        return value==null||value.trim().isEmpty()?"UNKNOWN":value;
     }
     public boolean write(String key,int value) {
-        if(!key.startsWith("picture_"))return false;
+        String expected=context();
+        if("UNKNOWN".equals(expected)||key==null||!key.startsWith("picture_")
+                ||"picture_mode".equals(key)||"picture_color_temperature".equals(key))return false;
+        String record=journal.entries().get(key);
+        if(record!=null&&!record.startsWith(expected+"\n"))return false;
         String old=backend.read(key);
         if(old==null)return false;
         // One durable record: context and original value must survive together.
-        if(!journal.entries().containsKey(key)&&!journal.save(key,context()+"\n"+old))return false;
+        if(record==null&&!journal.save(key,expected+"\n"+old))return false;
+        if(!expected.equals(context()))return false;
         return backend.write(key,Integer.toString(value))
             && Integer.toString(value).equals(backend.read(key));
     }
@@ -41,7 +46,7 @@ public final class PictureStateTransaction {
             int split=record.indexOf('\n');
             // A mode write can trigger asynchronous changes to several OEM keys.
             // It is never replayed as an ordinary scalar restore.
-            if(!key.startsWith("picture_")||"picture_mode".equals(key)||split<0
+            if(!key.startsWith("picture_")||"picture_mode".equals(key)||"picture_color_temperature".equals(key)||split<0
                     ||!expected.equals(record.substring(0,split))||!expected.equals(context())) {
                 complete=false; continue;
             }

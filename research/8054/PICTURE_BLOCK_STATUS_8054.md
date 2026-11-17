@@ -1,6 +1,6 @@
 # Изображение: состояние блока
 
-Source state: BUILT_UNTESTED. Android compile и transaction tests: source-safety run 44139714268 success, OEM run 44139714347 success. Аппаратное состояние RUNTIME_TEST_REQUIRED. Exact-8054 APK CI 44139714534 и v33 CI 44139714405 success. APK не установлен. Статус относится к MOD пользовательским picture controls, не к заводской калибровке/PQ.
+Source state: BUILT_UNTESTED (предыдущая сборка); review correction P1/P2 ожидает новый CI. Android compile и transaction tests: source-safety run 44139714268 success, OEM run 44139714347 success. Аппаратное состояние RUNTIME_TEST_REQUIRED. Exact-8054 APK CI 44139714534 и v33 CI 44139714405 success. APK не установлен. Статус относится к MOD пользовательским picture controls, не к заводской калибровке/PQ.
 
 ## Режим и источник
 
@@ -19,3 +19,11 @@ Source state: BUILT_UNTESTED. Android compile и transaction tests: source-safet
 Граница завершения: исходники и тестируемая защитная логика готовы, восстановление намеренно недоступно до установления контекста. Следующий пользовательский блок — звук: использовать готовую карту Settings/TvServices и OEM диапазоны, добавить групповые тесты, не исследовать закрытый HAL как условие переноса.
 
 
+
+## Граница после review 5944214002
+
+Прямые MOD list/slider/HDR/MEMC контролы скрыты до проверки контекста; пользовательский доступ — ссылка android.settings.PICTURE_SETTINGS на штатную com.android.tv.settings.uicustom.MainActivity (с проверкой наличия Activity). Это OEM делегирование, а не завершённый inline перенос. Отдельный mayEdit gate не позволяет показать прямые контролы; core блокирует UNKNOWN ещё до чтения provider/создания snapshot. Старые UNKNOWN/legacy records сохраняются без replay или автоматического удаления; даже при известном контексте journal с другим контекстом блокирует новую запись. picture_mode и picture_color_temperature делегируются из-за асинхронных групповых эффектов.
+
+Production adapter test компилирует именно OemPictureState.java с изолированными Android test doubles и вызывает public write/restore: при реальном adapter verifiedContext=null нет provider writes и journal commits; старые UNKNOWN и legacy записи не меняются после нового Context. Это тест Android adapter логики, не устройства/реального SharedPreferences процесса.
+
+Доступно: штатная OEM страница изображения. Скрыто: прямые MOD режимы, цветовая температура, sliders, HDR/MEMC. Отключено: replay snapshot. BUILT_UNTESTED относится к собранному MOD gate/делегированию; RUNTIME_TEST_REQUIRED относится к навигации/штатной пользовательской работе на устройстве. Полноценный откат не готов.

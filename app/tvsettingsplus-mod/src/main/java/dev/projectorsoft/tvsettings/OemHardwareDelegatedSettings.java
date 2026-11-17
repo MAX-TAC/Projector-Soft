@@ -112,4 +112,11 @@ public final class OemHardwareDelegatedSettings {
             "Оригинальные экраны автофокуса и калибровки четырёх углов",
             "android.settings.SETTINGS",251);
     }
+
+    public static boolean installPictureLink(Context context,Object category,Class<?> preferenceClass) {
+        return add(context,category,preferenceClass,"projectorsoft_picture_oem",
+            "Изображение · штатные настройки","Режим, цвет, HDR и MEMC через оригинальный обработчик",
+            "android.settings.PICTURE_SETTINGS",211);
+    }
 }
+

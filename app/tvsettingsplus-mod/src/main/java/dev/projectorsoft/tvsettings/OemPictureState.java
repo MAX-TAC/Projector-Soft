@@ -28,6 +28,7 @@ public final class OemPictureState {
             public boolean remove(String key) {return saved(context).edit().remove(key).commit();}
         });
     }
+    public static boolean mayEdit() {return false;}
     public static boolean write(Context context,String key,int value) {
         return transaction(context).write(key,value);
     }

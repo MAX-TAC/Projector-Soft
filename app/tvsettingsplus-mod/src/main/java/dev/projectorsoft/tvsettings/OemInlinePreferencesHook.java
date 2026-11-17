@@ -117,8 +117,9 @@ public final class OemInlinePreferencesHook {
                 }
             }
 
-            // All values below mirror known OEM SettingsUtil.putGlobalValueInt.
-            addList(pictureCategory,preference,context,"projectorsoft_picture_mode",
+            OemHardwareDelegatedSettings.installPictureLink(context,pictureCategory,preference);
+            // Direct MOD picture controls stay hidden until the profile/input is verified.
+            if(OemPictureState.mayEdit()) addList(pictureCategory,preference,context,"projectorsoft_picture_mode",
                     "Режим изображения","picture_mode",PIC_TITLES,PIC_VALUES,7,211);
             addList(pictureCategory,preference,context,"projectorsoft_color_temp",
                     "Цветовая температура","picture_color_temperature",
@@ -152,12 +153,12 @@ public final class OemInlinePreferencesHook {
             // explicit 0/1 HDR and 0..3 MEMC options. No guessed HAL APIs.
             // Hide them until the factory settings provider already holds state.
             String hdrKey="picture_list_hdr";
-            addSwitchIfPresent(pictureCategory,preference,context,
+            if(OemPictureState.mayEdit()) addSwitchIfPresent(pictureCategory,preference,context,
                     "projectorsoft_hdr","HDR (OEM)",hdrKey,230);
 
             String mjcKey="tv_picture_advance_video_mjc_effect";
             String mjcRaw=Settings.Global.getString(context.getContentResolver(),mjcKey);
-            if (mjcRaw != null && mjcRaw.matches("[0-3]")) {
+            if (OemPictureState.mayEdit() && mjcRaw != null && mjcRaw.matches("[0-3]")) {
                 String[] effects={"Выключено","Низкий","Средний","Высокий"};
                 int[] ids={0,1,2,3};
                 addList(pictureCategory,preference,context,"projectorsoft_memc",
@@ -215,7 +216,9 @@ public final class OemInlinePreferencesHook {
     private static void addSwitchIfPresent(Object category,Class<?> pref,Context context,
                                            String uiKey,String label,String oemKey,
                                            int order) throws Exception {
+        if((oemKey.startsWith("picture_")||oemKey.startsWith("tv_picture_"))&&!OemPictureState.mayEdit())return;
         ContentResolver resolver=context.getContentResolver();
+        final String openedMode=Settings.Global.getString(resolver,"sound_style");
         String initial=Settings.Global.getString(resolver,oemKey);
         if (!"0".equals(initial) && !"1".equals(initial)) return;
         Class<?> switchType=Class.forName("androidx.preference.SwitchPreference");
@@ -231,6 +234,7 @@ public final class OemInlinePreferencesHook {
                 try {
                     if (!(args[1] instanceof Boolean)) return false;
                     int target=(Boolean)args[1]?1:0;
+                    if("sound_sound_surround".equals(oemKey)&&!OemSoundValuePolicy.acceptsControlChange(oemKey,Settings.Global.getString(resolver,oemKey),target,openedMode,Settings.Global.getString(resolver,"sound_style")))return false;
                     if (!Settings.Global.putInt(resolver,oemKey,target)) return false;
                     return Settings.Global.getInt(resolver,oemKey,-999)==target;
                 } catch(Exception e) {
@@ -262,7 +266,9 @@ public final class OemInlinePreferencesHook {
                 throw new IllegalArgumentException("Duplicate OEM mode ID");
             entryValues[i]=Integer.toString(values[i]);
         }
+        if((oemKey.startsWith("picture_")||oemKey.startsWith("tv_picture_"))&&!OemPictureState.mayEdit())return;
         ContentResolver resolver=context.getContentResolver();
+        final String openedMode=Settings.Global.getString(resolver,"sound_style");
         String raw=Settings.Global.getString(resolver,oemKey);
         if(raw==null)return;
         final int current;
@@ -291,7 +297,10 @@ public final class OemInlinePreferencesHook {
                     if (!valueToTitle.containsKey(requested)) return false;
                     if (oemKey.startsWith("picture_")) {
                         if(!OemPictureState.write(context,oemKey,requested))return false;
-                    } else if (!Settings.Global.putInt(resolver,oemKey,requested)) return false;
+                    } else {
+                        if("sound_style".equals(oemKey)&&!OemSoundValuePolicy.acceptsControlChange(oemKey,Settings.Global.getString(resolver,oemKey),requested,openedMode,Settings.Global.getString(resolver,"sound_style")))return false;
+                        if(!Settings.Global.putInt(resolver,oemKey,requested))return false;
+                    }
                     if (Settings.Global.getInt(resolver,oemKey,-999)!=requested) return false;
                     pref.getMethod("setSummary",CharSequence.class)
                             .invoke(preference,valueToTitle.get(requested));

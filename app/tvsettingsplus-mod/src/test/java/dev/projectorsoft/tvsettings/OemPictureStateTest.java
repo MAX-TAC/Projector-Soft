@@ -47,13 +47,21 @@ public final class OemPictureStateTest {
         f.context=null;check(!f.transaction().restore()&&f.writes==before,"unknown input/profile no writes");
 
         f=fixture();f.values.put("picture_mode","7");f.transaction().write(KEY,60);
-        check(f.transaction().write("picture_mode",3),"mode selection accepted");
+        check(!f.transaction().write("picture_mode",3),"mode delegated, never scalar written");
+        f.context="HDMI1/mode3"; // OEM changed mode outside MOD.
         before=f.writes;check(!f.transaction().restore()&&f.writes==before,"mode switching never blindly replays old profile");
+        f.saved.put("picture_mode","HDMI1/mode7\n7");
         f.context="HDMI1/mode7";check(!f.transaction().restore(),"mode restore remains blocked even in original context");
         check(f.saved.containsKey("picture_mode"),"mode record kept for diagnostics");
 
         f=fixture();f.failSave=true;check(!f.transaction().write(KEY,80)&&f.writes==0,"journal persistence failure prevents write");
         f=fixture();f.saved.put(KEY,"50");check(!f.transaction().restore()&&f.writes==0,"legacy snapshot has no trusted context");
+        f=fixture();f.context=null;
+        check(!f.transaction().write(KEY,80)&&f.writes==0&&f.saved.isEmpty(),"UNKNOWN write: no snapshot or provider mutation");
+        f.saved.put(KEY,"UNKNOWN\n50");
+        check(!f.transaction().write(KEY,80)&&!f.transaction().restore()&&f.writes==0,"UNKNOWN history not replayed");
+        f.context="HDMI1/mode7";
+        check(!f.transaction().write(KEY,80)&&!f.transaction().restore()&&"UNKNOWN\n50".equals(f.saved.get(KEY)),"old UNKNOWN record quarantined in known context");
         System.out.println("PASS OemPictureState: repeat, absent, partial/retry, restart, mode, HDMI, unknown, journal failure, legacy");
     }
 }

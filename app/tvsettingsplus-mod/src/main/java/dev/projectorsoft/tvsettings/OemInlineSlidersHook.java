@@ -61,6 +61,7 @@ public final class OemInlineSlidersHook {
                 || soundCategory == null || prefClass == null) return;
         for (Spec spec:CONTROLS) {
             try {
+                if(spec.key.startsWith("picture_")&&!OemPictureState.mayEdit())continue;
                 Object dest=spec.key.startsWith("sound_")?soundCategory:pictureCategory;
                 attach(context,dest,prefClass,spec);
             } catch (Exception exception) {
@@ -73,12 +74,14 @@ public final class OemInlineSlidersHook {
                                Class<?> preferenceClass,Spec spec) throws Exception {
         ContentResolver resolver=context.getContentResolver();
         // Conservative capability gate: absent / malformed values remain hidden.
+        final String openedMode=Settings.Global.getString(resolver,"sound_style");
         String raw=Settings.Global.getString(resolver,spec.key);
         if (raw == null) return;
         final int initial;
         try { initial=Integer.parseInt(raw); }
         catch(NumberFormatException e) { return; }
         if (initial<spec.min || initial>spec.max) return;
+        if(spec.key.startsWith("sound_")&&!OemSoundValuePolicy.acceptsControlChange(spec.key,raw,initial,openedMode,openedMode))return;
 
         Class<?> bar=Class.forName("androidx.preference.SeekBarPreference");
         Object item=bar.getConstructor(Context.class).newInstance(context);
@@ -107,7 +110,10 @@ public final class OemInlineSlidersHook {
                     // accepting a failed provider write.
                     if(spec.key.startsWith("picture_")) {
                         if(!OemPictureState.write(context,spec.key,newValue))return false;
-                    } else if (!Settings.Global.putInt(resolver,spec.key,newValue)) return false;
+                    } else {
+                        if(!OemSoundValuePolicy.acceptsControlChange(spec.key,Settings.Global.getString(resolver,spec.key),newValue,openedMode,Settings.Global.getString(resolver,"sound_style")))return false;
+                        if(!Settings.Global.putInt(resolver,spec.key,newValue))return false;
+                    }
                     return Settings.Global.getInt(resolver,spec.key,-99999)==newValue;
                 } catch (Exception e) {
                     Log.w(TAG,"OEM seekbar write failed: "+spec.key,e);
