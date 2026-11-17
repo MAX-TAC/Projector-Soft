@@ -174,6 +174,29 @@ jobs:
                       if line.startswith('.method ') and ('setConifg(' in line or 'getConfigValueInt(' in line):
                           print('CONFIG_IMPL', name, file.relative_to(root), number, line.strip())
           PY
+      - name: Inventory original BluetoothReconnectService methods and invokes
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path('/tmp/apkdiff/TvSettingsPlus/8054')
+          matches = list(root.rglob('BluetoothReconnectService.smali'))
+          if len(matches) != 1:
+              raise RuntimeError(f'Expected one BluetoothReconnectService, got {len(matches)}')
+          file = matches[0]
+          method = None
+          for number, line in enumerate(file.read_text().splitlines(), 1):
+              if line.startswith('.method '):
+                  method = line.split()[-1]
+                  print('BT_RECONNECT_METHOD', file.relative_to(root), number, method)
+              elif line.startswith('.end method'):
+                  method = None
+              elif method and line.lstrip().startswith('invoke-'):
+                  if any(key in line for key in ('bluetooth', 'Bluetooth', 'ContentResolver',
+                                                  'Settings$', 'startService', 'stopService',
+                                                  'startActivity', 'registerReceiver')):
+                      print('BT_RECONNECT_INVOKE', method, number, line.strip())
+          PY
       - name: Inventory original 8054 AutoPair classes read only
         run: |
           set -euo pipefail
