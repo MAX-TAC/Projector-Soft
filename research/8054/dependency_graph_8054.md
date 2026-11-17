@@ -3,7 +3,7 @@
 Карта объединяет handoff и выбранные точные smali invoke из оригинальных APK. Имена владельцев/backend в матрице остаются гипотезами; статический вызов не доказывает исполнение на устройстве.
 
 Покрытие инвентаря: 88 APK, 1389 компонентов Manifest, 79 индикаторов DEX-строк, 96 функций.
-Статусы: UNKNOWN 73; BLOCKED 10; PARTIAL_STATIC_TRACE 2; DEFERRED 11. Точных статических smali invoke 8054: 32; в Factory отчёте есть 4 прослеженных JADX-вызова.
+Статусы: UNKNOWN 72; BLOCKED 10; PARTIAL_STATIC_TRACE 3; DEFERRED 11. Точных статических smali invoke 8054: 32; в Factory отчёте есть 4 прослеженных JADX-вызова.
 
 Пустое exported в Manifest означает неизвестное значение. Каждая DEX-строка имеет статус DEX_STRING_ONLY.
 
@@ -76,7 +76,7 @@
 | PRJ10 | Цифровой зум | P1 | UNKNOWN | TvSettingsPlus / RuiAutoFocus / KeystoneCorrection | Восстановить точную реализацию 8054 и побочные действия, все Intent/HAL |
 | PRJ11 | Оптическая яркость LED | P0 | UNKNOWN | KuSourceRJ.BrightReceiver, BrightUtils | Проверить 8054 customer/точные 4 режима, отказобезопасность |
 | SYS01 | Питание при подключении сети | P1 | UNKNOWN | TvSettingsPlus.MtkUtil | Проверить cold AC without watchdog disable |
-| SYS02 | Автосопряжение Bluetooth пульта | P0 | UNKNOWN | KuSettings.MyAutoBluetoothActivity; AutoPair; TvSettingsPlus BluetoothReconnectService | На 8054 автоконнект / при перезагрузке |
+| SYS02 | Автосопряжение Bluetooth пульта | P0 | PARTIAL_STATIC_TRACE | KuSettings.MyAutoBluetoothActivity; AutoPair; TvSettingsPlus BluetoothReconnectService | На 8054 автоконнект / при перезагрузке |
 | SYS03 | Восстановление термослужбы | P0 | UNKNOWN | KuSettings.MySetTimeService + KuSourceRJ.TimeService | На Android13 видимость other service не гарантирована |
 | SYS04 | Температура | P0 | UNKNOWN | KuSourceRJ.TimeService / Android PowerManager | Проверить качество sensor data |
 | SYS05 | Запуск источника после reboot | P1 | UNKNOWN | KuSourceRJ+TvSettingsPlus | Если не сработает должна быть возможность входа через ADB |

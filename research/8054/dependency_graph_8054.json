@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "firmware": "FlixTone D11 Master 8054 / MT9660 / Android TV 13",
-  "provenance": "Handoff metadata, curated exact 8054 invokes from run 44094937995, selected method bodies from run 44097233248. Runtime behavior remains unverified.",
+  "provenance": "Handoff metadata, curated exact 8054 invokes from run 44094937995, selected method bodies from runs 44097233248, 44098788358 and 44103425107. Runtime behavior remains unverified.",
   "evidence_rule": "VERIFIED requires an exact APK hash, source method, line or smali instruction, call target and arguments, plus a reproducible read-only test.",
   "apk_inventory": [
     {
@@ -19976,27 +19976,33 @@
       "entry_point_hint": "AUTO_BLUETOOTH",
       "backend_hint": "CachedBluetoothDevice.connect(true), HID major 1280, OEM name filtering",
       "side_effects_hint": "Сервисные эффекты, риски",
-      "source_file": null,
-      "class_method": null,
-      "line_or_smali": null,
-      "call_kind": null,
-      "target": null,
-      "arguments": null,
-      "precondition": null,
-      "confidence": "UNKNOWN",
-      "status": "UNKNOWN",
+      "source_file": "KuSettings smali_classes5/com/my/settings/bluetooth/MyAutoBluetoothActivity.smali; AutoPair smali/com/mediatek/autopair/BootBroadcastReceiver.smali and AutoPairBluetoothDevice.smali",
+      "class_method": "MyAutoBluetoothActivity#refreshDeviceList; BootBroadcastReceiver#onReceive; AutoPairBluetoothDevice#startScan/#openConnection/#createBond",
+      "line_or_smali": "KuSettings:348-563; AutoPair receiver:268-452; AutoPair device:572-650,1722-1879,2234-2286,2741-2935",
+      "call_kind": "DEX_INVOKE_CHAINS",
+      "target": "CachedBluetoothDevice#startPairing/#connect(true); Context#startService(AutoPairService); BluetoothLeScanner#startScan; BluetoothConnector#openConnection",
+      "arguments": "KuSettings HID major 0x500 and Remote/BT_Remote name filter; AutoPair autopair_status default 1, BLE name filters from AutoPairConfig",
+      "precondition": "Static paths only; AutoPairConfig values, service interactions, runtime permissions and connection results unverified",
+      "confidence": "DEX_INVOKE_STATIC",
+      "status": "PARTIAL_STATIC_TRACE",
       "evidence_hint": "S:Manifest/8052/V33; R:8054 runtime",
       "evidence": [
         {
           "kind": "HANDOFF_MATRIX_ROW",
           "source": "SETTINGS_MIGRATION_MATRIX_8054.csv",
           "row_id": "SYS02"
+        },
+        {
+          "kind": "EXACT_SMALI_TRACE",
+          "source": "Projector-Soft Actions runs 44098788358 and 44103425107",
+          "report": "BLUETOOTH_REMOTE_8054_STATIC_TRACE.md"
         }
       ],
       "missing_verification": "На 8054 автоконнект / при перезагрузке",
       "runtime_test": "Unpair/pair and cold boot",
       "rollback": "Restore service/component state",
-      "risk": "CRITICAL"
+      "risk": "CRITICAL",
+      "source_apk_sha256": "AutoPair b3479fe8f873450b1953cedd21d5804a40a5c5cd8edf868cd15ea2b1d7ab5a6f; KuSettings extracted from backup ZIP 4f53f2224c98b4c832a19a591b9dd7f925bde28528b5674a09732c0f0e41d362 (per-APK hash not logged)"
     },
     {
       "id": "SYS03",

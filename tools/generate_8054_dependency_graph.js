@@ -84,17 +84,28 @@ function main(inputDir, outputDir) {
       arguments:'Intent extra projector_mode_value; Factory default 0; mode switch 0..3; g_misc__mirror, g_misc__flip, persist.rjpj.projector.mode',
       precondition:'Static path only; underlying I2C register writes and runtime permissions remain unverified',
       source_apk_sha256:'TvSettingsPlus f8e0c6fe0f46e7eb8db651c31d85ef8b32a769b37e4dd0f96ed19a64725d74ee; Factory 2f0e2cbc133c97cb4b1383f7a4576fab78715dae72a8e590deb479a4196e0996'
+    },
+    SYS02: {
+      source_file:'KuSettings smali_classes5/com/my/settings/bluetooth/MyAutoBluetoothActivity.smali; AutoPair smali/com/mediatek/autopair/BootBroadcastReceiver.smali and AutoPairBluetoothDevice.smali',
+      class_method:'MyAutoBluetoothActivity#refreshDeviceList; BootBroadcastReceiver#onReceive; AutoPairBluetoothDevice#startScan/#openConnection/#createBond',
+      line_or_smali:'KuSettings:348-563; AutoPair receiver:268-452; AutoPair device:572-650,1722-1879,2234-2286,2741-2935',
+      call_kind:'DEX_INVOKE_CHAINS',
+      target:'CachedBluetoothDevice#startPairing/#connect(true); Context#startService(AutoPairService); BluetoothLeScanner#startScan; BluetoothConnector#openConnection',
+      arguments:'KuSettings HID major 0x500 and Remote/BT_Remote name filter; AutoPair autopair_status default 1, BLE name filters from AutoPairConfig',
+      precondition:'Static paths only; AutoPairConfig values, service interactions, runtime permissions and connection results unverified',
+      source_apk_sha256:'AutoPair b3479fe8f873450b1953cedd21d5804a40a5c5cd8edf868cd15ea2b1d7ab5a6f; KuSettings extracted from backup ZIP 4f53f2224c98b4c832a19a591b9dd7f925bde28528b5674a09732c0f0e41d362 (per-APK hash not logged)'
     }
   };
   for (const feature of features) if (partialTrace[feature.id]) {
     Object.assign(feature, partialTrace[feature.id], {confidence:'DEX_INVOKE_STATIC',status:'PARTIAL_STATIC_TRACE'});
-    feature.evidence.push({kind:'EXACT_SMALI_TRACE', source:'Projector-Soft Actions run 44097233248',
-      report:'SELECTED_SMALI_TRACE_FINDINGS_8054.md'});
+    feature.evidence.push({kind:'EXACT_SMALI_TRACE',
+      source:feature.id==='SYS02' ? 'Projector-Soft Actions runs 44098788358 and 44103425107' : 'Projector-Soft Actions run 44097233248',
+      report:feature.id==='SYS02' ? 'BLUETOOTH_REMOTE_8054_STATIC_TRACE.md' : 'SELECTED_SMALI_TRACE_FINDINGS_8054.md'});
   }
   const graph = {
     schema_version: 1,
     firmware: 'FlixTone D11 Master 8054 / MT9660 / Android TV 13',
-    provenance: 'Handoff metadata, curated exact 8054 invokes from run 44094937995, selected method bodies from run 44097233248. Runtime behavior remains unverified.',
+    provenance: 'Handoff metadata, curated exact 8054 invokes from run 44094937995, selected method bodies from runs 44097233248, 44098788358 and 44103425107. Runtime behavior remains unverified.',
     evidence_rule: 'VERIFIED requires an exact APK hash, source method, line or smali instruction, call target and arguments, plus a reproducible read-only test.',
     apk_inventory: apk.map(x => ({partition:x.partition, apk_path:x.apk_path, package:x.package,
       cert_sha256:x.cert_sha256, shared_user_id:x.sharedUserId,

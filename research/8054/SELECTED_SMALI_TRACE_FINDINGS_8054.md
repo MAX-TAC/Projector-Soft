@@ -18,7 +18,11 @@
 
 ## Bluetooth пульт
 
-`KuSettings: MyAutoBluetoothActivity#viewAutoBluetoothBak()V`, `smali_classes5/.../MyAutoBluetoothActivity.smali:644-790`: единственное смысловое изменение в этом методе — сравнение `sysOta` со строкой `V618RJENHD` через `String#contains` (8052, строка 652) заменено на `String#equals` (8054, та же строка). Ветви загружают разные изображения в `auto_bluetooth_bak` через Glide в зависимости от `sysOta` и locale. Этот diff **не** доказывает изменение подключения HID-пульта. Нужно отдельно проследить `refreshDeviceList`, `connect`, OEM AutoPair и boot receiver, затем выполнить разрешённый reboot/pairing тест.
+`KuSettings: MyAutoBluetoothActivity#viewAutoBluetoothBak()V`, `smali_classes5/.../MyAutoBluetoothActivity.smali:644-790`: единственное смысловое изменение в этом методе — сравнение `sysOta` со строкой `V618RJENHD` через `String#contains` (8052, строка 652) заменено на `String#equals` (8054, та же строка). Ветви загружают разные изображения в `auto_bluetooth_bak` через Glide в зависимости от `sysOta` и locale. Этот diff **не** доказывает изменение подключения HID-пульта.
+
+Дополнительная [точная трассировка KuSettings, run 44098788358](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44098788358): `MyAutoBluetoothActivity#refreshDeviceList()V` (`smali_classes5/.../MyAutoBluetoothActivity.smali:411-563`) получает cached devices, проверяет `BluetoothClass#getMajorDeviceClass()==0x500` (строки 453-463), затем `isAutoName` (470). Для неподключённого кандидата останавливает scan и планирует handler message 3 через `0x3a98` мс, вызывает `CachedBluetoothDevice#startPairing()` (548) и `#connect(true)` (551). Если устройство уже подключено, вызывает `connectFinsh()` (484). Точный источник вызова `refreshDeviceList` есть в activity handler/lifecycle, но Android runtime на 8054 ещё не проверен.
+
+`isAutoName(String)` (`:348-409`) отвергает пустое имя, принимает `Remote` и `BT_Remote` без учёта регистра, либо имя, содержащее `Remote`/`remote` (362-404). `getIrBluetoothStatus()` (`:175-220`) проверяет adapter enabled и `getProfileConnectionState(4)==2`, затем вызывает `connectFinsh`; фактический профиль пульта на устройстве остаётся неизвестным. Цепочка AutoPair и её отдельный boot receiver разобраны в `BLUETOOTH_REMOTE_8054_STATIC_TRACE.md`; взаимодействие механизмов в runtime всё ещё неизвестно.
 
 ## trdservice
 
