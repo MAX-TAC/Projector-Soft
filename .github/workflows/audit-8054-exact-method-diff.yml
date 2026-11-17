@@ -196,6 +196,18 @@ jobs:
                                                   'Settings$', 'startService', 'stopService',
                                                   'startActivity', 'registerReceiver')):
                       print('BT_RECONNECT_INVOKE', method, number, line.strip())
+          for inner in sorted(root.rglob('BluetoothReconnectService$*.smali')):
+              method = None
+              for number, line in enumerate(inner.read_text().splitlines(), 1):
+                  if line.startswith('.method '):
+                      method = line.split()[-1]
+                      print('BT_RECONNECT_INNER_METHOD', inner.relative_to(root), number, method)
+                  elif line.startswith('.end method'):
+                      method = None
+                  elif method and line.lstrip().startswith('invoke-'):
+                      if any(key in line for key in ('connect(', 'startPairing(', 'reconnectPhone(',
+                                                       'getLastConnected', 'onServiceConnected(')):
+                          print('BT_RECONNECT_INNER_INVOKE', inner.relative_to(root), method, number, line.strip())
           PY
       - name: Inventory original 8054 AutoPair classes read only
         run: |
