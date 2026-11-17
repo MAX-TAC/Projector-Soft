@@ -68,12 +68,12 @@ function main(inputDir, outputDir) {
   const partialTrace = {
     HDMI03: {
       source_file:'TvSettingsPlus smali_classes14/.../EdidSourceSecondaryController.smali, SourceSubMenuController.smali, EdidSourceSecondaryController$1..$4.smali, EdidSourceFragment$1..$4.smali; TvServices smali/com/mediatek/tv/agent/TVMenuSettingsService.smali',
-      class_method:'EdidSourceSecondaryController#getEdidVersion; SourceSubMenuController#getEdidVersion; eight EDID radio onClick(View) handlers; TVMenuSettingsService#initMapdata',
-      line_or_smali:'getters:129-154 and 300-344; secondary onClick:57-74; fragment onClick:57-70; TvServices Map.put:3051-3058',
+      class_method:'EdidSourceSecondaryController#getEdidVersion; SourceSubMenuController#getEdidVersion; eight EDID radio onClick(View) handlers; TVMenuSettingsService#initMapdata/#syncConfigDataToSetting/#updateSettingDB/#updateConfigData; TVMenuSettingsService$1/$2/SettingObserver#run/onChange; TVSettingConfig#setConifg',
+      line_or_smali:'getters:129-154 and 300-344; EDID onClick:57-74/57-70; TvServices Map.put:3051-3058, Global BASE_URI:205-207, observer:52-205, updateConfigData:4986-5376, config setter:472-508',
       call_kind:'DEX_INVOKE_CHAINS',
-      target:'MtkTvAVModeBase#getVideoInfoData; MtkTvVideoInfoBase#getU8EdidIndex; SettingsUtil#putGlobalValueInt; TvServices itemIds Map#put',
-      arguments:'getVideoInfoData first argument 0x6; Global key tv_input_hdmi_edid_version with values 0..3; TvServices maps key to g_fusion_picture__hdmi_edid_version; no port argument in onClick handlers',
-      precondition:'Radio row visible; Settings.Global observer, eventual MTK API/HAL, HW6/HW7 mapping and hotplug readback remain untraced',
+      target:'MtkTvAVModeBase#getVideoInfoData; MtkTvVideoInfoBase#getU8EdidIndex; SettingsUtil#putGlobalValueInt; TvServices itemIds Map#put; Settings.Global observer; TVSettingConfig#setConifg; MtkTvConfigBase#setConfigValue',
+      arguments:'getVideoInfoData first argument 0x6; Global key tv_input_hdmi_edid_version values 0..3; itemIds maps key to g_fusion_picture__hdmi_edid_version; config to Global sync and generic Global observer to MTK setter; no physical port argument in UI handlers',
+      precondition:'EDID membership in observed key array, dynamic generic-branch reachability, native/HAL effect, HW6/HW7 mapping and hotplug readback remain unverified',
       source_apk_sha256:'TvSettingsPlus f8e0c6fe0f46e7eb8db651c31d85ef8b32a769b37e4dd0f96ed19a64725d74ee; TvServices 2934ca9334afd0a2af85786aa0593d27da216086c7eb9b0c9b801f412516b77d'
     },
     PRJ01: {
@@ -101,7 +101,7 @@ function main(inputDir, outputDir) {
     Object.assign(feature, partialTrace[feature.id], {confidence:'DEX_INVOKE_STATIC',status:'PARTIAL_STATIC_TRACE'});
     feature.evidence.push({kind:'EXACT_SMALI_TRACE',
       source:feature.id==='SYS02' ? 'Projector-Soft Actions runs 44098788358 and 44103425107' :
-             feature.id==='HDMI03' ? 'Projector-Soft Actions runs 44097233248, 44106214713 and 44107731141' :
+             feature.id==='HDMI03' ? 'Projector-Soft Actions runs 44097233248, 44106214713, 44107731141, 44109768484, 44111398773, 44112728599, 44115028456 and 44115598445' :
              'Projector-Soft Actions run 44097233248',
       report:feature.id==='SYS02' ? 'BLUETOOTH_REMOTE_8054_STATIC_TRACE.md' :
              feature.id==='HDMI03' ? 'EDID_GLOBAL_ROUTE_8054.md' : 'SELECTED_SMALI_TRACE_FINDINGS_8054.md'});
