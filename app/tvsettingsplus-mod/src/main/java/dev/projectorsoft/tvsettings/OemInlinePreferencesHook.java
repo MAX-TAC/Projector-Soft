@@ -124,31 +124,11 @@ public final class OemInlinePreferencesHook {
             addList(pictureCategory,preference,context,"projectorsoft_color_temp",
                     "Цветовая температура","picture_color_temperature",
                     TEMP_TITLES,TEMP_VALUES,2,212);
-            addList(soundCategory,preference,context,"projectorsoft_sound_mode",
-                    "Режим звука","sound_style",SOUND_TITLES,SOUND_VALUES,1,213);
-            // Factory SoundFragment and SoundSubMenuController implement
-            // Surround and Auto-Volume as plain Settings.Global 0/1 writes.
-            // Expose those two only when the OEM already saved a 0/1 value.
-            addSwitchIfPresent(soundCategory,preference,context,
-                    "projectorsoft_surround","Объёмное звучание",
-                    "sound_sound_surround",217);
-            String autoVolume=vendorKey("KEY_SOUND_AUTO_VOLUME_CONTROL");
-            if(autoVolume!=null) addSwitchIfPresent(soundCategory,preference,context,
-                    "projectorsoft_auto_volume","Автоматическая громкость",
-                    autoVolume,218);
-            // Stock SoundFragment uses Settings.System
-            // Constant.SETTINGS_KEY_SOUND_EFFECTS_ENABLED with boolean 0/1.
-            // Keep the exact OEM key and verify the persisted value.
-            OemKeyToneHook.install(context,soundCategory,preference);
-
-            // Do NOT expose eARC as a raw toggle. Two factory screens disagree
-            // about KEY_SOUND_EARC polarity and the real audio API requires CEC.
-            // Keep original OEM sound control accessible as a safe fallback.
-            OemEarcDelegatedPreference.install(context,soundCategory,preference);
+            OemSoundPanel.install(context,soundCategory,preference);
 
             // Native Android TV seekbars: exact limits read from factory layout XML.
             // They remain hidden until the OEM Settings.Global value exists.
-            OemInlineSlidersHook.install(context,pictureCategory,soundCategory,preference);
+            OemInlineSlidersHook.installPicture(context,pictureCategory,preference);
             // OEM controller AdvanceSettingsSecondaryController provides
             // explicit 0/1 HDR and 0..3 MEMC options. No guessed HAL APIs.
             // Hide them until the factory settings provider already holds state.
@@ -174,13 +154,40 @@ public final class OemInlinePreferencesHook {
                     context,placementCategory,preference);
             // Five genuine OEM bands via stock PartnerSettingsConfig only.
             // Uses original ProgressDialog scale but native TV SeekBar widgets.
-            OemFiveBandEqualizerHook.install(context,soundCategory,preference);
+
             OemPictureState.install(context,pictureCategory,preference);
         } catch(Throwable e) {
             Log.w(TAG,"OEM quick controls unavailable; keep original settings",e);
         }
     }
 
+
+    static void populateSound(Context context,Object category,Class<?> pref) throws Exception {
+            addList(category,pref,context,"projectorsoft_sound_mode",
+                    "Режим звука","sound_style",SOUND_TITLES,SOUND_VALUES,1,213);
+            // Factory SoundFragment and SoundSubMenuController implement
+            // Surround and Auto-Volume as plain Settings.Global 0/1 writes.
+            // Expose those two only when the OEM already saved a 0/1 value.
+            addSwitchIfPresent(category,pref,context,
+                    "projectorsoft_surround","Объёмное звучание",
+                    "sound_sound_surround",217);
+            String autoVolume=vendorKey("KEY_SOUND_AUTO_VOLUME_CONTROL");
+            if(autoVolume!=null) addSwitchIfPresent(category,pref,context,
+                    "projectorsoft_auto_volume","Автоматическая громкость",
+                    autoVolume,218);
+            // Stock SoundFragment uses Settings.System
+            // Constant.SETTINGS_KEY_SOUND_EFFECTS_ENABLED with boolean 0/1.
+            // Keep the exact OEM key and verify the persisted value.
+            OemKeyToneHook.install(context,category,pref);
+
+            // Do NOT expose eARC as a raw toggle. Two factory screens disagree
+            // about KEY_SOUND_EARC polarity and the real audio API requires CEC.
+            // Keep original OEM sound control accessible as a safe fallback.
+            OemEarcDelegatedPreference.install(context,category,pref);
+
+        OemInlineSlidersHook.installSound(context,category,pref);
+        OemFiveBandEqualizerHook.install(context,category,pref);
+    }
 
     private static Object addCategory(Object screen,Class<?> preference,
                                       Class<?> categoryClass,Context context,

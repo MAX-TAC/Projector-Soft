@@ -69,6 +69,10 @@ jobs:
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemSoundValuePolicy.java \
             app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/OemSoundValuePolicyTest.java
           java -cp /tmp/picture-state-tests dev.projectorsoft.tvsettings.OemSoundValuePolicyTest
+          javac -d /tmp/picture-state-tests \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/SoundPanelState.java \
+            app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/SoundPanelStateTest.java
+          java -cp /tmp/picture-state-tests dev.projectorsoft.tvsettings.SoundPanelStateTest
       - name: Test production picture adapter against isolated Android fakes
         run: |
           mkdir -p /tmp/picture-adapter-tests

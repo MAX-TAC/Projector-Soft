@@ -118,5 +118,10 @@ public final class OemHardwareDelegatedSettings {
             "Изображение · штатные настройки","Режим, цвет, HDR и MEMC через оригинальный обработчик",
             "android.settings.PICTURE_SETTINGS",211);
     }
+    public static boolean installSoundLink(Context context,Object category,Class<?> preferenceClass) {
+        return add(context,category,preferenceClass,"projectorsoft_sound_oem",
+            "Звук · штатные настройки","Режим и восстановление параметров через оригинальный обработчик",
+            "android.settings.SOUND_SETTINGS",247);
+    }
 }
 

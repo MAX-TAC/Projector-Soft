@@ -70,6 +70,18 @@ public final class OemInlineSlidersHook {
         }
     }
 
+    public static void installSound(Context context,Object category,Class<?> pref) {
+        for(Spec spec:CONTROLS)if(spec.key.startsWith("sound_")) {
+            try {attach(context,category,pref,spec);}catch(Exception ex){Log.w(TAG,"Sound slider unavailable "+spec.key,ex);}
+        }
+    }
+    public static void installPicture(Context context,Object category,Class<?> pref) {
+        if(!OemPictureState.mayEdit())return;
+        for(Spec spec:CONTROLS)if(spec.key.startsWith("picture_")) {
+            try {attach(context,category,pref,spec);}catch(Exception ex){Log.w(TAG,"Picture slider unavailable "+spec.key,ex);}
+        }
+    }
+
     private static void attach(Context context,Object category,
                                Class<?> preferenceClass,Spec spec) throws Exception {
         ContentResolver resolver=context.getContentResolver();
