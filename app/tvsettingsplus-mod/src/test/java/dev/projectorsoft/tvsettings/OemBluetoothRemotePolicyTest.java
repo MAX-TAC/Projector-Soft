@@ -27,6 +27,15 @@ public final class OemBluetoothRemotePolicyTest {
             .contains("Нельзя"),"permission denied");
         ok(OemBluetoothRemotePolicy.summary(true,true,true,-1)
             .contains("недоступен"),"unreliable snapshot");
+        ok(OemBluetoothRemotePolicy.autoPairSettingSummary(null).contains("использует 1"),
+            "Boot receiver default is visible without claiming service state");
+        ok(OemBluetoothRemotePolicy.autoPairSettingSummary("0").contains("выключена"),
+            "Disabled OEM setting must be reported");
+        ok(OemBluetoothRemotePolicy.autoPairSettingSummary("1").contains("не проверена"),
+            "Enabled setting does not prove service operation");
+        ok(OemBluetoothRemotePolicy.autoPairSettingSummary("2").contains("неизвестное"),
+            "Unexpected OEM value must remain unknown");
         System.out.println("PASS: read-only Bluetooth HID policy, bounded names, no fake connection claims");
     }
 }
+

@@ -48,11 +48,13 @@ jobs:
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/KuSourceRecoveryPolicy.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/EdidPortPolicy.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/ProjectorCompatibilityPolicy.java \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemBluetoothRemotePolicy.java \
             app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/KuSourceRecoveryActivationPolicyTest.java \
             app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/KuSourceRecoveryPolicyTest.java \
             app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/EdidPortPolicyTest.java \
-            app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/ProjectorCompatibilityPolicyTest.java
-          for test in KuSourceRecoveryActivationPolicyTest KuSourceRecoveryPolicyTest EdidPortPolicyTest ProjectorCompatibilityPolicyTest; do
+            app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/ProjectorCompatibilityPolicyTest.java \
+            app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/OemBluetoothRemotePolicyTest.java
+          for test in KuSourceRecoveryActivationPolicyTest KuSourceRecoveryPolicyTest EdidPortPolicyTest ProjectorCompatibilityPolicyTest OemBluetoothRemotePolicyTest; do
             java -cp /tmp/8054-policy-classes "dev.projectorsoft.tvsettings.$test"
           done
       - name: Check Android entry-point wiring remains conservative
@@ -62,3 +64,4 @@ jobs:
           grep -Fq 'mayUseLegacySelector(machineId())' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemHdmiEdidHook.java
           grep -Fq 'return "8052".equals(machineId)' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/EdidPortPolicy.java
           grep -Fq 'mayOfferLegacyOrientation(machineId())' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemProjectorOrientationHook.java
+          grep -Fq 'autoPairSetting(context)' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemBluetoothRemoteHook.java

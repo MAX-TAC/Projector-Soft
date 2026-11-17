@@ -18,6 +18,12 @@ Test: `EdidPortPolicyTest` checks 8052, 8054 and unknown identifiers. This is a 
 
 Test: `ProjectorCompatibilityPolicyTest` covers 8052, 8054 and an unknown ID; CI checks that the hook uses the gate. Rollback: revert the C2 source commit after tracing the exact 8054 TvSettingsPlus setter's arguments and side effects, and after an approved hardware test with a recorded original orientation. Factory's similarly named setter changed signature in 8054 and must not be confused with the TvSettingsPlus class.
 
+## C3 — read-only OEM AutoPair setting
+
+`OemBluetoothRemoteHook` now displays the current `Settings.Global.autopair_status` value in its existing Bluetooth dialog. The exact 8054 `AutoPair.BootBroadcastReceiver#onReceive` reads that key with default 1 and exits when the value is 0. The dialog explicitly says that this setting does not prove whether AutoPairService is running. It never changes the value, starts a scan, pairs, connects, or disables a package.
+
+Test: `OemBluetoothRemotePolicyTest` covers absent, 0, 1 and unknown values. Exact APK build and Android source CI must pass; a live read requires owner permission. Rollback: revert C3 source changes; the stock KuSettings/AutoPair path remains enabled throughout.
+
 ## CI and remaining gates
 
 `audit-8054-source-safety.yml` validates the dependency evidence, compiles all Java against Android API 33 and runs pure JVM tests. Source safety run 44096540955 and exact-8054 build run 44096540197 passed with C0/C1/C2; see `BUILD_STATUS_8054_AUDIT_2026-11-17.md`. Installed package/update compatibility, TV Input HW6/HW7, Bluetooth remote, audio/PQ HAL, optics and TimeService/fan behavior remain open. No 8054 hardware parity claim follows from CI.
