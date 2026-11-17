@@ -7,6 +7,7 @@ on:
       - '.github/workflows/audit-8054-exact-method-diff.yml'
       - 'tools/compare_8052_8054_smali.js'
       - 'tools/trace_8054_selected_smali.js'
+      - 'tools/compare_8052_8054_apk_entries.py'
       - 'research/8054/apk_diff_config.json'
   workflow_dispatch:
 permissions:
@@ -34,6 +35,8 @@ jobs:
           node-version: '24'
       - name: Verify comparator on synthetic methods
         run: node tools/compare_8052_8054_smali.js --self-test
+      - name: Verify APK entry comparator on synthetic ZIPs
+        run: python3 tools/compare_8052_8054_apk_entries.py --self-test
       - name: Extract original 8054 APKs read only
         run: |
           set -euo pipefail
@@ -64,6 +67,11 @@ jobs:
           set -euo pipefail
           node tools/compare_8052_8054_smali.js research/8054/apk_diff_config.json /tmp/apkdiff/report
           test -s /tmp/apkdiff/report/exact_apk_method_diff.json
+      - name: Compare original APK Manifest and resource entry bytes
+        run: |
+          set -euo pipefail
+          python3 tools/compare_8052_8054_apk_entries.py research/8054/apk_diff_config.json /tmp/apkdiff/report
+          test -s /tmp/apkdiff/report/apk_entry_diff.json
       - name: Inventory original 8054 AutoPair classes read only
         run: |
           set -euo pipefail
