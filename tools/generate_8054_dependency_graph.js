@@ -73,7 +73,7 @@ function main(inputDir, outputDir) {
       call_kind:'DEX_INVOKE_CHAINS',
       target:'MtkTvAVModeBase#getVideoInfoData; MtkTvVideoInfoBase#getU8EdidIndex; SettingsUtil#putGlobalValueInt; TvServices itemIds Map#put; Settings.Global observer; TVSettingConfig#setConifg; MtkTvConfigBase#setConfigValue',
       arguments:'getVideoInfoData first argument 0x6; Global key tv_input_hdmi_edid_version values 0..3; itemIds maps key to g_fusion_picture__hdmi_edid_version; config to Global sync and generic Global observer to MTK setter; no physical port argument in UI handlers',
-      precondition:'EDID membership in observed key array, dynamic generic-branch reachability, native/HAL effect, HW6/HW7 mapping and hotplug readback remain unverified',
+      precondition:'EDID is in observed prefKeys; dynamic generic-branch execution, native/HAL effect, HW6/HW7 mapping and hotplug readback remain unverified',
       source_apk_sha256:'TvSettingsPlus f8e0c6fe0f46e7eb8db651c31d85ef8b32a769b37e4dd0f96ed19a64725d74ee; TvServices 2934ca9334afd0a2af85786aa0593d27da216086c7eb9b0c9b801f412516b77d'
     },
     PRJ01: {
@@ -97,13 +97,13 @@ function main(inputDir, outputDir) {
       source_apk_sha256:'AutoPair b3479fe8f873450b1953cedd21d5804a40a5c5cd8edf868cd15ea2b1d7ab5a6f; KuSettings extracted from backup ZIP 4f53f2224c98b4c832a19a591b9dd7f925bde28528b5674a09732c0f0e41d362 (per-APK hash not logged)'
     },
     SYS06: {
-      source_file:'TvSettingsPlus smali_classes14/com/android/tv/settings/partnercustomizer/tvsettingservice/BluetoothReconnectService.smali',
-      class_method:'BluetoothReconnectService#onCreate/#getLastConnectedPhoneDevices/#getLastConnectedA2dpDevices/#reconnectPhone/#registerBtProfileProxy',
-      line_or_smali:'onCreate:857-1025; A2DP selection:399-511; phone selection:513-625; reconnectPhone:627-657; profile proxy:690-734',
+      source_file:'TvSettingsPlus smali_classes14/com/android/tv/settings/partnercustomizer/tvsettingservice/BluetoothReconnectService.smali and BluetoothReconnectService$2..$8.smali',
+      class_method:'BluetoothReconnectService#onCreate/#getLastConnectedPhoneDevices/#getLastConnectedA2dpDevices/#reconnectPhone/#registerBtProfileProxy; $2/$3#onServiceConnected; $4..$7#onReceive; $8#handleMessage',
+      line_or_smali:'onCreate:857-1025; A2DP selection:399-511; phone selection:513-625; reconnectPhone:627-657; proxy:690-734; $2:38-174; $4:35-338; $8:35-870',
       call_kind:'DEX_INVOKE_CHAINS',
-      target:'BluetoothAdapter#setScanMode/#getBondedDevices/#getProfileProxy; SaveValue#readStrValue; BluetoothDevicePairer#startPairing; MtkTvUtil#QHB_IsQuietHotBoot',
-      arguments:'atvremote.disable_bt_discoverable gates scan mode 0x17; profile IDs 0xb and 0x2; saved keys audio_mac_address and phone_mac_address; no HID major/name filter in selected methods',
-      precondition:'Service start owner, inner callbacks, HID remote role, interaction with AutoPair/KuSettings, runtime result remain unverified',
+      target:'BluetoothAdapter#setScanMode/#getBondedDevices/#getProfileProxy; SaveValue#readStrValue/#saveStrValue; BluetoothDevicePairer#startPairing; BluetoothA2dpSink/BluetoothA2dp#setConnectionPolicy; MtkTvUtil#QHB_IsQuietHotBoot',
+      arguments:'atvremote.disable_bt_discoverable gates scan mode 0x17; profile IDs 0xb and 0x2; saved audio_mac_address/phone_mac_address; receiver major 0x200/0x400; A2dpSink policy 0x64; no HID major/name filter in selected methods',
+      precondition:'Service start owner, HID remote role, interaction with AutoPair/KuSettings, runtime result remain unverified',
       source_apk_sha256:'TvSettingsPlus f8e0c6fe0f46e7eb8db651c31d85ef8b32a769b37e4dd0f96ed19a64725d74ee'
     }
   };
@@ -111,8 +111,8 @@ function main(inputDir, outputDir) {
     Object.assign(feature, partialTrace[feature.id], {confidence:'DEX_INVOKE_STATIC',status:'PARTIAL_STATIC_TRACE'});
     feature.evidence.push({kind:'EXACT_SMALI_TRACE',
       source:feature.id==='SYS02' ? 'Projector-Soft Actions runs 44098788358 and 44103425107' :
-             feature.id==='SYS06' ? 'Projector-Soft Actions runs 44116773583 and 44117754570' :
-             feature.id==='HDMI03' ? 'Projector-Soft Actions runs 44097233248, 44106214713, 44107731141, 44109768484, 44111398773, 44112728599, 44115028456 and 44115598445' :
+             feature.id==='SYS06' ? 'Projector-Soft Actions runs 44116773583, 44117754570 and 44119451026' :
+             feature.id==='HDMI03' ? 'Projector-Soft Actions runs 44097233248, 44106214713, 44107731141, 44109768484, 44111398773, 44112728599, 44115028456, 44115598445, 44119451026 and 44120157009' :
              'Projector-Soft Actions run 44097233248',
       report:feature.id==='SYS02'||feature.id==='SYS06' ? 'BLUETOOTH_REMOTE_8054_STATIC_TRACE.md' :
              feature.id==='HDMI03' ? 'EDID_GLOBAL_ROUTE_8054.md' : 'SELECTED_SMALI_TRACE_FINDINGS_8054.md'});
