@@ -38,6 +38,7 @@ function main(inputDir, outputDir) {
   const components = read('MANIFEST_COMPONENTS_8054.csv');
   const literals = read('DEX_REFERENCE_INDICATORS_8054.csv');
   const matrix = read('SETTINGS_MIGRATION_MATRIX_8054.csv');
+  const exactCalls = JSON.parse(fs.readFileSync(path.join(outputDir, 'exact_smali_calls_8054.json'), 'utf8')).calls;
   const features = matrix.map(item => ({
     id: item.id,
     section: item.section,
@@ -67,7 +68,7 @@ function main(inputDir, outputDir) {
   const graph = {
     schema_version: 1,
     firmware: 'FlixTone D11 Master 8054 / MT9660 / Android TV 13',
-    provenance: 'Handoff metadata only. Exact 8054 invoke graph remains unverified.',
+    provenance: 'Handoff metadata plus curated exact 8054 smali invoke instructions from original APKs in CI run 44094937995. Runtime behavior remains unverified.',
     evidence_rule: 'VERIFIED requires an exact APK hash, source method, line or smali instruction, call target and arguments, plus a reproducible read-only test.',
     apk_inventory: apk.map(x => ({partition:x.partition, apk_path:x.apk_path, package:x.package,
       cert_sha256:x.cert_sha256, shared_user_id:x.sharedUserId,
@@ -115,6 +116,7 @@ function main(inputDir, outputDir) {
         evidence:'SOURCE_Factory_JADX_Callsite_Report.md:3392-3431',
         runtime_test:'None; prohibited write', rollback:'No execution authorized'}
     ],
+    exact_smali_calls: exactCalls,
     features
   };
   const ids = new Set();
@@ -129,6 +131,14 @@ function main(inputDir, outputDir) {
         !call.source_method || !call.line_or_smali || !call.target || !call.arguments))
       throw new Error(`Unsupported VERIFIED call ${call.id}`);
   }
+  for (const call of exactCalls) {
+    if (ids.has(call.id)) throw new Error(`Duplicate call ID ${call.id}`);
+    ids.add(call.id);
+    if (call.confidence !== 'DEX_INVOKE_STATIC' || !call.source_method ||
+        !call.source_file || !call.line_or_smali || !call.call_kind || !call.target ||
+        typeof call.target_declared_in_same_apk !== 'boolean' || call.arguments !== null)
+      throw new Error(`Invalid static invoke evidence ${call.id}`);
+  }
   if (apk.length !== 88 || components.length !== 1389 || literals.length !== 79 || features.length !== 96)
     throw new Error(`Unexpected handoff coverage ${apk.length}/${components.length}/${literals.length}/${features.length}`);
   for (const feature of features) {
@@ -142,18 +152,18 @@ function main(inputDir, outputDir) {
     features.reduce((a,x) => ((a[x.status] ||= []).push(x),a),{});
   const md = [
     '# Карта зависимостей FlixTone 8054 — контроль доказательств', '',
-    'Эта версия карты получена из переданного handoff. Имена владельцев и backend — гипотезы для проверки, а не подтверждённые инструкции DEX.', '',
+    'Карта объединяет handoff и выбранные точные smali invoke из оригинальных APK. Имена владельцев/backend в матрице остаются гипотезами; статический вызов не доказывает исполнение на устройстве.', '',
     `Покрытие инвентаря: ${apk.length} APK, ${components.length} компонентов Manifest, ${literals.length} индикаторов DEX-строк, ${features.length} функций.`,
-    `Статусы: ${Object.entries(byStatus).map(([k,v])=>`${k} ${v.length}`).join('; ')}. Подтверждённых smali-invoke вызовов 8054: 0; в Factory отчёте есть ${graph.decompiled_calls.length} прослеженных JADX-вызова.`, '',
+    `Статусы: ${Object.entries(byStatus).map(([k,v])=>`${k} ${v.length}`).join('; ')}. Точных статических smali invoke 8054: ${exactCalls.length}; в Factory отчёте есть ${graph.decompiled_calls.length} прослеженных JADX-вызова.`, '',
     'Пустое exported в Manifest означает неизвестное значение. Каждая DEX-строка имеет статус DEX_STRING_ONLY.', '',
     '| ID | Функция | Приоритет | Статус | Владелец (гипотеза) | Что проверить |',
     '|---|---|---|---|---|---|',
     ...features.map(x=>`| ${x.id} | ${x.function.replace(/\|/g,'/')} | ${x.priority} | ${x.status} | ${x.owner_hint.replace(/\|/g,'/')} | ${x.missing_verification.replace(/\|/g,'/')} |`),
     '', '## Следующая операция', '',
-    'Получить оригинальные APK 8054 и 8052 с проверенными SHA-256; извлечь invoke/Intent/Binder callsites и заполнить source_file, class_method, line_or_smali, arguments и precondition. Затем выполнить read-only проверки на 8054 с разрешения владельца.', ''
+    'Расширить exact invoke/Intent/Binder трассировку за пределы выбранных 32 вызовов, восстановить аргументы и ветвления из smali, затем проверить runtime только после разрешения владельца.', ''
   ].join('\n');
   fs.writeFileSync(path.join(outputDir,'dependency_graph_8054.md'),md);
-  console.log(`Validated ${apk.length} APK, ${components.length} components, ${literals.length} literals, ${features.length} features; 0 verified calls`);
+  console.log(`Validated ${apk.length} APK, ${components.length} components, ${literals.length} literals, ${features.length} features; ${exactCalls.length} static invokes, 0 runtime-verified calls`);
 }
 if (require.main === module) {
   const [inputDir, outputDir] = process.argv.slice(2);

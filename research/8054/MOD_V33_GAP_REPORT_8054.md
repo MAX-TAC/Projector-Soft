@@ -1,10 +1,10 @@
 # TvSettingsPlus MOD v33 — аудит функций на 8054
 
-Основание: исходники Projector-Soft `ad258ff32a05754eed9b923b3e95bd0ce97f2369`, матрица 96 функций и исторический успешный exact-8054 CI run 43900081008. Лог этого run фиксирует checkout `ac71758d4dafe873f3193be020a623abd5e8b777`; сравнение до `ad258ff` показывает только два добавленных документа, без изменений исходников.
+Основание: исходники Projector-Soft `ad258ff32a05754eed9b923b3e95bd0ce97f2369`, матрица 96 функций, исторический exact-8054 CI run 43900081008 и новый exact-8054 CI run 44093893342 с C0/C1 правками. Исторический run фиксирует checkout `ac71758d4dafe873f3193be020a623abd5e8b777`; сравнение до `ad258ff` показывает только два добавленных документа, без изменений исходников.
 
-Статус BUILT_UNTESTED означает: соответствующий Java-класс входил в компиляцию исторического CI и достижим по статическим ссылкам от smali/Manifest точек интеграции, либо это проверенный в том CI Intent alias. Он не доказывает запуск метода, запись в HAL или работу на проекторе. SOURCE_ONLY означает исходник без доказанной функциональной интеграции. STATIC_VERIFIED у SYS09 подтверждает лишь наличие Provision в инвентаре 8054. Новые правки после `ad258ff` пока не собраны.
+Статус BUILT_UNTESTED означает: соответствующий Java-класс входил в компиляцию exact-8054 CI run 44093893342 и достижим по статическим ссылкам от smali/Manifest точек интеграции, либо это проверенный в CI Intent alias. Он не доказывает запуск метода, запись в HAL или работу на проекторе. SOURCE_ONLY означает исходник без доказанной функциональной интеграции. STATIC_VERIFIED у SYS09 подтверждает лишь наличие Provision в инвентаре 8054. C0/C1 правки собраны, но не установлены на устройство.
 
-Итог матрицы: BUILT_UNTESTED 54; BLOCKED 10; NOT_IMPLEMENTED 30; SOURCE_ONLY 1; STATIC_VERIFIED 1. HARDWARE_VERIFIED 0; STATIC_VERIFIED 0.
+Итог матрицы: BUILT_UNTESTED 54; BLOCKED 10; NOT_IMPLEMENTED 30; SOURCE_ONLY 1; STATIC_VERIFIED 1. HARDWARE_VERIFIED 0.
 
 ## 96 функций
 
@@ -159,7 +159,7 @@
 | ProjectorCompatibilityPolicy | Да, от smali/Manifest root | Есть |
 | ThermalTelemetryPolicy | Да, от smali/Manifest root | Есть |
 
-Новый `EdidPortPolicy.java` добавлен после v33: SOURCE_ONLY до нового CI. Всего локально 48 Java-классов и 19 JVM-тестовых файлов.
+Новый `EdidPortPolicy.java` добавлен после v33 и скомпилирован exact-8054 CI; его чистая JVM-проверка прошла. Всего 48 Java-классов и 19 JVM-тестовых файлов.
 
 ## DEX, Manifest, ресурсы и сборка
 
@@ -167,7 +167,7 @@
 - Точки smali: `MainFragment#onCreateView` → `OemRootMenuHook.install` и `OemInlinePreferencesHook.install`; `uicustom.MainActivity#onCreate` → `OemLaunchRouteHook.apply`; исходные OEM brightness, source и general контроллеры патчатся отдельными fail-closed скриптами. CI ожидает восемь изменённых smali файлов.
 - Manifest меняется скриптом совместимых activity-alias и регистрацией `KuSourceRecoveryBootReceiver`/`KuSourceRecoveryService`. Проверено в историческом CI, но конкретный AXML нового APK не исследован.
 - Ресурсы, калибровочные классы и 8054 аппаратная совместимость требуют отдельного diff/repack аудита. В репозитории нет исходного AndroidManifest.xml или ресурсов MOD; за основу берётся оригинальный APK.
-- Исторический CI 8054 прошёл компиляцию, smali patch, тесты, repack и platform test-key signing. Установка поверх stock, системные права/SELinux, реальные HDMI/звук/BT/оптика/термозащита и откат не проверены.
+- CI run 44093893342 на commit `9fa9b8e` прошёл компиляцию C0/C1, smali patch, тесты, repack и platform test-key signing. Установка поверх stock, системные права/SELinux, реальные HDMI/звук/BT/оптика/термозащита и откат не проверены.
 
 ## Главные блокеры
 

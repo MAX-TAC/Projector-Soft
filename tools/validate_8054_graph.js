@@ -10,7 +10,7 @@ for (const [key,count] of Object.entries(expected)) {
     throw new Error(`${key}: expected ${count}, got ${graph[key]?.length}`);
 }
 const ids = new Set();
-for (const entry of [...graph.features,...graph.dex_literal_indicators,...graph.decompiled_calls]) {
+for (const entry of [...graph.features,...graph.dex_literal_indicators,...graph.decompiled_calls,...graph.exact_smali_calls]) {
   if (!entry.id || ids.has(entry.id)) throw new Error(`Duplicate or empty ID ${entry.id}`);
   ids.add(entry.id);
   if (entry.confidence === 'VERIFIED' || entry.status === 'VERIFIED') {
@@ -22,6 +22,14 @@ for (const entry of [...graph.features,...graph.dex_literal_indicators,...graph.
     if (!entry.evidence || !entry.runtime_test || !entry.rollback)
       throw new Error(`${entry.id}: VERIFIED requires evidence, test and rollback`);
   }
+}
+if (!Array.isArray(graph.exact_smali_calls) || graph.exact_smali_calls.length !== 32)
+  throw new Error(`Expected 32 curated exact invokes, got ${graph.exact_smali_calls?.length}`);
+for (const call of graph.exact_smali_calls) {
+  if (call.confidence !== 'DEX_INVOKE_STATIC' || !call.source_method || !call.source_file ||
+      !call.line_or_smali || !call.call_kind.startsWith('invoke-') || !call.target ||
+      typeof call.target_declared_in_same_apk !== 'boolean' || call.arguments !== null)
+    throw new Error(`${call.id}: invalid static invoke evidence`);
 }
 for (const item of graph.dex_literal_indicators) {
   if (item.confidence !== 'DEX_STRING_ONLY' || item.call_kind || item.source_method)

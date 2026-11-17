@@ -14,4 +14,4 @@ Test: `EdidPortPolicyTest` checks 8052, 8054 and unknown identifiers. This is a 
 
 ## CI and remaining gates
 
-`audit-8054-source-safety.yml` validates the dependency evidence, compiles all Java against Android API 33 and runs pure JVM tests. It does not repack or sign an APK. Exact 8054 APK rebuild, installed package/update compatibility, TV Input HW6/HW7, Bluetooth remote, audio/PQ HAL, optics and TimeService/fan behavior remain open. No 8054 hardware parity claim follows from this workflow.
+`audit-8054-source-safety.yml` validates the dependency evidence, compiles all Java against Android API 33 and runs pure JVM tests. Separate exact-8054 build run 44093893342 repacked, signed and verified an experimental APK from the original 8054 base; see `BUILD_STATUS_8054_AUDIT_2026-11-17.md`. Installed package/update compatibility, TV Input HW6/HW7, Bluetooth remote, audio/PQ HAL, optics and TimeService/fan behavior remain open. No 8054 hardware parity claim follows from CI.
