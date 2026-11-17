@@ -11,10 +11,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Inline EDID compatibility selector using the EXACT original
- * EdidSourceSecondaryController OEM hardware query and Settings.Global key.
- * Only shown while HDMI is the currently selected source. The manufacturer
- * checks this before enabling its EDID radio controls.
+ * Legacy 8052 EDID compatibility selector using the original
+ * EdidSourceSecondaryController query and Settings.Global key. The fixed
+ * HW6 query and global key have no proven per-port meaning on two-HDMI 8054.
+ * Only shown while HDMI is the currently selected source on 8052.
  */
 public final class OemHdmiEdidHook {
     private static final String TAG="TvSettingsPlusMOD";
@@ -24,7 +24,17 @@ public final class OemHdmiEdidHook {
 
     private OemHdmiEdidHook() {}
 
+    private static String machineId() {
+        try {
+            Class<?> properties=Class.forName("android.os.SystemProperties");
+            Object value=properties.getMethod("get",String.class,String.class)
+                    .invoke(null,"ro.rjpj.machine.id","");
+            return value instanceof String ? (String)value : "";
+        }catch(Exception e) {return "";}
+    }
+
     private static int hardwareSupportedMax(Context context) throws Exception {
+        if(!EdidPortPolicy.mayUseLegacySelector(machineId()))return -1;
         Class<?> config=Class.forName(
           "com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtils");
         Object preferences=config.getMethod("getInstance",Context.class).invoke(null,context);
@@ -108,3 +118,4 @@ public final class OemHdmiEdidHook {
         }
     }
 }
+
