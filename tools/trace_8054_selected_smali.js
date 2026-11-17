@@ -67,6 +67,7 @@ const targets=[
   {apk:'TvSettingsPlus',cls:'Lcom/android/tv/settings/partnercustomizer/utils/ProgressBarVerticalFragment;',method:'onPreferenceChange(Landroidx/preference/Preference;Ljava/lang/Object;)Z',versions:['8054']},
   {apk:'TvSettingsPlus',cls:'Lcom/android/tv/settings/partnercustomizer/tvsettingservice/util/PreferenceConfigUtils;',method:'updatePreferenceChanged(Landroidx/leanback/preference/LeanbackPreferenceFragmentCompat;Landroidx/preference/Preference;Ljava/lang/Object;)Z',versions:['8054']},
   {apk:'TvSettingsPlus',cls:'Lcom/android/tv/settings/partnercustomizer/tvsettingservice/util/PreferenceConfigUtils;',method:'onPreferenceValueChange(Landroidx/preference/Preference;Ljava/lang/Object;)I',versions:['8054']},
+  {apk:'TvSettingsPlus',cls:'Lcom/android/tv/settings/partnercustomizer/tvsettingservice/util/PreferenceConfigUtils;',method:'putSettingValueInt(Landroid/content/ContentResolver;Ljava/lang/String;I)V',versions:['8054']},
   {apk:'Factory',cls:'Lmediatek/tvsetting/factory/ui/ApiService;',method:'onStartCommand(Landroid/content/Intent;II)I',versions:['8054']},
   {apk:'Factory',cls:'Lmediatek/tvsetting/factory/ui/ProjectorManager;',method:'setProjectorMirrorMode(Landroid/content/Context;I)V',versions:['8052']},
   {apk:'Factory',cls:'Lmediatek/tvsetting/factory/ui/ProjectorManager;',method:'setProjectorMirrorMode(I)V',versions:['8054']},
@@ -118,4 +119,3 @@ function main(configFile,outputDir){
 }
 if(require.main===module)main(process.argv[2],process.argv[3]);
 module.exports={extract};
-

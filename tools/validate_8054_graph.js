@@ -36,7 +36,7 @@ for (const item of graph.dex_literal_indicators) {
     throw new Error(`${item.id}: DEX literal cannot imply a call`);
 }
 const traced=graph.features.filter(x=>x.status==='PARTIAL_STATIC_TRACE');
-if (traced.map(x=>x.id).sort().join(',')!=='HDMI03,PRJ01,SYS02,SYS06')
+if (traced.map(x=>x.id).sort().join(',')!=='HDMI03,PRJ01,SND07,SYS02,SYS06')
   throw new Error(`Unexpected partial static traces: ${traced.map(x=>x.id)}`);
 for(const item of traced) {
   for(const field of ['source_file','class_method','line_or_smali','call_kind','target','arguments','source_apk_sha256'])

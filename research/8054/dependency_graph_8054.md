@@ -3,7 +3,7 @@
 Карта объединяет handoff и выбранные точные smali invoke из оригинальных APK. Имена владельцев/backend в матрице остаются гипотезами; статический вызов не доказывает исполнение на устройстве.
 
 Покрытие инвентаря: 88 APK, 1389 компонентов Manifest, 79 индикаторов DEX-строк, 96 функций.
-Статусы: UNKNOWN 71; BLOCKED 10; PARTIAL_STATIC_TRACE 4; DEFERRED 11. Точных статических smali invoke 8054: 32; в Factory отчёте есть 4 прослеженных JADX-вызова.
+Статусы: UNKNOWN 70; BLOCKED 10; PARTIAL_STATIC_TRACE 5; DEFERRED 11. Точных статических smali invoke 8054: 32; в Factory отчёте есть 4 прослеженных JADX-вызова.
 
 Пустое exported в Manifest означает неизвестное значение. Каждая DEX-строка имеет статус DEX_STRING_ONLY.
 
@@ -47,7 +47,7 @@
 | SND04 | Surround | P1 | UNKNOWN | TvSettingsPlus.SoundSubMenuController / SoundModeValueSecondaryController | Проследить original handler Android 8054 -> HAL/observer, enum inversion |
 | SND05 | Автогромкость | P1 | UNKNOWN | TvSettingsPlus.SoundSubMenuController / SoundModeValueSecondaryController | Проследить original handler Android 8054 -> HAL/observer, enum inversion |
 | SND06 | Звуки интерфейса | P1 | UNKNOWN | TvSettingsPlus.SoundSubMenuController / SoundModeValueSecondaryController | Проследить original handler Android 8054 -> HAL/observer, enum inversion |
-| SND07 | 5-полосный EQ | P1 | UNKNOWN | TvSettingsPlus.EqualizerDetailFragment (partner) + Factory GEQ | Проверить фактический DSP, масштабы ползунков; заводской GEQ не автоматически равен Global |
+| SND07 | 5-полосный EQ | P1 | PARTIAL_STATIC_TRACE | TvSettingsPlus.EqualizerDetailFragment (partner) + Factory GEQ | Проверить фактический DSP, масштабы ползунков; заводской GEQ не автоматически равен Global |
 | SND08 | 13-полосный PEQ | P2 | UNKNOWN | Factory.PEQAdjustViewHolder | Масштаб gain/Q, влияние sound mode, hardware support, выходы |
 | SND09 | Dolby DAP | P3 | UNKNOWN | Factory.AdvancedEffectDapViewHolder | По фото DAP OFF, реальная поддержка неизвестна |
 | SND10 | DTS Loudness | P3 | UNKNOWN | Factory.FactoryDTSActivity | Доказать support |
