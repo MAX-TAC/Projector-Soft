@@ -72,6 +72,21 @@ jobs:
           set -euo pipefail
           python3 tools/compare_8052_8054_apk_entries.py research/8054/apk_diff_config.json /tmp/apkdiff/report
           test -s /tmp/apkdiff/report/apk_entry_diff.json
+      - name: Inventory exact 8054 EDID and source controller methods
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path('/tmp/apkdiff/TvSettingsPlus/8054')
+          for file in sorted(root.rglob('*.smali')):
+              name = file.name.lower()
+              if 'edid' not in name and name != 'sourcesubmenucontroller.smali':
+                  continue
+              print('SOURCE_CLASS', file.relative_to(root))
+              for line in file.read_text().splitlines():
+                  if line.startswith('.method '):
+                      print('SOURCE_METHOD', line.split()[-1])
+          PY
       - name: Inventory original 8054 AutoPair classes read only
         run: |
           set -euo pipefail
