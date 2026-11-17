@@ -67,11 +67,14 @@ function compare(a,b) {
 }
 function criticalCalls(map,apk) {
   const target=/^(Lcom\/coolux\/source\/|Lcom\/my\/settings\/|Lcom\/mediatek\/twoworlds\/|Lmediatek\/tvsetting\/factory\/ui\/|Lcom\/hysd\/screen\/|Lcom\/rjpj\/tcorrection\/|Landroid\/os\/SystemProperties;|Landroid\/provider\/Settings\$)/;
+  const declaredClasses=new Set([...map.keys()].map(key=>key.split('->')[0]));
   const calls=[];
   for (const [method,info] of map) for (const invoke of info.invokes) {
+    const targetClass=invoke.target.split('->')[0];
     if (target.test(invoke.target)) calls.push({apk,source_file:info.source_file,
       source_method:method,line_or_smali:invoke.line,call_kind:invoke.kind,
-      target:invoke.target,arguments:null,confidence:'DEX_INVOKE_STATIC',
+      target:invoke.target,target_declared_in_same_apk:declaredClasses.has(targetClass),
+      arguments:null,confidence:'DEX_INVOKE_STATIC',
       runtime_test:'Required; static instruction only',rollback:'Original OEM APK'});
   }
   return calls;
@@ -93,6 +96,11 @@ function main(configFile,outputDir) {
     result.packages.push({apk:pair.apk,original_sha256:originalSha,target_sha256:targetSha,
       original_methods:original.size,target_methods:target.size,changed_methods:changed,
       target_critical_invokes:criticalCalls(target,pair.apk)});
+    for (const item of changed)
+      console.log('DIFF_METHOD '+pair.apk+' '+item.change+' '+item.method);
+    const selected=/ApiService|ProjectorManager|MySetTimeService|BootupReceiver|MyAutoBluetoothActivity|EdidSourceSecondaryController|PowerOnSourceSecondaryController|KeystoneSettingsSecondaryController/;
+    for (const call of result.packages.at(-1).target_critical_invokes.filter(x=>selected.test(x.source_method)).slice(0,250))
+      console.log('CALLSITE '+pair.apk+' '+call.source_method+' '+call.source_file+':'+call.line_or_smali+' '+call.call_kind+' '+call.target+' same_apk='+call.target_declared_in_same_apk);
     console.log(`${pair.apk}: ${original.size}/${target.size} methods, ${changed.length} changed, ${result.packages.at(-1).target_critical_invokes.length} critical invokes`);
   }
   fs.writeFileSync(path.join(outputDir,'exact_apk_method_diff.json'),JSON.stringify(result,null,2)+'\n');
