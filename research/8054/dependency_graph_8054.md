@@ -3,7 +3,7 @@
 Карта объединяет handoff и выбранные точные smali invoke из оригинальных APK. Имена владельцев/backend в матрице остаются гипотезами; статический вызов не доказывает исполнение на устройстве.
 
 Покрытие инвентаря: 88 APK, 1389 компонентов Manifest, 79 индикаторов DEX-строк, 96 функций.
-Статусы: UNKNOWN 72; BLOCKED 10; PARTIAL_STATIC_TRACE 3; DEFERRED 11. Точных статических smali invoke 8054: 32; в Factory отчёте есть 4 прослеженных JADX-вызова.
+Статусы: UNKNOWN 71; BLOCKED 10; PARTIAL_STATIC_TRACE 4; DEFERRED 11. Точных статических smali invoke 8054: 32; в Factory отчёте есть 4 прослеженных JADX-вызова.
 
 Пустое exported в Manifest означает неизвестное значение. Каждая DEX-строка имеет статус DEX_STRING_ONLY.
 
@@ -80,7 +80,7 @@
 | SYS03 | Восстановление термослужбы | P0 | UNKNOWN | KuSettings.MySetTimeService + KuSourceRJ.TimeService | На Android13 видимость other service не гарантирована |
 | SYS04 | Температура | P0 | UNKNOWN | KuSourceRJ.TimeService / Android PowerManager | Проверить качество sensor data |
 | SYS05 | Запуск источника после reboot | P1 | UNKNOWN | KuSourceRJ+TvSettingsPlus | Если не сработает должна быть возможность входа через ADB |
-| SYS06 | Восстановление Bluetooth после reboot | P0 | UNKNOWN | TvSettingsPlus.BluetoothReconnectService | Взаимодействие с AutoPair |
+| SYS06 | Восстановление Bluetooth после reboot | P0 | PARTIAL_STATIC_TRACE | TvSettingsPlus.BluetoothReconnectService | Взаимодействие с AutoPair |
 | SYS07 | OEM Timer выключения | P1 | UNKNOWN | TvSettingsPlus.SwitchOffTimerService | Не деактивировать blanket sleep |
 | SYS08 | Кнопка Settings на пульте | P1 | UNKNOWN | TvServices HotKeyService; KuSettings; TvSettingsPlus | services.jar, launcher, OEM hotkey config 8054 |
 | SYS09 | Установленные/предустановочные приложения | P1 | UNKNOWN | Provision (не KuSetupWizard) | Не переносить 8052 KuSetupWizard assumptions |

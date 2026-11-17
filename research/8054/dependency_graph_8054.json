@@ -20106,27 +20106,33 @@
       "entry_point_hint": "BOOT_COMPLETED",
       "backend_hint": "OEM auto service",
       "side_effects_hint": "Сервисные эффекты, риски",
-      "source_file": null,
-      "class_method": null,
-      "line_or_smali": null,
-      "call_kind": null,
-      "target": null,
-      "arguments": null,
-      "precondition": null,
-      "confidence": "UNKNOWN",
-      "status": "UNKNOWN",
+      "source_file": "TvSettingsPlus smali_classes14/com/android/tv/settings/partnercustomizer/tvsettingservice/BluetoothReconnectService.smali",
+      "class_method": "BluetoothReconnectService#onCreate/#getLastConnectedPhoneDevices/#getLastConnectedA2dpDevices/#reconnectPhone/#registerBtProfileProxy",
+      "line_or_smali": "onCreate:857-1025; A2DP selection:399-511; phone selection:513-625; reconnectPhone:627-657; profile proxy:690-734",
+      "call_kind": "DEX_INVOKE_CHAINS",
+      "target": "BluetoothAdapter#setScanMode/#getBondedDevices/#getProfileProxy; SaveValue#readStrValue; BluetoothDevicePairer#startPairing; MtkTvUtil#QHB_IsQuietHotBoot",
+      "arguments": "atvremote.disable_bt_discoverable gates scan mode 0x17; profile IDs 0xb and 0x2; saved keys audio_mac_address and phone_mac_address; no HID major/name filter in selected methods",
+      "precondition": "Service start owner, inner callbacks, HID remote role, interaction with AutoPair/KuSettings, runtime result remain unverified",
+      "confidence": "DEX_INVOKE_STATIC",
+      "status": "PARTIAL_STATIC_TRACE",
       "evidence_hint": "S:Manifest/8052/V33; R:8054 runtime",
       "evidence": [
         {
           "kind": "HANDOFF_MATRIX_ROW",
           "source": "SETTINGS_MIGRATION_MATRIX_8054.csv",
           "row_id": "SYS06"
+        },
+        {
+          "kind": "EXACT_SMALI_TRACE",
+          "source": "Projector-Soft Actions runs 44116773583 and 44117754570",
+          "report": "BLUETOOTH_REMOTE_8054_STATIC_TRACE.md"
         }
       ],
       "missing_verification": "Взаимодействие с AutoPair",
       "runtime_test": "Cold boot/receiver",
       "rollback": "Restore service/component state",
-      "risk": "CRITICAL"
+      "risk": "CRITICAL",
+      "source_apk_sha256": "TvSettingsPlus f8e0c6fe0f46e7eb8db651c31d85ef8b32a769b37e4dd0f96ed19a64725d74ee"
     },
     {
       "id": "SYS07",
