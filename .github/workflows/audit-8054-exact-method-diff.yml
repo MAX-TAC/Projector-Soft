@@ -143,6 +143,24 @@ jobs:
                           method = None
                           body = []
           PY
+      - name: Verify EDID key membership in observed Settings array
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path('/tmp/apkdiff/TvServices/8054')
+          files = list(root.rglob('TVMenuSettingsService.smali'))
+          if len(files) != 1:
+              raise RuntimeError(f'Expected one TVMenuSettingsService, got {len(files)}')
+          lines = files[0].read_text().splitlines()
+          start = next(i for i, line in enumerate(lines) if line.startswith('.method ') and line.split()[-1] == '<init>()V')
+          end = next(i for i in range(start + 1, len(lines)) if lines[i].startswith('.end method'))
+          for i in range(start, end + 1):
+              line = lines[i]
+              if ('tv_input_hdmi_edid_version' in line or 'v124' in line or
+                  'filled-new-array' in line or 'iput-object' in line and 'setting' in line.lower()):
+                  print('EDID_OBSERVER_ARRAY', i + 1, line.strip())
+          PY
       - name: Inventory TvServices config and Settings observer callsites
         run: |
           set -euo pipefail
