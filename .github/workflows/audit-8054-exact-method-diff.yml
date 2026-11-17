@@ -150,7 +150,8 @@ jobs:
           from pathlib import Path
           root = Path('/tmp/apkdiff/TvServices/8054')
           needles = ('->formatSettingToConfigId(', '->registerContentObserver(',
-                     '->setConifg(', '->setConfigValue', '->getConfigValueInt(')
+                     '->setConifg(', '->setConfigValue', '->getConfigValueInt(',
+                     '->updateConfigData(', '->access$1100(')
           for file in sorted(root.rglob('TVMenuSettingsService*.smali')):
               method = None
               for number, line in enumerate(file.read_text().splitlines(), 1):
