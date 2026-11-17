@@ -1,0 +1,49 @@
+{
+  "pairs": [
+    {
+      "apk": "TvSettingsPlus",
+      "original_apk": "vendor/reference/8052/APK/TvSettingsPlus.apk",
+      "target_apk": "/tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk",
+      "original": "/tmp/apkdiff/TvSettingsPlus/8052",
+      "target": "/tmp/apkdiff/TvSettingsPlus/8054",
+      "expected_original_sha256": "e4184a13fbf56fa069effc6a40ea50c0da7e9190321b389f59ba34700a80d0a1",
+      "expected_target_sha256": "f8e0c6fe0f46e7eb8db651c31d85ef8b32a769b37e4dd0f96ed19a64725d74ee"
+    },
+    {
+      "apk": "KuSettings",
+      "original_apk": "vendor/reference/8052/APK/KuSettings.apk",
+      "target_apk": "/tmp/flix8054_erofs/system_a_tree/system/app/KuSettings/KuSettings.apk",
+      "original": "/tmp/apkdiff/KuSettings/8052",
+      "target": "/tmp/apkdiff/KuSettings/8054"
+    },
+    {
+      "apk": "RuiAutoFocus",
+      "original_apk": "vendor/reference/8052/APK/RuiAutoFocus.apk",
+      "target_apk": "/tmp/flix8054_erofs/system_a_tree/system/app/RuiAutoFocus/RuiAutoFocus.apk",
+      "original": "/tmp/apkdiff/RuiAutoFocus/8052",
+      "target": "/tmp/apkdiff/RuiAutoFocus/8054"
+    },
+    {
+      "apk": "KeystoneCorrection",
+      "original_apk": "vendor/reference/8052/APK/KeystoneCorrection.apk",
+      "target_apk": "/tmp/flix8054_erofs/system_a_tree/system/priv-app/KeystoneCorrection/KeystoneCorrection.apk",
+      "original": "/tmp/apkdiff/KeystoneCorrection/8052",
+      "target": "/tmp/apkdiff/KeystoneCorrection/8054"
+    },
+    {
+      "apk": "Factory",
+      "original_apk": "vendor/reference/8052/APK/Factory.apk",
+      "target_apk": "/tmp/flix8054_erofs/system_ext_a_tree/app/Factory/Factory.apk",
+      "original": "/tmp/apkdiff/Factory/8052",
+      "target": "/tmp/apkdiff/Factory/8054",
+      "expected_target_sha256": "2f0e2cbc133c97cb4b1383f7a4576fab78715dae72a8e590deb479a4196e0996"
+    },
+    {
+      "apk": "trdservice",
+      "original_apk": "vendor/reference/8052/APK/trdservice.apk",
+      "target_apk": "/tmp/flix8054_erofs/system_a_tree/system/app/trdservice/trdservice.apk",
+      "original": "/tmp/apkdiff/trdservice/8052",
+      "target": "/tmp/apkdiff/trdservice/8054"
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+name: Audit exact 8054 APK method diff
+on:
+  push:
+    branches:
+      - audit/8054-tvsettingsplus-20261117
+    paths:
+      - '.github/workflows/audit-8054-exact-method-diff.yml'
+      - 'tools/compare_8052_8054_smali.js'
+      - 'research/8054/apk_diff_config.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: MAX-TAC/FlixTone_8054_Backup
+          ref: dbc097a3bf7c7c73f2c5d5400a253dfe8f3fe11f
+          path: backup-tools
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Verify comparator on synthetic methods
+        run: node tools/compare_8052_8054_smali.js --self-test
+      - name: Extract original 8054 APKs read only
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq erofs-utils
+          gh release download FlixTone_8054_Backup \
+            --repo MAX-TAC/FlixTone_8054_Backup \
+            --pattern FlixTone_8054_Backup.zip --dir /tmp
+          echo '4f53f2224c98b4c832a19a591b9dd7f925bde28528b5674a09732c0f0e41d362  /tmp/FlixTone_8054_Backup.zip' | sha256sum -c -
+          python3 backup-tools/tools/inspect_8054_draft_safely.py /tmp/FlixTone_8054_Backup.zip >/tmp/inspect-super.log
+          python3 backup-tools/tools/deep_audit_8054_stock.py >/tmp/inspect-filesystems.log
+          test -s /tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk
+      - name: Decode six critical APK pairs
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 3 https://github.com/iBotPeaches/Apktool/releases/download/v2.11.1/apktool_2.11.1.jar -o /tmp/apktool.jar
+          mkdir -p /tmp/apkdiff/framework8052 /tmp/apkdiff/framework8054
+          java -jar /tmp/apktool.jar if vendor/reference/8052/APK/framework-res.apk -p /tmp/apkdiff/framework8052
+          java -jar /tmp/apktool.jar if /tmp/flix8054_erofs/system_a_tree/system/framework/framework-res.apk -p /tmp/apkdiff/framework8054
+          node -p 'require("./research/8054/apk_diff_config.json").pairs.map(p=>[p.apk,p.original_apk,p.target_apk,p.original,p.target].join("\t")).join("\n")' |
+            while IFS=$'\t' read -r name old_apk new_apk old_dir new_dir; do
+              echo "Decoding $name"
+              java -jar /tmp/apktool.jar d -f -r -p /tmp/apkdiff/framework8052 "$old_apk" -o "$old_dir" >/tmp/apkdiff/"$name"-8052.log
+              java -jar /tmp/apktool.jar d -f -r -p /tmp/apkdiff/framework8054 "$new_apk" -o "$new_dir" >/tmp/apkdiff/"$name"-8054.log
+            done
+      - name: Compare method hashes and actual invoke instructions
+        run: |
+          set -euo pipefail
+          node tools/compare_8052_8054_smali.js research/8054/apk_diff_config.json /tmp/apkdiff/report
+          test -s /tmp/apkdiff/report/exact_apk_method_diff.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: flix8054-exact-method-diff-text-only
+          path: /tmp/apkdiff/report/
+          if-no-files-found: warn
+          retention-days: 14
