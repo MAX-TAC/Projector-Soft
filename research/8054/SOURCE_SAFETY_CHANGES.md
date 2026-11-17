@@ -20,4 +20,4 @@ Test: `ProjectorCompatibilityPolicyTest` covers 8052, 8054 and an unknown ID; CI
 
 ## CI and remaining gates
 
-`audit-8054-source-safety.yml` validates the dependency evidence, compiles all Java against Android API 33 and runs pure JVM tests. Separate exact-8054 build run 44093893342 repacked, signed and verified an experimental APK from the original 8054 base; see `BUILD_STATUS_8054_AUDIT_2026-11-17.md`. Installed package/update compatibility, TV Input HW6/HW7, Bluetooth remote, audio/PQ HAL, optics and TimeService/fan behavior remain open. No 8054 hardware parity claim follows from CI.
+`audit-8054-source-safety.yml` validates the dependency evidence, compiles all Java against Android API 33 and runs pure JVM tests. Source safety run 44096540955 and exact-8054 build run 44096540197 passed with C0/C1/C2; see `BUILD_STATUS_8054_AUDIT_2026-11-17.md`. Installed package/update compatibility, TV Input HW6/HW7, Bluetooth remote, audio/PQ HAL, optics and TimeService/fan behavior remain open. No 8054 hardware parity claim follows from CI.
