@@ -57,6 +57,13 @@ jobs:
           for test in KuSourceRecoveryActivationPolicyTest KuSourceRecoveryPolicyTest EdidPortPolicyTest ProjectorCompatibilityPolicyTest OemBluetoothRemotePolicyTest; do
             java -cp /tmp/8054-policy-classes "dev.projectorsoft.tvsettings.$test"
           done
+      - name: Test picture snapshot and context restrictions
+        run: |
+          mkdir -p /tmp/picture-state-tests
+          javac -d /tmp/picture-state-tests \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/PictureStateTransaction.java \
+            app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/OemPictureStateTest.java
+          java -cp /tmp/picture-state-tests dev.projectorsoft.tvsettings.OemPictureStateTest
       - name: Check Android entry-point wiring remains conservative
         run: |
           set -euo pipefail

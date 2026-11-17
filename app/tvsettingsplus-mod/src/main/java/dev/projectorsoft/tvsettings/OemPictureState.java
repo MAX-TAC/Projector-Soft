@@ -11,37 +11,34 @@ public final class OemPictureState {
     private static SharedPreferences saved(Context context) {
         return context.getSharedPreferences("projectorsoft_picture_rollback", Context.MODE_PRIVATE);
     }
-    public static boolean write(Context context,String key,int value) {
-        String old=Settings.Global.getString(context.getContentResolver(),key);
-        if(old==null)return false;
-        SharedPreferences state=saved(context);
-        if(!state.contains(key)&&!state.edit().putString(key,old).commit())return false;
-        return Settings.Global.putInt(context.getContentResolver(),key,value)
-            && Integer.toString(value).equals(Settings.Global.getString(context.getContentResolver(),key));
-    }
-    public static boolean restore(Context context) {
-        boolean complete=true;
-        for(Map.Entry<String,?> item:saved(context).getAll().entrySet()) {
-            String key=item.getKey();
-            if(!key.startsWith("picture_")||!(item.getValue() instanceof String)) {
-                complete=false;
-                continue;
+    private static PictureStateTransaction transaction(Context context) {
+        return new PictureStateTransaction(new PictureStateTransaction.Backend() {
+            public String read(String key) {return Settings.Global.getString(context.getContentResolver(),key);}
+            public boolean write(String key,String value) {return Settings.Global.putString(context.getContentResolver(),key,value);}
+            // Global picture_mode alone cannot identify the active OEM HDMI/PQ profile.
+            public String verifiedContext() {return null;}
+        },new PictureStateTransaction.Journal() {
+            public Map<String,String> entries() {
+                Map<String,String> result=new java.util.LinkedHashMap<>();
+                for(Map.Entry<String,?> e:saved(context).getAll().entrySet())
+                    if(e.getValue() instanceof String)result.put(e.getKey(),(String)e.getValue());
+                return result;
             }
-            String value=(String)item.getValue();
-            // Keep failed entries so a subsequent attempt can restore them.
-            if(Settings.Global.putString(context.getContentResolver(),key,value)
-                    && value.equals(Settings.Global.getString(context.getContentResolver(),key))) {
-                if(!saved(context).edit().remove(key).commit())complete=false;
-            } else complete=false;
-        }
-        return complete;
+            public boolean save(String key,String value) {return saved(context).edit().putString(key,value).commit();}
+            public boolean remove(String key) {return saved(context).edit().remove(key).commit();}
+        });
     }
+    public static boolean write(Context context,String key,int value) {
+        return transaction(context).write(key,value);
+    }
+    public static boolean restore(Context context) {return transaction(context).restore();}
     public static void install(Context context,Object category,Class<?> pref) throws Exception {
         Object item=pref.getConstructor(Context.class).newInstance(context);
         pref.getMethod("setKey",String.class).invoke(item,"projectorsoft_picture_restore");
-        pref.getMethod("setTitle",CharSequence.class).invoke(item,"Восстановить изображение до изменений MOD");
-        pref.getMethod("setSummary",CharSequence.class).invoke(item,"После восстановления заново откройте настройки изображения");
+        pref.getMethod("setTitle",CharSequence.class).invoke(item,"Сохранённые значения изображения");
+        pref.getMethod("setSummary",CharSequence.class).invoke(item,"Восстановление недоступно: профиль изображения и HDMI ещё не определены");
         pref.getMethod("setOrder",int.class).invoke(item,239);
+        pref.getMethod("setEnabled",boolean.class).invoke(item,false);
         Class<?> listener=Class.forName("androidx.preference.Preference$OnPreferenceClickListener");
         Object callback=java.lang.reflect.Proxy.newProxyInstance(listener.getClassLoader(),new Class<?>[]{listener},
             (proxy,method,args)-> {
