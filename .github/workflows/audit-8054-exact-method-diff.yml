@@ -87,6 +87,35 @@ jobs:
                   if line.startswith('.method '):
                       print('SOURCE_METHOD', line.split()[-1])
           PY
+      - name: Locate EDID Global key consumers in original 8054 TV services
+        run: |
+          set -euo pipefail
+          for name in MtkTvInput TvServices; do
+            apk="/tmp/flix8054_erofs/system_ext_a_tree/priv-app/$name/$name.apk"
+            sha256sum "$apk"
+            java -jar /tmp/apktool.jar d -f -r -p /tmp/apkdiff/framework8054 \
+              "$apk" -o "/tmp/apkdiff/$name/8054" >"/tmp/apkdiff/$name-8054.log"
+          done
+          python3 - <<'PY'
+          from pathlib import Path
+          for name in ('TvSettingsPlus', 'KuSettings', 'Factory', 'MtkTvInput', 'TvServices'):
+              root = Path('/tmp/apkdiff') / name / '8054'
+              hits = 0
+              for file in root.rglob('*.smali'):
+                  if not file.parts[-1].endswith('.smali'):
+                      continue
+                  lines = file.read_text().splitlines()
+                  method = '<class>'
+                  for number, line in enumerate(lines, 1):
+                      if line.startswith('.method '):
+                          method = line.split()[-1]
+                      if 'tv_input_hdmi_edid_version' in line:
+                          hits += 1
+                          print('EDID_KEY_HIT', name, file.relative_to(root), method, number)
+                  if hits > 200:
+                      raise RuntimeError('EDID key scan unexpectedly broad')
+              print('EDID_KEY_COUNT', name, hits)
+          PY
       - name: Inventory original 8054 AutoPair classes read only
         run: |
           set -euo pipefail
