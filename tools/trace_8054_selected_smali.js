@@ -4,6 +4,15 @@ const fs=require('fs');
 const path=require('path');
 const targets=[
   {apk:'TvSettingsPlus',cls:'Lcom/android/tv/settings/uicustom/floatmenu/controller/source/EdidSourceSecondaryController;',method:'getEdidVersion()I',versions:['8054']},
+  {apk:'TvSettingsPlus',cls:'Lcom/android/tv/settings/uicustom/floatmenu/controller/source/SourceSubMenuController;',method:'getEdidVersion()I',versions:['8054']},
+  {apk:'TvSettingsPlus',cls:'Lcom/android/tv/settings/uicustom/floatmenu/controller/source/EdidSourceSecondaryController$1;',method:'onClick(Landroid/view/View;)V',versions:['8054']},
+  {apk:'TvSettingsPlus',cls:'Lcom/android/tv/settings/uicustom/floatmenu/controller/source/EdidSourceSecondaryController$2;',method:'onClick(Landroid/view/View;)V',versions:['8054']},
+  {apk:'TvSettingsPlus',cls:'Lcom/android/tv/settings/uicustom/floatmenu/controller/source/EdidSourceSecondaryController$3;',method:'onClick(Landroid/view/View;)V',versions:['8054']},
+  {apk:'TvSettingsPlus',cls:'Lcom/android/tv/settings/uicustom/floatmenu/controller/source/EdidSourceSecondaryController$4;',method:'onClick(Landroid/view/View;)V',versions:['8054']},
+  {apk:'TvSettingsPlus',cls:'Lcom/android/tv/settings/uicustom/fragment/source/EdidSourceFragment$1;',method:'onClick(Landroid/view/View;)V',versions:['8054']},
+  {apk:'TvSettingsPlus',cls:'Lcom/android/tv/settings/uicustom/fragment/source/EdidSourceFragment$2;',method:'onClick(Landroid/view/View;)V',versions:['8054']},
+  {apk:'TvSettingsPlus',cls:'Lcom/android/tv/settings/uicustom/fragment/source/EdidSourceFragment$3;',method:'onClick(Landroid/view/View;)V',versions:['8054']},
+  {apk:'TvSettingsPlus',cls:'Lcom/android/tv/settings/uicustom/fragment/source/EdidSourceFragment$4;',method:'onClick(Landroid/view/View;)V',versions:['8054']},
   {apk:'TvSettingsPlus',cls:'Lcom/android/tv/settings/uicustom/util/ProjectorManager;',method:'setProjectorMirrorMode(Landroid/content/Context;I)V',versions:['8054']},
   {apk:'KuSettings',cls:'Lcom/my/settings/bluetooth/MyAutoBluetoothActivity;',method:'viewAutoBluetoothBak()V',versions:['8052','8054']},
   {apk:'KuSettings',cls:'Lcom/my/settings/bluetooth/MyAutoBluetoothActivity;',method:'refreshDeviceList()V',versions:['8054']},
