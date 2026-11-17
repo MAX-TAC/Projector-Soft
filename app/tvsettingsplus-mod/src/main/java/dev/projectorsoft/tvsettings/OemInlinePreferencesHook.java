@@ -174,6 +174,7 @@ public final class OemInlinePreferencesHook {
             // Five genuine OEM bands via stock PartnerSettingsConfig only.
             // Uses original ProgressDialog scale but native TV SeekBar widgets.
             OemFiveBandEqualizerHook.install(context,soundCategory,preference);
+            OemPictureState.install(context,pictureCategory,preference);
         } catch(Throwable e) {
             Log.w(TAG,"OEM quick controls unavailable; keep original settings",e);
         }
@@ -262,7 +263,10 @@ public final class OemInlinePreferencesHook {
             entryValues[i]=Integer.toString(values[i]);
         }
         ContentResolver resolver=context.getContentResolver();
-        int current=Settings.Global.getInt(resolver,oemKey,defaultValue);
+        String raw=Settings.Global.getString(resolver,oemKey);
+        if(raw==null)return;
+        final int current;
+        try {current=Integer.parseInt(raw);} catch(NumberFormatException ex){return;}
         if (!valueToTitle.containsKey(current)) return; // don't invent vendor state
 
         Class<?> listType=Class.forName("androidx.preference.ListPreference");
@@ -285,7 +289,9 @@ public final class OemInlinePreferencesHook {
                 try {
                     int requested=Integer.parseInt(String.valueOf(args[1]));
                     if (!valueToTitle.containsKey(requested)) return false;
-                    if (!Settings.Global.putInt(resolver,oemKey,requested)) return false;
+                    if (oemKey.startsWith("picture_")) {
+                        if(!OemPictureState.write(context,oemKey,requested))return false;
+                    } else if (!Settings.Global.putInt(resolver,oemKey,requested)) return false;
                     if (Settings.Global.getInt(resolver,oemKey,-999)!=requested) return false;
                     pref.getMethod("setSummary",CharSequence.class)
                             .invoke(preference,valueToTitle.get(requested));
@@ -306,3 +312,5 @@ public final class OemInlinePreferencesHook {
         category.getClass().getMethod("addPreference",pref).invoke(category,preference);
     }
 }
+
+

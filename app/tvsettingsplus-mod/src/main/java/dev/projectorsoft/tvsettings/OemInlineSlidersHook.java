@@ -105,7 +105,9 @@ public final class OemInlineSlidersHook {
                     // with the exact same global key, which delegates to the
                     // platform Settings provider. We re-read instead of silently
                     // accepting a failed provider write.
-                    if (!Settings.Global.putInt(resolver,spec.key,newValue)) return false;
+                    if(spec.key.startsWith("picture_")) {
+                        if(!OemPictureState.write(context,spec.key,newValue))return false;
+                    } else if (!Settings.Global.putInt(resolver,spec.key,newValue)) return false;
                     return Settings.Global.getInt(resolver,spec.key,-99999)==newValue;
                 } catch (Exception e) {
                     Log.w(TAG,"OEM seekbar write failed: "+spec.key,e);
@@ -124,3 +126,5 @@ public final class OemInlineSlidersHook {
         category.getClass().getMethod("addPreference",preferenceClass).invoke(category,item);
     }
 }
+
+
