@@ -162,6 +162,18 @@ jobs:
                   elif method and line.lstrip().startswith('invoke-') and any(n in line for n in needles):
                       print('CONFIG_CALL', file.relative_to(root), method, number, line.strip())
           PY
+      - name: Locate TVSettingConfig setter owner
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          for name in ('TvSettingsPlus', 'Factory', 'TvServices'):
+              root = Path('/tmp/apkdiff') / name / '8054'
+              for file in sorted(root.rglob('TVSettingConfig.smali')):
+                  for number, line in enumerate(file.read_text().splitlines(), 1):
+                      if line.startswith('.method ') and ('setConifg(' in line or 'getConfigValueInt(' in line):
+                          print('CONFIG_IMPL', name, file.relative_to(root), number, line.strip())
+          PY
       - name: Inventory original 8054 AutoPair classes read only
         run: |
           set -euo pipefail
