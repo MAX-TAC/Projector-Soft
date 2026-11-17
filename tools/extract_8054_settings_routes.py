@@ -47,6 +47,7 @@ def main(source, target):
         limits='Literal map pairs only; shared observer proven separately. UI bounds and special branches require group review.'),
         ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
     print(f'Extracted {len(routes)} map entries, {len(set(r["key"] for r in routes))} unique keys')
+    print('ROUTES_JSON '+Path(target).read_text(encoding='utf-8').replace('\n',''))
 
 
 if __name__ == '__main__':
