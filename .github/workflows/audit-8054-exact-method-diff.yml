@@ -64,17 +64,13 @@ jobs:
           set -euo pipefail
           node tools/compare_8052_8054_smali.js research/8054/apk_diff_config.json /tmp/apkdiff/report
           test -s /tmp/apkdiff/report/exact_apk_method_diff.json
-      - name: Trace selected original methods and arguments read only
-        run: |
-          set -euo pipefail
-          node tools/trace_8054_selected_smali.js research/8054/apk_diff_config.json /tmp/apkdiff/report
-          test -s /tmp/apkdiff/report/selected_smali_trace.json
       - name: Inventory original 8054 AutoPair classes read only
         run: |
           set -euo pipefail
           java -jar /tmp/apktool.jar d -f -r -p /tmp/apkdiff/framework8054 \
             /tmp/flix8054_erofs/system_ext_a_tree/app/AutoPair/AutoPair.apk \
             -o /tmp/apkdiff/AutoPair/8054 >/tmp/apkdiff/AutoPair-8054.log
+          sha256sum /tmp/flix8054_erofs/system_ext_a_tree/app/AutoPair/AutoPair.apk
           python3 - <<'PY'
           from pathlib import Path
           root = Path('/tmp/apkdiff/AutoPair/8054')
@@ -86,6 +82,11 @@ jobs:
                       if line.startswith('.method '):
                           print('AUTOPAIR_METHOD', line.split()[-1])
           PY
+      - name: Trace selected original methods and arguments read only
+        run: |
+          set -euo pipefail
+          node tools/trace_8054_selected_smali.js research/8054/apk_diff_config.json /tmp/apkdiff/report
+          test -s /tmp/apkdiff/report/selected_smali_trace.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:

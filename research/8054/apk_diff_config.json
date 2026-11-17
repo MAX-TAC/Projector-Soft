@@ -45,5 +45,12 @@
       "original": "/tmp/apkdiff/trdservice/8052",
       "target": "/tmp/apkdiff/trdservice/8054"
     }
+  ],
+  "solo": [
+    {
+      "apk": "AutoPair",
+      "target_apk": "/tmp/flix8054_erofs/system_ext_a_tree/app/AutoPair/AutoPair.apk",
+      "target": "/tmp/apkdiff/AutoPair/8054"
+    }
   ]
 }

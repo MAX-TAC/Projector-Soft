@@ -9,6 +9,12 @@ const targets=[
   {apk:'KuSettings',cls:'Lcom/my/settings/bluetooth/MyAutoBluetoothActivity;',method:'refreshDeviceList()V',versions:['8054']},
   {apk:'KuSettings',cls:'Lcom/my/settings/bluetooth/MyAutoBluetoothActivity;',method:'isAutoName(Ljava/lang/String;)Z',versions:['8054']},
   {apk:'KuSettings',cls:'Lcom/my/settings/bluetooth/MyAutoBluetoothActivity;',method:'getIrBluetoothStatus()V',versions:['8054']},
+  {apk:'AutoPair',cls:'Lcom/mediatek/autopair/BootBroadcastReceiver;',method:'onReceive(Landroid/content/Context;Landroid/content/Intent;)V',versions:['8054']},
+  {apk:'AutoPair',cls:'Lcom/mediatek/autopair/AutoPairBluetoothDevice;',method:'isAutoPairDevice(Landroid/bluetooth/BluetoothDevice;)Z',versions:['8054']},
+  {apk:'AutoPair',cls:'Lcom/mediatek/autopair/AutoPairBluetoothDevice;',method:'isDeviceNameMatch(Ljava/lang/String;)Z',versions:['8054']},
+  {apk:'AutoPair',cls:'Lcom/mediatek/autopair/AutoPairBluetoothDevice;',method:'createBond(Landroid/bluetooth/BluetoothDevice;)Z',versions:['8054']},
+  {apk:'AutoPair',cls:'Lcom/mediatek/autopair/AutoPairBluetoothDevice;',method:'openConnection(Landroid/bluetooth/BluetoothDevice;)V',versions:['8054']},
+  {apk:'AutoPair',cls:'Lcom/mediatek/autopair/AutoPairBluetoothDevice;',method:'startScan()V',versions:['8054']},
   {apk:'Factory',cls:'Lmediatek/tvsetting/factory/ui/ApiService;',method:'onStartCommand(Landroid/content/Intent;II)I',versions:['8054']},
   {apk:'Factory',cls:'Lmediatek/tvsetting/factory/ui/ProjectorManager;',method:'setProjectorMirrorMode(Landroid/content/Context;I)V',versions:['8052']},
   {apk:'Factory',cls:'Lmediatek/tvsetting/factory/ui/ProjectorManager;',method:'setProjectorMirrorMode(I)V',versions:['8054']},
@@ -40,7 +46,7 @@ function main(configFile,outputDir){
   const config=JSON.parse(fs.readFileSync(configFile,'utf8'));
   const traces=[];
   for(const t of targets){
-    const pair=config.pairs.find(x=>x.apk===t.apk);
+    const pair=[...config.pairs,...(config.solo||[])].find(x=>x.apk===t.apk);
     if(!pair)throw new Error('Missing pair '+t.apk);
     for(const version of t.versions){
       const trace=extract(pair[version==='8052'?'original':'target'],t.cls,t.method);
