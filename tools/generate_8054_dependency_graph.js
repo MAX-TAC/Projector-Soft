@@ -67,14 +67,14 @@ function main(inputDir, outputDir) {
   }));
   const partialTrace = {
     HDMI03: {
-      source_file:'TvSettingsPlus smali_classes14/.../EdidSourceSecondaryController.smali, SourceSubMenuController.smali, EdidSourceSecondaryController$1..$4.smali, EdidSourceFragment$1..$4.smali',
-      class_method:'EdidSourceSecondaryController#getEdidVersion; SourceSubMenuController#getEdidVersion; eight EDID radio onClick(View) handlers',
-      line_or_smali:'getters:129-154 and 300-344; secondary onClick:57-74; fragment onClick:57-70',
+      source_file:'TvSettingsPlus smali_classes14/.../EdidSourceSecondaryController.smali, SourceSubMenuController.smali, EdidSourceSecondaryController$1..$4.smali, EdidSourceFragment$1..$4.smali; TvServices smali/com/mediatek/tv/agent/TVMenuSettingsService.smali',
+      class_method:'EdidSourceSecondaryController#getEdidVersion; SourceSubMenuController#getEdidVersion; eight EDID radio onClick(View) handlers; TVMenuSettingsService#initMapdata',
+      line_or_smali:'getters:129-154 and 300-344; secondary onClick:57-74; fragment onClick:57-70; TvServices Map.put:3051-3058',
       call_kind:'DEX_INVOKE_CHAINS',
-      target:'MtkTvAVModeBase#getVideoInfoData; MtkTvVideoInfoBase#getU8EdidIndex; SettingsUtil#putGlobalValueInt',
-      arguments:'getVideoInfoData first argument 0x6; Global key tv_input_hdmi_edid_version with values 0..3; no port argument in onClick handlers',
-      precondition:'Radio row visible; Settings.Global observer, HW6/HW7 mapping and hotplug readback remain untraced',
-      source_apk_sha256:'f8e0c6fe0f46e7eb8db651c31d85ef8b32a769b37e4dd0f96ed19a64725d74ee'
+      target:'MtkTvAVModeBase#getVideoInfoData; MtkTvVideoInfoBase#getU8EdidIndex; SettingsUtil#putGlobalValueInt; TvServices itemIds Map#put',
+      arguments:'getVideoInfoData first argument 0x6; Global key tv_input_hdmi_edid_version with values 0..3; TvServices maps key to g_fusion_picture__hdmi_edid_version; no port argument in onClick handlers',
+      precondition:'Radio row visible; Settings.Global observer, eventual MTK API/HAL, HW6/HW7 mapping and hotplug readback remain untraced',
+      source_apk_sha256:'TvSettingsPlus f8e0c6fe0f46e7eb8db651c31d85ef8b32a769b37e4dd0f96ed19a64725d74ee; TvServices 2934ca9334afd0a2af85786aa0593d27da216086c7eb9b0c9b801f412516b77d'
     },
     PRJ01: {
       source_file:'TvSettingsPlus smali_classes14/.../ProjectorManager.smali; Factory smali/.../ApiService.smali and ProjectorManager.smali',
@@ -101,14 +101,15 @@ function main(inputDir, outputDir) {
     Object.assign(feature, partialTrace[feature.id], {confidence:'DEX_INVOKE_STATIC',status:'PARTIAL_STATIC_TRACE'});
     feature.evidence.push({kind:'EXACT_SMALI_TRACE',
       source:feature.id==='SYS02' ? 'Projector-Soft Actions runs 44098788358 and 44103425107' :
-             feature.id==='HDMI03' ? 'Projector-Soft Actions runs 44097233248 and 44106214713' :
+             feature.id==='HDMI03' ? 'Projector-Soft Actions runs 44097233248, 44106214713 and 44107731141' :
              'Projector-Soft Actions run 44097233248',
-      report:feature.id==='SYS02' ? 'BLUETOOTH_REMOTE_8054_STATIC_TRACE.md' : 'SELECTED_SMALI_TRACE_FINDINGS_8054.md'});
+      report:feature.id==='SYS02' ? 'BLUETOOTH_REMOTE_8054_STATIC_TRACE.md' :
+             feature.id==='HDMI03' ? 'EDID_GLOBAL_ROUTE_8054.md' : 'SELECTED_SMALI_TRACE_FINDINGS_8054.md'});
   }
   const graph = {
     schema_version: 1,
     firmware: 'FlixTone D11 Master 8054 / MT9660 / Android TV 13',
-    provenance: 'Handoff metadata, curated exact 8054 invokes from run 44094937995, selected method bodies from runs 44097233248, 44098788358, 44103425107 and 44106214713. Runtime behavior remains unverified.',
+    provenance: 'Handoff metadata, curated exact 8054 invokes from run 44094937995, selected method bodies from runs 44097233248, 44098788358, 44103425107, 44106214713 and 44107731141. Runtime behavior remains unverified.',
     evidence_rule: 'VERIFIED requires an exact APK hash, source method, line or smali instruction, call target and arguments, plus a reproducible read-only test.',
     apk_inventory: apk.map(x => ({partition:x.partition, apk_path:x.apk_path, package:x.package,
       cert_sha256:x.cert_sha256, shared_user_id:x.sharedUserId,
