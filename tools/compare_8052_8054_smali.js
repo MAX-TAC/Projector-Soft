@@ -20,7 +20,8 @@ function methods(root) {
   for (const dir of fs.readdirSync(root).filter(x=>x==='smali'||x.startsWith('smali_classes'))) {
     for (const file of files(path.join(root,dir))) {
       const source = fs.readFileSync(file,'utf8');
-      const cls = source.match(/^\.class\s+[^\r\n]*?\s+(L[^;]+;)/m)?.[1];
+      const declaration=source.split(/\r?\n/).find(x=>x.startsWith('.class '));
+      const cls=declaration?.match(/L[^;]+;/)?.[0];
       if (!cls) throw new Error(`Missing .class in ${file}`);
       const lines = source.split(/\r?\n/);
       let current = null, body = [], start = 0;
@@ -109,7 +110,7 @@ if (require.main===module) {
       const a=path.join(temp,'a','smali','com','example');
       const b=path.join(temp,'b','smali','com','example');
       fs.mkdirSync(a,{recursive:true});fs.mkdirSync(b,{recursive:true});
-      const head='.class public Lcom/example/A;\n.super Ljava/lang/Object;\n';
+      const head='.class public Lcom/example/INotificationSideChannel$Stub$Proxy;\n.super Ljava/lang/Object;\n';
       fs.writeFileSync(path.join(a,'A.smali'),head+
         '.method public x()V\n    .locals 1\n    return-void\n.end method\n');
       fs.writeFileSync(path.join(b,'A.smali'),head+
