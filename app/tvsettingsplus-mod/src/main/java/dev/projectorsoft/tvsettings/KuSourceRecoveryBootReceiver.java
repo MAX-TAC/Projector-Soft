@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.util.Log;
+import java.lang.reflect.Method;
 
 /**
  * Starts MOD source-safety recovery on BOOT_COMPLETED only when KuSettings,
@@ -15,6 +16,17 @@ public final class KuSourceRecoveryBootReceiver extends BroadcastReceiver {
     private static final String TAG="TvSettingsPlusMOD";
     private static final String LEGACY="com.my.settings";
 
+    private static String machineId() {
+        try {
+            Class<?> properties=Class.forName("android.os.SystemProperties");
+            Method get=properties.getMethod("get",String.class,String.class);
+            Object value=get.invoke(null,"ro.rjpj.machine.id","");
+            return value instanceof String ? (String)value : "";
+        }catch(Exception e) {
+            return "";
+        }
+    }
+
     /**
      * A missing/hidden PackageManager entry is NOT proof of package disablement.
      * Android 11+ app-visibility filtering can otherwise produce a false
@@ -24,7 +36,11 @@ public final class KuSourceRecoveryBootReceiver extends BroadcastReceiver {
         try {
             PackageManager pm=context.getPackageManager();
             int state=pm.getApplicationEnabledSetting(LEGACY);
-            return KuSourceRecoveryActivationPolicy.explicitlyDisabled(state);
+            boolean allowed=KuSourceRecoveryActivationPolicy.automaticRecoveryAllowed(
+                    machineId(),state);
+            if(!allowed && KuSourceRecoveryActivationPolicy.explicitlyDisabled(state))
+                Log.w(TAG,"Automatic source recovery unavailable on unvalidated board; restore KuSettings");
+            return allowed;
         }catch(IllegalArgumentException e){
             Log.w(TAG,"Legacy KuSettings not queryable; replacement disabled",e);
             return false;
@@ -48,3 +64,4 @@ public final class KuSourceRecoveryBootReceiver extends BroadcastReceiver {
         }
     }
 }
+

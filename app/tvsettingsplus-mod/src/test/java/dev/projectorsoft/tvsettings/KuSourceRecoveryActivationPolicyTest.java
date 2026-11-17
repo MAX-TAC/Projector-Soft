@@ -20,6 +20,15 @@ public final class KuSourceRecoveryActivationPolicyTest {
                 "Query error/unknown state must never activate watchdog");
         check(!KuSourceRecoveryActivationPolicy.explicitlyDisabled(77),
                 "Unexpected package-manager state must fail closed");
+        check(!KuSourceRecoveryActivationPolicy.automaticRecoveryAllowed("8054",2),
+                "8054 must not transfer thermal watchdog ownership from package state alone");
+        check(!KuSourceRecoveryActivationPolicy.automaticRecoveryAllowed("",3),
+                "Unidentified board must fail closed");
+        check(!KuSourceRecoveryActivationPolicy.automaticRecoveryAllowed("8052",0),
+                "8052 default state retains OEM watchdog");
+        check(KuSourceRecoveryActivationPolicy.automaticRecoveryAllowed("8052",2),
+                "Existing 8052 guarded recovery path remains available");
         System.out.println("PASS KuSourceRecoveryActivationPolicy: explicit disable only");
     }
 }
+

@@ -21,4 +21,14 @@ public final class KuSourceRecoveryActivationPolicy {
         return componentEnabledState==DISABLED ||
                componentEnabledState==DISABLED_USER;
     }
+
+    /**
+     * The 8054 service lifecycle has not been established from bytecode and
+     * hardware traces. A disabled KuSettings package alone is insufficient
+     * authority to start a replacement thermal watchdog on that board.
+     */
+    public static boolean automaticRecoveryAllowed(String machineId,int componentEnabledState) {
+        return "8052".equals(machineId) && explicitlyDisabled(componentEnabledState);
+    }
 }
+
