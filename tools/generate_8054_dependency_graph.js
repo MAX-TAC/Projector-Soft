@@ -68,12 +68,12 @@ function main(inputDir, outputDir) {
   const partialTrace = {
     SND07: {
       source_file:'TvSettingsPlus smali_classes14/com/android/tv/settings/partnercustomizer/sound/equalizerdetail/EqualizerDetailFragment.smali and partnercustomizer/utils/ProgressBarVerticalFragment.smali; TvServices smali/com/mediatek/tv/agent/TVMenuSettingsService.smali',
-      class_method:'EqualizerDetailFragment#initPreferences; ProgressBarVerticalFragment#onPreferenceChange; PreferenceConfigUtils#updatePreferenceChanged/#onPreferenceValueChange; TVMenuSettingsService#<init>/#initMapdata/#initAdvancedAudioSubMap/#initSoundStyleMap/#reorganizeSettingValueIntToConfigValue; TVMenuSettingsService$1/SettingObserver#run/onChange; TVMenuSettingsService#updateConfigData; TVSettingConfig#setConifg',
-      line_or_smali:'OEM EQ UI:88-198; onPreferenceChange:1255-1257; PreferenceConfigUtils:4608-4643/3939-3982; TvServices keys:351-359, map pairs:2041-2081/1421-1461/4013-4053; value conversion:4385-4465; generic config setter:5299 and TVSettingConfig:503',
+      class_method:'EqualizerDetailFragment#initPreferences; ProgressBarVerticalFragment#onPreferenceChange; PreferenceConfigUtils#updatePreferenceChanged/#onPreferenceValueChange/#putSettingValueInt; TVMenuSettingsService#<init>/#initMapdata/#initAdvancedAudioSubMap/#initSoundStyleMap/#reorganizeSettingValueIntToConfigValue; TVMenuSettingsService$1/SettingObserver#run/onChange; TVMenuSettingsService#updateConfigData; TVSettingConfig#setConifg',
+      line_or_smali:'OEM EQ UI:88-198; onPreferenceChange:1255-1257; PreferenceConfigUtils:4608-4643/3939-3982/297-329; TvServices keys:351-359, map pairs:2041-2081/1421-1461/4013-4053; value conversion:4385-4465; generic config setter:5299 and TVSettingConfig:503',
       call_kind:'DEX_INVOKE_CHAINS',
       target:'PreferenceConfigUtils#createProgressDialogPreferenceTrans/#updatePreferenceChanged; Settings.Global observer; TVSettingConfig#setConifg; MtkTvConfigBase#setConfigValue',
       arguments:'Five sound_equalizer_detail_{120,500,1500,5000,10000}hz keys map to g_fusion_sound__equalizer_{120hz,500hz,1.5khz,5khz,10khz}; prefKeys includes all five',
-      precondition:'PreferenceConfigUtils#putSettingValueInt, ProgressBarDialog scale, dynamic observer branch, sound-mode interaction, native/HAL and DSP result remain unverified',
+      precondition:'ProgressBarDialog scale, dynamic observer branch, sound-mode interaction, native/HAL and DSP result remain unverified',
       source_apk_sha256:'TvSettingsPlus f8e0c6fe0f46e7eb8db651c31d85ef8b32a769b37e4dd0f96ed19a64725d74ee; TvServices 2934ca9334afd0a2af85786aa0593d27da216086c7eb9b0c9b801f412516b77d'
     },
     HDMI03: {
@@ -123,7 +123,7 @@ function main(inputDir, outputDir) {
       source:feature.id==='SYS02' ? 'Projector-Soft Actions runs 44098788358 and 44103425107' :
              feature.id==='SYS06' ? 'Projector-Soft Actions runs 44116773583, 44117754570 and 44119451026' :
              feature.id==='HDMI03' ? 'Projector-Soft Actions runs 44097233248, 44106214713, 44107731141, 44109768484, 44111398773, 44112728599, 44115028456, 44115598445, 44119451026 and 44120157009' :
-             feature.id==='SND07' ? 'Projector-Soft Actions runs 44121952362, 44122942100 and 44123938819' :
+             feature.id==='SND07' ? 'Projector-Soft Actions runs 44121952362, 44122942100, 44123938819 and 44125184745' :
              'Projector-Soft Actions run 44097233248',
       report:feature.id==='SYS02'||feature.id==='SYS06' ? 'BLUETOOTH_REMOTE_8054_STATIC_TRACE.md' :
              feature.id==='HDMI03' ? 'EDID_GLOBAL_ROUTE_8054.md' :
@@ -235,3 +235,4 @@ if (require.main === module) {
   main(inputDir, outputDir);
 }
 module.exports = {csv, main};
+

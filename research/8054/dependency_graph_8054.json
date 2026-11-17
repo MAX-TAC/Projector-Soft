@@ -19066,12 +19066,12 @@
       "backend_hint": "Global sound_equalizer_detail_120hz/500hz/1500hz/5000hz/10000hz, GEQ HAL independent?",
       "side_effects_hint": "Может сохранять лишь UI value",
       "source_file": "TvSettingsPlus smali_classes14/com/android/tv/settings/partnercustomizer/sound/equalizerdetail/EqualizerDetailFragment.smali and partnercustomizer/utils/ProgressBarVerticalFragment.smali; TvServices smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
-      "class_method": "EqualizerDetailFragment#initPreferences; ProgressBarVerticalFragment#onPreferenceChange; PreferenceConfigUtils#updatePreferenceChanged/#onPreferenceValueChange; TVMenuSettingsService#<init>/#initMapdata/#initAdvancedAudioSubMap/#initSoundStyleMap/#reorganizeSettingValueIntToConfigValue; TVMenuSettingsService$1/SettingObserver#run/onChange; TVMenuSettingsService#updateConfigData; TVSettingConfig#setConifg",
-      "line_or_smali": "OEM EQ UI:88-198; onPreferenceChange:1255-1257; PreferenceConfigUtils:4608-4643/3939-3982; TvServices keys:351-359, map pairs:2041-2081/1421-1461/4013-4053; value conversion:4385-4465; generic config setter:5299 and TVSettingConfig:503",
+      "class_method": "EqualizerDetailFragment#initPreferences; ProgressBarVerticalFragment#onPreferenceChange; PreferenceConfigUtils#updatePreferenceChanged/#onPreferenceValueChange/#putSettingValueInt; TVMenuSettingsService#<init>/#initMapdata/#initAdvancedAudioSubMap/#initSoundStyleMap/#reorganizeSettingValueIntToConfigValue; TVMenuSettingsService$1/SettingObserver#run/onChange; TVMenuSettingsService#updateConfigData; TVSettingConfig#setConifg",
+      "line_or_smali": "OEM EQ UI:88-198; onPreferenceChange:1255-1257; PreferenceConfigUtils:4608-4643/3939-3982/297-329; TvServices keys:351-359, map pairs:2041-2081/1421-1461/4013-4053; value conversion:4385-4465; generic config setter:5299 and TVSettingConfig:503",
       "call_kind": "DEX_INVOKE_CHAINS",
       "target": "PreferenceConfigUtils#createProgressDialogPreferenceTrans/#updatePreferenceChanged; Settings.Global observer; TVSettingConfig#setConifg; MtkTvConfigBase#setConfigValue",
       "arguments": "Five sound_equalizer_detail_{120,500,1500,5000,10000}hz keys map to g_fusion_sound__equalizer_{120hz,500hz,1.5khz,5khz,10khz}; prefKeys includes all five",
-      "precondition": "PreferenceConfigUtils#putSettingValueInt, ProgressBarDialog scale, dynamic observer branch, sound-mode interaction, native/HAL and DSP result remain unverified",
+      "precondition": "ProgressBarDialog scale, dynamic observer branch, sound-mode interaction, native/HAL and DSP result remain unverified",
       "confidence": "DEX_INVOKE_STATIC",
       "status": "PARTIAL_STATIC_TRACE",
       "evidence_hint": "S:8052/V33+Factory",
@@ -19083,7 +19083,7 @@
         },
         {
           "kind": "EXACT_SMALI_TRACE",
-          "source": "Projector-Soft Actions runs 44121952362, 44122942100 and 44123938819",
+          "source": "Projector-Soft Actions runs 44121952362, 44122942100, 44123938819 and 44125184745",
           "report": "AUDIO_EQ_PQ_STATIC_ROUTE_8054.md"
         }
       ],
