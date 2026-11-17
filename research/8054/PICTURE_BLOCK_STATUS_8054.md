@@ -1,6 +1,6 @@
 # Изображение: состояние блока
 
-Source state: IMPLEMENTED_PENDING_CI. После успешного compile/tests/APK CI — BUILT_UNTESTED; аппаратное состояние RUNTIME_TEST_REQUIRED. Статус относится к MOD пользовательским picture controls, не к заводской калибровке/PQ.
+Source state: BUILT_UNTESTED. Android compile и transaction tests: source-safety run 44139714268 success, OEM run 44139714347 success. Аппаратное состояние RUNTIME_TEST_REQUIRED. Exact-8054 APK CI 44139714534 и v33 CI 44139714405 success. APK не установлен. Статус относится к MOD пользовательским picture controls, не к заводской калибровке/PQ.
 
 ## Режим и источник
 
@@ -17,3 +17,5 @@ Source state: IMPLEMENTED_PENDING_CI. После успешного compile/test
 `OemPictureStateTest` запускает тот же transaction core, что Android adapter: повторное изменение сохраняет original; отсутствие original; частичное восстановление и повтор; новый экземпляр с сохранённым journal (модель перезапуска приложения); смена picture mode; HDMI mismatch; неизвестный контекст; ошибка journal commit; legacy запись. Это JVM fake provider/journal, не Android process/device test. Android adapter проверяется компиляцией API33; аппаратная проверка остаётся отдельной.
 
 Граница завершения: исходники и тестируемая защитная логика готовы, восстановление намеренно недоступно до установления контекста. Следующий пользовательский блок — звук: использовать готовую карту Settings/TvServices и OEM диапазоны, добавить групповые тесты, не исследовать закрытый HAL как условие переноса.
+
+

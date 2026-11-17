@@ -69,6 +69,7 @@ public final class OemFiveBandEqualizerHook {
             int[] bounds=originalBounds(ctx);
             if (supported==null || supported.isEmpty() || bounds==null) return;
             ContentResolver resolver=ctx.getContentResolver();
+            final String openedMode=Settings.Global.getString(resolver,"sound_style");
             Class<?> seek=Class.forName("androidx.preference.SeekBarPreference");
             Class<?> listener=Class.forName("androidx.preference.Preference$OnPreferenceChangeListener");
             for (int i=0;i<KEYS.length;i++) {
@@ -81,6 +82,7 @@ public final class OemFiveBandEqualizerHook {
                 try { current=Integer.parseInt(raw); }
                 catch(NumberFormatException malformed) { continue; }
                 if(current<bounds[0]||current>bounds[1])continue;
+                if(!OemSoundValuePolicy.acceptsBandChange(raw,current,bounds[0],bounds[1],openedMode,openedMode))continue;
                 Object item=seek.getConstructor(Context.class).newInstance(ctx);
                 preferenceClass.getMethod("setKey",String.class).invoke(item,
                         "projectorsoft_eq_"+key);
@@ -101,6 +103,8 @@ public final class OemFiveBandEqualizerHook {
                         int value=(Integer)args[1];
                         if (value<lo||value>hi)return false;
                         try {
+                            if(!OemSoundValuePolicy.acceptsBandChange(Settings.Global.getString(resolver,key),
+                                    value,lo,hi,openedMode,Settings.Global.getString(resolver,"sound_style")))return false;
                             if (!Settings.Global.putInt(resolver,key,value))return false;
                             return Settings.Global.getInt(resolver,key,Integer.MIN_VALUE)==value;
                         } catch(Exception ex) {
@@ -124,5 +128,4 @@ public final class OemFiveBandEqualizerHook {
         }
     }
 }
-
 

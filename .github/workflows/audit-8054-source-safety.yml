@@ -64,6 +64,10 @@ jobs:
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/PictureStateTransaction.java \
             app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/OemPictureStateTest.java
           java -cp /tmp/picture-state-tests dev.projectorsoft.tvsettings.OemPictureStateTest
+          javac -d /tmp/picture-state-tests \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemSoundValuePolicy.java \
+            app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/OemSoundValuePolicyTest.java
+          java -cp /tmp/picture-state-tests dev.projectorsoft.tvsettings.OemSoundValuePolicyTest
       - name: Check Android entry-point wiring remains conservative
         run: |
           set -euo pipefail
