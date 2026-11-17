@@ -44,6 +44,7 @@ const targets=[
   {apk:'TvServices',cls:'Lcom/mediatek/tv/agent/TVMenuSettingsService;',method:'<clinit>()V',versions:['8054']},
   {apk:'TvServices',cls:'Lcom/mediatek/tv/agent/TVMenuSettingsService;',method:'formatUriToString(Landroid/net/Uri;)Ljava/lang/String;',versions:['8054']},
   {apk:'TvServices',cls:'Lcom/android/tv/settings/partnercustomizer/tvsettingservice/TVSettingConfig;',method:'setConifg(Ljava/lang/String;I)I',versions:['8054']},
+  {apk:'TvServices',cls:'Lcom/mediatek/tv/agent/TVMenuSettingsService;',method:'access$100(Lcom/mediatek/tv/agent/TVMenuSettingsService;)[Ljava/lang/String;',versions:['8054']},
   {apk:'TvSettingsPlus',cls:'Lcom/android/tv/settings/partnercustomizer/tvsettingservice/BluetoothReconnectService;',method:'onCreate()V',versions:['8054']},
   {apk:'TvSettingsPlus',cls:'Lcom/android/tv/settings/partnercustomizer/tvsettingservice/BluetoothReconnectService;',method:'getLastConnectedA2dpDevices()Landroid/bluetooth/BluetoothDevice;',versions:['8054']},
   {apk:'TvSettingsPlus',cls:'Lcom/android/tv/settings/partnercustomizer/tvsettingservice/BluetoothReconnectService;',method:'getLastConnectedPhoneDevices()Landroid/bluetooth/BluetoothDevice;',versions:['8054']},
