@@ -313,10 +313,32 @@ jobs:
           root = pathlib.Path('/tmp/tv33/decoded')
           for path in sorted(root.glob('smali*/**/uicustom/**/*.smali')):
               owner = path.stem.split('$')[0]
+              text = path.read_text()
+              if path.stem == 'FocusSettingsSecondaryController':
+                  for setter, key in {'setPowerOnAutoFocus': 'persist.rjpj.autofocus.poweron',
+                                      'setMoveAutoFocus': 'persist.rjpj.autofocus.move'}.items():
+                      method = re.search(r'(?ms)^\.method private '+setter+r'\(Z\)V\n.*?^\.end method', text)
+                      assert method, setter
+                      body = method.group()
+                      calls = re.findall(r'(?m)^\s+invoke-\S+ \{[^}]*\}, (\S+)$', body)
+                      assert calls.count('Lcom/android/tv/settings/uicustom/util/SystemPropertiesUtil;->set(Ljava/lang/String;Ljava/lang/String;)V') == 1, calls
+                      assert all(call.startswith(('Ljava/lang/String;->valueOf(', 'Lcom/android/tv/settings/uicustom/util/SystemPropertiesUtil;->set('))
+                                 for call in calls), calls
+                      assert re.findall(r'const-string(?:/jumbo)? \S+, "([^"]+)"', body) == [key], body
+                      assert ':try_' not in body and 'iget-' not in body, body
+                      print('PASS standalone stock focus callback', setter, key)
+              for match in re.finditer(r'(?ms)^\.method [^\n]+\n.*?^\.end method', text):
+                  body = match.group()
+                  if ((path.stem == 'KeystoneSettingsSecondaryController'
+                       and re.search(r' (?:setMoveAutoKeystone|gotoKeystoneCorrection|onAttach)\(',body.splitlines()[0]))
+                      or ('FourCornerActivity' in body or 'DigitalZoomActivity' in body)
+                      or ('$' in path.stem and 'Landroid/content/Intent;->' in body
+                          and owner == 'KeystoneSettingsSecondaryController')):
+                      print('EXACT STOCK', path.name, body)
               if owner in {'FocusSettingsSecondaryController', 'KeystoneSettingsSecondaryController',
                            'GeneralSubMenuController', 'PictureSubMenuController',
                            'PictureModeValueSecondaryController', 'ColorTempValueSecondaryController'}:
-                  for match in re.finditer(r'(?ms)^\.method [^\n]+\n.*?^\.end method', path.read_text()):
+                  for match in re.finditer(r'(?ms)^\.method [^\n]+\n.*?^\.end method', text):
                       body = match.group()
                       signals = re.findall(r'(?m)^\s+(?:(?:invoke|const-string|iget|sget|iput)[^\n]*'
                           r'(?:Focus|focus|Keystone|keystone|tsv_|SettingsUtil|SystemProperties|tcorrection|'

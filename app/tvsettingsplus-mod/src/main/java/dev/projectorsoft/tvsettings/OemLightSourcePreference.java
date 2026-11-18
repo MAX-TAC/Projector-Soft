@@ -87,7 +87,10 @@ final class OemLightSourcePreference {
                                     Toast.makeText(context,"Не удалось выбрать режим",Toast.LENGTH_SHORT).show();
                                     return false;
                                 }
-                                if (model.currentSnapshot().pendingId == null) return true;
+                                if (model.currentSnapshot().pendingId == null) {
+                                    summary.invoke(item,titles[requested]);
+                                    return true;
+                                }
                                 enabled.invoke(item,false);
                                 summary.invoke(item,"Ожидается подтверждение режима");
                                 main.postDelayed(new Runnable() {

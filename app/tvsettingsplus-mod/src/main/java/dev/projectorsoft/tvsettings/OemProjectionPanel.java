@@ -15,6 +15,7 @@ public final class OemProjectionPanel {
             "com.rjpj.tcorrection","com.rjpj.tcorrection.DigitalZoomActivity",Intent.ACTION_MAIN,252);
         if ("8054".equals(OemHdmiPortInfo.machineId())) {
             OemLightSourcePreference.install(context,category,pref);
+            OemFocusPreferences.install(context,category,pref);
         } else {
             add(context,category,pref,"light","Яркость источника света · OEM",
                 "Оригинальный экран с OEM ограничениями охлаждения",
