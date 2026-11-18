@@ -8,7 +8,7 @@ on:
       - 'app/tvsettingsplus-mod/src/main/java/**'
       - 'app/tvsettingsplus-mod/src/test/java/**'
       - 'tools/patch_*.py'
-      - 'tools/trace_8054_hdmi_controls.py'
+      - 'tools/trace_8054_audio_delay.py'
   workflow_dispatch:
 concurrency:
   group: tvsettings-exact-8054-v33-build
@@ -96,9 +96,7 @@ jobs:
           SERVICE=/tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvServices/TvServices.apk
           echo "2934ca9334afd0a2af85786aa0593d27da216086c7eb9b0c9b801f412516b77d  $SERVICE" | sha256sum -c -
           apktool d -f -r -p /tmp/tv33/framework "$SERVICE" -o /tmp/tv33/tvservices
-          python3 tools/trace_8054_hdmi_controls.py /tmp/tv33/decoded /tmp/tv33/tvservices
-          aapt dump --values resources "$STOCK" > /tmp/tv33/stock-resources.txt
-          grep -Ei -A 5 'spec resource .*:(string|id)/[^ ]*(edid|hdmi1_4|hdmi2_0|hdmi2_1|hdmi_1_4|hdmi_2_0|hdmi_2_1)' /tmp/tv33/stock-resources.txt | head -n 130 || true
+          python3 tools/trace_8054_audio_delay.py /tmp/tv33/decoded /tmp/tv33/tvservices
           python3 tools/find_8054_keystone_layout.py \
             /tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk \
             /tmp/tv33/Exact8054ProjectionResources.java
