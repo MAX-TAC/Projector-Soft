@@ -96,7 +96,9 @@ jobs:
           SERVICE=/tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvServices/TvServices.apk
           echo "2934ca9334afd0a2af85786aa0593d27da216086c7eb9b0c9b801f412516b77d  $SERVICE" | sha256sum -c -
           apktool d -f -r -p /tmp/tv33/framework "$SERVICE" -o /tmp/tv33/tvservices
-          python3 tools/trace_8054_audio_delay.py /tmp/tv33/decoded /tmp/tv33/tvservices
+          KU_SETTINGS=/tmp/flix8054_erofs/system_a_tree/system/app/KuSettings/KuSettings.apk
+          apktool d -f -r -p /tmp/tv33/framework "$KU_SETTINGS" -o /tmp/tv33/kusettings
+          python3 tools/trace_8054_audio_delay.py /tmp/tv33/decoded /tmp/tv33/tvservices /tmp/tv33/kusettings
           python3 tools/find_8054_keystone_layout.py \
             /tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk \
             /tmp/tv33/Exact8054ProjectionResources.java

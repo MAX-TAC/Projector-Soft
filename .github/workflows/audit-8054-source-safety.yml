@@ -139,4 +139,19 @@ jobs:
           grep -Fq 'return "8052".equals(machineId)' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/EdidPortPolicy.java
           grep -Fq 'mayOfferLegacyOrientation(machineId())' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemProjectorOrientationHook.java
           grep -Fq 'autoPairSetting(context)' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemBluetoothRemoteHook.java
-
+  host-preflight-tests:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify host preflight with mock ADB
+        run: python -m unittest discover -s install-kit -p "test_*.py" -v

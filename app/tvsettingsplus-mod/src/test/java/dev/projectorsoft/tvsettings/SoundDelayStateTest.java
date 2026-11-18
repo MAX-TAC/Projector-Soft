@@ -26,6 +26,12 @@ public final class SoundDelayStateTest {
     }
 
     public static void main(String[] args) {
+        check(SoundDelayState.stockOffersSpdif(java.util.Arrays.asList("sound_spdif_delay"))
+                && !SoundDelayState.stockOffersSpdif(java.util.Collections.emptyList()),"stock SPDIF availability");
+        check(SoundDelayState.stockOffersSpeaker(java.util.Arrays.asList("sound_speaker_delay"),"true")
+                && !SoundDelayState.stockOffersSpeaker(java.util.Arrays.asList("sound_speaker_delay"),"false")
+                && !SoundDelayState.stockOffersSpeaker(java.util.Collections.emptyList(),"true"),
+                "speaker requires both stock menu membership and factory show-all flag");
         Fake delay=new Fake();
         SoundDelayState.Snapshot displayed=delay.read();
         check(displayed.synchronizedValue() && displayed.minMs==-20 && displayed.maxMs==140,"OEM scaling");

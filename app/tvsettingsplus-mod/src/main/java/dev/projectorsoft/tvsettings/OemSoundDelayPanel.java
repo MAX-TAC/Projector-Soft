@@ -15,7 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.WeakHashMap;
 
-/** Native audio delay preferences backed by the original Settings/TvServices route. */
+/** Native speaker and SPDIF delay preferences backed by the original Settings/TvServices route. */
 final class OemSoundDelayPanel implements View.OnAttachStateChangeListener,
         ViewTreeObserver.OnWindowFocusChangeListener {
     private static final String TAG="TvSettingsPlusMOD";
@@ -25,22 +25,30 @@ final class OemSoundDelayPanel implements View.OnAttachStateChangeListener,
     private View root;
     private boolean attached;
 
-    static void install(Context context,Object group,Class<?> pref) throws Exception {
+    static void install(Context context,Object group,Class<?> pref) {
         if (!"8054".equals(OemHdmiPortInfo.machineId())) return;
-        Class<?> stock=Class.forName("com.mediatek.wwtv.tvcenter.util.PartnerSettingsConfig");
-        Object audioOutput=stock.getMethod("getSettingsList",String.class).invoke(null,"audio_output");
-        if (!(audioOutput instanceof List)) return;
-        List<?> stockKeys=(List<?>)audioOutput;
         OemSoundDelayPanel panel=new OemSoundDelayPanel();
-        panel.add(context,group,pref,stockKeys,"sound_spdif_delay","g_audio__spdif_delay",
-                "Задержка SPDIF",243);
+        panel.add(context,group,pref,"sound_speaker_delay","g_audio__speaker_delay","Задержка динамиков",242);
+        panel.add(context,group,pref,"sound_spdif_delay","g_audio__spdif_delay","Задержка SPDIF",243);
         if (!panel.rows.isEmpty()) PANELS.put(group,new WeakReference<>(panel));
     }
 
-    private void add(Context context,Object group,Class<?> pref,List<?> stockKeys,
-                     String key,String configId,String title,int order) {
-        if (!stockKeys.contains(key)) return;
+    private static boolean available(String key) throws ReflectiveOperationException {
+        boolean speaker="sound_speaker_delay".equals(key);
+        Class<?> stock=Class.forName("com.mediatek.wwtv.tvcenter.util.PartnerSettingsConfig");
+        Object keys=stock.getMethod("getSettingsList",String.class)
+                .invoke(null,speaker?"sound_effects":"audio_output");
+        if (!(keys instanceof List)) return false;
+        if (!speaker) return SoundDelayState.stockOffersSpdif((List<?>)keys);
+        Class<?> properties=Class.forName("android.os.SystemProperties");
+        Object showAll=properties.getMethod("get",String.class,String.class)
+                .invoke(null,"persist.sys.settings.all","false");
+        return SoundDelayState.stockOffersSpeaker((List<?>)keys,showAll);
+    }
+
+    private void add(Context context,Object group,Class<?> pref,String key,String configId,String title,int order) {
         try {
+            if (!available(key)) return;
             Row row=new Row(context,pref,key,configId,title,order);
             if (Boolean.TRUE.equals(group.getClass().getMethod("addPreference",pref).invoke(group,row.item)))
                 rows.add(row);
@@ -117,6 +125,7 @@ final class OemSoundDelayPanel implements View.OnAttachStateChangeListener,
         }
 
         @Override public SoundDelayState.Snapshot read() throws Exception {
+            if (!available(key)) return null;
             List<String> selectors=selectors();
             String raw=Settings.Global.getString(context.getContentResolver(),key);
             int min=(Integer)getMin.invoke(config,configId);

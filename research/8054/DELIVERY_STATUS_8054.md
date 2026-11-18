@@ -49,7 +49,7 @@ DIRECT_MOD 22; DELEGATED_OEM 19; READ_ONLY 19; NOT_IMPLEMENTED 23; BLOCKED 11; H
 | SND09 | Dolby DAP | NOT_IMPLEMENTED | — | — | — | По фото DAP OFF, реальная поддержка неизвестна |
 | SND10 | DTS Loudness | NOT_IMPLEMENTED | — | — | — | Доказать support |
 | SND11 | ARC/eARC | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify CEC/ARC/eARC and output-specific behavior |
-| SND12 | Задержка аудио | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify SPDIF min/max, pending readback and audio timing on 8054; trace the speaker capability branch |
+| SND12 | Задержка аудио | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify per-output min/max, pending readback and audio timing on 8054 |
 | SND13 | Bluetooth Speaker / A2DP sink | HIDDEN | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Deferred speaker-mode scope; no service disable |
 | HDMI01 | Активный источник HDMI 1 | DIRECT_MOD | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm LiveTV resolves, actual port/signal, no-signal behavior and Back on 8054 |
 | HDMI02 | Активный источник HDMI 2 | DIRECT_MOD | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm LiveTV resolves, actual port/signal, no-signal behavior and Back on 8054 |

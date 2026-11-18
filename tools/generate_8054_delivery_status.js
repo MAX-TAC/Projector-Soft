@@ -15,7 +15,7 @@ set('NAV12','DELEGATED_OEM','Legacy intent aliases; compatibility diagnostics om
 set('PIC01 PIC02 PIC03 PIC04 PIC05 PIC06 PIC07 PIC08 PIC09 PIC10 PIC11 PIC12','READ_ONLY','OemPicturePanel native stored-value rows; editing BLOCKED_BY_RUNTIME','Establish the active input/PQ context and the stock callback/limits before direct writes');
 set('SND01 SND02 SND03 SND04 SND05 SND06 SND07','DIRECT_MOD','OemSoundPanel / sound guards / OemKeyToneHook / OEM capability gates','SOUND_DEVICE_CHECKLIST_8054.md: mode/output/focus, readback and audible effect','DELEGATED_OEM');
 set('SND11','DELEGATED_OEM','OEM SOUND_SETTINGS and stock AudioOutputActivity','Verify CEC/ARC/eARC and output-specific behavior');
-set('SND12','DIRECT_MOD','Native SPDIF delay via stock audio_output and TvServices; speaker delay requires its separate availability guard','Verify SPDIF min/max, pending readback and audio timing on 8054; trace the speaker capability branch','DELEGATED_OEM');
+set('SND12','DIRECT_MOD','Native speaker and SPDIF delay with exact OEM availability guards, provider and MediaTek readback','Verify per-output min/max, pending readback and audio timing on 8054','DELEGATED_OEM');
 set('SND13 DBL05','HIDDEN','OemMenuVisibilityHook hides BT speaker entry only; service retained','Deferred speaker-mode scope; no service disable');
 set('HDMI01 HDMI02','DIRECT_MOD','OemHdmiPortInfo HW6/HW7: verified input ID and stock LiveTV ACTION_VIEW passthrough','Confirm LiveTV resolves, actual port/signal, no-signal behavior and Back on 8054');
 set('HDMI03','READ_ONLY','OemHdmiEdidHook displays the single stored Global code; OEM editor retained','Verify EDID target scope for both inputs, renegotiation and restore','DELEGATED_OEM');

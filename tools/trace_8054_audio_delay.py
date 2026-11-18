@@ -8,7 +8,7 @@ METHOD = re.compile(r"(?ms)^\.method [^\n]*?([^\s(]+)\([^\n]*\n.*?^\.end method$
 RELEVANT = re.compile(
     r"sound_(?:speaker|spdif)_delay|g_audio__(?:speaker|spdif)_delay|"
     r"->(?:getDigitalZoom|setDigitalZoom)|(?:FourCorner|DigitalZoom)Activity;|"
-    r"tv_timer_power_off_timer_values|Lcom/my/(?:settings/activity/ProjectionActivity|service/MySetTimeService);"
+    r"tv_timer_power_off_timer_values|partnercustomizer/timer/(?:TimerActivity|TimerSetActivity|TimerFragment);|Lcom/my/(?:settings/activity/ProjectionActivity|service/MySetTimeService);"
 )
 EXACT = {
     "PreferenceConfigUtils": {"createNewProgressPreferencesss", "createProgressDialogPreferenceTrans",
@@ -18,6 +18,11 @@ EXACT = {
     "TVMenuSettingsService$2": {"run"},
     "TVMenuSettingsService$3": {"run"},
     "TVSettingConfig": {"getMin", "getMax", "getConfigValueInt"},
+    "TimerActivity": {"createSettingsFragment", "onCreate", "isOnEqualToOff", "setTime"},
+    "TimerFragment": {"onCreatePreferences", "onResume", "createPreferences"},
+    "TimerSetActivity": {"createSettingsFragment", "onCreate"},
+    "BootupReceiver": {"onReceive"},
+    "MySetTimeService": {"onCreate", "onStartCommand", "onDestroy"},
     "SoundFragment": {"createPreferences"},
     "ProgressBarDialog": {"onStart"},
     "AudioOutputActivity": {"createSettingsFragment"},

@@ -1,5 +1,6 @@
 package dev.projectorsoft.tvsettings;
 
+import java.util.List;
 import java.util.Objects;
 
 /** STOCK delay preferences use milliseconds while the MediaTek config uses units of 10 ms. */
@@ -36,13 +37,21 @@ final class SoundDelayState {
             return storedMs!=null && storedMs.equals(appliedMs);
         }
 
-        boolean sameRange(Snapshot other) {
+        boolean sameConfiguration(Snapshot other) {
             return other!=null && minMs==other.minMs && maxMs==other.maxMs
                     && Objects.equals(soundContext,other.soundContext);
         }
     }
 
     private SoundDelayState() {}
+
+    static boolean stockOffersSpdif(List<?> audioOutput) {
+        return audioOutput.contains("sound_spdif_delay");
+    }
+
+    static boolean stockOffersSpeaker(List<?> soundEffects,Object showAll) {
+        return "true".equals(showAll) && soundEffects.contains("sound_speaker_delay");
+    }
 
     static Write change(Backend backend, Snapshot displayed, int requested) {
         if (displayed==null || !displayed.synchronizedValue() || !displayed.allowed(requested))
@@ -53,7 +62,7 @@ final class SoundDelayState {
         } catch (Exception e) {
             return Write.STALE;
         }
-        if (!displayed.sameRange(before) || !before.synchronizedValue()
+        if (!displayed.sameConfiguration(before) || !before.synchronizedValue()
                 || !displayed.storedMs.equals(before.storedMs)) return Write.STALE;
         if (requested==before.storedMs) return Write.APPLIED;
 
@@ -68,7 +77,7 @@ final class SoundDelayState {
     static Write observe(Backend backend, Snapshot before, int requested) {
         try {
             Snapshot after=backend.read();
-            if (!before.sameRange(after) || after.storedMs==null || after.storedMs!=requested)
+            if (!before.sameConfiguration(after) || after.storedMs==null || after.storedMs!=requested)
                 return Write.UNCERTAIN;
             if (after.synchronizedValue()) return Write.APPLIED;
             return before.appliedMs.equals(after.appliedMs) ? Write.PENDING : Write.UNCERTAIN;
