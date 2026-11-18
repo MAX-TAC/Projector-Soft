@@ -13,7 +13,9 @@ import android.widget.Toast;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /** Uses the 8054 customer-zero KuSourceRJ route and confirms its persisted mode. */
 final class OemLightSourcePreference {
@@ -59,9 +61,11 @@ final class OemLightSourcePreference {
             List<LightSourceBrightnessController.Mode> modes = initial.choices;
             CharSequence[] titles = new CharSequence[modes.size()];
             CharSequence[] values = new CharSequence[modes.size()];
+            Map<String,LightSourceBrightnessController.Mode> modeByValue = new HashMap<>();
             for (int i = 0; i < modes.size(); i++) {
                 titles[i] = modes.get(i).title;
                 values[i] = Integer.toString(modes.get(i).hardwareId);
+                modeByValue.put(values[i].toString(),modes.get(i));
             }
             pref.getMethod("setKey",String.class).invoke(item,"projectorsoft_projection_light");
             pref.getMethod("setTitle",CharSequence.class).invoke(item,"Яркость источника света");
@@ -83,13 +87,14 @@ final class OemLightSourcePreference {
                             case "onPreferenceChange":
                                 LightSourceBrightnessController.Snapshot current = model.refresh();
                                 if (!current.enabled || current.pendingId != null) return false;
-                                int requested = Integer.parseInt((String)args[1]);
-                                if (!model.select(requested)) {
+                                LightSourceBrightnessController.Mode requested = modeByValue.get(args[1]);
+                                if (requested == null) return false;
+                                if (!model.select(requested.hardwareId)) {
                                     Toast.makeText(context,"Не удалось выбрать режим",Toast.LENGTH_SHORT).show();
                                     return false;
                                 }
                                 if (model.currentSnapshot().pendingId == null) {
-                                    summary.invoke(item,titles[requested]);
+                                    summary.invoke(item,requested.title);
                                     return true;
                                 }
                                 enabled.invoke(item,false);

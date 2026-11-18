@@ -20,6 +20,7 @@ public final class OemProjectionPanel {
                 "com.android.tv.settings.uicustom.fragment.projector.KeystoneCalibrationActivity",null,256);
             OemLightSourcePreference.install(context,category,pref);
             OemFocusPreferences.install(context,category,pref);
+            OemMoveKeystonePreference.install(context,category,pref);
         } else {
             add(context,category,pref,"light","Яркость источника света · OEM",
                 "Оригинальный экран с OEM ограничениями охлаждения",

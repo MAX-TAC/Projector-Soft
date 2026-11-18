@@ -47,6 +47,8 @@ final class OemFocusPreferences {
             Class<?> controllerClass = Class.forName(CONTROLLER);
             Method original = controllerClass.getDeclaredMethod(callbackName,boolean.class);
             original.setAccessible(true);
+            // The exact build checks the public no-arg constructor chain.
+            Object controller = controllerClass.getConstructor().newInstance();
             Class<?> switchClass = Class.forName("androidx.preference.SwitchPreference");
             Object item = switchClass.getConstructor(Context.class).newInstance(context);
             Method checked = switchClass.getMethod("setChecked",boolean.class);
@@ -67,7 +69,6 @@ final class OemFocusPreferences {
                                     boolean requested = (Boolean) args[1];
                                     // On exact stock these two setters touch only controller-local state
                                     // and the corresponding OEM property. No attached view is needed.
-                                    Object controller = controllerClass.getConstructor().newInstance();
                                     original.invoke(controller,requested);
                                     String after = (String) read.invoke(null,property,"");
                                     if ((requested ? "1" : "0").equals(after)) return true;
