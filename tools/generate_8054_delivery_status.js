@@ -17,7 +17,7 @@ set('SND01 SND02 SND03 SND04 SND05 SND06 SND07','DIRECT_MOD','OemSoundPanel / so
 set('SND11','DELEGATED_OEM','OEM SOUND_SETTINGS and stock AudioOutputActivity','Verify CEC/ARC/eARC and output-specific behavior');
 set('SND12','NOT_IMPLEMENTED','OEM_ROUTE_UNCONFIRMED: speaker/SPDIF config keys only','Find the stock controller and range if available on 8054');
 set('SND13 DBL05','HIDDEN','OemMenuVisibilityHook hides BT speaker entry only; service retained','Deferred speaker-mode scope; no service disable');
-set('HDMI01 HDMI02','READ_ONLY','OemHdmiPortInfo HW6/HW7; OEM source screen','Confirm physical port identity, active selection and signal','DELEGATED_OEM');
+set('HDMI01 HDMI02','DIRECT_MOD','OemHdmiPortInfo HW6/HW7: verified input ID and stock LiveTV ACTION_VIEW passthrough','Confirm LiveTV resolves, actual port/signal, no-signal behavior and Back on 8054');
 set('HDMI03 HDMI04 HDMI05','DELEGATED_OEM','OEM source page; direct EDID/CEC gated on8054','EDID per-port routing, CEC/eARC side effects and keystone preservation');
 set('HDMI06','DIRECT_MOD','OemHdmiAutoPlayHook','Verify OEM autoplay state and startup side effects');
 set('HDMI07','DIRECT_MOD','OemPowerOnSourceHook; boot property only','Verify exact8054 accepted IDs and cold boot per input');

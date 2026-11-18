@@ -1,5 +1,12 @@
 package dev.projectorsoft.tvsettings;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.media.tv.TvContract;
 import android.media.tv.TvInputInfo;
 import android.media.tv.TvInputManager;
 import android.os.Build;
@@ -13,7 +20,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.*;
 
-/** Read-only logical port inventory; no tune(), CEC, EDID, or property writes. */
+/** Native HDMI rows open the stock LiveTV passthrough route for verified ports. */
 public final class OemHdmiPortInfo {
     private static final Map<Object,WeakReference<Observer>> OBSERVERS = new WeakHashMap<>();
 
@@ -53,18 +60,39 @@ public final class OemHdmiPortInfo {
 
     private static String status(TvInputManager tv,Hdmi8054Policy.Port port) {
         if(tv==null) return "Служба TV Input недоступна";
-        if(port.inputId==null) return "Вход недоступен или неоднозначен · нажмите для обновления";
+        if(port.inputId==null) return "Вход недоступен или неоднозначен";
         try {
             switch(tv.getInputState(port.inputId)) {
-                case TvInputManager.INPUT_STATE_CONNECTED: return "Подключён · нажмите для обновления";
-                case TvInputManager.INPUT_STATE_CONNECTED_STANDBY: return "В режиме ожидания · нажмите для обновления";
-                case TvInputManager.INPUT_STATE_DISCONNECTED: return "Отключён · нажмите для обновления";
+                case TvInputManager.INPUT_STATE_CONNECTED: return "Подключён";
+                case TvInputManager.INPUT_STATE_CONNECTED_STANDBY: return "В режиме ожидания";
+                case TvInputManager.INPUT_STATE_DISCONNECTED: return "Отключён";
                 default: break;
             }
         } catch(RuntimeException ex) {
             Log.w("TvSettingsPlusMOD","HDMI input state unavailable",ex);
         }
-        return "Состояние недоступно · нажмите для обновления";
+        return "Состояние недоступно";
+    }
+
+    private static Intent liveTvIntent(Context context,Hdmi8054Policy.Port port) {
+        if(port.inputId==null)return null;
+        // Exact stock SourceFragment.switchToHDMI uses ACTION_VIEW with this passthrough URI.
+        Intent intent=new Intent(Intent.ACTION_VIEW,TvContract.buildChannelUriForPassthroughInput(port.inputId))
+                .setPackage(Hdmi8054Policy.LIVE_TV).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        PackageManager pm=context.getPackageManager();
+        ResolveInfo resolved=pm.resolveActivity(intent,PackageManager.MATCH_DEFAULT_ONLY);
+        ActivityInfo info=resolved==null?null:resolved.activityInfo;
+        if(info==null || info.applicationInfo==null || info.name==null
+                || !Hdmi8054Policy.LIVE_TV.equals(info.packageName))return null;
+        ComponentName component=new ComponentName(info.packageName,info.name);
+        boolean system=(info.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM)!=0;
+        boolean enabled=info.enabled && info.applicationInfo.enabled
+                && pm.getComponentEnabledSetting(component)<=PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                && pm.getApplicationEnabledSetting(info.packageName)<=PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
+        boolean permission=info.permission==null || info.permission.isEmpty()
+                || context.checkSelfPermission(info.permission)==PackageManager.PERMISSION_GRANTED;
+        return Hdmi8054Policy.mayLaunch(info.packageName,system,enabled,info.exported,permission)
+                ? intent.setComponent(component) : null;
     }
 
     static void bind(Object fragment,View root) {
@@ -176,22 +204,26 @@ public final class OemHdmiPortInfo {
                 (proxy,method,args)-> {
                     switch(method.getName()) {
                         case "onPreferenceClick":
-                            String current="Состояние недоступно";
+                            String failure="Вход недоступен или неоднозначен";
                             try {
                                 for(Hdmi8054Policy.Port port:ports(tv,count,metadata)) {
-                                    if(key.equals(port.hardware)) {
-                                        current=status(tv,port);
-                                        break;
+                                    if(!key.equals(port.hardware) || port.inputId==null)continue;
+                                    failure="Штатный экран HDMI недоступен";
+                                    Intent target=liveTvIntent(context,port);
+                                    if(target!=null){
+                                        context.startActivity(target);
+                                        return true;
                                     }
+                                    break;
                                 }
                             } catch(RuntimeException ex) {
-                                Log.w("TvSettingsPlusMOD","HDMI input state unavailable",ex);
+                                Log.w("TvSettingsPlusMOD","Cannot open HDMI input "+key,ex);
                             }
-                            pref.getMethod("setSummary",CharSequence.class).invoke(item,current);
+                            pref.getMethod("setSummary",CharSequence.class).invoke(item,failure);
                             return true;
                         case "hashCode": return System.identityHashCode(proxy);
                         case "equals": return proxy==args[0];
-                        case "toString": return "HdmiPortStatus:"+key;
+                        case "toString": return "HdmiPortSelect:"+key;
                         default: return null;
                     }
                 });

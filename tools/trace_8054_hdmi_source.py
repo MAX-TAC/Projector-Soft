@@ -8,7 +8,7 @@ METHOD = re.compile(r'^\.method .*?([^\s(]+)\(')
 SOURCE_CALL = re.compile(
     r'invoke-.*->(?:startActivity(?:ForResult)?|sendBroadcast(?:AsUser)?|'
     r'(?:[a-zA-Z0-9_]*(?:witch|elect|etCurrent|etMain)[a-zA-Z0-9_]*(?:Source|Input)[a-zA-Z0-9_]*)|'
-    r'tune|setSource|setInput|setInputSource|putExtra|startService)\('
+    r'tune|switchToHDMI|setSource|setInput|setInputSource|putExtra|startService)\('
 )
 
 

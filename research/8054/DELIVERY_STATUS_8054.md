@@ -2,7 +2,7 @@
 
 DIRECT_MOD — код контрола/платформенной интеграции; DELEGATED_OEM — только штатная навигация; READ_ONLY — только информация; HIDDEN — прямой MOD-контрол скрыт; BLOCKED — запрещённый путь; NOT_IMPLEMENTED — реализации MOD нет. OEM ссылка не MIGRATED и не FEATURE_COMPLETE. Наличие отдельного подменю и аппаратуры надо подтвердить на устройстве. BUILT_UNTESTED относится к условному пути в APK, а не к переносу всей функции. — означает отсутствие активной реализации, не успешную сборку функции. Все hardware результаты отсутствуют.
 
-DIRECT_MOD 18; DELEGATED_OEM 21; READ_ONLY 20; NOT_IMPLEMENTED 24; BLOCKED 11; HIDDEN 2
+DIRECT_MOD 20; DELEGATED_OEM 21; READ_ONLY 18; NOT_IMPLEMENTED 24; BLOCKED 11; HIDDEN 2
 
 | ID | Функция | Доставка | Fallback | Код | Аппаратура | Следующая проверка |
 |---|---|---|---|---|---|---|
@@ -51,8 +51,8 @@ DIRECT_MOD 18; DELEGATED_OEM 21; READ_ONLY 20; NOT_IMPLEMENTED 24; BLOCKED 11; H
 | SND11 | ARC/eARC | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify CEC/ARC/eARC and output-specific behavior |
 | SND12 | Задержка аудио | NOT_IMPLEMENTED | — | — | — | Find the stock controller and range if available on 8054 |
 | SND13 | Bluetooth Speaker / A2DP sink | HIDDEN | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Deferred speaker-mode scope; no service disable |
-| HDMI01 | Активный источник HDMI 1 | READ_ONLY | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm physical port identity, active selection and signal |
-| HDMI02 | Активный источник HDMI 2 | READ_ONLY | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm physical port identity, active selection and signal |
+| HDMI01 | Активный источник HDMI 1 | DIRECT_MOD | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm LiveTV resolves, actual port/signal, no-signal behavior and Back on 8054 |
+| HDMI02 | Активный источник HDMI 2 | DIRECT_MOD | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm LiveTV resolves, actual port/signal, no-signal behavior and Back on 8054 |
 | HDMI03 | EDID version | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | EDID per-port routing, CEC/eARC side effects and keystone preservation |
 | HDMI04 | HDMI-CEC | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | EDID per-port routing, CEC/eARC side effects and keystone preservation |
 | HDMI05 | Game mode | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | EDID per-port routing, CEC/eARC side effects and keystone preservation |

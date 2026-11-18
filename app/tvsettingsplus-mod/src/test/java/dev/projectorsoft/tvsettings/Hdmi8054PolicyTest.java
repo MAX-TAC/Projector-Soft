@@ -21,6 +21,12 @@ public final class Hdmi8054PolicyTest {
         check(ports.get(0).inputId==null); // Ambiguous duplicate registrations fail closed.
         check(!Hdmi8054Policy.mayUseLegacyCec("8054")&&!Hdmi8054Policy.mayUseLegacyCec(null)
             &&!Hdmi8054Policy.mayUseLegacyCec("")&&Hdmi8054Policy.mayUseLegacyCec("8052"));
+        check(Hdmi8054Policy.mayLaunch(Hdmi8054Policy.LIVE_TV,true,true,true,true));
+        check(!Hdmi8054Policy.mayLaunch("other.tv",true,true,true,true));
+        check(!Hdmi8054Policy.mayLaunch(Hdmi8054Policy.LIVE_TV,false,true,true,true));
+        check(!Hdmi8054Policy.mayLaunch(Hdmi8054Policy.LIVE_TV,true,false,true,true));
+        check(!Hdmi8054Policy.mayLaunch(Hdmi8054Policy.LIVE_TV,true,true,false,true));
+        check(!Hdmi8054Policy.mayLaunch(Hdmi8054Policy.LIVE_TV,true,true,true,false));
         System.out.println("PASS HDMI8054 HW6/HW7 identity, metadata, missing/duplicate/spoofed inputs, legacy CEC gate");
     }
 }

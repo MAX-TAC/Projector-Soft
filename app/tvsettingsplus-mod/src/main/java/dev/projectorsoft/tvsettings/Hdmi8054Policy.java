@@ -1,7 +1,7 @@
 package dev.projectorsoft.tvsettings;
 import java.util.*;
 
-/** Board metadata and installed HDMI input identity, not an active-source or EDID selector. */
+/** Board port identity and eligibility for the stock LiveTV launch. */
 public final class Hdmi8054Policy {
     public static final class Port {
         public final String label,hardware,inputId;
@@ -9,7 +9,13 @@ public final class Hdmi8054Policy {
             this.label=label;this.hardware=hardware;this.inputId=inputId;
         }
     }
+    static final String LIVE_TV = "com.mediatek.wwtv.tvcenter";
     private Hdmi8054Policy() {}
+
+    static boolean mayLaunch(String owner,boolean system,boolean enabled,boolean exported,boolean permission) {
+        return LIVE_TV.equals(owner) && system && enabled && exported && permission;
+    }
+
     public static boolean mayUseLegacyCec(String machine) {return "8052".equals(machine);}
     public static List<Port> ports(String machine,int count,String metadata,List<String> hdmiInputs) {
         if(!"8054".equals(machine)||count!=2||metadata==null||hdmiInputs==null)return Collections.emptyList();

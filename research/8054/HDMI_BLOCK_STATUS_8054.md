@@ -1,6 +1,6 @@
 # HDMI / EDID / CEC 8054
 
-Кодовый milestone: read-only проверка logical port inventory и OEM делегирование; аппаратное состояние RUNTIME_TEST_REQUIRED. Не hardware verified. После успешного CI статус этого milestone — BUILT_UNTESTED, PR draft.
+Кодовый milestone: нативные строки выбора HDMI1/2 запускают штатный MediaTek LiveTV; аппаратное состояние RUNTIME_TEST_REQUIRED. Не hardware verified. После успешного CI статус этого milestone — BUILT_UNTESTED, PR draft.
 
 ## Доказательства и разные индексы
 
@@ -18,7 +18,7 @@ Handoff `00_START_HERE.md:3` и строки HDMI01/HDMI02 миграционн�
 
 ## Реализация и побочные действия
 
-OemHdmiPortInfo только читает board identity и TYPE_HDMI TV Input list. Показывает две read-only строки при валидной metadata, отдельно отмечает отсутствующий/неоднозначный input; при неверной metadata не выдумывает HDMI-порты. Нет tune(), property/Settings writes, CEC API или EDID setter.
+OemHdmiPortInfo проверяет board identity и TYPE_HDMI TV Input list. Две строки используют только однозначные HW6/HW7. При клике список перечитывается; отсутствующий или неоднозначный input блокирует запуск. Нет прямого tune(), записи Settings/properties, CEC API или EDID setter.
 
 Legacy MOD EDID selector остаётся скрыт на 8054 (EdidPortPolicy). Добавлена явная ссылка в оригинальный раздел источников: нужный источник и EDID выбираются пользователем там. Это переход в source page, не автоматический выбор порта или direct EDID control.
 
@@ -28,7 +28,7 @@ Legacy MOD CEC разрешён только на исходной 8052; на 80
 
 Строки HDMI 1/2 перечитывают состояние TV Input при возвращении фокуса окну, в том числе если OEM отказал в регистрации callback. Срок жизни focus-listener привязан к текущему View. Это актуализирует состояние соединения и не помечает его как активный вход. JVM регрессия покрывает отказ регистрации, повторный attach, возврат фокуса и снятие подписок.
 
-Выбор HDMI1/2 требует подтверждённого штатного маршрута, который различает HW6/HW7. Сопоставление `TvInputInfo` само по себе не определяет аргументы OEM-команды переключения. Exact workflow трассирует только вызовы выбора источника в декодированных штатных TvSettingsPlus и KuSourceRJ. До подтверждения входного контракта строки остаются read-only. Отдельные блокеры EDID, CEC и game mode сохраняются.
+Штатный `SourceFragment.switchToHDMI(Context, String)` в TvSettingsPlus фильтрует TYPE_HDMI, берёт ID входа и передаёт `TvContract.buildChannelUriForPassthroughInput(id)` в ACTION_VIEW с пакетом `com.mediatek.wwtv.tvcenter` и NEW_TASK (smali 674–759). MOD повторяет этот переход из нативной строки с точным ID и разрешает только доступный системный LiveTV Activity для такого URI. Проверка разрешения и enabled/exported выполняется при клике. Ошибка запуска видна в строке. Запуск не доказывает активный видеовход. [Exact stock trace](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44357322703/job/134988833252)
 
 ## Тесты, откат, device-план
 
