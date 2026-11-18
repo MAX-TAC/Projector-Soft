@@ -118,7 +118,7 @@ public final class OemHardwareDelegatedSettings {
 
     public static boolean installPictureLink(Context context,Object category,Class<?> preferenceClass) {
         return add(context,category,preferenceClass,"projectorsoft_picture_oem",
-            "Изображение · штатные настройки","Режим, цвет, HDR и MEMC через оригинальный обработчик",
+            "Редактировать изображение","Штатные ползунки, режим изображения, цвет, HDR и MEMC",
             "android.settings.PICTURE_SETTINGS",211);
     }
     public static boolean installSoundLink(Context context,Object category,Class<?> preferenceClass) {

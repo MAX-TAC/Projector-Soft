@@ -307,6 +307,24 @@ jobs:
           mkdir -p /tmp/tv33/framework
           apktool if /tmp/flix8054_erofs/system_a_tree/system/framework/framework-res.apk -p /tmp/tv33/framework
           apktool d -f -r -p /tmp/tv33/framework /tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk -o /tmp/tv33/decoded
+          # Exact stock call sites for the projection and picture integration, before any patches.
+          python3 - <<'PY'
+          import pathlib, re
+          root = pathlib.Path('/tmp/tv33/decoded')
+          for path in sorted(root.glob('smali*/**/uicustom/**/*.smali')):
+              owner = path.stem.split('$')[0]
+              if owner in {'FocusSettingsSecondaryController', 'KeystoneSettingsSecondaryController',
+                           'GeneralSubMenuController', 'PictureSubMenuController',
+                           'PictureModeValueSecondaryController', 'ColorTempValueSecondaryController'}:
+                  for match in re.finditer(r'(?ms)^\.method [^\n]+\n.*?^\.end method', path.read_text()):
+                      body = match.group()
+                      signals = re.findall(r'(?m)^\s+(?:(?:invoke|const-string|iget|sget|iput)[^\n]*'
+                          r'(?:Focus|focus|Keystone|keystone|tsv_|SettingsUtil|SystemProperties|tcorrection|'
+                          r'BRIGHT_SETTINGS|A_RJ_CUSTOMER_ID|showSecondary|startActivity|setOnClick|setOnChecked)[^\n]*)$', body)
+                      if signals:
+                          print(path.name, body.splitlines()[0])
+                          print('\n'.join(line.strip() for line in signals))
+          PY
           python3 tools/patch_customer0_lightmode_smali.py /tmp/tv33/decoded /tmp/tv33/brightness_report.json
           python3 tools/patch_aosp_root_menu_smali.py /tmp/tv33/decoded /tmp/tv33/navigation_report.json
           python3 tools/patch_oem_sleep_menu_smali.py /tmp/tv33/decoded /tmp/tv33/sleep_menu_report.json
@@ -427,7 +445,7 @@ jobs:
           retains customer-specific light mode, hides Bluetooth speaker menu
           entry, and keeps nine legacy settings Intents.
           For 8054, legacy MOD optical brightness writes are blocked; original
-          customer-specific brightness UI and checked OEM BrightActivity are retained.
+          The 8054 light-source selector requires customer 0 and an available OEM KuSourceRJ receiver.
           Do not equate the retained OEM controls with transferred native MOD controls.
           The brightness adapter rejects 8054/unknown writes before receiver lookup/broadcast.
           8054 TimeService replacement is gated off pending bytecode and hardware proof.

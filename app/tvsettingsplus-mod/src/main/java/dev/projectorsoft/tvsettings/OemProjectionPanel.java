@@ -13,9 +13,13 @@ public final class OemProjectionPanel {
         add(context,category,pref,"zoom","Цифровой зум · OEM",
             "Масштаб изображения; это не яркость LED и не управление мотором",
             "com.rjpj.tcorrection","com.rjpj.tcorrection.DigitalZoomActivity",Intent.ACTION_MAIN,252);
-        add(context,category,pref,"light","Яркость источника света · OEM",
-            "Оригинальный экран с OEM ограничениями охлаждения",
-            "com.coolux.source","com.coolux.source.activity.BrightActivity",Intent.ACTION_MAIN,253);
+        if ("8054".equals(OemHdmiPortInfo.machineId())) {
+            OemLightSourcePreference.install(context,category,pref);
+        } else {
+            add(context,category,pref,"light","Яркость источника света · OEM",
+                "Оригинальный экран с OEM ограничениями охлаждения",
+                "com.coolux.source","com.coolux.source.activity.BrightActivity",Intent.ACTION_MAIN,253);
+        }
     }
     private static void add(Context context,Object category,Class<?> pref,String key,String title,String summary,
                             String pkg,String activity,String action,int order) {

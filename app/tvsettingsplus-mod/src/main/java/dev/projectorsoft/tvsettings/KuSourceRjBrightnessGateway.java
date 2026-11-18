@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BooleanSupplier;
 
 /**
  * OEM-preserving adapter for MT9660 RUIOS 8052/8054 light-source modes.
@@ -19,8 +20,6 @@ import java.util.Objects;
  * persistent mode, thermal/PWM limits and timing. Never write PWM, TRD or
  * persist.bright.model from the settings app.
  *
- * IMPORTANT: This class is source-level implementation; it is NOT yet wired
- * into the signed TvSettingsPlus APK until its DEX/menu integration passes CI.
  */
 public final class KuSourceRjBrightnessGateway
         implements LightSourceBrightnessController.VendorGateway {
@@ -40,10 +39,21 @@ public final class KuSourceRjBrightnessGateway
 
     private final Context context;
     private final String firmwareId;
+    private final BooleanSupplier stock8054Path;
 
     public KuSourceRjBrightnessGateway(Context context, String firmwareId) {
+        this(context, firmwareId, () -> false);
+    }
+
+    KuSourceRjBrightnessGateway(Context context, String firmwareId, BooleanSupplier stock8054Path) {
         this.context = Objects.requireNonNull(context, "context").getApplicationContext();
         this.firmwareId = firmwareId;
+        this.stock8054Path = Objects.requireNonNull(stock8054Path);
+    }
+
+    private boolean supportedPath() {
+        return Projection8054Policy.mayUseLegacyBrightness(firmwareId)
+                || ("8054".equals(firmwareId) && stock8054Path.getAsBoolean());
     }
 
     private void requireReceiver() throws PackageManager.NameNotFoundException {
@@ -59,8 +69,7 @@ public final class KuSourceRjBrightnessGateway
     public List<LightSourceBrightnessController.Mode> readSupportedModes() throws Exception {
         // The 8052/8054 static comparison finds identical BrightReceiver and BrightUtils.
         // A runtime LIGHT_SOURCE_MODE capability gate remains mandatory on each board.
-        if (!("8052".equals(firmwareId) || "8054".equals(firmwareId)))
-            return Collections.emptyList();
+        if (!supportedPath()) return Collections.emptyList();
         requireReceiver();
         return OEM_MODES;
     }
@@ -83,8 +92,8 @@ public final class KuSourceRjBrightnessGateway
         if (hardwareId < 0 || hardwareId > 3) {
             throw new IllegalArgumentException("Non-OEM brightness mode");
         }
-        if (!Projection8054Policy.mayUseLegacyBrightness(firmwareId))
-            throw new IllegalStateException("Use original OEM brightness UI until 8054 transaction and rollback are verified");
+        if (!supportedPath())
+            throw new IllegalStateException("OEM brightness route unavailable for this profile");
         requireReceiver();
         Intent intent=new Intent(ACTION);
         intent.setComponent(new ComponentName(PACKAGE, RECEIVER));
