@@ -91,10 +91,16 @@ public final class OemHardwareDelegatedSettings {
                 SOURCE_ACTION,275);
         }
         if(!hdmiExists())return added;
+        if("8054".equals(OemHdmiPortInfo.machineId())) {
+            added=add(context,sourceCategory,preferenceClass,
+                "projectorsoft_hdmi_edid_oem","EDID · штатный раздел источников",
+                "Выберите нужный HDMI в штатном меню перед настройкой EDID",
+                SOURCE_ACTION,278)||added;
+        }
         added=add(context,sourceCategory,preferenceClass,
             "projectorsoft_hdmi_game_oem","Игровой режим HDMI",
             "Заводская настройка с сохранением коррекции трапеции",
-            SOURCE_ACTION,276);
+            SOURCE_ACTION,276)||added;
         if(!nativeCec) {
             added=add(context,sourceCategory,preferenceClass,
                 "projectorsoft_hdmi_cec_oem","HDMI-CEC · расширенные настройки",

@@ -102,6 +102,7 @@ public final class OemInlinePreferencesHook {
             Object hdmiCategory=addCategory(screen,preference,categoryClass,
                     context,"projectorsoft_hdmi_category","Источники · Проектор",270);
             if(hdmiCategory!=null) {
+                boolean hasPorts=OemHdmiPortInfo.install(context,hdmiCategory,preference);
                 boolean hasEdid=OemHdmiEdidHook.install(context,hdmiCategory,preference);
                 boolean hasAutoplay=OemHdmiAutoPlayHook.install(context,hdmiCategory,preference);
                 boolean hasBootSource=OemPowerOnSourceHook.install(context,hdmiCategory,preference);
@@ -109,7 +110,7 @@ public final class OemInlinePreferencesHook {
                 boolean hasCec=OemHdmiCecHook.install(context,hdmiCategory,preference);
                 boolean hasOemLinks=OemHardwareDelegatedSettings.installSourceLinks(
                         context,hdmiCategory,preference,hasCec,hasBootApp);
-                if(!hasEdid && !hasAutoplay && !hasBootSource && !hasBootApp
+                if(!hasPorts && !hasEdid && !hasAutoplay && !hasBootSource && !hasBootApp
                         && !hasCec && !hasOemLinks) {
                     // Never present an empty category or unsupported HDMI options.
                     screen.getClass().getMethod("removePreference",preference)
