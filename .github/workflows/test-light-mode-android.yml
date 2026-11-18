@@ -65,6 +65,7 @@ jobs:
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/KuSourceRecoveryActivationPolicy.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/EdidPortPolicy.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/Hdmi8054Policy.java \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/HdmiViewLifecycle.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/Projection8054Policy.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/StandardAndroidNavigationPolicy.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/PictureStateTransaction.java \
@@ -72,7 +73,7 @@ jobs:
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/SoundPanelState.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/MenuPresentationPolicy.java \
             app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/*.java
-          for cls in StandardAndroidNavigationPolicyTest Projection8054PolicyTest Hdmi8054PolicyTest SoundPanelStateTest OemPictureStateTest OemSoundValuePolicyTest ProjectorCapabilitiesTest LightSourceBrightnessControllerTest MenuPresentationPolicyTest BootSourceMappingTest KuSourceRecoveryPolicyTest KuSourceRecoveryActivationPolicyTest EdidPortPolicyTest ProjectorCompatibilityPolicyTest OemEarcPolicyTest ThermalTelemetryPolicyTest OemDelegatedMenuPolicyTest OemAcPowerBootPolicyTest OemKeyTonePolicyTest OemPowerOnAppPolicyTest OemFontScalePolicyTest OemScreenTimeoutPolicyTest OemBluetoothRemotePolicyTest OemKuSourceServicePolicyTest OemLegacyIntentPolicyTest; do
+          for cls in StandardAndroidNavigationPolicyTest Projection8054PolicyTest Hdmi8054PolicyTest HdmiViewLifecycleTest SoundPanelStateTest OemPictureStateTest OemSoundValuePolicyTest ProjectorCapabilitiesTest LightSourceBrightnessControllerTest MenuPresentationPolicyTest BootSourceMappingTest KuSourceRecoveryPolicyTest KuSourceRecoveryActivationPolicyTest EdidPortPolicyTest ProjectorCompatibilityPolicyTest OemEarcPolicyTest ThermalTelemetryPolicyTest OemDelegatedMenuPolicyTest OemAcPowerBootPolicyTest OemKeyTonePolicyTest OemPowerOnAppPolicyTest OemFontScalePolicyTest OemScreenTimeoutPolicyTest OemBluetoothRemotePolicyTest OemKuSourceServicePolicyTest OemLegacyIntentPolicyTest; do
             java -cp /tmp/jvm-classes "dev.projectorsoft.tvsettings.$cls"
           done
       - uses: actions/upload-artifact@v4

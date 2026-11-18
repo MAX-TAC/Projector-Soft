@@ -7,17 +7,21 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
+import java.lang.ref.WeakReference;
+import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.*;
 
 /** Read-only logical port inventory; no tune(), CEC, EDID, or property writes. */
 public final class OemHdmiPortInfo {
+    private static final Map<Object,WeakReference<Observer>> OBSERVERS = new WeakHashMap<>();
+
     private OemHdmiPortInfo() {}
     public static String machineId() {
         try {return (String)Class.forName("android.os.SystemProperties").getMethod("get",String.class,String.class)
             .invoke(null,"ro.rjpj.machine.id","");}catch(Exception ex){return "";}
     }
-    public static boolean install(Context context,Object category,Class<?> pref,View root) {
+    public static boolean install(Context context,Object category,Class<?> pref) {
         if(!"8054".equals(machineId()))return false;
         try {
             int count=Build.class.getField("A_RJ_HDMI_PORT_COUNT").getInt(null);
@@ -27,14 +31,13 @@ public final class OemHdmiPortInfo {
             String metadata=raw instanceof String?(String)raw:null;
             List<Hdmi8054Policy.Port> ports=ports(tv,count,metadata);
             if(ports.isEmpty())return false;
-            Map<String,Object> rows=new LinkedHashMap<>();
+            boolean added=false;
             for(int i=0;i<ports.size();i++) {
                 Hdmi8054Policy.Port port=ports.get(i);
                 Object row=entry(context,category,pref,port.hardware,port.label,status(tv,port),271+i,tv,count,metadata);
-                if(row!=null)rows.put(port.hardware,row);
+                added |= row != null;
             }
-            if(root!=null && tv!=null && !rows.isEmpty())observe(root,tv,pref,count,metadata,rows);
-            return !rows.isEmpty();
+            return added;
         }catch(Exception ex){Log.w("TvSettingsPlusMOD","HDMI port inventory unavailable",ex);return false;}
     }
 
@@ -63,42 +66,91 @@ public final class OemHdmiPortInfo {
         return "Состояние недоступно · нажмите для обновления";
     }
 
-    private static void observe(View root,TvInputManager tv,Class<?> pref,int count,String metadata,
-                                Map<String,Object> rows) throws ReflectiveOperationException {
-        java.lang.reflect.Method summary=pref.getMethod("setSummary",CharSequence.class);
-        Runnable refresh=()-> {
-            if(!root.isAttachedToWindow())return;
+    static void bind(Object fragment,View root) {
+        WeakReference<Observer> reference=OBSERVERS.get(fragment);
+        Observer observer=reference==null ? null : reference.get();
+        if(root==null || !"8054".equals(machineId())) {
+            if(observer!=null)observer.bind(null);
+            OBSERVERS.remove(fragment);
+            return;
+        }
+        try {
+            Method find=fragment.getClass().getMethod("findPreference",CharSequence.class);
+            if(find.invoke(fragment,"projectorsoft_hdmi_info_HW6")==null
+                    && find.invoke(fragment,"projectorsoft_hdmi_info_HW7")==null) {
+                if(observer!=null)observer.bind(null);
+                OBSERVERS.remove(fragment);
+                return;
+            }
+            if(observer==null) {
+                Context context=root.getContext();
+                TvInputManager tv=context.getSystemService(TvInputManager.class);
+                if(tv==null)return;
+                int count=Build.class.getField("A_RJ_HDMI_PORT_COUNT").getInt(null);
+                Object raw=Build.class.getField("A_RJ_HDMI_PORTS").get(null);
+                Method summary=Class.forName("androidx.preference.Preference")
+                        .getMethod("setSummary",CharSequence.class);
+                observer=new Observer(fragment,find,summary,tv,count,raw instanceof String ? (String)raw : null);
+                OBSERVERS.put(fragment,new WeakReference<>(observer));
+            }
+            observer.bind(root);
+        }catch(Exception ex){Log.w("TvSettingsPlusMOD","HDMI view binding unavailable",ex);}
+    }
+
+    private static final class Observer extends HdmiViewLifecycle<View>
+            implements View.OnAttachStateChangeListener {
+        private final Object fragment;
+        private final Method find;
+        private final Method summary;
+        private final TvInputManager tv;
+        private final int count;
+        private final String metadata;
+        private final TvInputManager.TvInputCallback callback=new TvInputManager.TvInputCallback() {
+            @Override public void onInputAdded(String id){inputChanged();}
+            @Override public void onInputRemoved(String id){inputChanged();}
+            @Override public void onInputStateChanged(String id,int state){inputChanged();}
+        };
+
+        Observer(Object fragment,Method find,Method summary,TvInputManager tv,int count,String metadata) {
+            this.fragment=fragment;
+            this.find=find;
+            this.summary=summary;
+            this.tv=tv;
+            this.count=count;
+            this.metadata=metadata;
+        }
+
+        @Override public void onViewAttachedToWindow(View root){attached(root);}
+        @Override public void onViewDetachedFromWindow(View root){detached(root);}
+        @Override boolean isAttached(View root){return root.isAttachedToWindow();}
+        @Override void addListener(View root){root.addOnAttachStateChangeListener(this);}
+        @Override void removeListener(View root){root.removeOnAttachStateChangeListener(this);}
+        @Override boolean subscribe(){
+            try {
+                tv.registerCallback(callback,new Handler(Looper.getMainLooper()));
+                return true;
+            }catch(RuntimeException ex){
+                Log.w("TvSettingsPlusMOD","HDMI events unavailable",ex);
+                return false;
+            }
+        }
+        @Override void unsubscribe(){
+            try {
+                tv.unregisterCallback(callback);
+            }catch(RuntimeException ex){
+                Log.w("TvSettingsPlusMOD","Cannot unregister HDMI events",ex);
+            }
+        }
+        @Override void refresh(){
             try {
                 Map<String,String> statuses=new HashMap<>();
                 for(Hdmi8054Policy.Port port:ports(tv,count,metadata))statuses.put(port.hardware,status(tv,port));
-                for(Map.Entry<String,Object> row:rows.entrySet()) {
-                    summary.invoke(row.getValue(),statuses.getOrDefault(row.getKey(),"Вход недоступен"));
+                for(String hardware:new String[]{"HW6","HW7"}) {
+                    Object row=find.invoke(fragment,"projectorsoft_hdmi_info_"+hardware);
+                    if(row!=null)summary.invoke(row,statuses.getOrDefault(hardware,"Вход недоступен"));
                 }
             }catch(Exception ex){Log.w("TvSettingsPlusMOD","HDMI refresh unavailable",ex);}
-        };
-        TvInputManager.TvInputCallback callback=new TvInputManager.TvInputCallback() {
-            @Override public void onInputAdded(String inputId){refresh.run();}
-            @Override public void onInputRemoved(String inputId){refresh.run();}
-            @Override public void onInputStateChanged(String inputId,int state){refresh.run();}
-        };
-        View.OnAttachStateChangeListener lifecycle=new View.OnAttachStateChangeListener() {
-            private boolean registered;
-            @Override public void onViewAttachedToWindow(View view) {
-                if(!registered)try {
-                    tv.registerCallback(callback,new Handler(Looper.getMainLooper()));
-                    registered=true;
-                }catch(RuntimeException ex){Log.w("TvSettingsPlusMOD","HDMI events unavailable",ex);}
-                refresh.run();
-            }
-            @Override public void onViewDetachedFromWindow(View view) {
-                if(registered)try {
-                    tv.unregisterCallback(callback);
-                }catch(RuntimeException ex){Log.w("TvSettingsPlusMOD","Cannot unregister HDMI events",ex);}
-                finally{registered=false;}
-            }
-        };
-        root.addOnAttachStateChangeListener(lifecycle);
-        if(root.isAttachedToWindow())lifecycle.onViewAttachedToWindow(root);
+        }
     }
 
     private static Object entry(Context context,Object group,Class<?> pref,String key,String title,String summary,

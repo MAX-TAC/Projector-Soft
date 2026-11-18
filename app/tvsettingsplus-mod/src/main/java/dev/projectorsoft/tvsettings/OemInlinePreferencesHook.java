@@ -44,6 +44,7 @@ public final class OemInlinePreferencesHook {
             Object ctx=fragment.getClass().getMethod("getContext").invoke(fragment);
             if (!(ctx instanceof Context)) return;
             Context context=(Context)ctx;
+            boolean exactBoard="8054".equals(OemHdmiPortInfo.machineId());
             // Enforce the projector no-black-screen policy even when native
             // preferences have already been inserted during fragment recreation.
             OemScreenTimeoutSafetyHook.ensureNever(context);
@@ -76,14 +77,13 @@ public final class OemInlinePreferencesHook {
             if(systemCategory!=null) {
                 boolean androidNavigation=OemStandardAndroidNavigation.install(context,systemCategory,preference);
                 boolean info=OemSystemInfoHook.install(context,systemCategory,preference);
-                boolean preflight=!"8054".equals(OemHdmiPortInfo.machineId()) && OemCompatibilityDiagnosticsHook.install(
+                boolean preflight=!exactBoard && OemCompatibilityDiagnosticsHook.install(
                         context,systemCategory,preference);
                 boolean firmware=OemHardwareDelegatedSettings.installSystemLinks(
                         context,systemCategory,preference);
-                boolean screenStatus=OemScreenTimeoutSafetyHook.installStatus(
+                boolean screenStatus=!exactBoard && OemScreenTimeoutSafetyHook.installStatus(
                         context,systemCategory,preference);
-                boolean timer=OemStockUserSettings.installSwitchOffTimer(context,systemCategory,preference);
-                if(!androidNavigation && !info && !preflight && !firmware && !screenStatus && !timer) {
+                if(!androidNavigation && !info && !preflight && !firmware && !screenStatus) {
                     screen.getClass().getMethod("removePreference",preference)
                             .invoke(screen,systemCategory);
                 }
@@ -97,15 +97,18 @@ public final class OemInlinePreferencesHook {
             }
             Object powerCategory=addCategory(screen,preference,categoryClass,
                     context,"projectorsoft_power_category","Питание · Проектор",260);
-            if(powerCategory!=null && !OemAcPowerBootHook.install(
-                    context,powerCategory,preference)) {
-                screen.getClass().getMethod("removePreference",preference)
-                    .invoke(screen,powerCategory);
+            if(powerCategory!=null) {
+                boolean acPower=OemAcPowerBootHook.install(context,powerCategory,preference);
+                boolean idle=exactBoard && OemScreenTimeoutSafetyHook.installStatus(context,powerCategory,preference);
+                boolean timer=OemStockUserSettings.installSwitchOffTimer(context,powerCategory,preference);
+                if(!acPower && !idle && !timer) {
+                    screen.getClass().getMethod("removePreference",preference).invoke(screen,powerCategory);
+                }
             }
             Object hdmiCategory=addCategory(screen,preference,categoryClass,
                     context,"projectorsoft_hdmi_category","Источники · Проектор",270);
             if(hdmiCategory!=null) {
-                boolean hasPorts=OemHdmiPortInfo.install(context,hdmiCategory,preference,root);
+                boolean hasPorts=OemHdmiPortInfo.install(context,hdmiCategory,preference);
                 boolean hasEdid=OemHdmiEdidHook.install(context,hdmiCategory,preference);
                 boolean hasAutoplay=OemHdmiAutoPlayHook.install(context,hdmiCategory,preference);
                 boolean hasBootSource=OemPowerOnSourceHook.install(context,hdmiCategory,preference);
@@ -167,6 +170,8 @@ public final class OemInlinePreferencesHook {
             OemPictureState.install(context,pictureCategory,preference);
         } catch(Throwable e) {
             Log.w(TAG,"OEM quick controls unavailable; keep original settings",e);
+        } finally {
+            OemHdmiPortInfo.bind(fragment,root);
         }
     }
 

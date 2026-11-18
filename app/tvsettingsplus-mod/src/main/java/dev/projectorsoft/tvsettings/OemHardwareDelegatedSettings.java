@@ -31,25 +31,29 @@ public final class OemHardwareDelegatedSettings {
         }
     }
 
+    static Intent mainActivityIntent(Context context,String action) throws PackageManager.NameNotFoundException {
+        ComponentName component=new ComponentName(context,ACTIVITY);
+        PackageManager pm=context.getPackageManager();
+        ActivityInfo info=pm.getActivityInfo(component,0);
+        if (info.applicationInfo==null || !info.enabled || !info.applicationInfo.enabled
+                || pm.getComponentEnabledSetting(component)>PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                || pm.getApplicationEnabledSetting(component.getPackageName())>PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                || (info.permission!=null && !info.permission.isEmpty()
+                    && context.checkSelfPermission(info.permission)!=PackageManager.PERMISSION_GRANTED)) return null;
+        return new Intent(action).setComponent(component);
+    }
+
     private static boolean add(Context context,Object category,Class<?> preferenceClass,
                                String key,String title,String summary,
                                String action,int order) {
         try {
-            ComponentName component=new ComponentName(context,ACTIVITY);
-            PackageManager pm=context.getPackageManager();
-            ActivityInfo info=pm.getActivityInfo(component,0);
-            if (info.applicationInfo==null || !info.enabled || !info.applicationInfo.enabled
-                    || pm.getComponentEnabledSetting(component)>PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-                    || pm.getApplicationEnabledSetting(component.getPackageName())>PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-                    || (info.permission!=null && !info.permission.isEmpty()
-                        && context.checkSelfPermission(info.permission)!=PackageManager.PERMISSION_GRANTED)) return false;
+            Intent intent=mainActivityIntent(context,action);
+            if(intent==null)return false;
             Object item=preferenceClass.getConstructor(Context.class).newInstance(context);
             preferenceClass.getMethod("setKey",String.class).invoke(item,key);
             preferenceClass.getMethod("setTitle",CharSequence.class).invoke(item,title);
             preferenceClass.getMethod("setSummary",CharSequence.class).invoke(item,summary);
             preferenceClass.getMethod("setOrder",int.class).invoke(item,order);
-            Intent intent=new Intent(action);
-            intent.setComponent(component);
             preferenceClass.getMethod("setIntent",Intent.class).invoke(item,intent);
             Object inserted=category.getClass().getMethod("addPreference",preferenceClass)
                                     .invoke(category,item);
