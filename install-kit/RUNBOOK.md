@@ -5,9 +5,9 @@
 | Файл | Источник |
 |---|---|
 | STOCK | Подтверждённая [резервная копия 8054](https://github.com/MAX-TAC/FlixTone_8054_Backup/releases/tag/FlixTone_8054_Backup), раздел system_ext_a, priv-app/TvSettingsPlus/TvSettingsPlus.apk |
-| MOD | Коммит `3b3ec2397c7d5180175f5b562b8af888aa683f8f`, [exact CI](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44306298224), [исходный артефакт](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44306298224/artifacts/14426839815) |
+| MOD | Коммит `9f8fc64a641c5267865dd290576b1a40e95fcc22`, [exact CI](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44310425800), [исходный артефакт](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44310425800/artifacts/14429239489) |
 
-Пины APK и ZIP, хеши и версия сборки записаны в `provenance.json`. Интеграционный коммит исправляет повторную инициализацию меню. Его отдельно собранный APK сюда не подставлялся. Артефакты GitHub имеют срок хранения. Сохраните две проверенные копии комплекта и резервную копию прошивки на независимых носителях.
+Пины APK и ZIP, хеши и версия сборки записаны в `provenance.json`. В комплект входит точный APK с исправлением повторной инициализации меню. Исторический комплект для 3b3ec23 сохранён отдельно: [архив аудита](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44311025252/artifacts/14431095561). Используйте отчёты и APK только из одного комплекта. Артефакты GitHub имеют срок хранения. Сохраните две проверенные копии комплекта и резервную копию прошивки на независимых носителях.
 
 На рабочей станции нужны Python 3.10+, SDK aapt и apksigner с Java. Windows: `py -3` и `apksigner.jar` из SDK допустимы. Проверки пишут отчёты в новый каталог хоста. На Linux используется /tmp.
 
@@ -30,6 +30,8 @@ python3 verify_offline.py --kit . --aapt /path/to/aapt --apksigner /path/to/apks
 ```text
 python3 preflight.py --kit . --serial APPROVED_ADB_SERIAL --adb /path/to/adb --aapt /path/to/aapt --apksigner /path/to/apksigner
 ```
+
+Перед запуском зафиксируйте, доступен ли уже настроенный ADB без открытия меню настроек. Эта сессия не меняет транспорт и не проверяет восстановление ADB после перезагрузки. После запуска сохраните каталог отчёта на компьютере, включая pm-help, package state, результаты проверки подписей и хешей, доступность обоих APK и список OEM-служб. Достаточность данных для восстановления разбирается отдельно.
 
 PASS для диагностического пункта не заменяет проверку PackageManager и восстановления. Код возврата 1 означает сбой проверки. Код 2 означает успешную диагностику с неподтверждённой готовностью к установке. Не возобновляйте автоматом установку после любого результата.
 

@@ -19,7 +19,8 @@ def build(kit, commit):
         verification='reports/offline/offline-verification.json',
         integration_audit=audit['status'], compatibility={key: verification[key] for key in
             ('static_identity','upgrade','rollback_A','rollback_B')},
-        note='Pinned MOD bytes are from code commit 3b3ec23. The menu retry fix in the assembly commit is not in this APK.'))
+        apk_state='FINAL_APK_STATIC_AUDIT_PASS / BUILT_UNTESTED' if ready else 'STATIC_AUDIT_INCOMPLETE',
+        note='Unchanged exact CI APK from the pinned code commit, including the menu retry fix.'))
     files = sorted(p for p in kit.rglob('*') if p.is_file() and p != kit/'SHA256SUMS')
     (kit/'SHA256SUMS').write_text(''.join(sha256(p)+'  '+p.relative_to(kit).as_posix()+'\n' for p in files), encoding='utf-8')
     print('PASS final checksum manifest: '+str(verify_files(kit))+' files')

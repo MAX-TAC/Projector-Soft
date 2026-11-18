@@ -43,7 +43,7 @@ jobs:
           java-version: '17'
       - uses: actions/checkout@v4
         with:
-          ref: 3b3ec2397c7d5180175f5b562b8af888aa683f8f
+          ref: 9f8fc64a641c5267865dd290576b1a40e95fcc22
           path: pinned-source
           persist-credentials: false
       - name: Verify pinned build and artifact provenance before download
@@ -56,6 +56,10 @@ jobs:
           def api(path): return json.loads(subprocess.check_output(['gh','api',path],text=True))
           run=api('repos/MAX-TAC/Projector-Soft/actions/runs/'+str(pins['build_run']))
           assert run['conclusion']=='success' and run['head_sha']==pins['mod_code_commit']
+          for label, run_id in pins['regression_runs'].items():
+              check=api('repos/MAX-TAC/Projector-Soft/actions/runs/'+str(run_id))
+              assert check['conclusion']=='success' and check['head_sha']==pins['mod_code_commit'], label
+              print('PASS pinned regression',label,run_id)
           records=api('repos/MAX-TAC/Projector-Soft/actions/runs/'+str(pins['build_run'])+'/artifacts')['artifacts']
           artifact=next(a for a in records if a['id']==pins['input_artifact_id'])
           assert not artifact['expired'] and artifact['digest']=='sha256:'+pins['input_artifact_zip_digest']
@@ -64,8 +68,8 @@ jobs:
           PY
       - uses: actions/download-artifact@v4
         with:
-          artifact-ids: '14426839815'
-          run-id: '44306298224'
+          artifact-ids: '14429239489'
+          run-id: '44310425800'
           github-token: ${{ github.token }}
           merge-multiple: true
           path: /tmp/install8054_input/mod
@@ -101,11 +105,11 @@ jobs:
       - name: Audit pinned archives, manifests, DEX and original handlers
         run: |
           set -euo pipefail
-          test "$(git -C pinned-source rev-parse HEAD)" = '3b3ec2397c7d5180175f5b562b8af888aa683f8f'
+          test "$(git -C pinned-source rev-parse HEAD)" = '9f8fc64a641c5267865dd290576b1a40e95fcc22'
           curl -fsSL --retry 3 https://github.com/iBotPeaches/Apktool/releases/download/v2.11.1/apktool_2.11.1.jar -o /tmp/install8054_input/apktool.jar
           python3 install-kit/audit_apks.py \
             --stock /tmp/install8054_kit/assets/STOCK-TvSettingsPlus-8054.apk \
-            --mod /tmp/install8054_kit/assets/MOD-TvSettingsPlus-8054-3b3ec23.apk \
+            --mod /tmp/install8054_kit/assets/MOD-TvSettingsPlus-8054-9f8fc64.apk \
             --reports /tmp/install8054_kit/reports/offline \
             --source pinned-source --apktool /tmp/install8054_input/apktool.jar
       - name: Generate final manifest and all-file checksums
@@ -114,7 +118,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: tvsettingsplus-8054-install-recovery-review-pinned-3b3ec23
+          name: tvsettingsplus-8054-install-recovery-review-pinned-9f8fc64
           path: /tmp/install8054_kit/
           if-no-files-found: error
           retention-days: 90
