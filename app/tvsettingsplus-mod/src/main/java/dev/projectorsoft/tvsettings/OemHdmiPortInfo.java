@@ -3,7 +3,10 @@ import android.content.Context;
 import android.media.tv.TvInputInfo;
 import android.media.tv.TvInputManager;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
+import android.view.View;
 import java.lang.reflect.Proxy;
 import java.util.*;
 
@@ -14,7 +17,7 @@ public final class OemHdmiPortInfo {
         try {return (String)Class.forName("android.os.SystemProperties").getMethod("get",String.class,String.class)
             .invoke(null,"ro.rjpj.machine.id","");}catch(Exception ex){return "";}
     }
-    public static boolean install(Context context,Object category,Class<?> pref) {
+    public static boolean install(Context context,Object category,Class<?> pref,View root) {
         if(!"8054".equals(machineId()))return false;
         try {
             int count=Build.class.getField("A_RJ_HDMI_PORT_COUNT").getInt(null);
@@ -23,15 +26,15 @@ public final class OemHdmiPortInfo {
             TvInputManager tv=manager instanceof TvInputManager?(TvInputManager)manager:null;
             String metadata=raw instanceof String?(String)raw:null;
             List<Hdmi8054Policy.Port> ports=ports(tv,count,metadata);
-            if(ports.isEmpty())return entry(context,category,pref,"unknown","HDMI · данные портов",
-                "Соответствие входов не подтверждено. Используйте штатный раздел источников",271);
-            boolean added=false;
+            if(ports.isEmpty())return false;
+            Map<String,Object> rows=new LinkedHashMap<>();
             for(int i=0;i<ports.size();i++) {
                 Hdmi8054Policy.Port port=ports.get(i);
-                added=entry(context,category,pref,port.hardware,port.label,
-                    status(tv,port),271+i,tv,count,metadata)||added;
+                Object row=entry(context,category,pref,port.hardware,port.label,status(tv,port),271+i,tv,count,metadata);
+                if(row!=null)rows.put(port.hardware,row);
             }
-            return added;
+            if(root!=null && tv!=null && !rows.isEmpty())observe(root,tv,pref,count,metadata,rows);
+            return !rows.isEmpty();
         }catch(Exception ex){Log.w("TvSettingsPlusMOD","HDMI port inventory unavailable",ex);return false;}
     }
 
@@ -60,11 +63,45 @@ public final class OemHdmiPortInfo {
         return "Состояние недоступно · нажмите для обновления";
     }
 
-    private static boolean entry(Context context,Object group,Class<?> pref,String key,String title,String summary,int order) throws Exception {
-        return entry(context,group,pref,key,title,summary,order,null,0,null);
+    private static void observe(View root,TvInputManager tv,Class<?> pref,int count,String metadata,
+                                Map<String,Object> rows) throws ReflectiveOperationException {
+        java.lang.reflect.Method summary=pref.getMethod("setSummary",CharSequence.class);
+        Runnable refresh=()-> {
+            if(!root.isAttachedToWindow())return;
+            try {
+                Map<String,String> statuses=new HashMap<>();
+                for(Hdmi8054Policy.Port port:ports(tv,count,metadata))statuses.put(port.hardware,status(tv,port));
+                for(Map.Entry<String,Object> row:rows.entrySet()) {
+                    summary.invoke(row.getValue(),statuses.getOrDefault(row.getKey(),"Вход недоступен"));
+                }
+            }catch(Exception ex){Log.w("TvSettingsPlusMOD","HDMI refresh unavailable",ex);}
+        };
+        TvInputManager.TvInputCallback callback=new TvInputManager.TvInputCallback() {
+            @Override public void onInputAdded(String inputId){refresh.run();}
+            @Override public void onInputRemoved(String inputId){refresh.run();}
+            @Override public void onInputStateChanged(String inputId,int state){refresh.run();}
+        };
+        View.OnAttachStateChangeListener lifecycle=new View.OnAttachStateChangeListener() {
+            private boolean registered;
+            @Override public void onViewAttachedToWindow(View view) {
+                if(!registered)try {
+                    tv.registerCallback(callback,new Handler(Looper.getMainLooper()));
+                    registered=true;
+                }catch(RuntimeException ex){Log.w("TvSettingsPlusMOD","HDMI events unavailable",ex);}
+                refresh.run();
+            }
+            @Override public void onViewDetachedFromWindow(View view) {
+                if(registered)try {
+                    tv.unregisterCallback(callback);
+                }catch(RuntimeException ex){Log.w("TvSettingsPlusMOD","Cannot unregister HDMI events",ex);}
+                finally{registered=false;}
+            }
+        };
+        root.addOnAttachStateChangeListener(lifecycle);
+        if(root.isAttachedToWindow())lifecycle.onViewAttachedToWindow(root);
     }
 
-    private static boolean entry(Context context,Object group,Class<?> pref,String key,String title,String summary,
+    private static Object entry(Context context,Object group,Class<?> pref,String key,String title,String summary,
                                  int order,TvInputManager tv,int count,String metadata) throws Exception {
         Object item=pref.getConstructor(Context.class).newInstance(context);
         pref.getMethod("setKey",String.class).invoke(item,"projectorsoft_hdmi_info_"+key);
@@ -99,6 +136,6 @@ public final class OemHdmiPortInfo {
                 });
             pref.getMethod("setOnPreferenceClickListener",listener).invoke(item,callback);
         }
-        return Boolean.TRUE.equals(group.getClass().getMethod("addPreference",pref).invoke(group,item));
+        return Boolean.TRUE.equals(group.getClass().getMethod("addPreference",pref).invoke(group,item)) ? item : null;
     }
 }

@@ -52,10 +52,10 @@ public final class OemScreenTimeoutSafetyHook {
             preference.getMethod("setKey",String.class).invoke(
                     item,"projectorsoft_screen_timeout_status");
             preference.getMethod("setTitle",CharSequence.class).invoke(
-                    item,"Сон и заставка");
+                    item,"Сон экрана и заставка");
             preference.getMethod("setSummary",CharSequence.class).invoke(item,
-                allDisabled(context)?"Отключены · экран не гаснет по таймеру":
-                  "Не все параметры отключены · проверьте системные разрешения");
+                allDisabled(context)?"Отключены при бездействии":
+                  "Не все параметры бездействия отключены");
             preference.getMethod("setOrder",int.class).invoke(item,288);
             preference.getMethod("setSelectable",boolean.class).invoke(item,false);
             Object accepted=category.getClass().getMethod(
@@ -67,3 +67,4 @@ public final class OemScreenTimeoutSafetyHook {
         }
     }
 }
+

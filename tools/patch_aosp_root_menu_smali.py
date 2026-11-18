@@ -22,6 +22,11 @@ def hook_return_method(text,method_signature,return_verb,hook_call):
  branches=list(re.finditer(r"(?m)^[ \t]*"+re.escape(return_verb)+r"\b[^\n]*$",body))
  if len(branches)!=1:
   raise ValueError("Expected exactly 1 "+return_verb+" in "+method_signature+", got "+str(len(branches)))
+ if "%retval%" in hook_call:
+  register=re.fullmatch(r"[ \t]*return-object ([vp]\d+)\s*",branches[0].group())
+  if register is None:
+   raise ValueError("Expected object return register in "+method_signature)
+  hook_call=hook_call.replace("%retval%",register[1])
  insert="    "+hook_call+"\n"
  at=branches[0].start()
  patched=body[:at]+insert+body[at:]
@@ -44,7 +49,7 @@ def main():
  j=hook_return_method(j,
    "onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;",
    "return-object",
-   "invoke-static {p0}, Ldev/projectorsoft/tvsettings/OemRootMenuHook;->install(Ljava/lang/Object;)V\n    invoke-static {p0}, Ldev/projectorsoft/tvsettings/OemInlinePreferencesHook;->install(Ljava/lang/Object;)V")
+   "invoke-static {p0, %retval%}, Ldev/projectorsoft/tvsettings/OemInlinePreferencesHook;->install(Ljava/lang/Object;Landroid/view/View;)V\n    invoke-static {p0}, Ldev/projectorsoft/tvsettings/OemRootMenuHook;->install(Ljava/lang/Object;)V")
  main_fragment.write_text(j)
 
  z=activity.read_text()
@@ -60,3 +65,4 @@ def main():
  a.out.write_text(json.dumps(info,indent=2)+"\n")
  print(json.dumps(info,indent=2))
 if __name__=="__main__":main()
+

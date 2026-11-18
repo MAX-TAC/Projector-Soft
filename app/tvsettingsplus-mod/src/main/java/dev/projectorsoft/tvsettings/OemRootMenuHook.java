@@ -57,16 +57,21 @@ public final class OemRootMenuHook {
             if (category==null) return;
             if (find.invoke(fragment,"projectorsoft_projection") != null) return;
 
-            insert(category,preferenceClass,context,"projectorsoft_projection",
+            boolean grouped = "8054".equals(OemHdmiPortInfo.machineId());
+            if (!grouped || find.invoke(fragment,"projectorsoft_calibration_oem")==null)
+                insert(category,preferenceClass,context,"projectorsoft_projection",
                     "Проекция", "Фокус, трапеция, установка проектора",
                     "android.settings.SETTINGS",200);
-            insert(category,preferenceClass,context,"projectorsoft_sources",
+            if (!grouped || find.invoke(fragment,"projectorsoft_sources_oem")==null)
+                insert(category,preferenceClass,context,"projectorsoft_sources",
                     "Источники", "HDMI, USB, CEC, источник при включении",
                     SOURCE_ACTION,201);
-            insert(category,preferenceClass,context,"projectorsoft_picture",
+            if (!grouped || find.invoke(fragment,"projectorsoft_picture_oem")==null)
+                insert(category,preferenceClass,context,"projectorsoft_picture",
                     "Изображение проектора", "Режим, цвет, контрастность, HDR и MEMC",
                     "android.settings.PICTURE_SETTINGS",202);
-            insert(category,preferenceClass,context,"projectorsoft_sound",
+            if (!grouped || find.invoke(fragment,"projectorsoft_sound_oem")==null)
+                insert(category,preferenceClass,context,"projectorsoft_sound",
                     "Звук проектора", "Звуковые режимы и дополнительные параметры",
                     "android.settings.SOUND_SETTINGS",203);
             insert(category,preferenceClass,context,"projectorsoft_general",
@@ -80,3 +85,4 @@ public final class OemRootMenuHook {
     public static String actionForSource() {return SOURCE_ACTION;}
     public static String actionForGeneral() {return GENERAL_ACTION;}
 }
+

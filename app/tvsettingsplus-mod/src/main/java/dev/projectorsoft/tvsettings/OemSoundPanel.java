@@ -29,6 +29,7 @@ public final class OemSoundPanel {
     }
     private void install() throws Exception {
         OemHardwareDelegatedSettings.installSoundLink(context,group,preference);
+        OemStockUserSettings.installAudioOutput(context,group,preference);
         refreshItem = action("projectorsoft_sound_refresh","Обновить настройки звука",249,this::refresh);
         action("projectorsoft_sound_original","Исходные значения звука",248,this::showOriginal);
         // PreferenceGroup sorts by order. Keep the static rows by identity, not by index.

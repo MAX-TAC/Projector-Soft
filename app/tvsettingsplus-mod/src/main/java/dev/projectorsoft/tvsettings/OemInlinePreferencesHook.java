@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -37,7 +38,7 @@ public final class OemInlinePreferencesHook {
     public static int[] colorValues() {return TEMP_VALUES.clone();}
     public static int[] soundValues() {return SOUND_VALUES.clone();}
 
-    public static void install(Object fragment) {
+    public static void install(Object fragment,View root) {
         if (fragment==null) return;
         try {
             Object ctx=fragment.getClass().getMethod("getContext").invoke(fragment);
@@ -75,13 +76,14 @@ public final class OemInlinePreferencesHook {
             if(systemCategory!=null) {
                 boolean androidNavigation=OemStandardAndroidNavigation.install(context,systemCategory,preference);
                 boolean info=OemSystemInfoHook.install(context,systemCategory,preference);
-                boolean preflight=OemCompatibilityDiagnosticsHook.install(
+                boolean preflight=!"8054".equals(OemHdmiPortInfo.machineId()) && OemCompatibilityDiagnosticsHook.install(
                         context,systemCategory,preference);
                 boolean firmware=OemHardwareDelegatedSettings.installSystemLinks(
                         context,systemCategory,preference);
                 boolean screenStatus=OemScreenTimeoutSafetyHook.installStatus(
                         context,systemCategory,preference);
-                if(!androidNavigation && !info && !preflight && !firmware && !screenStatus) {
+                boolean timer=OemStockUserSettings.installSwitchOffTimer(context,systemCategory,preference);
+                if(!androidNavigation && !info && !preflight && !firmware && !screenStatus && !timer) {
                     screen.getClass().getMethod("removePreference",preference)
                             .invoke(screen,systemCategory);
                 }
@@ -103,7 +105,7 @@ public final class OemInlinePreferencesHook {
             Object hdmiCategory=addCategory(screen,preference,categoryClass,
                     context,"projectorsoft_hdmi_category","Источники · Проектор",270);
             if(hdmiCategory!=null) {
-                boolean hasPorts=OemHdmiPortInfo.install(context,hdmiCategory,preference);
+                boolean hasPorts=OemHdmiPortInfo.install(context,hdmiCategory,preference,root);
                 boolean hasEdid=OemHdmiEdidHook.install(context,hdmiCategory,preference);
                 boolean hasAutoplay=OemHdmiAutoPlayHook.install(context,hdmiCategory,preference);
                 boolean hasBootSource=OemPowerOnSourceHook.install(context,hdmiCategory,preference);
@@ -190,7 +192,9 @@ public final class OemInlinePreferencesHook {
             // Do NOT expose eARC as a raw toggle. Two factory screens disagree
             // about KEY_SOUND_EARC polarity and the real audio API requires CEC.
             // Keep original OEM sound control accessible as a safe fallback.
-            OemEarcDelegatedPreference.install(context,category,pref);
+            if (!"8054".equals(OemHdmiPortInfo.machineId())) {
+                OemEarcDelegatedPreference.install(context,category,pref);
+            }
 
         OemInlineSlidersHook.installSound(context,category,pref);
         OemFiveBandEqualizerHook.install(context,category,pref);

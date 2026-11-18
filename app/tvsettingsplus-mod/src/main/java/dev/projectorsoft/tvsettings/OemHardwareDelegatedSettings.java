@@ -3,6 +3,8 @@ package dev.projectorsoft.tvsettings;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
 import java.lang.reflect.Field;
@@ -34,7 +36,13 @@ public final class OemHardwareDelegatedSettings {
                                String action,int order) {
         try {
             ComponentName component=new ComponentName(context,ACTIVITY);
-            context.getPackageManager().getActivityInfo(component,0);
+            PackageManager pm=context.getPackageManager();
+            ActivityInfo info=pm.getActivityInfo(component,0);
+            if (info.applicationInfo==null || !info.enabled || !info.applicationInfo.enabled
+                    || pm.getComponentEnabledSetting(component)>PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                    || pm.getApplicationEnabledSetting(component.getPackageName())>PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                    || (info.permission!=null && !info.permission.isEmpty()
+                        && context.checkSelfPermission(info.permission)!=PackageManager.PERMISSION_GRANTED)) return false;
             Object item=preferenceClass.getConstructor(Context.class).newInstance(context);
             preferenceClass.getMethod("setKey",String.class).invoke(item,key);
             preferenceClass.getMethod("setTitle",CharSequence.class).invoke(item,title);
@@ -80,6 +88,14 @@ public final class OemHardwareDelegatedSettings {
     public static boolean installSourceLinks(Context context,Object sourceCategory,
                                           Class<?> preferenceClass,boolean nativeCec,boolean nativeBootApp) {
         if(context==null||sourceCategory==null||preferenceClass==null)return false;
+        if ("8054".equals(OemHdmiPortInfo.machineId())) {
+            if (!hdmiExists() && (nativeBootApp || !hasOriginalControl(context,"tciv_source_power_on_app"))) {
+                return false;
+            }
+            return add(context,sourceCategory,preferenceClass,"projectorsoft_sources_oem",
+                    "Выбор источника и настройки HDMI",
+                    "HDMI 1/2, EDID, CEC и игровой режим в штатном меню",SOURCE_ACTION,275);
+        }
         // App-on-boot is a factory source-page feature even on a board with
         // zero confirmed HDMI ports. Do not hide it behind HDMI gating.
         boolean added=false;
@@ -91,12 +107,6 @@ public final class OemHardwareDelegatedSettings {
                 SOURCE_ACTION,275);
         }
         if(!hdmiExists())return added;
-        if("8054".equals(OemHdmiPortInfo.machineId())) {
-            added=add(context,sourceCategory,preferenceClass,
-                "projectorsoft_hdmi_edid_oem","EDID · штатный раздел источников",
-                "Выберите нужный HDMI в штатном меню перед настройкой EDID",
-                SOURCE_ACTION,278)||added;
-        }
         added=add(context,sourceCategory,preferenceClass,
             "projectorsoft_hdmi_game_oem","Игровой режим HDMI",
             "Заводская настройка с сохранением коррекции трапеции",
@@ -122,6 +132,11 @@ public final class OemHardwareDelegatedSettings {
             "android.settings.PICTURE_SETTINGS",211);
     }
     public static boolean installSoundLink(Context context,Object category,Class<?> preferenceClass) {
+        if ("8054".equals(OemHdmiPortInfo.machineId())) {
+            return add(context,category,preferenceClass,"projectorsoft_sound_oem",
+                    "Дополнительные настройки звука","Штатные настройки звука и HDMI eARC",
+                    "android.settings.SOUND_SETTINGS",247);
+        }
         return add(context,category,preferenceClass,"projectorsoft_sound_oem",
             "Звук · штатные настройки","Режим и восстановление параметров через оригинальный обработчик",
             "android.settings.SOUND_SETTINGS",247);

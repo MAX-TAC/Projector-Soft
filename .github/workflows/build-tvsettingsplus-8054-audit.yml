@@ -76,11 +76,17 @@ jobs:
         run: |
           set -euo pipefail
           ANDROID_JAR="$ANDROID_HOME/platforms/android-33/android.jar"
+          mkdir -p /tmp/tv33/framework
+          apktool if /tmp/flix8054_erofs/system_a_tree/system/framework/framework-res.apk -p /tmp/tv33/framework
+          apktool d -f -r -p /tmp/tv33/framework /tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk -o /tmp/tv33/decoded
           python3 tools/find_8054_keystone_layout.py \
             /tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk \
             /tmp/tv33/Exact8054ProjectionResources.java
+          python3 tools/find_8054_user_routes.py \
+            /tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk \
+            /tmp/tv33/decoded /tmp/tv33/Exact8054UserRoutes.java
           javac -source 8 -target 8 -cp "$ANDROID_JAR" -d /tmp/tv33/classes \
-            /tmp/tv33/Exact8054ProjectionResources.java \
+            /tmp/tv33/Exact8054ProjectionResources.java /tmp/tv33/Exact8054UserRoutes.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/*.java
           find /tmp/tv33/classes -name '*.class' -print0 | xargs -0 "$ANDROID_HOME/build-tools/33.0.3/d8" \
             --lib "$ANDROID_JAR" --min-api 33 --output /tmp/tv33/dex
@@ -308,25 +314,6 @@ jobs:
       - name: Patch only existing OEM brightness controller and routing
         run: |
           set -euo pipefail
-          mkdir -p /tmp/tv33/framework
-          apktool if /tmp/flix8054_erofs/system_a_tree/system/framework/framework-res.apk -p /tmp/tv33/framework
-          apktool d -f -r -p /tmp/tv33/framework /tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk -o /tmp/tv33/decoded
-          apktool d -f -r /tmp/flix8054_erofs/system_a_tree/system/app/KuSettings/KuSettings.apk -o /tmp/tv33/stock-kusettings
-          apktool d -f -r /tmp/flix8054_erofs/system_a_tree/system/priv-app/KeystoneCorrection/KeystoneCorrection.apk -o /tmp/tv33/stock-keystone
-          python3 - <<'PY'
-          import pathlib, re
-          for folder in ('decoded','stock-kusettings','stock-keystone'):
-              for path in pathlib.Path('/tmp/tv33',folder).glob('smali*/**/*.smali'):
-                  data = path.read_text()
-                  for match in re.finditer(r'(?ms)^\.method [^\n]+\n.*?^\.end method',data):
-                      method = match.group()
-                      has_launch = ('->startActivity(' in method or '->sendBroadcast(' in method
-                                    or path.stem == 'TCorrectionBroadcastReceiver')
-                      relevant = any(x in method for x in ('FourCornerActivity','DigitalZoomActivity',
-                          'PICTURE_SETTINGS','TCorrectionBroadcastReceiver','com.rjpj.tcorrection'))
-                      if has_launch and relevant:
-                          print(folder,path.name,method)
-          PY
           # Verify the original callbacks and fallback entry on the exact unmodified APK.
           python3 - <<'PY'
           import pathlib, re
@@ -349,6 +336,18 @@ jobs:
           assert parent_calls == ['Ljava/lang/Object;-><init>()V'], parent
           assert not re.search(r'\b(?:sput|new-instance|monitor-|throw)',parent), parent
           print('PASS public stock focus constructor chain without attach')
+
+          keystone_constructor = stock_method('KeystoneSettingsSecondaryController','public constructor <init>()V')
+          constructor_calls = re.findall(r'(?m)^\s+invoke-\S+ \{[^}]*\}, (\S+)$', keystone_constructor)
+          assert constructor_calls and constructor_calls[0] == base+'-><init>()V', keystone_constructor
+          assert all(call in {
+              base+'-><init>()V',
+              'Landroid/os/Looper;->getMainLooper()Landroid/os/Looper;',
+              'Landroid/os/Handler;-><init>()V',
+              'Landroid/os/Handler;-><init>(Landroid/os/Looper;)V'
+          } for call in constructor_calls), keystone_constructor
+          assert not re.search(r'\b(?:sput|monitor-|throw)',keystone_constructor), keystone_constructor
+          print('PASS public stock keystone constructor chain; calls:', constructor_calls)
 
           keystone = stock_method('KeystoneSettingsSecondaryController','private setMoveAutoKeystone(Z)V')
           assert re.findall(r'const-string(?:/jumbo)? \S+, "([^"]+)"',keystone) == ['persist.rjpj.autokeystone.move']
