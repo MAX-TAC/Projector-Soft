@@ -86,6 +86,10 @@ jobs:
             app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/HdmiViewLifecycleTest.java
           java -cp /tmp/picture-state-tests dev.projectorsoft.tvsettings.HdmiViewLifecycleTest
           javac -d /tmp/picture-state-tests \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/MenuInstallation.java \
+            app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/MenuInstallationTest.java
+          java -cp /tmp/picture-state-tests dev.projectorsoft.tvsettings.MenuInstallationTest
+          javac -d /tmp/picture-state-tests \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/Projection8054Policy.java \
             app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/Projection8054PolicyTest.java
           java -cp /tmp/picture-state-tests dev.projectorsoft.tvsettings.Projection8054PolicyTest

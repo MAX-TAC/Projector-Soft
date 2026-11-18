@@ -10,7 +10,7 @@ from pathlib import Path
 
 PACKAGE = 'com.android.tv.settings'
 STOCK_SHA = 'f8e0c6fe0f46e7eb8db651c31d85ef8b32a769b37e4dd0f96ed19a64725d74ee'
-MOD_SHA = 'cf5bba9d90935952ea5a8a832ea0bd9662374e5cc10c052d5cdb6698e0ba1246'
+MOD_SHA = '64fbb64a8e4217dc1ba7b91bd8ff40644d2388b1f556b05910ce271e2129e895'
 
 
 def sha256(path):

@@ -64,14 +64,39 @@ def compare(records):
         if not record.get('standalone'): failures.append(f'{label}: splits/dependencies unsupported')
         if len(record.get('cert_sha256', [])) != 1: failures.append(f'{label}: expected one actual APK signer')
         if label != 'stock':
-            for key in required + ['requested_permissions', 'declared_permissions']:
+            keys = required + ['requested_permissions', 'declared_permissions']
+            if label == 'mod':
+                keys = [key for key in keys if key not in ('version_code', 'version_name')]
+            for key in keys:
                 if record.get(key) != stock.get(key): failures.append(f'{label}: {key} mismatch')
     return failures
+
+
+def assess_versions(records):
+    result = dict(upgrade='BLOCKED_IDENTITY_OR_METADATA', rollback_A='NOT_VERIFIED_ON_8054',
+                  rollback_B='BLOCKED_IDENTITY_OR_METADATA')
+    if compare(records):
+        return result
+    try:
+        stock, mod = (int(records[key]['version_code']) for key in ('stock', 'mod'))
+        if min(stock,mod) <= 0:
+            return result
+    except (ValueError,TypeError):
+        return result
+    result['stock_version_code'] = stock
+    result['mod_version_code'] = mod
+    result['upgrade'] = ('STATIC_CANDIDATE_LIVE_PM_REQUIRED' if mod > stock
+                         else 'BLOCKED_EXPECTED_VERSION_INCREASE')
+    result['rollback_B'] = ('STANDARD_REPLACE_DOWNGRADE_BLOCKED' if mod > stock
+                            else 'NOT_VERIFIED_ON_8054')
+    return result
 
 
 def verify(kit, destination, aapt='aapt', apksigner='apksigner', live=None, runner=run):
     report = dict(status='FAIL', readiness='NOT_READY', install_state='NOT_READY_FOR_DEVICE_INSTALL',
                   records={}, failures=[], live_identity='NOT_TESTED',
+                  static_identity='NOT_VERIFIED', upgrade='NOT_VERIFIED',
+                  rollback_A='NOT_VERIFIED_ON_8054', rollback_B='NOT_VERIFIED',
                   remaining_proofs=['live package identity/state', 'critical services', 'device rollback support/drill',
                                     'reliable out-of-band ADB after approved reboot', 'owner installation permission'])
     try:
@@ -91,6 +116,10 @@ def verify(kit, destination, aapt='aapt', apksigner='apksigner', live=None, runn
             report['records'][label]['sha256'] = expected[label]
         report['failures'] = compare(report['records'])
         if live: report['live_identity'] = 'PASS' if not report['failures'] else 'FAIL'
+        report['static_identity'] = 'FAIL' if report['failures'] else 'PASS'
+        report.update(assess_versions(report['records']))
+        if report['upgrade'] != 'STATIC_CANDIDATE_LIVE_PM_REQUIRED':
+            report['failures'].append('Upgrade preliminary result: '+report['upgrade'])
         if not report['failures']: report.update(status='PASS', readiness='READY_FOR_OWNER_REVIEW')
     except (ValueError, OSError, KeyError, subprocess.SubprocessError) as exc:
         report['failures'].append(str(exc))
@@ -99,6 +128,8 @@ def verify(kit, destination, aapt='aapt', apksigner='apksigner', live=None, runn
         print('APK ' + label + ': ' + json.dumps({key: record.get(key) for key in
               ('sha256', 'package', 'version_code', 'min_sdk', 'target_sdk', 'shared_user_id', 'cert_sha256', 'standalone')}, sort_keys=True))
     print(f"{report['status']} offline assets; {report['readiness']}; NOT_READY_FOR_DEVICE_INSTALL")
+    print('Upgrade/rollback: '+json.dumps({key: report[key] for key in
+          ('static_identity','upgrade','rollback_A','rollback_B')},sort_keys=True))
     for failure in report['failures']: print('FAIL ' + failure)
     return report
 

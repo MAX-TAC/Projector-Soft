@@ -112,7 +112,7 @@ def collect(kit, serial, destination, adb='adb', aapt='aapt', apksigner='apksign
     result = dict(readiness='NOT_READY', install_state='NOT_READY_FOR_DEVICE_INSTALL', checks=checks,
                   device_changes=False, serial=serial,
                   rollback_route_A='NOT_VERIFIED: package-scoped system update removal',
-                  rollback_route_B='NOT_VERIFIED: out-of-band ADB stock APK replacement',
+                  rollback_route_B='STANDARD_REPLACE_DOWNGRADE_BLOCKED: STOCK v1 over MOD v33; no approved exception',
                   remaining_proofs=['actual rollback support and data behavior', 'ADB reliably available after separately approved reboot',
                                     'fingerprint/sharedUID/permissions/SELinux human review', 'owner opt-in installation permission'])
     # Even all diagnostic PASS results cannot substitute for device recovery evidence or owner approval.
@@ -133,6 +133,9 @@ def main():
     try:
         destination = output_dir(args.out, 'tvsettings8054-preflight-')
         verify_files(args.kit.resolve())
+        assembled = json.loads((args.kit/'manifest.json').read_text(encoding='utf-8'))
+        if assembled.get('integration_audit') != 'PASS':
+            raise ValueError('Pinned archive integration audit did not pass')
         host = destination/'host-assets'; host.mkdir()
         if verify(args.kit.resolve(), host, args.aapt, args.apksigner)['status'] != 'PASS':
             print('FAIL host assets; no ADB called / NOT_READY'); return 1

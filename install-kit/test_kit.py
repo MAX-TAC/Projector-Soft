@@ -33,7 +33,7 @@ class KitTests(unittest.TestCase):
     def test_all_identity_mismatches_stop(self):
         original = self.record()
         self.assertEqual(verify_offline.compare({'stock': original, 'mod': copy.deepcopy(original)}), [])
-        for key, replacement in [('package', 'other'), ('version_code', '2'), ('min_sdk', '24'),
+        for key, replacement in [('package', 'other'), ('min_sdk', '24'),
                                  ('target_sdk', '34'), ('shared_user_id', 'other.uid'),
                                  ('cert_sha256', ['b'*64]), ('requested_permissions', []),
                                  ('declared_permissions', []), ('standalone', False)]:
@@ -42,6 +42,21 @@ class KitTests(unittest.TestCase):
                 self.assertTrue(verify_offline.compare({'stock': original, 'mod': modified}))
         self.assertFalse(verify_offline.parse_metadata(BADGING.replace("versionCode='1'", "versionCode='1' split='feature'"), TREE, PERMS, SIGNER)['standalone'])
         self.assertTrue(verify_offline.compare({'stock': self.record(), 'live': self.record() | {'cert_sha256': []}}))
+
+    def test_upgrade_and_rollback_have_independent_version_results(self):
+        stock = self.record()
+        mod = stock | {'version_code': '33', 'version_name': 'MOD'}
+        records = {'stock': stock, 'mod': mod}
+        self.assertEqual(verify_offline.compare(records), [])
+        result = verify_offline.assess_versions(records)
+        self.assertEqual(result['upgrade'], 'STATIC_CANDIDATE_LIVE_PM_REQUIRED')
+        self.assertEqual(result['rollback_B'], 'STANDARD_REPLACE_DOWNGRADE_BLOCKED')
+        self.assertEqual(result['rollback_A'], 'NOT_VERIFIED_ON_8054')
+        self.assertEqual(verify_offline.assess_versions(records | {'mod': stock})['upgrade'],
+                         'BLOCKED_EXPECTED_VERSION_INCREASE')
+        self.assertEqual(verify_offline.assess_versions(records | {'mod': mod | {'cert_sha256': ['b'*64]}})['upgrade'],
+                         'BLOCKED_IDENTITY_OR_METADATA')
+        self.assertTrue(verify_offline.compare(records | {'live': mod}))
 
     def test_hash_mismatch_never_invokes_tools(self):
         with tempfile.TemporaryDirectory() as temporary:

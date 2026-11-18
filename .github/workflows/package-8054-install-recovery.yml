@@ -41,6 +41,11 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+      - uses: actions/checkout@v4
+        with:
+          ref: 3b3ec2397c7d5180175f5b562b8af888aa683f8f
+          path: pinned-source
+          persist-credentials: false
       - name: Verify pinned build and artifact provenance before download
         run: |
           mkdir -p /tmp/install8054_input /tmp/install8054_kit/assets
@@ -59,22 +64,23 @@ jobs:
           PY
       - uses: actions/download-artifact@v4
         with:
-          artifact-ids: '14403668693'
-          run-id: '44252085197'
+          artifact-ids: '14426839815'
+          run-id: '44306298224'
           github-token: ${{ github.token }}
           merge-multiple: true
           path: /tmp/install8054_input/mod
       - name: Stage reviewed operator files and unchanged MOD bytes
         run: |
           python3 - <<'PY'
-          import shutil
+          import json, shutil
           from pathlib import Path
           root=Path('/tmp/install8054_kit')
           for name in ('RUNBOOK.md','provenance.json','kit_common.py','verify_files.py','verify_offline.py','preflight.py'):
               shutil.copyfile(Path('install-kit')/name,root/name)
           files=list(Path('/tmp/install8054_input/mod').rglob('*.apk'))
           assert len(files)==1 and files[0].name=='TvSettingsPlus-8054-v33-NATIVE-CONTROLS-EXPERIMENTAL.apk'
-          shutil.copyfile(files[0],root/'assets/MOD-TvSettingsPlus-8054-476a39a.apk')
+          pins=json.loads((root/'provenance.json').read_text())
+          shutil.copyfile(files[0],root/pins['mod_file'])
           (root/'reports').mkdir()
           shutil.copyfile('/tmp/install8054_input/artifact-provenance.json',root/'reports/input-artifact.json')
           PY
@@ -82,7 +88,7 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update -qq
-          sudo apt-get install -y -qq erofs-utils aapt apksigner
+          sudo apt-get install -y -qq erofs-utils aapt apksigner zipalign
           gh release download FlixTone_8054_Backup --repo MAX-TAC/FlixTone_8054_Backup \
             --pattern FlixTone_8054_Backup.zip --dir /tmp/install8054_input
           python3 install-kit/extract_stock.py /tmp/install8054_input/FlixTone_8054_Backup.zip \
@@ -92,13 +98,23 @@ jobs:
         run: |
           python3 /tmp/install8054_kit/verify_offline.py --kit /tmp/install8054_kit \
             --out /tmp/install8054_kit/reports/offline
+      - name: Audit pinned archives, manifests, DEX and original handlers
+        run: |
+          set -euo pipefail
+          test "$(git -C pinned-source rev-parse HEAD)" = '3b3ec2397c7d5180175f5b562b8af888aa683f8f'
+          curl -fsSL --retry 3 https://github.com/iBotPeaches/Apktool/releases/download/v2.11.1/apktool_2.11.1.jar -o /tmp/install8054_input/apktool.jar
+          python3 install-kit/audit_apks.py \
+            --stock /tmp/install8054_kit/assets/STOCK-TvSettingsPlus-8054.apk \
+            --mod /tmp/install8054_kit/assets/MOD-TvSettingsPlus-8054-3b3ec23.apk \
+            --reports /tmp/install8054_kit/reports/offline \
+            --source pinned-source --apktool /tmp/install8054_input/apktool.jar
       - name: Generate final manifest and all-file checksums
         if: always() && steps.offline.outcome != 'skipped'
         run: python3 install-kit/build_manifest.py /tmp/install8054_kit --commit '${{ github.sha }}'
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: tvsettingsplus-8054-install-recovery-review-pinned-476a39a
+          name: tvsettingsplus-8054-install-recovery-review-pinned-3b3ec23
           path: /tmp/install8054_kit/
           if-no-files-found: error
           retention-days: 90
