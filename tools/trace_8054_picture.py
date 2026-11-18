@@ -13,8 +13,12 @@ SETTINGS = {
     ),
     "PreferenceConfigUtils": (
         r"putSettingValueInt|updatePreferenceChanged|onPreferenceValueChange|"
-        r"createProgressDialogPreference(?:Trans)?|getACFGId"
+        r"createProgressDialogPreference(?:Trans)?|getACFGId|isVGASource|setProgressSummary"
     ),
+    "ProgressDialogPreference": r"onClick|onBindViewHolder|onSetInitialValue",
+    "ProgressBarDialog": r"onCreate.*|getACFGId|onProgressChanged|onStopTrackingTouch|.*[Mm]in.*|.*[Mm]ax.*|.*[Ss]ource.*",
+    "ProgressBarVerticalFragment": r"onPreferenceChange|onCreatePreferences",
+    "TitleSeekBarView": r"<init>|init.*|setValue|setMax|setMin",
     "SettingsUtil": r"putGlobalValueInt",
     "PictureModeValueSecondaryController": r"init.*|update.*|show.*",
     **{f"PictureModeValueSecondaryController${i}": r"onValueChanged" for i in (1, 2, 3)},
@@ -23,6 +27,7 @@ SERVICES = {
     "TVMenuSettingsService": r"updateConfigDataChanged|equalsCurrentAcfgValue|formatSettingToConfigId",
     "TVMenuSettingsService$SettingObserver": r"onChange",
     "TVSettingConfig": r"getConfigValueInt|setConifg",
+    "TVNativeWrapper": r"(?:get|set)ConfigValue_native",
     "MtkTvConfigBase": r"getConfigValue|setConfigValue|getMinMaxConfigValue",
 }
 METHOD_START = re.compile(r"^\.method .*?([^\s(]+)\(")
@@ -52,7 +57,7 @@ def trace(root, selections):
                 if method:
                     selected.add((path.stem, name))
                     print(f"PIC8054_METHOD {owner}:{line_number} {line}")
-            elif method and not line.startswith((".line ", ".end method")) and line.strip():
+            elif method and not line.strip().startswith((".line ", ".end method")) and line.strip():
                 print(f"PIC8054_LINE {line_number} {line.strip()}")
             if line == ".end method":
                 method = None

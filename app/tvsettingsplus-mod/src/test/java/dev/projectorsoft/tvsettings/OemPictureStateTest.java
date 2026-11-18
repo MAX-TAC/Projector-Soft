@@ -51,6 +51,12 @@ public final class OemPictureStateTest {
         f=fixture();f.context="HDMI2/mode7";
         check(!f.transaction().write(KEY,75,"HDMI1/mode7")&&f.writes==0&&f.saved.isEmpty(),
                 "obsolete UI context must not write the new input");
+        f=fixture();f.fail=KEY;
+        check(!f.transaction().write(KEY,75)&&"50".equals(f.values.get(KEY))&&f.saved.containsKey(KEY),
+                "provider refusal must keep the recovery baseline");
+        f.fail=null;
+        check(f.transaction().write(KEY,65)&&f.transaction().restore()&&"50".equals(f.values.get(KEY)),
+                "retry after refusal restores the original baseline");
         f=fixture();f.switchDuringWrite=true;
         check(!f.transaction().write(KEY,75,"HDMI1/mode7")&&f.saved.containsKey(KEY),
                 "readback after context change must not confirm success or discard baseline");

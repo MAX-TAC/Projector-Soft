@@ -111,8 +111,11 @@ jobs:
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/ProjectorCapabilities.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/LightSourceBrightnessController.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/KuSourceRjBrightnessGateway.java \
-            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemPictureState.java
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemPictureState.java \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/PicturePanelState.java \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemPicturePanel.java
           java -cp /tmp/picture-adapter-tests dev.projectorsoft.tvsettings.OemPictureAdapterTest
+          java -cp /tmp/picture-adapter-tests dev.projectorsoft.tvsettings.OemPicturePanelAdapterTest
           java -cp /tmp/picture-adapter-tests dev.projectorsoft.tvsettings.Brightness8054AdapterTest
       - name: Check Android entry-point wiring remains conservative
         run: |
