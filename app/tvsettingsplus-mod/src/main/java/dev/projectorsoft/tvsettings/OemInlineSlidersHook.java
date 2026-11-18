@@ -1,5 +1,6 @@
 package dev.projectorsoft.tvsettings;
 
+import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.provider.Settings;
@@ -80,6 +81,66 @@ public final class OemInlineSlidersHook {
         for(Spec spec:CONTROLS)if(spec.key.startsWith("picture_")) {
             try {attach(context,category,pref,spec);}catch(Exception ex){Log.w(TAG,"Picture slider unavailable "+spec.key,ex);}
         }
+    }
+
+    public static void installPictureReadout(Context context,Object category,Class<?> pref) throws Exception {
+        if (!"8054".equals(OemHdmiPortInfo.machineId())) return;
+        Object item = pref.getConstructor(Context.class).newInstance(context);
+        pref.getMethod("setKey",String.class).invoke(item,"projectorsoft_picture_values");
+        pref.getMethod("setTitle",CharSequence.class).invoke(item,"Значения изображения");
+        pref.getMethod("setSummary",CharSequence.class).invoke(item,"Прочитать сохранённые значения и диапазоны");
+        pref.getMethod("setOrder",int.class).invoke(item,214);
+        Class<?> listener = Class.forName("androidx.preference.Preference$OnPreferenceClickListener");
+        Object callback = Proxy.newProxyInstance(listener.getClassLoader(),new Class<?>[]{listener},
+                (proxy,method,args) -> {
+                    switch (method.getName()) {
+                        case "onPreferenceClick":
+                            showPictureReadout(context);
+                            return true;
+                        case "hashCode": return System.identityHashCode(proxy);
+                        case "equals": return proxy == args[0];
+                        case "toString": return "PictureReadout";
+                        default: return null;
+                    }
+                });
+        pref.getMethod("setOnPreferenceClickListener",listener).invoke(item,callback);
+        category.getClass().getMethod("addPreference",pref).invoke(category,item);
+    }
+
+    private static void showPictureReadout(Context context) {
+        ContentResolver resolver = context.getContentResolver();
+        StringBuilder message = new StringBuilder();
+        try {
+            String mode = Settings.Global.getString(resolver,"picture_mode");
+            String temperature = Settings.Global.getString(resolver,"picture_color_temperature");
+            for (Spec spec : CONTROLS) {
+                if (!spec.key.startsWith("picture_")) continue;
+                String raw = Settings.Global.getString(resolver,spec.key);
+                String value = "недоступно";
+                if (raw != null) {
+                    try {
+                        int parsed = Integer.parseInt(raw);
+                        if (parsed >= spec.min && parsed <= spec.max) value = Integer.toString(parsed);
+                    } catch (NumberFormatException ignored) {
+                        // Do not present a malformed provider entry as a control value.
+                    }
+                }
+                message.append(spec.title).append(": ").append(value)
+                        .append(" (").append(spec.min).append("…").append(spec.max).append(")\n");
+            }
+            if (!java.util.Objects.equals(mode,Settings.Global.getString(resolver,"picture_mode"))
+                    || !java.util.Objects.equals(temperature,Settings.Global.getString(resolver,"picture_color_temperature"))) {
+                message = new StringBuilder("Профиль изменился при чтении. Откройте значения ещё раз.");
+            } else {
+                message.append("\nЗначения хранятся в Android. Активный HDMI/PQ-профиль не подтверждён. ")
+                        .append("Для изменения откройте штатные настройки изображения.");
+            }
+        } catch (RuntimeException ex) {
+            Log.w(TAG,"Cannot read OEM picture values",ex);
+            message = new StringBuilder("Параметры изображения недоступны.");
+        }
+        new AlertDialog.Builder(context).setTitle("Значения изображения")
+                .setMessage(message).setPositiveButton("Закрыть",null).show();
     }
 
     private static void attach(Context context,Object category,

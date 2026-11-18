@@ -120,6 +120,11 @@ public final class OemInlinePreferencesHook {
             }
 
             OemHardwareDelegatedSettings.installPictureLink(context,pictureCategory,preference);
+            try {
+                OemInlineSlidersHook.installPictureReadout(context,pictureCategory,preference);
+            } catch (Exception ex) {
+                Log.w(TAG,"Picture readout unavailable",ex);
+            }
             // Direct MOD picture controls stay hidden until the profile/input is verified.
             if(OemPictureState.mayEdit()) addList(pictureCategory,preference,context,"projectorsoft_picture_mode",
                     "Режим изображения","picture_mode",PIC_TITLES,PIC_VALUES,7,211);
@@ -164,9 +169,9 @@ public final class OemInlinePreferencesHook {
     }
 
 
-    static void populateSound(Context context,Object category,Class<?> pref) throws Exception {
+    static void populateSound(Context context,Object category,Class<?> pref,Runnable soundModeChanged) throws Exception {
             addList(category,pref,context,"projectorsoft_sound_mode",
-                    "Режим звука","sound_style",SOUND_TITLES,SOUND_VALUES,1,213);
+                    "Режим звука","sound_style",SOUND_TITLES,SOUND_VALUES,1,213,soundModeChanged);
             // Factory SoundFragment and SoundSubMenuController implement
             // Surround and Auto-Volume as plain Settings.Global 0/1 writes.
             // Expose those two only when the OEM already saved a 0/1 value.
@@ -266,6 +271,13 @@ public final class OemInlinePreferencesHook {
                                 String uiKey,String title,String oemKey,
                                 String[] labels,int[] values,int defaultValue,
                                 int order) throws Exception {
+        addList(category,pref,context,uiKey,title,oemKey,labels,values,defaultValue,order,null);
+    }
+
+    private static void addList(Object category,Class<?> pref,Context context,
+                                String uiKey,String title,String oemKey,
+                                String[] labels,int[] values,int defaultValue,
+                                int order,Runnable soundModeChanged) throws Exception {
         if (labels.length!=values.length || labels.length==0)
             throw new IllegalArgumentException("Invalid factory mode table");
         Map<Integer,String> valueToTitle=new HashMap<>();
@@ -313,6 +325,9 @@ public final class OemInlinePreferencesHook {
                     if (Settings.Global.getInt(resolver,oemKey,-999)!=requested) return false;
                     pref.getMethod("setSummary",CharSequence.class)
                             .invoke(preference,valueToTitle.get(requested));
+                    if ("sound_style".equals(oemKey) && requested != current && soundModeChanged != null) {
+                        soundModeChanged.run();
+                    }
                     return true;
                 } catch(Exception ex) {
                     Log.w(TAG,"Failed applying OEM setting "+oemKey,ex);
