@@ -3,6 +3,7 @@ package dev.projectorsoft.tvsettings;
 /** One HDMI subscription for the currently attached menu view. Main thread only. */
 abstract class HdmiViewLifecycle<V> {
     private V view;
+    private boolean active;
     private boolean subscribed;
 
     final void bind(V next) {
@@ -19,13 +20,17 @@ abstract class HdmiViewLifecycle<V> {
     }
 
     final void attached(V candidate) {
-        if (candidate != view || subscribed || !isAttached(candidate)) return;
+        if (candidate != view || active || !isAttached(candidate)) return;
+        active = true;
+        addFocusListener(candidate);
         subscribed = subscribe();
         refresh();
     }
 
     final void detached(V candidate) {
-        if (candidate != view) return;
+        if (candidate != view || !active) return;
+        active = false;
+        removeFocusListener(candidate);
         if (subscribed) {
             subscribed = false;
             unsubscribe();
@@ -36,6 +41,12 @@ abstract class HdmiViewLifecycle<V> {
         if (view != null && subscribed && isAttached(view)) refresh();
     }
 
+    final void windowFocused() {
+        if (active && isAttached(view)) refresh();
+    }
+
+    abstract void addFocusListener(V candidate);
+    abstract void removeFocusListener(V candidate);
     abstract boolean isAttached(V candidate);
     abstract void addListener(V candidate);
     abstract void removeListener(V candidate);

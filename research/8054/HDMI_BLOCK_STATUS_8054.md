@@ -24,6 +24,12 @@ Legacy MOD EDID selector остаётся скрыт на 8054 (EdidPortPolicy).
 
 Legacy MOD CEC разрешён только на исходной 8052; на 8054/unknown Bridge не создаётся и raw CEC/eARC операции не выполняются. Причина: текущий legacy transaction после смены CEC может выключить auto-device-off, вызвать setEarcEnable(false) и обновить Global eARC key; частичный отказ оставляет побочные изменения, а обратный transaction на 8054 не проверен. OEM CEC экран сохраняет подтверждения и управление зависимостями. eARC остаётся в OEM sound page; game mode в OEM source page (известен resetTrapezoid side effect). Критические службы не отключались. Boot-source/autoplay контролы этим milestone не переделываются и не считаются доказательством active input switching.
 
+## Обновление состояния портов
+
+Строки HDMI 1/2 перечитывают состояние TV Input при возвращении фокуса окну, в том числе если OEM отказал в регистрации callback. Срок жизни focus-listener привязан к текущему View. Это актуализирует состояние соединения и не помечает его как активный вход. JVM регрессия покрывает отказ регистрации, повторный attach, возврат фокуса и снятие подписок.
+
+Выбор HDMI1/2 требует подтверждённого штатного маршрута, который различает HW6/HW7. Сопоставление `TvInputInfo` само по себе не определяет аргументы OEM-команды переключения. Exact workflow трассирует только вызовы выбора источника в декодированных штатных TvSettingsPlus и KuSourceRJ. До подтверждения входного контракта строки остаются read-only. Отдельные блокеры EDID, CEC и game mode сохраняются.
+
 ## Тесты, откат, device-план
 
 Hdmi8054PolicyTest: exact HW6/HW7 mapping, four registered inputs versus two physical ports, reverse metadata order, wrong labels/count, missing metadata, 8052 rejection, absent input, spoofed owner, duplicate registrations и CEC gate 8054/unknown/8052. API33 compile/общий JVM regression/exact-8054 build — одним пакетом subsystem. Это не проверка HDMI сигнала/handshake.

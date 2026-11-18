@@ -4,11 +4,14 @@ public final class HdmiViewLifecycleTest {
     private static final class View {
         boolean attached;
         boolean listening;
+        boolean focusListening;
         View(boolean attached){this.attached=attached;}
     }
 
     private static final class Observer extends HdmiViewLifecycle<View> {
         int subscriptions;
+        int attempts;
+        boolean reject;
         int unsubscriptions;
         int refreshes;
         boolean active;
@@ -22,7 +25,17 @@ public final class HdmiViewLifecycleTest {
             require(view.listening,"missing view listener");
             view.listening=false;
         }
+        @Override void addFocusListener(View view){
+            require(!view.focusListening,"duplicate window focus listener");
+            view.focusListening=true;
+        }
+        @Override void removeFocusListener(View view){
+            require(view.focusListening,"missing window focus listener");
+            view.focusListening=false;
+        }
         @Override boolean subscribe(){
+            attempts++;
+            if(reject)return false;
             require(!active,"duplicate TV callback");
             active=true;
             subscriptions++;
@@ -82,9 +95,26 @@ public final class HdmiViewLifecycleTest {
                 "final release left a listener or subscription");
     }
 
+    private static void refreshOnFocusWhenTvCallbacksUnavailable() {
+        Observer observer=new Observer();
+        observer.reject=true;
+        View first=new View(true);
+        observer.bind(first);
+        observer.attached(first);
+        require(observer.attempts==1 && first.focusListening,"repeated attach after rejected callback");
+        observer.inputChanged();
+        observer.windowFocused();
+        require(observer.refreshes==2,"window focus must refresh when TV callback was rejected");
+        observer.bind(null);
+        observer.windowFocused();
+        require(!first.focusListening && observer.unsubscriptions==0 && observer.refreshes==2,
+                "detached focus listener leaked after a rejected callback");
+    }
+
     public static void main(String[] args) {
         recreateViewWithExistingRows();
         replaceBeforeOldDetachAndReattach();
+        refreshOnFocusWhenTvCallbacksUnavailable();
         System.out.println("PASS HDMI lifecycle: recreate, replace, reattach, and unsubscribe without duplicate callbacks");
     }
 }

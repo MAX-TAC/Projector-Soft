@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -98,7 +99,7 @@ public final class OemHdmiPortInfo {
     }
 
     private static final class Observer extends HdmiViewLifecycle<View>
-            implements View.OnAttachStateChangeListener {
+            implements View.OnAttachStateChangeListener, ViewTreeObserver.OnWindowFocusChangeListener {
         private final Object fragment;
         private final Method find;
         private final Method summary;
@@ -125,6 +126,14 @@ public final class OemHdmiPortInfo {
         @Override boolean isAttached(View root){return root.isAttachedToWindow();}
         @Override void addListener(View root){root.addOnAttachStateChangeListener(this);}
         @Override void removeListener(View root){root.removeOnAttachStateChangeListener(this);}
+        @Override public void onWindowFocusChanged(boolean focused){if(focused)windowFocused();}
+        @Override void addFocusListener(View root){
+            root.getViewTreeObserver().addOnWindowFocusChangeListener(this);
+        }
+        @Override void removeFocusListener(View root){
+            ViewTreeObserver observer=root.getViewTreeObserver();
+            if(observer.isAlive())observer.removeOnWindowFocusChangeListener(this);
+        }
         @Override boolean subscribe(){
             try {
                 tv.registerCallback(callback,new Handler(Looper.getMainLooper()));
