@@ -1,6 +1,6 @@
 package dev.projectorsoft.tvsettings;
 
-/** Guard for the legacy Global EDID selector with a fixed HW6 query. */
+/** Guard for the legacy Global EDID selector with the EDID query type 6. */
 public final class EdidPortPolicy {
     private EdidPortPolicy() {}
 

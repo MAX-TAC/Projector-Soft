@@ -12,8 +12,7 @@ import java.util.Map;
 
 /**
  * Legacy 8052 EDID compatibility selector using the original
- * EdidSourceSecondaryController query and Settings.Global key. The fixed
- * HW6 query and global key have no proven per-port meaning on two-HDMI 8054.
+ * EdidSourceSecondaryController query and Settings.Global key. The EDID query type 6 and global key have no proven per-port meaning on two-HDMI 8054.
  * Only shown while HDMI is the currently selected source on 8052.
  */
 public final class OemHdmiEdidHook {
