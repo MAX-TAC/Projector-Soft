@@ -6,7 +6,7 @@ const states=new Set(['DIRECT_MOD','DELEGATED_OEM','READ_ONLY','HIDDEN','BLOCKED
 const overrides={};
 function set(ids,state,path,next,fallback=null){for(const id of ids.split(' '))overrides[id]={delivery:state,implementation:path,next_check:next,fallback};}
 set('NAV01','DIRECT_MOD','OemRootMenuHook + Android TV MainFragment','D-pad root navigation on8054');
-set('NAV02 NAV03 NAV04 NAV05 NAV06 NAV10','DELEGATED_OEM','Existing Android TV fragments / nine tested legacy Intent aliases','Confirm target screen and Back navigation, no reset action');
+set('NAV02 NAV03 NAV04 NAV05 NAV06 NAV10','DELEGATED_OEM','OemStandardAndroidNavigation for NAV02-06; retained stock reset page NAV10, no reset action','Confirm target screen and Back navigation, no reset action');
 set('NAV07 NAV14','READ_ONLY','OemSystemInfoHook / OemCompatibilityDiagnosticsHook','Compare displayed values to original platform values');
 set('NAV08','DIRECT_MOD','OemFontScaleHook','Verify four OEM scale values and persistence');
 set('NAV09','DIRECT_MOD','OemScreenTimeoutSafetyHook','Verify Never/no dream policy versus OEM power timer');
@@ -51,4 +51,5 @@ fs.writeFileSync(root+'/DELIVERY_STATUS_8054.md',[
   ...rows.map(r=>'| '+[r.id,r.function,r.delivery,r.fallback||'—',r.build_state||'—',r.runtime_state||'—',r.next_check].map(x=>String(x).replace(/\|/g,'/')).join(' | ')+' |'),''
 ].join('\n'));
 console.log('PASS delivery inventory: '+JSON.stringify(counts)+'; 0 runtime verified, 0 feature complete');
+
 

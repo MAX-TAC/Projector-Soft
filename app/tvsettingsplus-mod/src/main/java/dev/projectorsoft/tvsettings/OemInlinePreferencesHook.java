@@ -73,6 +73,7 @@ public final class OemInlinePreferencesHook {
             Object systemCategory=addCategory(screen,preference,categoryClass,
                     context,"projectorsoft_system_category","Об устройстве · Проектор",280);
             if(systemCategory!=null) {
+                boolean androidNavigation=OemStandardAndroidNavigation.install(context,systemCategory,preference);
                 boolean info=OemSystemInfoHook.install(context,systemCategory,preference);
                 boolean preflight=OemCompatibilityDiagnosticsHook.install(
                         context,systemCategory,preference);
@@ -80,7 +81,7 @@ public final class OemInlinePreferencesHook {
                         context,systemCategory,preference);
                 boolean screenStatus=OemScreenTimeoutSafetyHook.installStatus(
                         context,systemCategory,preference);
-                if(!info && !preflight && !firmware && !screenStatus) {
+                if(!androidNavigation && !info && !preflight && !firmware && !screenStatus) {
                     screen.getClass().getMethod("removePreference",preference)
                             .invoke(screen,systemCategory);
                 }

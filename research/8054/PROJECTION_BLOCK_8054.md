@@ -36,3 +36,6 @@ OemProjectionPanel только устанавливает checked explicit Inte
 4. При отсутствии исходного state/понятного ручного возврата — stop test до изменения функции. UI/Intent eligibility не доказывает физический rollback. Результаты по каждому PRJxx остаются NOT_TESTED до реального теста.
 
 Следующий кодовый milestone — STANDARD_ANDROID система/NAV; без полного reverse низкоуровневых служб. Перед первым device test отдельный обязательный пакет: exact MOD + matching sha256 + original8054 APK + preflight PackageManager/signature/sharedUID/SELinux + recovery/D-pad path при нестарте меню. Ни установки, ни включения/отключения системных пакетов, ни записи Global этот документ не разрешает.
+
+## Подтверждённый пакет проекции
+Implementation db9818: source-safety 44251310586, Android/D8/JVM 44251310569, OEM 44251310610, v33 44251310583, exact-8054 44251310720 — success. APK SHA-256 d14b05f14a752d170a46956197059164693e6082b6c86db8be691cf67e029f8a, artifact 14404267004; не установлен. Тест настоящего brightness gateway подтвердил ноль receiver lookup/broadcast8054/unknown и сохранение8052 dispatch. Начат следующий STANDARD_ANDROID milestone (STANDARD_ANDROID_BLOCK_8054.md); пройденная сборка не означает аппаратного переноса PRJxx.
