@@ -13,9 +13,13 @@ SETTINGS = {
     ),
     "PreferenceConfigUtils": (
         r"putSettingValueInt|updatePreferenceChanged|onPreferenceValueChange|"
-        r"createProgressDialogPreference(?:Trans)?|getACFGId|isVGASource|setProgressSummary"
+        r"createProgressDialogPreference(?:Trans)?|createNewProgressPreferencesss|getACFGId|isVGASource|setProgressSummary"
     ),
-    "ProgressDialogPreference": r"onClick|onBindViewHolder|onSetInitialValue",
+    "ProgressDialogPreference": r"<init>|onClick|performClick|onBindViewHolder",
+    "NewProgressPreference": r"<init>|onBindViewHolder|.*[Pp]rogress.*|.*[Mm]in.*|.*[Mm]ax.*",
+    "SettingsPreferenceFragment": r"onDisplayPreferenceDialog|onPreferenceTreeClick|onPreferenceStartFragment",
+    "SaveValue": r"readWorldInputType",
+    "TVSettingConfig": r"getMin|getMax",
     "ProgressBarDialog": r"onCreate.*|getACFGId|onProgressChanged|onStopTrackingTouch|.*[Mm]in.*|.*[Mm]ax.*|.*[Ss]ource.*",
     "ProgressBarVerticalFragment": r"onPreferenceChange|onCreatePreferences",
     "TitleSeekBarView": r"<init>|init.*|setValue|setMax|setMin",
@@ -28,6 +32,7 @@ SERVICES = {
     "TVMenuSettingsService$SettingObserver": r"onChange",
     "TVSettingConfig": r"getConfigValueInt|setConifg",
     "TVNativeWrapper": r"(?:get|set)ConfigValue_native",
+    "TVNative": r"(?:get|set)ConfigValue_native",
     "MtkTvConfigBase": r"getConfigValue|setConfigValue|getMinMaxConfigValue",
 }
 METHOD_START = re.compile(r"^\.method .*?([^\s(]+)\(")
