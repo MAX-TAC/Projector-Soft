@@ -18,7 +18,9 @@ set('SND11','DELEGATED_OEM','OEM SOUND_SETTINGS and stock AudioOutputActivity','
 set('SND12','NOT_IMPLEMENTED','OEM_ROUTE_UNCONFIRMED: speaker/SPDIF config keys only','Find the stock controller and range if available on 8054');
 set('SND13 DBL05','HIDDEN','OemMenuVisibilityHook hides BT speaker entry only; service retained','Deferred speaker-mode scope; no service disable');
 set('HDMI01 HDMI02','DIRECT_MOD','OemHdmiPortInfo HW6/HW7: verified input ID and stock LiveTV ACTION_VIEW passthrough','Confirm LiveTV resolves, actual port/signal, no-signal behavior and Back on 8054');
-set('HDMI03 HDMI04 HDMI05','DELEGATED_OEM','OEM source page; direct EDID/CEC gated on8054','EDID per-port routing, CEC/eARC side effects and keystone preservation');
+set('HDMI03','READ_ONLY','OemHdmiEdidHook displays the single stored Global code; OEM editor retained','Verify EDID target scope for both inputs, renegotiation and restore','DELEGATED_OEM');
+set('HDMI04','DIRECT_MOD','OemCecAutoOff8054: main CEC status and native standby-on-sleep switch; main CEC remains OEM','Verify CEC availability, standby behavior, ARC/eARC and original power confirmation','DELEGATED_OEM');
+set('HDMI05','DELEGATED_OEM','OEM source game mode; resetTrapezoid is part of enable','Trace reset scope and restore correction before allowing a native toggle');
 set('HDMI06','DIRECT_MOD','OemHdmiAutoPlayHook','Verify OEM autoplay state and startup side effects');
 set('HDMI07','DIRECT_MOD','OemPowerOnSourceHook; boot property only','Verify exact8054 accepted IDs and cold boot per input');
 set('HDMI08','DIRECT_MOD','OemPowerOnAppHook','Verify target activity and persisted OEM property');

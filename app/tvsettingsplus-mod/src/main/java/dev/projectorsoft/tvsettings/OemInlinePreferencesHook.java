@@ -118,7 +118,9 @@ public final class OemInlinePreferencesHook {
                 boolean hasAutoplay=OemHdmiAutoPlayHook.install(context,hdmiCategory,preference);
                 boolean hasBootSource=OemPowerOnSourceHook.install(context,hdmiCategory,preference);
                 boolean hasBootApp=OemPowerOnAppHook.install(context,hdmiCategory,preference);
-                boolean hasCec=OemHdmiCecHook.install(context,hdmiCategory,preference);
+                boolean hasCec=exactBoard
+                        ? OemCecAutoOff8054.install(context,hdmiCategory,preference)
+                        : OemHdmiCecHook.install(context,hdmiCategory,preference);
                 boolean hasOemLinks=OemHardwareDelegatedSettings.installSourceLinks(
                         context,hdmiCategory,preference,hasCec,hasBootApp);
                 if(!hasPorts && !hasEdid && !hasAutoplay && !hasBootSource && !hasBootApp

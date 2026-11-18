@@ -62,6 +62,13 @@ jobs:
           for test in KuSourceRecoveryActivationPolicyTest KuSourceRecoveryPolicyTest EdidPortPolicyTest ProjectorCompatibilityPolicyTest OemBluetoothRemotePolicyTest; do
             java -cp /tmp/8054-policy-classes "dev.projectorsoft.tvsettings.$test"
           done
+      - name: Test 8054 CEC standby-only operation
+        run: |
+          mkdir -p /tmp/8054-cec-tests
+          javac -d /tmp/8054-cec-tests \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/CecAutoOff8054.java \
+            app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/CecAutoOff8054Test.java
+          java -cp /tmp/8054-cec-tests dev.projectorsoft.tvsettings.CecAutoOff8054Test
       - name: Test picture snapshot and context restrictions
         run: |
           mkdir -p /tmp/picture-state-tests

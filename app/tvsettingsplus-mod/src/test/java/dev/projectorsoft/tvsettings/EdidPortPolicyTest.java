@@ -9,6 +9,11 @@ public final class EdidPortPolicyTest {
         check(!EdidPortPolicy.mayUseLegacySelector("8054"),"Never write shared EDID key for unverified two-port mapping");
         check(!EdidPortPolicy.mayUseLegacySelector(null),"Unknown board must fail closed");
         check(!EdidPortPolicy.mayUseLegacySelector(""),"Missing board ID must fail closed");
+        for(int mode=0;mode<=3;mode++)
+            check(Integer.valueOf(mode).equals(EdidPortPolicy.storedMode(Integer.toString(mode))),
+                    "Known OEM provider code must be displayed");
+        for(String invalid:new String[]{null,"","-1","4","00"," 0","auto"})
+            check(EdidPortPolicy.storedMode(invalid)==null,"No guessed EDID baseline: "+invalid);
         System.out.println("PASS EdidPortPolicy: 8054 legacy EDID selector hidden");
     }
 }

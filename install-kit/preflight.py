@@ -13,6 +13,7 @@ CRITICAL = {'KuSettings': 'com.my.settings', 'KuSourceRJ': 'com.coolux.source',
             'TvServices': 'com.mediatek.tv.service', 'RuiAutoFocus': 'com.hysd.screen',
             'KeystoneCorrection': 'com.rjpj.tcorrection', 'AutoPair': 'com.mediatek.autopair'}
 BUILTIN = '/system_ext/priv-app/TvSettingsPlus/TvSettingsPlus.apk'
+EDID_KEY = 'tv_input_hdmi_edid_version'
 PICTURE_KEYS = ('picture_mode', 'picture_brightness', 'picture_contrast', 'picture_saturation')
 
 
@@ -47,6 +48,10 @@ def capture_adb(runner, adb, serial, destination, name, args):
 
 
 def collect_stock_picture(serial, destination, adb='adb', runner=run):
+    return collect_stock_snapshot(serial, destination, adb, runner)
+
+
+def collect_stock_snapshot(serial, destination, adb='adb', runner=run, *, hdmi=False):
     """Collect one exact STOCK snapshot. Optional dumps are evidence for manual review."""
     gates, commands_used = {}, {}
 
@@ -80,7 +85,7 @@ def collect_stock_picture(serial, destination, adb='adb', runner=run):
                 return value
         return None
 
-    baseline = dict.fromkeys(PICTURE_KEYS)
+    baseline = dict.fromkeys((EDID_KEY,) if hdmi else PICTURE_KEYS)
     service_record = 'UNVERIFIED'
 
     stock = (
@@ -99,15 +104,22 @@ def collect_stock_picture(serial, destination, adb='adb', runner=run):
     )
     if stock:
         capture('fingerprint', ['shell', 'getprop', 'ro.build.fingerprint'])
-        before = capture('picture_mode_before', ['shell', 'settings', 'get', 'global', 'picture_mode'])
-        capture('tv_input', ['shell', 'dumpsys', 'tv_input'])
-        capture('display', ['shell', 'dumpsys', 'display'])
-        for key in PICTURE_KEYS[1:]:
-            raw = capture(key, ['shell', 'settings', 'get', 'global', key])
-            baseline[key] = setting_int(raw)
-        after = capture('picture_mode_after', ['shell', 'settings', 'get', 'global', 'picture_mode'])
-        if before == after:
-            baseline['picture_mode'] = setting_int(after)
+        if hdmi:
+            capture('tv_input', ['shell', 'dumpsys', 'tv_input'])
+            capture('hdmi_control', ['shell', 'dumpsys', 'hdmi_control'])
+            raw = capture(EDID_KEY, ['shell', 'settings', 'get', 'global', EDID_KEY])
+            if raw in ('0', '1', '2', '3'):
+                baseline[EDID_KEY] = int(raw)
+        else:
+            before = capture('picture_mode_before', ['shell', 'settings', 'get', 'global', 'picture_mode'])
+            capture('tv_input', ['shell', 'dumpsys', 'tv_input'])
+            capture('display', ['shell', 'dumpsys', 'display'])
+            for key in PICTURE_KEYS[1:]:
+                raw = capture(key, ['shell', 'settings', 'get', 'global', key])
+                baseline[key] = setting_int(raw)
+            after = capture('picture_mode_after', ['shell', 'settings', 'get', 'global', 'picture_mode'])
+            if before == after:
+                baseline['picture_mode'] = setting_int(after)
         capture('tvservices_package', ['shell', 'dumpsys', 'package', CRITICAL['TvServices']])
         services = capture('tvservices_activity',
                            ['shell', 'dumpsys', 'activity', 'services', CRITICAL['TvServices']])
@@ -128,7 +140,10 @@ def collect_stock_picture(serial, destination, adb='adb', runner=run):
                   mediatek_bounds='NO_CONFIRMED_SHELL_INTERFACE',
                   tvmenu_service_record=service_record,
                   device_changes=False, install_state='NOT_READY_FOR_DEVICE_INSTALL')
-    save_json(destination / 'stock-picture.json', result)
+    if hdmi:
+        result.update(edid_port_scope='UNVERIFIED', edid_sink_readback='NO_CONFIRMED_SHELL_INTERFACE',
+                      cec_earc_state='UNVERIFIED')
+    save_json(destination / ('stock-hdmi.json' if hdmi else 'stock-picture.json'), result)
     return result
 
 
@@ -216,7 +231,9 @@ def collect(kit, serial, destination, adb='adb', aapt='aapt', apksigner='apksign
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--picture-stock', action='store_true', help='Read-only exact STOCK picture snapshot; no install assets needed')
+    modes = parser.add_mutually_exclusive_group()
+    modes.add_argument('--hdmi-stock', action='store_true', help='Read-only exact STOCK EDID and HDMI dumps')
+    modes.add_argument('--picture-stock', action='store_true', help='Read-only exact STOCK picture snapshot; no install assets needed')
     parser.add_argument('--serial', required=True, help='Explicit approved device; never auto-select')
     parser.add_argument('--kit', type=Path, default=Path(__file__).resolve().parent)
     parser.add_argument('--out', help='New host directory; Linux /tmp only')
@@ -224,10 +241,11 @@ def main():
     args = parser.parse_args()
     if not args.serial.strip() or args.serial.startswith('-') or any(c in args.serial for c in '\r\n\0'):
         print('FAIL explicit serial / NOT_READY'); return 1
-    if args.picture_stock:
+    if args.picture_stock or args.hdmi_stock:
         try:
-            destination = output_dir(args.out, 'tvsettings8054-stock-picture-')
-            result = collect_stock_picture(args.serial, destination, args.adb)
+            prefix = 'tvsettings8054-stock-hdmi-' if args.hdmi_stock else 'tvsettings8054-stock-picture-'
+            destination = output_dir(args.out, prefix)
+            result = collect_stock_snapshot(args.serial, destination, args.adb, hdmi=args.hdmi_stock)
         except (OSError, ValueError) as exc:
             print('STOP host output: ' + str(exc))
             return 1

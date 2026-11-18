@@ -6,9 +6,9 @@ from pathlib import Path
 
 METHOD = re.compile(r"(?ms)^\.method [^\n]*?([^\s(]+)\([^\n]*\n.*?^\.end method$")
 OWNERS = {
-    'EdidSourceSecondaryController': r'getEdidVersion|init.*|set.*|.*lambda.*',
-    'EdidSourceFragment': r'getEdidVersion|init.*|on.*|set.*|.*lambda.*',
-    'SourceSubMenuController': r'.*(?:[Cc]ec|[Ee]did|[Aa]utoDeviceOff|[Gg]ame|[Cc]onfirm).*',
+    'EdidSourceSecondaryController': r'getEdidVersion|init.*|set.*|update.*|validate.*|.*lambda.*',
+    'EdidSourceFragment': r'getEdidVersion|init.*|on.*|set.*|update.*|validate.*|.*lambda.*',
+    'SourceSubMenuController': r'.*(?:[Cc]ec|[Ee]did|[Aa]utoDeviceOff|[Gg]ame|[Cc]onfirm|[Tt]rapezoid).*',
     'SourceFragment': r'.*(?:[Cc]ec|[Ee]did|[Aa]utoDeviceOff|[Gg]ame|[Cc]onfirm).*',
     'PreferenceConfigUtils': r'isHDMISource|isSupportEARC',
     'SaveValue': r'readWorldInputType',
@@ -18,6 +18,7 @@ OWNERS = {
     'MtkTvCecAnBase': r'.*[Ee]arc.*',
     'TVNativeWrapper': r'.*(?:VideoInfoData|[Ee]arc).*',
     'TVNative': r'.*(?:VideoInfoData|[Ee]arc).*',
+    'EnergyCommonActivity': r'onCreate|onClick|.*lambda.*|.*[Cc]ec.*',
     'DataSeparaterUtil': r'isSupportPowerConfirmed',
 }
 CALL = re.compile(
@@ -41,6 +42,10 @@ def trace(root):
                 continue
         else:
             raw = path.read_text(encoding='utf-8')
+        if owner in ('MtkTvAVModeBase', 'MtkTvVideoInfoBase'):
+            for i, line in enumerate(raw.splitlines(), 1):
+                if line.startswith('.field') and ('EDID' in line.upper() or line.endswith(' = 0x6')):
+                    print(f'HDMI_CONTROL_FIELD {root.name}/{relative}:{i} {line}')
         for match in METHOD.finditer(raw):
             name = match[1]
             body = match[0]

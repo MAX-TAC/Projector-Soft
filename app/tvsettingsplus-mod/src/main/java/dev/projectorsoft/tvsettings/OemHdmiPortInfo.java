@@ -106,7 +106,8 @@ public final class OemHdmiPortInfo {
         try {
             Method find=fragment.getClass().getMethod("findPreference",CharSequence.class);
             if(find.invoke(fragment,"projectorsoft_hdmi_info_HW6")==null
-                    && find.invoke(fragment,"projectorsoft_hdmi_info_HW7")==null) {
+                    && find.invoke(fragment,"projectorsoft_hdmi_info_HW7")==null
+                    && find.invoke(fragment,OemHdmiEdidHook.STATUS_KEY)==null) {
                 if(observer!=null)observer.bind(null);
                 OBSERVERS.remove(fragment);
                 return;
@@ -119,7 +120,7 @@ public final class OemHdmiPortInfo {
                 Object raw=Build.class.getField("A_RJ_HDMI_PORTS").get(null);
                 Method summary=Class.forName("androidx.preference.Preference")
                         .getMethod("setSummary",CharSequence.class);
-                observer=new Observer(fragment,find,summary,tv,count,raw instanceof String ? (String)raw : null);
+                observer=new Observer(context,fragment,find,summary,tv,count,raw instanceof String ? (String)raw : null);
                 OBSERVERS.put(fragment,new WeakReference<>(observer));
             }
             observer.bind(root);
@@ -128,6 +129,7 @@ public final class OemHdmiPortInfo {
 
     private static final class Observer extends HdmiViewLifecycle<View>
             implements View.OnAttachStateChangeListener, ViewTreeObserver.OnWindowFocusChangeListener {
+        private final Context context;
         private final Object fragment;
         private final Method find;
         private final Method summary;
@@ -140,7 +142,8 @@ public final class OemHdmiPortInfo {
             @Override public void onInputStateChanged(String id,int state){inputChanged();}
         };
 
-        Observer(Object fragment,Method find,Method summary,TvInputManager tv,int count,String metadata) {
+        Observer(Context context,Object fragment,Method find,Method summary,TvInputManager tv,int count,String metadata) {
+            this.context=context;
             this.fragment=fragment;
             this.find=find;
             this.summary=summary;
@@ -186,6 +189,10 @@ public final class OemHdmiPortInfo {
                     Object row=find.invoke(fragment,"projectorsoft_hdmi_info_"+hardware);
                     if(row!=null)summary.invoke(row,statuses.getOrDefault(hardware,"Вход недоступен"));
                 }
+                Object edid=find.invoke(fragment,OemHdmiEdidHook.STATUS_KEY);
+                if(edid!=null)summary.invoke(edid,OemHdmiEdidHook.storedSummary(context));
+                OemCecAutoOff8054.refresh(context,find.invoke(fragment,OemCecAutoOff8054.CEC_KEY),
+                        find.invoke(fragment,OemCecAutoOff8054.OFF_KEY));
             }catch(Exception ex){Log.w("TvSettingsPlusMOD","HDMI refresh unavailable",ex);}
         }
     }

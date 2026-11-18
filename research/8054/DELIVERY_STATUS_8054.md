@@ -2,7 +2,7 @@
 
 DIRECT_MOD — код контрола/платформенной интеграции; DELEGATED_OEM — только штатная навигация; READ_ONLY — только информация; HIDDEN — прямой MOD-контрол скрыт; BLOCKED — запрещённый путь; NOT_IMPLEMENTED — реализации MOD нет. OEM ссылка не MIGRATED и не FEATURE_COMPLETE. Наличие отдельного подменю и аппаратуры надо подтвердить на устройстве. BUILT_UNTESTED относится к условному пути в APK, а не к переносу всей функции. — означает отсутствие активной реализации, не успешную сборку функции. Все hardware результаты отсутствуют.
 
-DIRECT_MOD 20; DELEGATED_OEM 21; READ_ONLY 18; NOT_IMPLEMENTED 24; BLOCKED 11; HIDDEN 2
+DIRECT_MOD 21; DELEGATED_OEM 19; READ_ONLY 19; NOT_IMPLEMENTED 24; BLOCKED 11; HIDDEN 2
 
 | ID | Функция | Доставка | Fallback | Код | Аппаратура | Следующая проверка |
 |---|---|---|---|---|---|---|
@@ -53,9 +53,9 @@ DIRECT_MOD 20; DELEGATED_OEM 21; READ_ONLY 18; NOT_IMPLEMENTED 24; BLOCKED 11; H
 | SND13 | Bluetooth Speaker / A2DP sink | HIDDEN | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Deferred speaker-mode scope; no service disable |
 | HDMI01 | Активный источник HDMI 1 | DIRECT_MOD | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm LiveTV resolves, actual port/signal, no-signal behavior and Back on 8054 |
 | HDMI02 | Активный источник HDMI 2 | DIRECT_MOD | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm LiveTV resolves, actual port/signal, no-signal behavior and Back on 8054 |
-| HDMI03 | EDID version | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | EDID per-port routing, CEC/eARC side effects and keystone preservation |
-| HDMI04 | HDMI-CEC | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | EDID per-port routing, CEC/eARC side effects and keystone preservation |
-| HDMI05 | Game mode | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | EDID per-port routing, CEC/eARC side effects and keystone preservation |
+| HDMI03 | EDID version | READ_ONLY | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify EDID target scope for both inputs, renegotiation and restore |
+| HDMI04 | HDMI-CEC | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify CEC availability, standby behavior, ARC/eARC and original power confirmation |
+| HDMI05 | Game mode | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Trace reset scope and restore correction before allowing a native toggle |
 | HDMI06 | HDMI Plug autoplay | DIRECT_MOD | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify OEM autoplay state and startup side effects |
 | HDMI07 | Источник при старте | DIRECT_MOD | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify exact8054 accepted IDs and cold boot per input |
 | HDMI08 | Приложение при старте | DIRECT_MOD | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify target activity and persisted OEM property |

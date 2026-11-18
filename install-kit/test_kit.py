@@ -205,6 +205,36 @@ class KitTests(unittest.TestCase):
             self.assertEqual(report['commands']['tvservices_activity']['status'], 'UNAVAILABLE')
             self.assertEqual(report['tvmenu_service_record'], 'UNVERIFIED')
 
+    def test_hdmi_snapshot_keeps_provider_and_port_scope_separate(self):
+        overrides = {
+            ('shell', 'dumpsys', 'hdmi_control'): 'Permission Denial: hdmi_control',
+            ('shell', 'settings', 'get', 'global', preflight.EDID_KEY): '2',
+        }
+        runner, calls, picture_commands = picture_runner(overrides)
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary)
+            report = preflight.collect_stock_snapshot('STOCK-SERIAL', path, runner=runner, hdmi=True)
+            expected = {c for c in picture_commands if c != ('shell', 'dumpsys', 'display')
+                        and not (c[:4] == ('shell', 'settings', 'get', 'global')
+                                 and c[-1] in preflight.PICTURE_KEYS)}
+            self.assertEqual(set(map(tuple, calls)), expected)
+            self.assertEqual(report['status'], 'CAPTURED')
+            self.assertEqual(report['settings_global'], {preflight.EDID_KEY: 2})
+            self.assertEqual(report['edid_port_scope'], 'UNVERIFIED')
+            self.assertEqual(report['commands']['hdmi_control']['status'], 'DENIED')
+            self.assertFalse(report['device_changes'])
+            self.assertTrue((path / 'stock-hdmi.json').is_file())
+
+    def test_hdmi_snapshot_rejects_unsupported_value(self):
+        runner, _, _ = picture_runner({
+            ('shell', 'dumpsys', 'hdmi_control'): 'HDMI Control Service',
+            ('shell', 'settings', 'get', 'global', preflight.EDID_KEY): '4',
+        })
+        with tempfile.TemporaryDirectory() as temporary:
+            report = preflight.collect_stock_snapshot('STOCK-SERIAL', Path(temporary), runner=runner, hdmi=True)
+        self.assertEqual(report['status'], 'PARTIAL')
+        self.assertIsNone(report['settings_global'][preflight.EDID_KEY])
+
     def test_checksum_tampering_and_traversal(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary); asset = root/'stock.apk'; asset.write_bytes(b'original')

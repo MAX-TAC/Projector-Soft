@@ -17,6 +17,7 @@ import java.util.Map;
  * Only shown while HDMI is the currently selected source on 8052.
  */
 public final class OemHdmiEdidHook {
+    static final String STATUS_KEY="projectorsoft_hdmi_edid_status";
     private static final String TAG="TvSettingsPlusMOD";
     private static final String KEY="tv_input_hdmi_edid_version";
     private static final int[] MODES={0,1,2,3};
@@ -54,9 +55,30 @@ public final class OemHdmiEdidHook {
         return max>=0 && max<=3 ? max : -1;
     }
 
-    /** Returns true only when a real native EDID preference is added. */
+    static String storedSummary(Context context) {
+        try {
+            Integer mode=EdidPortPolicy.storedMode(Settings.Global.getString(context.getContentResolver(),KEY));
+            if(mode!=null)return NAMES[mode] + " · сохранено; порт и применение не подтверждены";
+        }catch(RuntimeException error){
+            Log.w(TAG,"Stored EDID value unavailable",error);
+        }
+        return "Сохранённый режим недоступен";
+    }
+
+    private static boolean installStatus(Context context,Object category,Class<?> pref) throws Exception {
+        Object item=pref.getConstructor(Context.class).newInstance(context);
+        pref.getMethod("setKey",String.class).invoke(item,STATUS_KEY);
+        pref.getMethod("setTitle",CharSequence.class).invoke(item,"EDID · сохранённый режим");
+        pref.getMethod("setSummary",CharSequence.class).invoke(item,storedSummary(context));
+        pref.getMethod("setOrder",int.class).invoke(item,273);
+        pref.getMethod("setSelectable",boolean.class).invoke(item,false);
+        return Boolean.TRUE.equals(category.getClass().getMethod("addPreference",pref).invoke(category,item));
+    }
+
+    /** On 8054 only the persisted provider value is exposed. */
     public static boolean install(Context context,Object category,Class<?> preferenceClass) {
         try {
+            if("8054".equals(machineId()))return installStatus(context,category,preferenceClass);
             final int hardwareMax=hardwareSupportedMax(context);
             if(hardwareMax<0)return false;
 
