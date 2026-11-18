@@ -30,7 +30,8 @@ public final class OemProjectionPanel {
                     info.applicationInfo!=null&&info.applicationInfo.enabled&&appState<=PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
                     context.getPackageName().equals(pkg),info.exported,permission))return;
             Object item=pref.getConstructor(Context.class).newInstance(context);
-            pref.getMethod("setKey",String.class).invoke(item,"projectorsoft_projection_"+key);
+            pref.getMethod("setKey",String.class).invoke(item,
+                "settings".equals(key)?"projectorsoft_calibration_oem":"projectorsoft_projection_"+key);
             pref.getMethod("setTitle",CharSequence.class).invoke(item,title);
             pref.getMethod("setSummary",CharSequence.class).invoke(item,summary);
             pref.getMethod("setOrder",int.class).invoke(item,order);
