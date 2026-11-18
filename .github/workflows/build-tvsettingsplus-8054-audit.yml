@@ -129,12 +129,14 @@ jobs:
                   continue
               print('HDMI8054 LiveTV default VIEW', owner)
               for line in attributes:
-                  if 'android:scheme' in line or 'android:host' in line or 'android:path' in line:
+                  if any(field in line for field in ('android:scheme', 'android:host', 'android:path', 'android:mimeType')):
                       print('HDMI8054 LiveTV data', line.strip())
-              if ('android:scheme' in details and '"content"' in details and
-                      ('"android.media.tv"' in details or 'android:host' not in details)):
+              # AOSP TvProvider returns channel-item MIME for passthrough channel URIs.
+              if ('"vnd.android.cursor.item/channel"' in details
+                      and 'android:scheme' not in details and 'android:host' not in details
+                      and 'android:path' not in details):
                   routes += 1
-          print('HDMI8054 LiveTV default VIEW content candidates', routes)
+          print('HDMI8054 LiveTV default VIEW channel MIME candidates', routes)
           PY
           python3 tools/find_8054_keystone_layout.py \
             /tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk \
