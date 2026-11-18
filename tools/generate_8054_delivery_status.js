@@ -12,7 +12,7 @@ set('NAV08','DIRECT_MOD','OemFontScaleHook','Verify four OEM scale values and pe
 set('NAV09','DIRECT_MOD','OemScreenTimeoutSafetyHook','Verify Never/no dream policy versus OEM power timer');
 set('NAV11','DELEGATED_OEM','Existing OEM update page link, deferred scope','No OTA work/actions in current milestone');
 set('NAV12','DELEGATED_OEM','Legacy intent aliases; compatibility diagnostics omitted from the normal 8054 menu','Test Settings key routing without disabling KuSettings');
-set('PIC01 PIC02 PIC03 PIC04 PIC05 PIC06 PIC07 PIC08 PIC09 PIC10 PIC11 PIC12','HIDDEN','OemPictureState.mayEdit=false; OEM picture page is reachable','Establish verified PQ/input context before direct writes','DELEGATED_OEM');
+set('PIC01 PIC02 PIC03 PIC04 PIC05 PIC06 PIC07 PIC08 PIC09 PIC10 PIC11 PIC12','READ_ONLY','OemPicturePanel native stored-value rows; editing BLOCKED_BY_RUNTIME','Establish the active input/PQ context and the stock callback/limits before direct writes');
 set('SND01 SND02 SND03 SND04 SND05 SND06 SND07','DIRECT_MOD','OemSoundPanel / sound guards / OemKeyToneHook / OEM capability gates','SOUND_DEVICE_CHECKLIST_8054.md: mode/output/focus, readback and audible effect','DELEGATED_OEM');
 set('SND11','DELEGATED_OEM','OEM SOUND_SETTINGS and stock AudioOutputActivity','Verify CEC/ARC/eARC and output-specific behavior');
 set('SND12','NOT_IMPLEMENTED','OEM_ROUTE_UNCONFIRMED: speaker/SPDIF config keys only','Find the stock controller and range if available on 8054');
@@ -40,7 +40,8 @@ const rows=graph.features.map(f=>{
   let record=overrides[f.id];
   if(!record)record={delivery:f.status==='BLOCKED'?'BLOCKED':'NOT_IMPLEMENTED',implementation:'No current MOD path demonstrated',next_check:f.status==='DEFERRED'?'Out of current scope':f.missing_verification,fallback:null};
   const implemented=['DIRECT_MOD','DELEGATED_OEM','READ_ONLY','HIDDEN'].includes(record.delivery);
-  return {id:f.id,function:f.function,...record,build_state:implemented?'BUILT_UNTESTED':null,
+  const picturePreview=record.implementation.startsWith('OemPicturePanel ');
+  return {id:f.id,function:f.function,...record,build_state:picturePreview?'SOURCE_ONLY':implemented?'BUILT_UNTESTED':null,
     runtime_state:implemented?'RUNTIME_TEST_REQUIRED':null,feature_complete:false,
     scope:f.status==='DEFERRED'?'DEFERRED':'CURRENT',evidence_status:f.status};
 });

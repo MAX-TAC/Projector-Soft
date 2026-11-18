@@ -10,12 +10,14 @@ public final class OemPictureStateTest {
         String context="HDMI1/mode7";
         String fail;
         boolean failSave;
+        boolean switchDuringWrite;
         int writes;
         public String read(String key) {return values.get(key);}
         public boolean write(String key,String value) {
             writes++;
             if(key.equals(fail))return false;
             values.put(key,value);
+            if(switchDuringWrite)context="HDMI2/mode7";
             if("picture_mode".equals(key))context="HDMI1/mode"+value;
             return true;
         }
@@ -45,6 +47,13 @@ public final class OemPictureStateTest {
         int before=f.writes;check(!f.transaction().restore()&&f.writes==before,"mode mismatch no writes");
         f.context="HDMI2/mode7";check(!f.transaction().restore()&&f.writes==before,"HDMI mismatch no writes");
         f.context=null;check(!f.transaction().restore()&&f.writes==before,"unknown input/profile no writes");
+
+        f=fixture();f.context="HDMI2/mode7";
+        check(!f.transaction().write(KEY,75,"HDMI1/mode7")&&f.writes==0&&f.saved.isEmpty(),
+                "obsolete UI context must not write the new input");
+        f=fixture();f.switchDuringWrite=true;
+        check(!f.transaction().write(KEY,75,"HDMI1/mode7")&&f.saved.containsKey(KEY),
+                "readback after context change must not confirm success or discard baseline");
 
         f=fixture();f.values.put("picture_mode","7");f.transaction().write(KEY,60);
         check(!f.transaction().write("picture_mode",3),"mode delegated, never scalar written");

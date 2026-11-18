@@ -25,7 +25,10 @@ public final class PictureStateTransaction {
     }
     public boolean write(String key,int value) {
         String expected=context();
-        if("UNKNOWN".equals(expected)||key==null||!key.startsWith("picture_")
+        return write(key,value,expected);
+    }
+    public boolean write(String key,int value,String expected) {
+        if(expected==null||"UNKNOWN".equals(expected)||!expected.equals(context())||key==null||!key.startsWith("picture_")
                 ||"picture_mode".equals(key)||"picture_color_temperature".equals(key))return false;
         String record=journal.entries().get(key);
         if(record!=null&&!record.startsWith(expected+"\n"))return false;
@@ -35,7 +38,8 @@ public final class PictureStateTransaction {
         if(record==null&&!journal.save(key,expected+"\n"+old))return false;
         if(!expected.equals(context()))return false;
         return backend.write(key,Integer.toString(value))
-            && Integer.toString(value).equals(backend.read(key));
+            && Integer.toString(value).equals(backend.read(key))
+            && expected.equals(context());
     }
     public boolean restore() {
         String expected=context();

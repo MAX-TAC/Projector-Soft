@@ -91,6 +91,25 @@ jobs:
           mkdir -p /tmp/tv33/framework
           apktool if /tmp/flix8054_erofs/system_a_tree/system/framework/framework-res.apk -p /tmp/tv33/framework
           apktool d -f -r -p /tmp/tv33/framework /tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk -o /tmp/tv33/decoded
+          python3 - <<'PY'
+          import pathlib, re
+          root=pathlib.Path('/tmp/tv33/decoded')
+          owners=('PictureSubMenuController','PictureModeValueSecondaryController',
+                  'ColorTempValueSecondaryController','AdvanceSettingsSecondaryController',
+                  'PictureFragment','PictureActivity','PictureResetActivity')
+          for path in sorted(root.glob('smali*/**/*.smali')):
+              if path.stem.split('$')[0] not in owners:
+                  continue
+              body=path.read_text()
+              for chunk in re.findall(r'(?ms)^\.method [^\n]+\n.*?^\.end method',body):
+                  lines=[line.strip() for line in chunk.splitlines()[1:]
+                         if ('const-string' in line and ('picture_' in line or 'mjc' in line))
+                         or ('invoke-' in line and re.search(
+                             r'Global;|SettingsUtil;|TVSettingConfig;|MtkTvConfigBase;|MtkUtil;|SourceManager|'
+                             r'CurrentSource|CurrentInput|setOnValueChange|setOnClick|resetPicture|SettingsFragment',line))]
+                  if lines:
+                      print('PIC8054',path.stem,chunk.splitlines()[0], '|', ' | '.join(lines))
+          PY
           python3 tools/find_8054_keystone_layout.py \
             /tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk \
             /tmp/tv33/Exact8054ProjectionResources.java

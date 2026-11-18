@@ -129,7 +129,8 @@ public final class OemInlinePreferencesHook {
                 }
             }
 
-            OemHardwareDelegatedSettings.installPictureLink(context,pictureCategory,preference);
+            if(exactBoard)OemPicturePanel.install(context,pictureCategory,preference);
+            else OemHardwareDelegatedSettings.installPictureLink(context,pictureCategory,preference);
             try {
                 if(!exactBoard)OemInlineSlidersHook.installPictureReadout(context,pictureCategory,preference);
             } catch (Exception ex) {
@@ -181,7 +182,8 @@ public final class OemInlinePreferencesHook {
                 if(attempt!=null)attempt.close();
                 for(Object category:categories)removeIfEmpty(screen,preference,category);
             } finally {
-                OemHdmiPortInfo.bind(fragment,root);
+                try {OemHdmiPortInfo.bind(fragment,root);}
+                finally {OemPicturePanel.bind(fragment,root);}
             }
         }
     }

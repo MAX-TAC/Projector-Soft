@@ -77,8 +77,7 @@ public final class OemRootMenuHook {
                     grouped?"projectorsoft_sources_oem":null,
                     "Источники", "HDMI, USB, CEC, источник при включении",
                     SOURCE_ACTION,201);
-            insert(fragment,find,category,preferenceClass,context,"projectorsoft_picture",
-                    grouped?"projectorsoft_picture_oem":null,
+            if(!grouped)insert(fragment,find,category,preferenceClass,context,"projectorsoft_picture",null,
                     "Изображение проектора", "Режим, цвет, контрастность, HDR и MEMC",
                     "android.settings.PICTURE_SETTINGS",202);
             insert(fragment,find,category,preferenceClass,context,"projectorsoft_sound",

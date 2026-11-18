@@ -70,6 +70,10 @@ jobs:
             app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/OemPictureStateTest.java
           java -cp /tmp/picture-state-tests dev.projectorsoft.tvsettings.OemPictureStateTest
           javac -d /tmp/picture-state-tests \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/PicturePanelState.java \
+            app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/PicturePanelStateTest.java
+          java -cp /tmp/picture-state-tests dev.projectorsoft.tvsettings.PicturePanelStateTest
+          javac -d /tmp/picture-state-tests \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemSoundValuePolicy.java \
             app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/OemSoundValuePolicyTest.java
           java -cp /tmp/picture-state-tests dev.projectorsoft.tvsettings.OemSoundValuePolicyTest

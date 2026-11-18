@@ -29,6 +29,9 @@ public final class OemPictureState {
         });
     }
     public static boolean mayEdit() {return false;}
+    static String readStored(Context context,String key) {
+        return Settings.Global.getString(context.getContentResolver(),key);
+    }
     public static boolean write(Context context,String key,int value) {
         return transaction(context).write(key,value);
     }

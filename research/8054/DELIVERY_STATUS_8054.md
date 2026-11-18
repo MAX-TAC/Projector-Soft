@@ -2,7 +2,7 @@
 
 DIRECT_MOD — код контрола/платформенной интеграции; DELEGATED_OEM — только штатная навигация; READ_ONLY — только информация; HIDDEN — прямой MOD-контрол скрыт; BLOCKED — запрещённый путь; NOT_IMPLEMENTED — реализации MOD нет. OEM ссылка не MIGRATED и не FEATURE_COMPLETE. Наличие отдельного подменю и аппаратуры надо подтвердить на устройстве. BUILT_UNTESTED относится к условному пути в APK, а не к переносу всей функции. — означает отсутствие активной реализации, не успешную сборку функции. Все hardware результаты отсутствуют.
 
-DIRECT_MOD 18; DELEGATED_OEM 21; READ_ONLY 8; NOT_IMPLEMENTED 24; HIDDEN 14; BLOCKED 11
+DIRECT_MOD 18; DELEGATED_OEM 21; READ_ONLY 20; NOT_IMPLEMENTED 24; BLOCKED 11; HIDDEN 2
 
 | ID | Функция | Доставка | Fallback | Код | Аппаратура | Следующая проверка |
 |---|---|---|---|---|---|---|
@@ -20,18 +20,18 @@ DIRECT_MOD 18; DELEGATED_OEM 21; READ_ONLY 8; NOT_IMPLEMENTED 24; HIDDEN 14; BLO
 | NAV12 | Совместимые OEM Intent | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Test Settings key routing without disabling KuSettings |
 | NAV13 | Скриншоты OEM | NOT_IMPLEMENTED | — | — | — | Проверить 8054 triggers, отсутствие внешнего потребителя |
 | NAV14 | Модель/диагностика платы | READ_ONLY | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Compare displayed values to original platform values |
-| PIC01 | Режим изображения | HIDDEN | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Establish verified PQ/input context before direct writes |
-| PIC02 | Цветовая температура | HIDDEN | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Establish verified PQ/input context before direct writes |
-| PIC03 | Яркость изображения | HIDDEN | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Establish verified PQ/input context before direct writes |
-| PIC04 | Контраст | HIDDEN | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Establish verified PQ/input context before direct writes |
-| PIC05 | Насыщенность | HIDDEN | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Establish verified PQ/input context before direct writes |
-| PIC06 | Резкость | HIDDEN | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Establish verified PQ/input context before direct writes |
-| PIC07 | Оттенок / Hue | HIDDEN | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Establish verified PQ/input context before direct writes |
-| PIC08 | Баланс красного R | HIDDEN | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Establish verified PQ/input context before direct writes |
-| PIC09 | Баланс зелёного G | HIDDEN | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Establish verified PQ/input context before direct writes |
-| PIC10 | Баланс синего B | HIDDEN | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Establish verified PQ/input context before direct writes |
-| PIC11 | HDR | HIDDEN | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Establish verified PQ/input context before direct writes |
-| PIC12 | MEMC/MJC | HIDDEN | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Establish verified PQ/input context before direct writes |
+| PIC01 | Режим изображения | READ_ONLY | — | SOURCE_ONLY | RUNTIME_TEST_REQUIRED | Establish the active input/PQ context and the stock callback/limits before direct writes |
+| PIC02 | Цветовая температура | READ_ONLY | — | SOURCE_ONLY | RUNTIME_TEST_REQUIRED | Establish the active input/PQ context and the stock callback/limits before direct writes |
+| PIC03 | Яркость изображения | READ_ONLY | — | SOURCE_ONLY | RUNTIME_TEST_REQUIRED | Establish the active input/PQ context and the stock callback/limits before direct writes |
+| PIC04 | Контраст | READ_ONLY | — | SOURCE_ONLY | RUNTIME_TEST_REQUIRED | Establish the active input/PQ context and the stock callback/limits before direct writes |
+| PIC05 | Насыщенность | READ_ONLY | — | SOURCE_ONLY | RUNTIME_TEST_REQUIRED | Establish the active input/PQ context and the stock callback/limits before direct writes |
+| PIC06 | Резкость | READ_ONLY | — | SOURCE_ONLY | RUNTIME_TEST_REQUIRED | Establish the active input/PQ context and the stock callback/limits before direct writes |
+| PIC07 | Оттенок / Hue | READ_ONLY | — | SOURCE_ONLY | RUNTIME_TEST_REQUIRED | Establish the active input/PQ context and the stock callback/limits before direct writes |
+| PIC08 | Баланс красного R | READ_ONLY | — | SOURCE_ONLY | RUNTIME_TEST_REQUIRED | Establish the active input/PQ context and the stock callback/limits before direct writes |
+| PIC09 | Баланс зелёного G | READ_ONLY | — | SOURCE_ONLY | RUNTIME_TEST_REQUIRED | Establish the active input/PQ context and the stock callback/limits before direct writes |
+| PIC10 | Баланс синего B | READ_ONLY | — | SOURCE_ONLY | RUNTIME_TEST_REQUIRED | Establish the active input/PQ context and the stock callback/limits before direct writes |
+| PIC11 | HDR | READ_ONLY | — | SOURCE_ONLY | RUNTIME_TEST_REQUIRED | Establish the active input/PQ context and the stock callback/limits before direct writes |
+| PIC12 | MEMC/MJC | READ_ONLY | — | SOURCE_ONLY | RUNTIME_TEST_REQUIRED | Establish the active input/PQ context and the stock callback/limits before direct writes |
 | PIC13 | MEMC Demo | NOT_IMPLEMENTED | — | — | — | Доказать support, убрать если не работает |
 | PIC14 | Overscan / масштаб входа | NOT_IMPLEMENTED | — | — | — | Различать factory calibration и user per-HDMI crop |
 | PIC15 | Тестовые картинки | NOT_IMPLEMENTED | — | — | — | Разработать watchdog восстановления паттерна |
