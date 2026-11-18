@@ -13,6 +13,7 @@ CRITICAL = {'KuSettings': 'com.my.settings', 'KuSourceRJ': 'com.coolux.source',
             'TvServices': 'com.mediatek.tv.service', 'RuiAutoFocus': 'com.hysd.screen',
             'KeystoneCorrection': 'com.rjpj.tcorrection', 'AutoPair': 'com.mediatek.autopair'}
 BUILTIN = '/system_ext/priv-app/TvSettingsPlus/TvSettingsPlus.apk'
+PICTURE_KEYS = ('picture_mode', 'picture_brightness', 'picture_contrast', 'picture_saturation')
 
 
 def commands():
@@ -36,6 +37,101 @@ def commands():
     return result
 
 
+def capture_adb(runner, adb, serial, destination, name, args):
+    try:
+        code, stdout, stderr = runner([adb, '-s', serial] + args)
+    except Exception as exc:
+        code, stdout, stderr = 1, '', type(exc).__name__
+    (destination / (name + '.txt')).write_text(stdout + '\n' + stderr, encoding='utf-8')
+    return dict(code=code, stdout=stdout.strip(), stderr=stderr.strip())
+
+
+def collect_stock_picture(serial, destination, adb='adb', runner=run):
+    """Collect one exact STOCK snapshot. Optional dumps are evidence for manual review."""
+    gates, commands_used = {}, {}
+
+    def capture(name, args):
+        result = capture_adb(runner, adb, serial, destination, name, args)
+        output = result['stdout']
+        text = output + '\n' + result['stderr']
+        denied = re.search(r'permission denial|permission denied|securityexception', text, re.I)
+        missing = re.search(r"can't find service|no such service|service .* not found", text, re.I)
+        if denied:
+            status = 'DENIED'
+        elif result['code'] != 0 or not output or missing:
+            status = 'UNAVAILABLE'
+        else:
+            status = 'OBSERVED'
+        commands_used[name] = dict(args=args, exit_code=result['code'], status=status,
+                                   file=name + '.txt')
+        return output if status == 'OBSERVED' else None
+
+    def require(name, args, eligible, reason):
+        passed = eligible(capture(name, args))
+        gates[name] = 'PASS' if passed else 'STOP'
+        if not passed:
+            print('STOP ' + name + ': ' + reason)
+        return passed
+
+    def setting_int(raw):
+        if raw and re.fullmatch(r'-?\d{1,10}', raw):
+            value = int(raw)
+            if -(2**31) <= value < 2**31:
+                return value
+        return None
+
+    baseline = dict.fromkeys(PICTURE_KEYS)
+    service_record = 'UNVERIFIED'
+
+    stock = (
+        require('connection', ['get-state'], lambda v: v == 'device', 'selected serial is unavailable')
+        and require('shell_identity', ['shell', 'id'], lambda v: bool(v and re.match(r'uid=2000\b', v)),
+                    'ordinary adb shell required')
+        and require('machine', ['shell', 'getprop', 'ro.rjpj.machine.id'], lambda v: v == '8054',
+                    'expected machine 8054')
+        and require('api', ['shell', 'getprop', 'ro.build.version.sdk'], lambda v: v == '33',
+                    'expected Android API 33')
+        and require('settings_path', ['shell', 'pm', 'path', PACKAGE], lambda v: v == 'package:' + BUILTIN,
+                    'expected a single built-in TvSettingsPlus APK')
+        and require('settings_sha256', ['shell', 'sha256sum', BUILTIN],
+                    lambda v: bool(v and v.split() == [STOCK_SHA, BUILTIN]),
+                    'expected the exact STOCK hash; inspect settings_sha256.txt')
+    )
+    if stock:
+        capture('fingerprint', ['shell', 'getprop', 'ro.build.fingerprint'])
+        before = capture('picture_mode_before', ['shell', 'settings', 'get', 'global', 'picture_mode'])
+        capture('tv_input', ['shell', 'dumpsys', 'tv_input'])
+        capture('display', ['shell', 'dumpsys', 'display'])
+        for key in PICTURE_KEYS[1:]:
+            raw = capture(key, ['shell', 'settings', 'get', 'global', key])
+            baseline[key] = setting_int(raw)
+        after = capture('picture_mode_after', ['shell', 'settings', 'get', 'global', 'picture_mode'])
+        if before == after:
+            baseline['picture_mode'] = setting_int(after)
+        capture('tvservices_package', ['shell', 'dumpsys', 'package', CRITICAL['TvServices']])
+        services = capture('tvservices_activity',
+                           ['shell', 'dumpsys', 'activity', 'services', CRITICAL['TvServices']])
+        if services and re.search(r'ServiceRecord\{[^}\n]*com\.mediatek\.tv\.service/'
+                                  r'(?:com\.mediatek\.tv)?\.agent\.TVMenuSettingsService(?:[\s}])',
+                                  services):
+            service_record = 'OBSERVED'
+
+    if not stock:
+        status = 'STOP'
+    elif any(value is None for value in baseline.values()):
+        status = 'PARTIAL'
+    else:
+        status = 'CAPTURED'
+    result = dict(status=status, stock_verified=stock, gates=gates, commands=commands_used,
+                  settings_global=baseline, active_source='UNVERIFIED', main_video_input='UNVERIFIED',
+                  signal_format='UNVERIFIED', mediatek_config='NO_CONFIRMED_SHELL_INTERFACE',
+                  mediatek_bounds='NO_CONFIRMED_SHELL_INTERFACE',
+                  tvmenu_service_record=service_record,
+                  device_changes=False, install_state='NOT_READY_FOR_DEVICE_INSTALL')
+    save_json(destination / 'stock-picture.json', result)
+    return result
+
+
 def package_state(text, user):
     flags = re.search(r'(?:pkgFlags|flags)=\[([^\]]*)\]', text)
     line = re.search(r'^\s*User ' + re.escape(user) + r':([^\n]*)', text, re.M)
@@ -55,11 +151,8 @@ def collect(kit, serial, destination, adb='adb', aapt='aapt', apksigner='apksign
         checks.append(dict(name=name, status='PASS' if passed else 'FAIL', detail=detail))
         print(('PASS ' if passed else 'FAIL ') + name + ': ' + detail)
     def capture(name, args):
-        try: code, stdout, stderr = runner([adb, '-s', serial] + args)
-        except Exception as exc: code, stdout, stderr = 1, '', type(exc).__name__
-        (destination / (name + '.txt')).write_text(stdout + '\n' + stderr, encoding='utf-8')
-        captured[name] = dict(code=code, stdout=stdout.strip(), stderr=stderr.strip())
-        return code == 0
+        captured[name] = capture_adb(runner, adb, serial, destination, name, args)
+        return captured[name]['code'] == 0
     connected = capture('connection', ['get-state']) and captured['connection']['stdout'] == 'device'
     check('ADB_connection', connected, 'selected serial only; no device selection by guess')
     if connected:
@@ -123,6 +216,7 @@ def collect(kit, serial, destination, adb='adb', aapt='aapt', apksigner='apksign
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--picture-stock', action='store_true', help='Read-only exact STOCK picture snapshot; no install assets needed')
     parser.add_argument('--serial', required=True, help='Explicit approved device; never auto-select')
     parser.add_argument('--kit', type=Path, default=Path(__file__).resolve().parent)
     parser.add_argument('--out', help='New host directory; Linux /tmp only')
@@ -130,6 +224,15 @@ def main():
     args = parser.parse_args()
     if not args.serial.strip() or args.serial.startswith('-') or any(c in args.serial for c in '\r\n\0'):
         print('FAIL explicit serial / NOT_READY'); return 1
+    if args.picture_stock:
+        try:
+            destination = output_dir(args.out, 'tvsettings8054-stock-picture-')
+            result = collect_stock_picture(args.serial, destination, args.adb)
+        except (OSError, ValueError) as exc:
+            print('STOP host output: ' + str(exc))
+            return 1
+        print(result['status'] + ': private local report: ' + str(destination))
+        return {'CAPTURED': 0, 'STOP': 1, 'PARTIAL': 2}[result['status']]
     try:
         destination = output_dir(args.out, 'tvsettings8054-preflight-')
         verify_files(args.kit.resolve())

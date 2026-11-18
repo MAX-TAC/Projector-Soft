@@ -27,6 +27,38 @@ PERMS = "package: com.android.tv.settings\nuses-permission: name='android.permis
 SIGNER = 'Signer #1 certificate SHA-256 digest: ' + 'a' * 64
 
 
+def picture_runner(overrides=None):
+    calls = []
+    responses = {
+        ('get-state',): 'device',
+        ('shell', 'id'): 'uid=2000(shell) gid=2000(shell)',
+        ('shell', 'getprop', 'ro.rjpj.machine.id'): '8054',
+        ('shell', 'getprop', 'ro.build.version.sdk'): '33',
+        ('shell', 'pm', 'path', kit_common.PACKAGE): 'package:' + preflight.BUILTIN,
+        ('shell', 'sha256sum', preflight.BUILTIN): kit_common.STOCK_SHA + '  ' + preflight.BUILTIN,
+        ('shell', 'getprop', 'ro.build.fingerprint'): 'stock/fingerprint',
+        ('shell', 'dumpsys', 'tv_input'): 'connected HW6, HW7; active source unknown',
+        ('shell', 'dumpsys', 'display'): 'HDR capabilities; active format unknown',
+        ('shell', 'dumpsys', 'package', 'com.mediatek.tv.service'): 'Package [com.mediatek.tv.service]',
+        ('shell', 'dumpsys', 'activity', 'services', 'com.mediatek.tv.service'):
+            '* ServiceRecord{abc u0 com.mediatek.tv.service/.agent.TVMenuSettingsService}',
+        **{('shell', 'settings', 'get', 'global', key): str(value)
+           for key, value in zip(preflight.PICTURE_KEYS, (7, 51, 45, 52))}
+    }
+    responses.update(overrides or {})
+
+    def run(args):
+        calls.append(args[3:])
+        if args[:3] != ['adb', '-s', 'STOCK-SERIAL']:
+            raise AssertionError(args)
+        value = responses[tuple(args[3:])]
+        if isinstance(value, list):
+            value = value.pop(0)
+        return 0, value + '\n', ''
+
+    return run, calls, responses
+
+
 class KitTests(unittest.TestCase):
     def record(self): return verify_offline.parse_metadata(BADGING, TREE, PERMS, SIGNER)
 
@@ -121,6 +153,57 @@ class KitTests(unittest.TestCase):
             self.assertTrue(any(c[-1] == str(root/'LIVE-base.apk') for c in calls))
             allowed_shell = list(preflight.commands().values())
             self.assertTrue(all(c[3] in ('get-state', 'version', 'help', 'pull') or c[4:] in allowed_shell for c in calls))
+
+    def test_picture_snapshot_only_uses_known_read_commands(self):
+        runner, calls, allowed = picture_runner()
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary)
+            report = preflight.collect_stock_picture('STOCK-SERIAL', path, runner=runner)
+            self.assertEqual(set(map(tuple, calls)), set(allowed))
+            self.assertEqual(report['status'], 'CAPTURED')
+            self.assertEqual(report['settings_global']['picture_contrast'], 45)
+            self.assertEqual(report['tvmenu_service_record'], 'OBSERVED')
+            self.assertEqual(report['active_source'], 'UNVERIFIED')
+            self.assertEqual(report['signal_format'], 'UNVERIFIED')
+            self.assertEqual(report['mediatek_config'], 'NO_CONFIRMED_SHELL_INTERFACE')
+            self.assertFalse(report['device_changes'])
+            self.assertEqual(json.loads((path / 'stock-picture.json').read_text()), report)
+
+    def test_picture_snapshot_stops_before_reads_on_wrong_device_or_apk(self):
+        for command, value in {
+            ('get-state',): 'offline',
+            ('shell', 'id'): 'uid=0(root)',
+            ('shell', 'getprop', 'ro.rjpj.machine.id'): '8052',
+            ('shell', 'getprop', 'ro.build.version.sdk'): '32',
+            ('shell', 'pm', 'path', kit_common.PACKAGE): 'package:/data/app/base.apk',
+            ('shell', 'sha256sum', preflight.BUILTIN): '0' * 64 + '  ' + preflight.BUILTIN,
+        }.items():
+            with self.subTest(command=command), tempfile.TemporaryDirectory() as temporary:
+                runner, calls, _ = picture_runner({command: value})
+                report = preflight.collect_stock_picture('STOCK-SERIAL', Path(temporary), runner=runner)
+                self.assertEqual(report['status'], 'STOP')
+                self.assertEqual(tuple(calls[-1]), command)
+                self.assertFalse(report['stock_verified'])
+
+    def test_picture_snapshot_exposes_missing_values_mode_change_and_denied_dumps(self):
+        overrides = {
+            ('shell', 'settings', 'get', 'global', 'picture_mode'): ['7', '8'],
+            ('shell', 'settings', 'get', 'global', 'picture_contrast'): 'null',
+            ('shell', 'settings', 'get', 'global', 'picture_brightness'): '2147483648',
+            ('shell', 'dumpsys', 'tv_input'): 'Permission Denial: dumping tv_input',
+            ('shell', 'dumpsys', 'activity', 'services', 'com.mediatek.tv.service'):
+                "Can't find service: activity",
+        }
+        runner, _, _ = picture_runner(overrides)
+        with tempfile.TemporaryDirectory() as temporary:
+            report = preflight.collect_stock_picture('STOCK-SERIAL', Path(temporary), runner=runner)
+            self.assertEqual(report['status'], 'PARTIAL')
+            self.assertIsNone(report['settings_global']['picture_mode'])
+            self.assertIsNone(report['settings_global']['picture_contrast'])
+            self.assertIsNone(report['settings_global']['picture_brightness'])
+            self.assertEqual(report['commands']['tv_input']['status'], 'DENIED')
+            self.assertEqual(report['commands']['tvservices_activity']['status'], 'UNAVAILABLE')
+            self.assertEqual(report['tvmenu_service_record'], 'UNVERIFIED')
 
     def test_checksum_tampering_and_traversal(self):
         with tempfile.TemporaryDirectory() as temporary:
