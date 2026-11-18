@@ -29,8 +29,10 @@ def run(args, timeout=90):
     if os.name == 'nt' and Path(args[0]).suffix.lower() in ('.bat', '.cmd'):
         if any(re.search(r'[&|<>^%!"\r\n]', str(x)) for x in args):
             raise ValueError('Unsafe Windows SDK wrapper argument')
-        args = ['cmd.exe', '/d', '/s', '/c', '"' + subprocess.list2cmdline([str(x) for x in args]) + '"']
-    result = subprocess.run([str(x) for x in args], capture_output=True, text=True,
+        command = 'cmd.exe /d /s /c "' + subprocess.list2cmdline([str(x) for x in args]) + '"'
+    else:
+        command = [str(x) for x in args]
+    result = subprocess.run(command, capture_output=True, text=True,
                             encoding='utf-8', errors='replace', timeout=timeout, shell=False)
     return result.returncode, result.stdout, result.stderr
 
