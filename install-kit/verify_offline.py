@@ -120,7 +120,7 @@ def verify(kit, destination, aapt='aapt', apksigner='apksigner', live=None, runn
         report.update(assess_versions(report['records']))
         if report['upgrade'] != 'STATIC_CANDIDATE_LIVE_PM_REQUIRED':
             report['failures'].append('Upgrade preliminary result: '+report['upgrade'])
-        if not report['failures']: report.update(status='PASS', readiness='READY_FOR_OWNER_REVIEW')
+        if not report['failures']: report.update(status='PASS', readiness='STATIC_INPUTS_VERIFIED')
     except (ValueError, OSError, KeyError, subprocess.SubprocessError) as exc:
         report['failures'].append(str(exc))
     save_json(destination / 'offline-verification.json', report)

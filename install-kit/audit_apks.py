@@ -110,15 +110,26 @@ def audit(args, report):
             raise ValueError("Original DEX set does not match the eight reviewed patch sites")
         expected, observed = smali_inventory(baseline), smali_inventory(actual)
         changed = sorted(name for name in set(expected) | set(observed) if expected.get(name) != observed.get(name))
-        report["unexpected_oem_smali"] = changed
+        report["pre_assembly_smali_differences"] = changed
         report["stock_class_count"] = len(expected)
-        if changed:
+        rebuilt = work/"expected.apk"
+        # Assemble the reviewed stock edits using the exact build's Apktool version.
+        # Comparing the output bytes handles assembler changes to instruction forms,
+        # labels, and debug directives without allowing different executable code.
+        subprocess.run(["java","-jar",str(args.apktool),"b",str(baseline),"-o",str(rebuilt)],
+                       check=True,timeout=300)
+        with zipfile.ZipFile(rebuilt) as expected_apk, zipfile.ZipFile(args.mod) as pinned_apk:
+            different_dex = sorted(name for name in edited_dex
+                                   if expected_apk.read(name) != pinned_apk.read(name))
+        report["reproduced_oem_dex"] = sorted(edited_dex - set(different_dex))
+        if different_dex and changed:
             first = changed[0]
             before = (baseline/first).read_text().splitlines() if (baseline/first).is_file() else []
             after = (actual/first).read_text().splitlines() if (actual/first).is_file() else []
             details = list(difflib.unified_diff(before,after,fromfile="expected/"+first,tofile="actual/"+first))
             (args.reports/"first-oem-difference.txt").write_text("\n".join(details),encoding="utf-8")
-            raise ValueError(f"Unexpected original smali delta: {len(changed)} files; see report")
+        if different_dex:
+            raise ValueError(f"Reviewed stock patches did not reproduce DEX bytes: {different_dex}")
         added = smali_inventory(actual,module=True)
         if not added or any(not name.startswith("smali_classes17/dev/projectorsoft/tvsettings/") for name in added):
             raise ValueError("Added DEX classes leave the expected MOD namespace")
@@ -138,7 +149,7 @@ def main():
     except (ValueError,OSError,subprocess.SubprocessError,StopIteration) as error:
         result["failure"] = str(error)
     (args.reports/"integration-audit.json").write_text(json.dumps(result,indent=2)+"\n")
-    print("APK integration audit:",json.dumps({k:v for k,v in result.items() if k != "unexpected_oem_smali"}))
+    print("APK integration audit:",json.dumps({k:v for k,v in result.items() if k != "pre_assembly_smali_differences"}))
     return int(result["status"] != "PASS")
 
 
