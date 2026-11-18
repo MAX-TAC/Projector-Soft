@@ -52,6 +52,18 @@ jobs:
           echo 'Ready: exact original 8054 APK and framework-res, only in temporary runner.'
           sha256sum '/tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk'
           aapt dump badging '/tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk' | grep '^package:'
+          python3 - <<'PY'
+          import re, subprocess
+          manifest = subprocess.check_output(['aapt','dump','xmltree',
+              '/tmp/flix8054_erofs/system_a_tree/system/app/KuSettings/KuSettings.apk','AndroidManifest.xml'],
+              text=True)
+          activities = re.split(r'(?m)^    E: ',manifest)
+          routed = any(block.startswith('activity ') and re.search(
+              r'android:name\([^)]*\)="(?:com\.my\.settings)?\.activity\.ProjectionActivity"',block)
+              and '"android.settings.PROJECTABOUT_SETTINGS"' in block
+              and '"android.intent.category.DEFAULT"' in block for block in activities)
+          print('8054 stock ProjectionActivity default route:', 'confirmed' if routed else 'not established; runtime check and OEM fallback')
+          PY
       - uses: actions/setup-java@v4
         with:
           distribution: temurin

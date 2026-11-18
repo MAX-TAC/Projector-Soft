@@ -2,7 +2,7 @@
 
 DIRECT_MOD — код контрола/платформенной интеграции; DELEGATED_OEM — только штатная навигация; READ_ONLY — только информация; HIDDEN — прямой MOD-контрол скрыт; BLOCKED — запрещённый путь; NOT_IMPLEMENTED — реализации MOD нет. OEM ссылка не MIGRATED и не FEATURE_COMPLETE. Наличие отдельного подменю и аппаратуры надо подтвердить на устройстве. BUILT_UNTESTED относится к условному пути в APK, а не к переносу всей функции. — означает отсутствие активной реализации, не успешную сборку функции. Все hardware результаты отсутствуют.
 
-DIRECT_MOD 14; DELEGATED_OEM 24; READ_ONLY 9; NOT_IMPLEMENTED 24; HIDDEN 14; BLOCKED 11
+DIRECT_MOD 18; DELEGATED_OEM 21; READ_ONLY 8; NOT_IMPLEMENTED 24; HIDDEN 14; BLOCKED 11
 
 | ID | Функция | Доставка | Fallback | Код | Аппаратура | Следующая проверка |
 |---|---|---|---|---|---|---|
@@ -17,7 +17,7 @@ DIRECT_MOD 14; DELEGATED_OEM 24; READ_ONLY 9; NOT_IMPLEMENTED 24; HIDDEN 14; BLO
 | NAV09 | Сон / заставка / таймаут | DIRECT_MOD | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify Never/no dream policy versus OEM power timer |
 | NAV10 | Factory reset | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm target screen and Back navigation, no reset action |
 | NAV11 | Обновление OEM OTA | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | No OTA work/actions in current milestone |
-| NAV12 | Совместимые OEM Intent | READ_ONLY | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Test Settings key routing without disabling KuSettings |
+| NAV12 | Совместимые OEM Intent | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Test Settings key routing without disabling KuSettings |
 | NAV13 | Скриншоты OEM | NOT_IMPLEMENTED | — | — | — | Проверить 8054 triggers, отсутствие внешнего потребителя |
 | NAV14 | Модель/диагностика платы | READ_ONLY | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Compare displayed values to original platform values |
 | PIC01 | Режим изображения | HIDDEN | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Establish verified PQ/input context before direct writes |
@@ -49,7 +49,7 @@ DIRECT_MOD 14; DELEGATED_OEM 24; READ_ONLY 9; NOT_IMPLEMENTED 24; HIDDEN 14; BLO
 | SND09 | Dolby DAP | NOT_IMPLEMENTED | — | — | — | По фото DAP OFF, реальная поддержка неизвестна |
 | SND10 | DTS Loudness | NOT_IMPLEMENTED | — | — | — | Доказать support |
 | SND11 | ARC/eARC | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify CEC/ARC/eARC and output-specific behavior |
-| SND12 | Задержка аудио | NOT_IMPLEMENTED | — | — | — | Найти source controller exact |
+| SND12 | Задержка аудио | NOT_IMPLEMENTED | — | — | — | Find the stock controller and range if available on 8054 |
 | SND13 | Bluetooth Speaker / A2DP sink | HIDDEN | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Deferred speaker-mode scope; no service disable |
 | HDMI01 | Активный источник HDMI 1 | READ_ONLY | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm physical port identity, active selection and signal |
 | HDMI02 | Активный источник HDMI 2 | READ_ONLY | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm physical port identity, active selection and signal |
@@ -61,24 +61,24 @@ DIRECT_MOD 14; DELEGATED_OEM 24; READ_ONLY 9; NOT_IMPLEMENTED 24; HIDDEN 14; BLO
 | HDMI08 | Приложение при старте | DIRECT_MOD | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify target activity and persisted OEM property |
 | HDMI09 | USB local media | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Deferred player scope, navigation only |
 | HDMI10 | Аналоговые входы VGA/SCART/Tuner | BLOCKED | — | — | — | Проверить зависимости HDMI arbitration |
-| PRJ01 | Положение: Front/Rear/Ceiling | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | PROJECTION_BLOCK_8054.md: confirm each original subcontrol and stock return path |
-| PRJ02 | Автофокус при включении | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | PROJECTION_BLOCK_8054.md: confirm each original subcontrol and stock return path |
-| PRJ03 | Автофокус при перемещении | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | PROJECTION_BLOCK_8054.md: confirm each original subcontrol and stock return path |
-| PRJ04 | Ручная фокусировка | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | PROJECTION_BLOCK_8054.md: confirm each original subcontrol and stock return path |
-| PRJ05 | Автоматическая трапеция | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | PROJECTION_BLOCK_8054.md: confirm each original subcontrol and stock return path |
-| PRJ06 | 4-угольная коррекция | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | PROJECTION_BLOCK_8054.md: confirm each original subcontrol and stock return path |
-| PRJ07 | Горизонтальная/вертикальная трапеция | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | PROJECTION_BLOCK_8054.md: confirm each original subcontrol and stock return path |
-| PRJ08 | Обнаружение препятствия | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | PROJECTION_BLOCK_8054.md: confirm each original subcontrol and stock return path |
-| PRJ09 | Автоматическое выравнивание / экран | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | PROJECTION_BLOCK_8054.md: confirm each original subcontrol and stock return path |
-| PRJ10 | Цифровой зум | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Check exported/permission/enabled state; obtain actual digital zoom bounds |
-| PRJ11 | Оптическая яркость LED | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify customer-specific modes, thermal limits and OEM return |
+| PRJ01 | Положение: Front/Rear/Ceiling | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm the original subcontrols, fullscreen routes and return path |
+| PRJ02 | Автофокус при включении | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify autofocus behavior separately for startup and movement |
+| PRJ03 | Автофокус при перемещении | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify autofocus behavior separately for startup and movement |
+| PRJ04 | Ручная фокусировка | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm the original subcontrols, fullscreen routes and return path |
+| PRJ05 | Автоматическая трапеция | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify OEM view inflation and motion correction without changing manual correction |
+| PRJ06 | 4-угольная коррекция | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm the original subcontrols, fullscreen routes and return path |
+| PRJ07 | Горизонтальная/вертикальная трапеция | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm the original subcontrols, fullscreen routes and return path |
+| PRJ08 | Обнаружение препятствия | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm the original subcontrols, fullscreen routes and return path |
+| PRJ09 | Автоматическое выравнивание / экран | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm the original subcontrols, fullscreen routes and return path |
+| PRJ10 | Цифровой зум | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify stock digital zoom entry and Back/D-pad |
+| PRJ11 | Оптическая яркость LED | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify available customer profile, OEM readback, actual brightness and thermal behavior |
 | SYS01 | Питание при подключении сети | DIRECT_MOD | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify power restoration behavior without modifying thermal services |
 | SYS02 | Автосопряжение Bluetooth пульта | READ_ONLY | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify HID remote pairing and retained AutoPair/reconnect owners |
 | SYS03 | Восстановление термослужбы | BLOCKED | — | — | — | Do not replace TimeService/source boot owner without proven transaction/rollback |
 | SYS04 | Температура | READ_ONLY | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Compare sensor names/readings, no fan control |
 | SYS05 | Запуск источника после reboot | BLOCKED | — | — | — | Do not replace TimeService/source boot owner without proven transaction/rollback |
 | SYS06 | Восстановление Bluetooth после reboot | READ_ONLY | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify HID remote pairing and retained AutoPair/reconnect owners |
-| SYS07 | OEM Timer выключения | NOT_IMPLEMENTED | — | — | — | Не деактивировать blanket sleep |
+| SYS07 | OEM Timer выключения | NOT_IMPLEMENTED | — | — | — | Find an editable stock timer entry on 8054 |
 | SYS08 | Кнопка Settings на пульте | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify physical Settings button resolution with KuSettings enabled |
 | SYS09 | Установленные/предустановочные приложения | READ_ONLY | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Check inventory and OEM package visibility |
 | FAC01 | Глубокая информация о чипе | NOT_IMPLEMENTED | — | — | — | Установить точные безопасность/поддержку на 8054 |

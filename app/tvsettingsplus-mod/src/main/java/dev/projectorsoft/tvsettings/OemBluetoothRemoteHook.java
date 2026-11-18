@@ -8,6 +8,8 @@ import android.bluetooth.BluetoothManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.provider.Settings;
 import android.util.Log;
 import java.lang.reflect.InvocationHandler;
@@ -34,9 +36,14 @@ public final class OemBluetoothRemoteHook {
 
     private static boolean hasPairingActivity(Context context) {
         try {
-            context.getPackageManager().getActivityInfo(
-                new ComponentName(context,TARGET),0);
-            return true;
+            ComponentName component=new ComponentName(context,TARGET);
+            PackageManager pm=context.getPackageManager();
+            ActivityInfo info=pm.getActivityInfo(component,0);
+            return info.enabled && info.applicationInfo!=null && info.applicationInfo.enabled
+                    && pm.getComponentEnabledSetting(component)<=PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                    && pm.getApplicationEnabledSetting(component.getPackageName())<=PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                    && (info.permission==null || info.permission.isEmpty()
+                        || context.checkSelfPermission(info.permission)==PackageManager.PERMISSION_GRANTED);
         }catch(Exception e){return false;}
     }
 

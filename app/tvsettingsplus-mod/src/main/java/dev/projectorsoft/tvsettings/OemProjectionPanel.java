@@ -7,12 +7,11 @@ import android.util.Log;
 public final class OemProjectionPanel {
     private OemProjectionPanel() {}
     public static void install(Context context,Object category,Class<?> pref) {
-        add(context,category,pref,"settings","Установка, фокус и коррекция · OEM",
-            "Штатный раздел проекции; доступные функции определяет OEM",
-            "com.android.tv.settings","com.android.tv.settings.uicustom.MainActivity","android.settings.SETTINGS",251);
-        add(context,category,pref,"zoom","Цифровой зум · OEM",
-            "Масштаб изображения; это не яркость LED и не управление мотором",
-            "com.rjpj.tcorrection","com.rjpj.tcorrection.DigitalZoomActivity",Intent.ACTION_MAIN,252);
+        try {
+            Intent intent=projectionIntent(context);
+            if(intent!=null)addRow(context,category,pref,"projectorsoft_calibration_oem",
+                    "Штатные настройки проектора","Положение, фокус и коррекция",intent,251);
+        }catch(Exception ex){Log.w("TvSettingsPlusMOD","OEM projection menu unavailable",ex);}
         if ("8054".equals(OemHdmiPortInfo.machineId())) {
             // Exact stock KeystoneSettingsSecondaryController.gotoKeystoneCorrection intent.
             add(context,category,pref,"keystone","Коррекция трапеции · штатный экран",null,
@@ -22,31 +21,61 @@ public final class OemProjectionPanel {
             OemFocusPreferences.install(context,category,pref);
             OemMoveKeystonePreference.install(context,category,pref);
         } else {
+            add(context,category,pref,"zoom","Цифровой зум · OEM",null,
+                "com.rjpj.tcorrection","com.rjpj.tcorrection.DigitalZoomActivity",Intent.ACTION_MAIN,252);
             add(context,category,pref,"light","Яркость источника света · OEM",
                 "Оригинальный экран с OEM ограничениями охлаждения",
                 "com.coolux.source","com.coolux.source.activity.BrightActivity",Intent.ACTION_MAIN,253);
         }
     }
+
+    static Intent projectionIntent(Context context) throws PackageManager.NameNotFoundException {
+        if("8054".equals(OemHdmiPortInfo.machineId())) {
+            String owner="com.my.settings";
+            String name="com.my.settings.activity.ProjectionActivity";
+            Intent route=new Intent("android.settings.PROJECTABOUT_SETTINGS").setPackage(owner);
+            PackageManager pm=context.getPackageManager();
+            ResolveInfo resolved=pm.resolveActivity(route,PackageManager.MATCH_DEFAULT_ONLY);
+            ActivityInfo info=resolved==null ? null : resolved.activityInfo;
+            if(info!=null && owner.equals(info.packageName) && name.equals(info.name)
+                    && info.applicationInfo!=null
+                    && (info.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM)!=0) {
+                ComponentName component=new ComponentName(owner,name);
+                if(accessible(context,pm,component,info))return route.setComponent(component);
+            }
+        }
+        return OemHardwareDelegatedSettings.mainActivityIntent(context,"android.settings.SETTINGS");
+    }
+
+    private static boolean accessible(Context context,PackageManager pm,ComponentName component,ActivityInfo info) {
+        boolean permission=info.permission==null || info.permission.isEmpty()
+                || context.checkSelfPermission(info.permission)==PackageManager.PERMISSION_GRANTED;
+        boolean owner=info.applicationInfo!=null && info.applicationInfo.uid==context.getApplicationInfo().uid;
+        return Projection8054Policy.mayNavigate(
+                info.enabled && pm.getComponentEnabledSetting(component)<=PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                info.applicationInfo!=null && info.applicationInfo.enabled
+                    && pm.getApplicationEnabledSetting(component.getPackageName())<=PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                owner,info.exported,permission);
+    }
     private static void add(Context context,Object category,Class<?> pref,String key,String title,String summary,
                             String pkg,String activity,String action,int order) {
         try {
             ComponentName component=new ComponentName(pkg,activity);
-            ActivityInfo info=context.getPackageManager().getActivityInfo(component,0);
-            int componentState=context.getPackageManager().getComponentEnabledSetting(component);
-            int appState=context.getPackageManager().getApplicationEnabledSetting(pkg);
-            boolean permission=info.permission==null||info.permission.isEmpty()
-                ||context.checkSelfPermission(info.permission)==PackageManager.PERMISSION_GRANTED;
-            if(!Projection8054Policy.mayNavigate(info.enabled&&componentState<=PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-                    info.applicationInfo!=null&&info.applicationInfo.enabled&&appState<=PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-                    context.getPackageName().equals(pkg),info.exported,permission))return;
-            Object item=pref.getConstructor(Context.class).newInstance(context);
-            pref.getMethod("setKey",String.class).invoke(item,
-                "settings".equals(key)?"projectorsoft_calibration_oem":"projectorsoft_projection_"+key);
-            pref.getMethod("setTitle",CharSequence.class).invoke(item,title);
-            pref.getMethod("setSummary",CharSequence.class).invoke(item,summary);
-            pref.getMethod("setOrder",int.class).invoke(item,order);
-            pref.getMethod("setIntent",Intent.class).invoke(item,new Intent(action).setComponent(component));
-            category.getClass().getMethod("addPreference",pref).invoke(category,item);
+            PackageManager pm=context.getPackageManager();
+            if(!accessible(context,pm,component,pm.getActivityInfo(component,0)))return;
+            addRow(context,category,pref,"projectorsoft_projection_"+key,title,summary,
+                    new Intent(action).setComponent(component),order);
         }catch(Exception ex){Log.w("TvSettingsPlusMOD","OEM projection entry unavailable "+key,ex);}
+    }
+
+    private static void addRow(Context context,Object category,Class<?> pref,String key,String title,
+                               String summary,Intent intent,int order) throws Exception {
+        Object item=pref.getConstructor(Context.class).newInstance(context);
+        pref.getMethod("setKey",String.class).invoke(item,key);
+        pref.getMethod("setTitle",CharSequence.class).invoke(item,title);
+        pref.getMethod("setSummary",CharSequence.class).invoke(item,summary);
+        pref.getMethod("setOrder",int.class).invoke(item,order);
+        pref.getMethod("setIntent",Intent.class).invoke(item,intent);
+        category.getClass().getMethod("addPreference",pref).invoke(category,item);
     }
 }

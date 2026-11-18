@@ -9,7 +9,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.InvocationHandler;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.WeakHashMap;
 import java.util.Map;
 
 /**
@@ -31,6 +34,7 @@ public final class OemInlinePreferencesHook {
     private static final String[] SOUND_TITLES={
         "Стандартный","Яркий","Спорт","Кино","Музыка","Новости","Пользовательский"};
     private static final int[] SOUND_VALUES={1,2,3,4,5,6,0};
+    private static final Map<Object,Boolean> INSTALLED_SCREENS=new WeakHashMap<>();
     private static final String CATEGORY_KEY="projectorsoft_picture_category";
     private OemInlinePreferencesHook() {}
 
@@ -40,6 +44,9 @@ public final class OemInlinePreferencesHook {
 
     public static void install(Object fragment,View root) {
         if (fragment==null) return;
+        Object screen=null;
+        Class<?> preference=null;
+        List<Object> categories=new ArrayList<>();
         try {
             Object ctx=fragment.getClass().getMethod("getContext").invoke(fragment);
             if (!(ctx instanceof Context)) return;
@@ -48,31 +55,27 @@ public final class OemInlinePreferencesHook {
             // Enforce the projector no-black-screen policy even when native
             // preferences have already been inserted during fragment recreation.
             OemScreenTimeoutSafetyHook.ensureNever(context);
-            Class<?> preference=Class.forName("androidx.preference.Preference");
+            preference=Class.forName("androidx.preference.Preference");
             Class<?> categoryClass=Class.forName("androidx.preference.PreferenceCategory");
-            Method find=fragment.getClass().getMethod("findPreference",CharSequence.class);
-            Object existing=find.invoke(fragment,CATEGORY_KEY);
-            if (existing != null) return;
-
-            Object screen=fragment.getClass().getMethod("getPreferenceScreen").invoke(fragment);
-            if (screen==null) return;
-            Object pictureCategory=addCategory(screen,preference,categoryClass,
+            screen=fragment.getClass().getMethod("getPreferenceScreen").invoke(fragment);
+            if(screen==null || INSTALLED_SCREENS.put(screen,true)!=null)return;
+            Object pictureCategory=addCategory(categories,screen,preference,categoryClass,
                     context,CATEGORY_KEY,"Изображение · Проектор",210);
             if(pictureCategory==null)return;
-            Object soundCategory=addCategory(screen,preference,categoryClass,
+            Object soundCategory=addCategory(categories,screen,preference,categoryClass,
                     context,"projectorsoft_sound_category","Звук · Проектор",230);
             if(soundCategory==null)return;
-            Object remoteCategory=addCategory(screen,preference,categoryClass,
+            Object remoteCategory=addCategory(categories,screen,preference,categoryClass,
                     context,"projectorsoft_remote_category","Bluetooth · Проектор",242);
             if(remoteCategory!=null && !OemBluetoothRemoteHook.install(
                     context,remoteCategory,preference)) {
                 screen.getClass().getMethod("removePreference",preference)
                     .invoke(screen,remoteCategory);
             }
-            Object placementCategory=addCategory(screen,preference,categoryClass,
+            Object placementCategory=addCategory(categories,screen,preference,categoryClass,
                     context,"projectorsoft_placement_category","Проекция · Проектор",250);
             if(placementCategory==null)return;
-            Object systemCategory=addCategory(screen,preference,categoryClass,
+            Object systemCategory=addCategory(categories,screen,preference,categoryClass,
                     context,"projectorsoft_system_category","Об устройстве · Проектор",280);
             if(systemCategory!=null) {
                 boolean androidNavigation=OemStandardAndroidNavigation.install(context,systemCategory,preference);
@@ -88,14 +91,14 @@ public final class OemInlinePreferencesHook {
                             .invoke(screen,systemCategory);
                 }
             }
-            Object interfaceCategory=addCategory(screen,preference,categoryClass,
+            Object interfaceCategory=addCategory(categories,screen,preference,categoryClass,
                     context,"projectorsoft_interface_category","Интерфейс · Проектор",255);
             if(interfaceCategory!=null && !OemFontScaleHook.install(
                     context,interfaceCategory,preference)) {
                 screen.getClass().getMethod("removePreference",preference)
                     .invoke(screen,interfaceCategory);
             }
-            Object powerCategory=addCategory(screen,preference,categoryClass,
+            Object powerCategory=addCategory(categories,screen,preference,categoryClass,
                     context,"projectorsoft_power_category","Питание · Проектор",260);
             if(powerCategory!=null) {
                 boolean acPower=OemAcPowerBootHook.install(context,powerCategory,preference);
@@ -105,7 +108,7 @@ public final class OemInlinePreferencesHook {
                     screen.getClass().getMethod("removePreference",preference).invoke(screen,powerCategory);
                 }
             }
-            Object hdmiCategory=addCategory(screen,preference,categoryClass,
+            Object hdmiCategory=addCategory(categories,screen,preference,categoryClass,
                     context,"projectorsoft_hdmi_category","Источники · Проектор",270);
             if(hdmiCategory!=null) {
                 boolean hasPorts=OemHdmiPortInfo.install(context,hdmiCategory,preference);
@@ -126,7 +129,7 @@ public final class OemInlinePreferencesHook {
 
             OemHardwareDelegatedSettings.installPictureLink(context,pictureCategory,preference);
             try {
-                OemInlineSlidersHook.installPictureReadout(context,pictureCategory,preference);
+                if(!exactBoard)OemInlineSlidersHook.installPictureReadout(context,pictureCategory,preference);
             } catch (Exception ex) {
                 Log.w(TAG,"Picture readout unavailable",ex);
             }
@@ -167,10 +170,11 @@ public final class OemInlinePreferencesHook {
             // Five genuine OEM bands via stock PartnerSettingsConfig only.
             // Uses original ProgressDialog scale but native TV SeekBar widgets.
 
-            OemPictureState.install(context,pictureCategory,preference);
+            if(!exactBoard || OemPictureState.mayEdit())OemPictureState.install(context,pictureCategory,preference);
         } catch(Throwable e) {
             Log.w(TAG,"OEM quick controls unavailable; keep original settings",e);
         } finally {
+            for(Object category:categories)removeIfEmpty(screen,preference,category);
             OemHdmiPortInfo.bind(fragment,root);
         }
     }
@@ -205,7 +209,7 @@ public final class OemInlinePreferencesHook {
         OemFiveBandEqualizerHook.install(context,category,pref);
     }
 
-    private static Object addCategory(Object screen,Class<?> preference,
+    private static Object addCategory(List<Object> categories,Object screen,Class<?> preference,
                                       Class<?> categoryClass,Context context,
                                       String key,String title,int order) throws Exception {
         Object category=categoryClass.getConstructor(Context.class).newInstance(context);
@@ -214,7 +218,19 @@ public final class OemInlinePreferencesHook {
         categoryClass.getMethod("setOrder",int.class).invoke(category,order);
         Object added=screen.getClass().getMethod("addPreference",preference)
                 .invoke(screen,category);
-        return Boolean.TRUE.equals(added)?category:null;
+        if(!Boolean.TRUE.equals(added))return null;
+        categories.add(category);
+        return category;
+    }
+
+    private static void removeIfEmpty(Object screen,Class<?> preference,Object category) {
+        try {
+            if(Integer.valueOf(0).equals(category.getClass().getMethod("getPreferenceCount").invoke(category))) {
+                screen.getClass().getMethod("removePreference",preference).invoke(screen,category);
+            }
+        } catch(Exception ex) {
+            Log.w(TAG,"Could not remove an empty projector section",ex);
+        }
     }
 
     private static String vendorKey(String fieldName) {

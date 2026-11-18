@@ -23,7 +23,9 @@ public final class OemRootMenuHook {
     private static void insert(Object fragment, Method find, Object category, Class<?> clazz, Context context,
                                String key, String groupedKey, String title, String summary,
                                String action, int order) throws Exception {
-        Intent intent=OemHardwareDelegatedSettings.mainActivityIntent(context,action);
+        Intent intent="projectorsoft_projection".equals(key)
+                ? OemProjectionPanel.projectionIntent(context)
+                : OemHardwareDelegatedSettings.mainActivityIntent(context,action);
         if(intent==null)return;
         if(groupedKey!=null && offersSameRoute(find.invoke(fragment,groupedKey),clazz,intent)) {
             Object old=find.invoke(fragment,key);
