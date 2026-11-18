@@ -30,6 +30,8 @@ public final class OemSoundPanel {
     private void install() throws Exception {
         OemHardwareDelegatedSettings.installSoundLink(context,group,preference);
         OemStockUserSettings.installAudioOutput(context,group,preference);
+        try {OemSoundDelayPanel.install(context,group,preference);}
+        catch (Exception | LinkageError ex) {Log.w("TvSettingsPlusMOD","OEM audio delay unavailable",ex);}
         refreshItem = action("projectorsoft_sound_refresh","Обновить настройки звука",249,this::refresh);
         action("projectorsoft_sound_original","Исходные значения звука",248,this::showOriginal);
         // PreferenceGroup sorts by order. Keep the static rows by identity, not by index.
@@ -52,6 +54,7 @@ public final class OemSoundPanel {
     }
 
     private void refresh() throws Exception {
+        OemSoundDelayPanel.refresh(group);
         boolean stable=state.refresh(key->Settings.Global.getString(context.getContentResolver(),key));
         Class<?> type = group.getClass();
         Method child = type.getMethod("getPreference",int.class);

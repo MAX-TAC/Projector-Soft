@@ -1,10 +1,10 @@
 {
   "meaning": "Current code delivery; no MIGRATED/FEATURE_COMPLETE claim. BUILT_UNTESTED refers to compiled conditional path, not hardware availability. Group OEM navigation does not prove individual feature presence. Null build/runtime state means no implemented feature to verify.",
   "counts": {
-    "DIRECT_MOD": 21,
+    "DIRECT_MOD": 22,
     "DELEGATED_OEM": 19,
     "READ_ONLY": 19,
-    "NOT_IMPLEMENTED": 24,
+    "NOT_IMPLEMENTED": 23,
     "BLOCKED": 11,
     "HIDDEN": 2
   },
@@ -571,12 +571,12 @@
     {
       "id": "SND12",
       "function": "Задержка аудио",
-      "delivery": "NOT_IMPLEMENTED",
-      "implementation": "OEM_ROUTE_UNCONFIRMED: speaker/SPDIF config keys only",
-      "next_check": "Find the stock controller and range if available on 8054",
-      "fallback": null,
-      "build_state": null,
-      "runtime_state": null,
+      "delivery": "DIRECT_MOD",
+      "implementation": "Native SPDIF delay via stock audio_output and TvServices; speaker delay requires its separate availability guard",
+      "next_check": "Verify SPDIF min/max, pending readback and audio timing on 8054; trace the speaker capability branch",
+      "fallback": "DELEGATED_OEM",
+      "build_state": "BUILT_UNTESTED",
+      "runtime_state": "RUNTIME_TEST_REQUIRED",
       "feature_complete": false,
       "scope": "CURRENT",
       "evidence_status": "UNKNOWN"

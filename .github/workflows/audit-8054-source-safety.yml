@@ -69,6 +69,13 @@ jobs:
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/CecAutoOff8054.java \
             app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/CecAutoOff8054Test.java
           java -cp /tmp/8054-cec-tests dev.projectorsoft.tvsettings.CecAutoOff8054Test
+      - name: Test OEM delay units and asynchronous confirmation
+        run: |
+          mkdir -p /tmp/audio-delay-tests
+          javac -d /tmp/audio-delay-tests \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/SoundDelayState.java \
+            app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/SoundDelayStateTest.java
+          java -cp /tmp/audio-delay-tests dev.projectorsoft.tvsettings.SoundDelayStateTest
       - name: Test picture snapshot and context restrictions
         run: |
           mkdir -p /tmp/picture-state-tests

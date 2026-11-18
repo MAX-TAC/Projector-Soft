@@ -18,6 +18,8 @@ EXACT = {
     "TVMenuSettingsService$2": {"run"},
     "TVMenuSettingsService$3": {"run"},
     "TVSettingConfig": {"getMin", "getMax", "getConfigValueInt"},
+    "SoundFragment": {"createPreferences"},
+    "ProgressBarDialog": {"onStart"},
     "AudioOutputActivity": {"createSettingsFragment"},
 }
 
