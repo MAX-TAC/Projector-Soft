@@ -1,0 +1,50 @@
+"""Host-only helpers. No device mutation, installation or recovery commands."""
+import hashlib
+import json
+import os
+import platform
+import re
+import subprocess
+import tempfile
+from pathlib import Path
+
+PACKAGE = 'com.android.tv.settings'
+STOCK_SHA = 'f8e0c6fe0f46e7eb8db651c31d85ef8b32a769b37e4dd0f96ed19a64725d74ee'
+MOD_SHA = 'cf5bba9d90935952ea5a8a832ea0bd9662374e5cc10c052d5cdb6698e0ba1246'
+
+
+def sha256(path):
+    h = hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        for block in iter(lambda: stream.read(8 * 1024 * 1024), b''):
+            h.update(block)
+    return h.hexdigest()
+
+
+def run(args, timeout=90):
+    if Path(args[0]).suffix.lower() == '.jar':
+        args = ['java', '-jar'] + list(args)
+    # Windows Android SDK wrappers are .bat/.cmd. cmd.exe needs robust quoting;
+    # reject shell metacharacters and use list2cmdline only for trusted local tool paths.
+    if os.name == 'nt' and Path(args[0]).suffix.lower() in ('.bat', '.cmd'):
+        if any(re.search(r'[&|<>^%!"\r\n]', str(x)) for x in args):
+            raise ValueError('Unsafe Windows SDK wrapper argument')
+        args = ['cmd.exe', '/d', '/s', '/c', '"' + subprocess.list2cmdline([str(x) for x in args]) + '"']
+    result = subprocess.run([str(x) for x in args], capture_output=True, text=True,
+                            encoding='utf-8', errors='replace', timeout=timeout, shell=False)
+    return result.returncode, result.stdout, result.stderr
+
+
+def output_dir(path=None, prefix='tvsettings8054-'):
+    if path:
+        directory = Path(path).resolve()
+        if platform.system() == 'Linux' and not directory.is_relative_to(Path('/tmp')):
+            raise ValueError('Linux diagnostic outputs must be under /tmp on the HOST')
+        directory.mkdir(parents=True, exist_ok=False)
+    else:
+        directory = Path(tempfile.mkdtemp(prefix=prefix, dir='/tmp' if platform.system() == 'Linux' else None))
+    return directory
+
+
+def save_json(path, value):
+    Path(path).write_text(json.dumps(value, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')

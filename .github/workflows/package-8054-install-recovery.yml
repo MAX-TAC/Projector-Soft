@@ -1,0 +1,104 @@
+name: Package pinned 8054 install recovery review kit
+on:
+  push:
+    branches: [audit/8054-tvsettingsplus-20261117]
+    paths: ['install-kit/**', '.github/workflows/package-8054-install-recovery.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+jobs:
+  tests:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test offline gates and mock-only ADB collection
+        run: python -m unittest discover -s install-kit -p "test_*.py" -v
+  package:
+    needs: tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Verify pinned build and artifact provenance before download
+        run: |
+          mkdir -p /tmp/install8054_input /tmp/install8054_kit/assets
+          python3 - <<'PY'
+          import json, subprocess
+          from pathlib import Path
+          pins=json.loads(Path('install-kit/provenance.json').read_text())
+          def api(path): return json.loads(subprocess.check_output(['gh','api',path],text=True))
+          run=api('repos/MAX-TAC/Projector-Soft/actions/runs/'+str(pins['build_run']))
+          assert run['conclusion']=='success' and run['head_sha']==pins['mod_code_commit']
+          records=api('repos/MAX-TAC/Projector-Soft/actions/runs/'+str(pins['build_run'])+'/artifacts')['artifacts']
+          artifact=next(a for a in records if a['id']==pins['input_artifact_id'])
+          assert not artifact['expired'] and artifact['digest']=='sha256:'+pins['input_artifact_zip_digest']
+          Path('/tmp/install8054_input/artifact-provenance.json').write_text(json.dumps(artifact,indent=2))
+          print('PASS pinned code commit/run/artifact/digest; artifact TTL is not permanent storage')
+          PY
+      - uses: actions/download-artifact@v4
+        with:
+          artifact-ids: '14403668693'
+          run-id: '44252085197'
+          github-token: ${{ github.token }}
+          merge-multiple: true
+          path: /tmp/install8054_input/mod
+      - name: Stage reviewed operator files and unchanged MOD bytes
+        run: |
+          python3 - <<'PY'
+          import shutil
+          from pathlib import Path
+          root=Path('/tmp/install8054_kit')
+          for name in ('RUNBOOK.md','provenance.json','kit_common.py','verify_files.py','verify_offline.py','preflight.py'):
+              shutil.copyfile(Path('install-kit')/name,root/name)
+          files=list(Path('/tmp/install8054_input/mod').rglob('*.apk'))
+          assert len(files)==1 and files[0].name=='TvSettingsPlus-8054-v33-NATIVE-CONTROLS-EXPERIMENTAL.apk'
+          shutil.copyfile(files[0],root/'assets/MOD-TvSettingsPlus-8054-476a39a.apk')
+          (root/'reports').mkdir()
+          shutil.copyfile('/tmp/install8054_input/artifact-provenance.json',root/'reports/input-artifact.json')
+          PY
+      - name: Obtain one exact stock APK from pinned owner backup (host only)
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq erofs-utils aapt apksigner
+          gh release download FlixTone_8054_Backup --repo MAX-TAC/FlixTone_8054_Backup \
+            --pattern FlixTone_8054_Backup.zip --dir /tmp/install8054_input
+          python3 install-kit/extract_stock.py /tmp/install8054_input/FlixTone_8054_Backup.zip \
+            /tmp/install8054_kit/assets/STOCK-TvSettingsPlus-8054.apk
+      - name: Verify actual stock and MOD signature/metadata, no ADB or installation
+        id: offline
+        run: |
+          python3 /tmp/install8054_kit/verify_offline.py --kit /tmp/install8054_kit \
+            --out /tmp/install8054_kit/reports/offline
+      - name: Generate final manifest and all-file checksums
+        if: always() && steps.offline.outcome != 'skipped'
+        run: python3 install-kit/build_manifest.py /tmp/install8054_kit --commit '${{ github.sha }}'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tvsettingsplus-8054-install-recovery-review-pinned-476a39a
+          path: /tmp/install8054_kit/
+          if-no-files-found: error
+          retention-days: 90
