@@ -85,10 +85,9 @@ final class OemPicturePanel {
             if(active)return;
             active=true;
             view.getViewTreeObserver().addOnWindowFocusChangeListener(this);
-            try {
-                for(String key:PicturePanelState.KEYS)
-                    resolver.registerContentObserver(Settings.Global.getUriFor(key),false,this);
-            }catch(RuntimeException ex){Log.w(TAG,"Picture observer unavailable",ex);}
+            PicturePanelState.observe(key ->
+                    resolver.registerContentObserver(Settings.Global.getUriFor(key),false,this),
+                    (key, error) -> Log.w(TAG,"Picture observer unavailable for " + key,error));
             refresh();
         }
 

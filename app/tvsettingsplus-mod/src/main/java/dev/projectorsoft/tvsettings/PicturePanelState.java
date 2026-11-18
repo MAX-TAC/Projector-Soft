@@ -3,6 +3,8 @@ package dev.projectorsoft.tvsettings;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 /** Stored provider values. The profile markers do not identify the active MediaTek input. */
 final class PicturePanelState {
@@ -21,6 +23,13 @@ final class PicturePanelState {
     };
 
     private PicturePanelState(){}
+
+    static void observe(Consumer<String> register, BiConsumer<String,RuntimeException> onFailure){
+        for(String key:KEYS){
+            try{register.accept(key);}
+            catch(RuntimeException error){onFailure.accept(key,error);}
+        }
+    }
 
     static Map<String,Integer> read(Reader reader){
         String mode=reader.read(MODE);

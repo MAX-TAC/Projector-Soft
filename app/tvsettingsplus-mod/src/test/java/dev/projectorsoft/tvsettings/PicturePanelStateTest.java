@@ -1,6 +1,8 @@
 package dev.projectorsoft.tvsettings;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public final class PicturePanelStateTest {
@@ -24,6 +26,16 @@ public final class PicturePanelStateTest {
         if(!Integer.valueOf(9).equals(refreshed.get("picture_mode"))
                 ||!Integer.valueOf(30).equals(refreshed.get("picture_brightness")))
             throw new AssertionError("mode/dependent values did not refresh");
+        List<String> registered=new ArrayList<>();
+        List<String> failed=new ArrayList<>();
+        PicturePanelState.observe(key->{
+            if(PicturePanelState.MODE.equals(key))throw new SecurityException("observer rejected");
+            registered.add(key);
+        },(key,error)->failed.add(key));
+        if(failed.size()!=1 || !PicturePanelState.MODE.equals(failed.get(0))
+                || registered.size()!=PicturePanelState.KEYS.length-1
+                || !registered.contains("picture_contrast"))
+            throw new AssertionError("A failed observer prevented registration of other settings");
         System.out.println("PASS native picture readout: missing, malformed, profile change and dependent reread");
     }
 }
