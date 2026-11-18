@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.util.Log;
+import android.widget.Toast;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -83,6 +84,7 @@ public final class OemPowerOnAppHook {
             OemPowerOnAppPolicy.Property prop=property();
             String current=prop.read();
             if(!OemPowerOnAppPolicy.expose(current,apps))return false;
+            String[] displayedValue={current};
             List<String> names=new ArrayList<>(apps);
             Collections.sort(names,(a,b)-> {
                 int c=nameByPackage.get(a).compareToIgnoreCase(nameByPackage.get(b));
@@ -117,9 +119,18 @@ public final class OemPowerOnAppHook {
                 String methodName=method.getName();
                 if("onPreferenceChange".equals(methodName)) {
                     if(args==null || args.length<2)return false;
-                    boolean success=OemPowerOnAppPolicy.apply(prop,apps,args[1]);
+                    if (!(args[1] instanceof String)) return false;
+                    String chosen=(String)args[1];
+                    Set<String> installed=candidates(context).keySet();
+                    if (!OemPowerOnAppPolicy.allowed(chosen,apps)
+                            || !OemPowerOnAppPolicy.allowed(chosen,installed)
+                            || !displayedValue[0].equals(prop.read())) {
+                        Toast.makeText(context,"Параметр запуска изменился. Переоткройте настройки.",Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
+                    boolean success=OemPowerOnAppPolicy.apply(prop,installed,chosen);
                     if(success) {
-                        String chosen=String.valueOf(args[1]);
+                        displayedValue[0]=chosen;
                         String label="HOME".equals(chosen)
                                 ? "Не запускать приложение":nameByPackage.get(chosen);
                         try {
@@ -149,3 +160,4 @@ public final class OemPowerOnAppHook {
         }
     }
 }
+

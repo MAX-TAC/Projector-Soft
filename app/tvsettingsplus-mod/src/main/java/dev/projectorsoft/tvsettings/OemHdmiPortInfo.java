@@ -4,6 +4,7 @@ import android.media.tv.TvInputInfo;
 import android.media.tv.TvInputManager;
 import android.os.Build;
 import android.util.Log;
+import java.lang.reflect.Proxy;
 import java.util.*;
 
 /** Read-only logical port inventory; no tune(), CEC, EDID, or property writes. */
@@ -19,32 +20,85 @@ public final class OemHdmiPortInfo {
             int count=Build.class.getField("A_RJ_HDMI_PORT_COUNT").getInt(null);
             Object raw=Build.class.getField("A_RJ_HDMI_PORTS").get(null);
             Object manager=context.getSystemService(Context.TV_INPUT_SERVICE);
-            List<String> ids=new ArrayList<>();
-            if(manager instanceof TvInputManager) {
-                List<TvInputInfo> inputs=((TvInputManager)manager).getTvInputList();
-                if(inputs!=null)for(TvInputInfo input:inputs)
-                    if(input.getType()==TvInputInfo.TYPE_HDMI)ids.add(input.getId());
-            }
-            List<Hdmi8054Policy.Port> ports=Hdmi8054Policy.ports(machineId(),count,raw instanceof String?(String)raw:null,ids);
+            TvInputManager tv=manager instanceof TvInputManager?(TvInputManager)manager:null;
+            String metadata=raw instanceof String?(String)raw:null;
+            List<Hdmi8054Policy.Port> ports=ports(tv,count,metadata);
             if(ports.isEmpty())return entry(context,category,pref,"unknown","HDMI · данные портов",
                 "Соответствие входов не подтверждено. Используйте штатный раздел источников",271);
             boolean added=false;
             for(int i=0;i<ports.size();i++) {
                 Hdmi8054Policy.Port port=ports.get(i);
                 added=entry(context,category,pref,port.hardware,port.label,
-                    port.inputId==null?"TV Input не найден или неоднозначен; используйте штатный раздел источников":
-                    "Логический вход найден; сигнал и EDID проверяются в штатном разделе источников",271+i)||added;
+                    status(tv,port),271+i,tv,count,metadata)||added;
             }
             return added;
         }catch(Exception ex){Log.w("TvSettingsPlusMOD","HDMI port inventory unavailable",ex);return false;}
     }
+
+    private static List<Hdmi8054Policy.Port> ports(TvInputManager tv,int count,String metadata) {
+        List<String> ids=new ArrayList<>();
+        List<TvInputInfo> inputs=tv==null?null:tv.getTvInputList();
+        if(inputs!=null)for(TvInputInfo input:inputs) {
+            if(input!=null && input.getType()==TvInputInfo.TYPE_HDMI)ids.add(input.getId());
+        }
+        return Hdmi8054Policy.ports(machineId(),count,metadata,ids);
+    }
+
+    private static String status(TvInputManager tv,Hdmi8054Policy.Port port) {
+        if(tv==null) return "Служба TV Input недоступна";
+        if(port.inputId==null) return "Вход недоступен или неоднозначен · нажмите для обновления";
+        try {
+            switch(tv.getInputState(port.inputId)) {
+                case TvInputManager.INPUT_STATE_CONNECTED: return "Подключён · нажмите для обновления";
+                case TvInputManager.INPUT_STATE_CONNECTED_STANDBY: return "В режиме ожидания · нажмите для обновления";
+                case TvInputManager.INPUT_STATE_DISCONNECTED: return "Отключён · нажмите для обновления";
+                default: break;
+            }
+        } catch(RuntimeException ex) {
+            Log.w("TvSettingsPlusMOD","HDMI input state unavailable",ex);
+        }
+        return "Состояние недоступно · нажмите для обновления";
+    }
+
     private static boolean entry(Context context,Object group,Class<?> pref,String key,String title,String summary,int order) throws Exception {
+        return entry(context,group,pref,key,title,summary,order,null,0,null);
+    }
+
+    private static boolean entry(Context context,Object group,Class<?> pref,String key,String title,String summary,
+                                 int order,TvInputManager tv,int count,String metadata) throws Exception {
         Object item=pref.getConstructor(Context.class).newInstance(context);
         pref.getMethod("setKey",String.class).invoke(item,"projectorsoft_hdmi_info_"+key);
         pref.getMethod("setTitle",CharSequence.class).invoke(item,title);
         pref.getMethod("setSummary",CharSequence.class).invoke(item,summary);
         pref.getMethod("setOrder",int.class).invoke(item,order);
-        pref.getMethod("setSelectable",boolean.class).invoke(item,false);
+        pref.getMethod("setSelectable",boolean.class).invoke(item,tv!=null);
+        if(tv!=null) {
+            Class<?> listener=Class.forName("androidx.preference.Preference$OnPreferenceClickListener");
+            Object callback=Proxy.newProxyInstance(listener.getClassLoader(),new Class<?>[]{listener},
+                (proxy,method,args)-> {
+                    switch(method.getName()) {
+                        case "onPreferenceClick":
+                            String current="Состояние недоступно";
+                            try {
+                                for(Hdmi8054Policy.Port port:ports(tv,count,metadata)) {
+                                    if(key.equals(port.hardware)) {
+                                        current=status(tv,port);
+                                        break;
+                                    }
+                                }
+                            } catch(RuntimeException ex) {
+                                Log.w("TvSettingsPlusMOD","HDMI input state unavailable",ex);
+                            }
+                            pref.getMethod("setSummary",CharSequence.class).invoke(item,current);
+                            return true;
+                        case "hashCode": return System.identityHashCode(proxy);
+                        case "equals": return proxy==args[0];
+                        case "toString": return "HdmiPortStatus:"+key;
+                        default: return null;
+                    }
+                });
+            pref.getMethod("setOnPreferenceClickListener",listener).invoke(item,callback);
+        }
         return Boolean.TRUE.equals(group.getClass().getMethod("addPreference",pref).invoke(group,item));
     }
 }

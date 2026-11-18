@@ -1,17 +1,16 @@
 package dev.projectorsoft.tvsettings;
 
 import android.content.Context;
-import android.content.ContentResolver;
 import android.media.tv.TvInputInfo;
 import android.media.tv.TvInputManager;
 import android.os.Build;
 import android.util.Log;
+import android.widget.Toast;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -53,33 +52,45 @@ public final class OemPowerOnSourceHook {
         return Build.class.getField("A_RJ_SUPPORT_SETTINGS_SHOW_AV").getInt(null)==1;
     }
 
-    private static List<BootSourceMapping.Entry> available(Context context) throws Exception {
-        List<BootSourceMapping.Entry> entries=BootSourceMapping.candidates(
-                boardCount(),boardPorts(),hasAv());
-        if(entries.isEmpty())return entries;
-        Object manager=context.getSystemService(Context.TV_INPUT_SERVICE);
-        if(!(manager instanceof TvInputManager))return java.util.Collections.emptyList();
+    private static Map<String,String> available(Context context) throws Exception {
+        int count = boardCount();
+        String metadata = boardPorts();
+        Map<String,String> choices = new LinkedHashMap<>();
+        List<BootSourceMapping.Entry> entries = BootSourceMapping.candidates(count,metadata,hasAv());
+        TvInputManager tv = context.getSystemService(TvInputManager.class);
+        if (entries.isEmpty() || tv == null) return choices;
+        List<TvInputInfo> installed = tv.getTvInputList();
+        if (installed == null) return choices;
 
-        // Unlike factory fallback guesses, require a real MediaTek TV input.
-        List<TvInputInfo> installed=((TvInputManager)manager).getTvInputList();
-        if(installed==null)return java.util.Collections.emptyList();
-        List<BootSourceMapping.Entry> actual=new ArrayList<>();
-        for(BootSourceMapping.Entry option:entries) {
-            if(option.hdmiHardwarePort==null) {
-                actual.add(option);
-                continue;
+        List<String> hdmiIds = new ArrayList<>();
+        for (TvInputInfo input : installed) {
+            if (input != null && input.getType() == TvInputInfo.TYPE_HDMI && input.getId() != null) {
+                hdmiIds.add(input.getId());
             }
-            boolean found=false;
-            for(TvInputInfo input:installed) {
-                if(input.getType()==TvInputInfo.TYPE_HDMI && input.getId()!=null
-                        && input.getId().endsWith("/"+option.hdmiHardwarePort)){
-                    found=true;
-                    break;
+        }
+        String machine = OemHdmiPortInfo.machineId();
+        List<Hdmi8054Policy.Port> verifiedPorts = Hdmi8054Policy.ports(machine,count,metadata,hdmiIds);
+        if ("8054".equals(machine) && verifiedPorts.isEmpty()) return choices;
+
+        for (BootSourceMapping.Entry entry : entries) {
+            if (entry.hdmiHardwarePort == null) {
+                choices.put(entry.id,entry.title);
+            } else if ("8054".equals(machine)) {
+                for (Hdmi8054Policy.Port port : verifiedPorts) {
+                    if (entry.hdmiHardwarePort.equals(port.hardware) && port.inputId != null) {
+                        choices.put(port.inputId,port.label);
+                    }
+                }
+            } else {
+                for (String id : hdmiIds) {
+                    if (id.endsWith("/"+entry.hdmiHardwarePort)) {
+                        choices.put(id,entry.title);
+                        break;
+                    }
                 }
             }
-            if(found)actual.add(option);
         }
-        return actual;
+        return choices;
     }
 
     /**
@@ -88,38 +99,13 @@ public final class OemPowerOnSourceHook {
      */
     public static boolean install(Context context,Object category,Class<?> preferenceClass) {
         try {
-            List<BootSourceMapping.Entry> candidates=available(context);
-            if(candidates.size()<2)return false;
-            String current=propGet();
-            if(!BootSourceMapping.isKnownState(candidates,current))return false;
-
-            List<String> labels=new ArrayList<>();
-            List<String> values=new ArrayList<>();
-            Map<String,String> titleById=new HashMap<>();
-            Object tv=context.getSystemService(Context.TV_INPUT_SERVICE);
-            List<TvInputInfo> tvInputs=((TvInputManager)tv).getTvInputList();
-            for(BootSourceMapping.Entry entry:candidates) {
-                String id=entry.id;
-                if(entry.hdmiHardwarePort!=null) {
-                    id=null;
-                    for(TvInputInfo input:tvInputs) {
-                        if(input.getType()==TvInputInfo.TYPE_HDMI && input.getId()!=null
-                                && input.getId().endsWith("/"+entry.hdmiHardwarePort)) {
-                            id=input.getId();
-                            break;
-                        }
-                    }
-                }
-                if(id==null || titleById.containsKey(id))continue;
-                labels.add(entry.title);
-                values.add(id);
-                titleById.put(id,entry.title);
-            }
-            if(!titleById.containsKey(current)) {
-                // A known OEM legacy ID may differ from TvInputManager's registered ID.
-                // Avoid an unselected UI and preserve the original OEM control.
-                return false;
-            }
+            Map<String,String> titleById = available(context);
+            if (titleById.size() < 2) return false;
+            String current = propGet();
+            if (!titleById.containsKey(current)) return false;
+            List<String> values = new ArrayList<>(titleById.keySet());
+            List<String> labels = new ArrayList<>(titleById.values());
+            String[] displayedValue = {current};
             Class<?> list=Class.forName("androidx.preference.ListPreference");
             Object item=list.getConstructor(Context.class).newInstance(context);
             preferenceClass.getMethod("setKey",String.class)
@@ -145,9 +131,13 @@ public final class OemPowerOnSourceHook {
                     String requested=String.valueOf(args[1]);
                     if(!titleById.containsKey(requested))return false;
                     try {
-                        List<BootSourceMapping.Entry> now=available(context);
-                        if(!BootSourceMapping.isKnownState(now,requested))return false;
-                        if(!propSet(requested))return false;
+                        if (!available(context).containsKey(requested)
+                                || !displayedValue[0].equals(propGet())) {
+                            Toast.makeText(context,"Источник изменился. Переоткройте настройки.",Toast.LENGTH_SHORT).show();
+                            return false;
+                        }
+                        if (!propSet(requested)) return false;
+                        displayedValue[0] = requested;
                         preferenceClass.getMethod("setSummary",CharSequence.class)
                                 .invoke(item,titleById.get(requested));
                         return true;
@@ -174,3 +164,4 @@ public final class OemPowerOnSourceHook {
         }
     }
 }
+
