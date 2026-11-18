@@ -7,7 +7,34 @@ from pathlib import Path
 
 
 AUDIO = "com.android.tv.settings.device.sound.AudioOutputActivity"
+TIMER_ACTIVITY = "com.android.tv.settings.partnercustomizer.timer.TimerSetActivity"
+TIMER_FRAGMENT = "com.android.tv.settings.partnercustomizer.timer.TimerFragment"
 TIMER_PACKAGE = "com.android.tv.settings.partnercustomizer.switchofftimer."
+
+
+def stock_timer_activity(manifest, activity, fragment):
+    """Require the stock activity to construct the verified editor without extras."""
+    declared = any(re.search(r'\bandroid:name(?:\([^)]*\))?="'+re.escape(TIMER_ACTIVITY)+r'"', block)
+                   for block in re.split(r'(?m)^\s*E:\s*', manifest)
+                   if re.match(r'^activity(?:\s|$)', block))
+    if not declared:
+        return False
+    descriptor = "L" + TIMER_FRAGMENT.replace(".", "/") + ";"
+    match = re.search(r'(?ms)^\.method [^\n]*\bcreateSettingsFragment\(\)Landroidx/fragment/app/Fragment;\n'
+                      r'(.*?)^\.end method', activity)
+    if not match:
+        return False
+    body = match[1]
+    return (
+        re.search(r'\bconst-class\s+\w+,\s*'+re.escape(descriptor), body) is not None
+        and re.search(r'const/4\s+(v\d+),\s*0x0\s*(?:\.line[^\n]*\s*)?'
+                      r'invoke-interface\s+\{\w+,\s*\w+,\s*\1\},\s*'
+                      r'Lcom/android/tv/settings/SettingsFragmentProvider;->newSettingsFragment\(',
+                      body) is not None
+        and not re.search(r'->(?:getIntent|getExtras|putExtra|startActivity)\(', body)
+        and 'set_timer_power_off_timer' in fragment
+        and 'tv_timer_power_off_timer_values' in fragment
+    )
 
 
 def discover(apk, decoded):
@@ -62,19 +89,30 @@ def discover(apk, decoded):
                     proven.add(AUDIO)
                     break
     timer = sorted(timer_fragments & proven)
+    timer_activity = list(decoded.glob("smali*/**/partnercustomizer/timer/TimerSetActivity.smali"))
+    timer_fragment = list(decoded.glob("smali*/**/partnercustomizer/timer/TimerFragment.smali"))
+    activity_proven = False
+    if len(timer_activity) == 1 and len(timer_fragment) == 1:
+        manifest = subprocess.run(["aapt", "dump", "xmltree", apk, "AndroidManifest.xml"],
+                                  check=True, text=True, capture_output=True).stdout
+        activity_proven = stock_timer_activity(manifest, timer_activity[0].read_text(),
+                                               timer_fragment[0].read_text())
+    print("Stock power schedule activity:", TIMER_ACTIVITY if activity_proven else "unconfirmed")
     print("Exact user routes:", "audio output" if AUDIO in proven else "audio output unconfirmed",
           "timer " + timer[0] if len(timer) == 1 else "timer fragment unconfirmed")
     print("Stock timer classes:", ", ".join(path.stem for path in timer_files) or "none")
-    return AUDIO in proven and len(audio_activity) == 1, timer[0] if len(timer) == 1 else ""
+    return (AUDIO in proven and len(audio_activity) == 1, timer[0] if len(timer) == 1 else "",
+            TIMER_ACTIVITY if activity_proven else "")
 
 
 if __name__ == "__main__":
     apk, decoded, output = sys.argv[1:]
-    audio, timer = discover(apk, Path(decoded))
+    audio, timer, timer_activity = discover(apk, Path(decoded))
     Path(output).write_text(
         "package dev.projectorsoft.tvsettings;\n"
         "public final class Exact8054UserRoutes {\n"
         f'    public static final String AUDIO_OUTPUT = "{AUDIO if audio else ""}";\n'
         f'    public static final String TIMER_FRAGMENT = "{timer}";\n'
+        f'    public static final String TIMER_ACTIVITY = "{timer_activity}";\n'
         "}\n", encoding="utf-8"
     )

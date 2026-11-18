@@ -2,7 +2,7 @@
 
 DIRECT_MOD — код контрола/платформенной интеграции; DELEGATED_OEM — только штатная навигация; READ_ONLY — только информация; HIDDEN — прямой MOD-контрол скрыт; BLOCKED — запрещённый путь; NOT_IMPLEMENTED — реализации MOD нет. OEM ссылка не MIGRATED и не FEATURE_COMPLETE. Наличие отдельного подменю и аппаратуры надо подтвердить на устройстве. BUILT_UNTESTED относится к условному пути в APK, а не к переносу всей функции. — означает отсутствие активной реализации, не успешную сборку функции. Все hardware результаты отсутствуют.
 
-DIRECT_MOD 22; DELEGATED_OEM 19; READ_ONLY 19; NOT_IMPLEMENTED 23; BLOCKED 11; HIDDEN 2
+DIRECT_MOD 22; DELEGATED_OEM 20; READ_ONLY 19; NOT_IMPLEMENTED 22; BLOCKED 11; HIDDEN 2
 
 | ID | Функция | Доставка | Fallback | Код | Аппаратура | Следующая проверка |
 |---|---|---|---|---|---|---|
@@ -78,7 +78,7 @@ DIRECT_MOD 22; DELEGATED_OEM 19; READ_ONLY 19; NOT_IMPLEMENTED 23; BLOCKED 11; H
 | SYS04 | Температура | READ_ONLY | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Compare sensor names/readings, no fan control |
 | SYS05 | Запуск источника после reboot | BLOCKED | — | — | — | Do not replace TimeService/source boot owner without proven transaction/rollback |
 | SYS06 | Восстановление Bluetooth после reboot | READ_ONLY | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify HID remote pairing and retained AutoPair/reconnect owners |
-| SYS07 | OEM Timer выключения | NOT_IMPLEMENTED | — | — | — | Find an editable stock timer entry on 8054 |
+| SYS07 | OEM Timer выключения | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify editor navigation, permitted schedule edit, power-off trigger and manual restore; separate from idle policy |
 | SYS08 | Кнопка Settings на пульте | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify physical Settings button resolution with KuSettings enabled |
 | SYS09 | Установленные/предустановочные приложения | READ_ONLY | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Check inventory and OEM package visibility |
 | FAC01 | Глубокая информация о чипе | NOT_IMPLEMENTED | — | — | — | Установить точные безопасность/поддержку на 8054 |

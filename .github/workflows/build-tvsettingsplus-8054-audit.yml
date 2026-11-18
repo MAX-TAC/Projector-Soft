@@ -9,6 +9,7 @@ on:
       - 'app/tvsettingsplus-mod/src/test/java/**'
       - 'tools/patch_*.py'
       - 'tools/trace_8054_audio_delay.py'
+      - 'tools/find_8054_user_routes.py'
   workflow_dispatch:
 concurrency:
   group: tvsettings-exact-8054-v33-build

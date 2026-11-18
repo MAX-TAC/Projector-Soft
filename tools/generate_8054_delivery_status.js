@@ -34,7 +34,7 @@ set('SYS01','DIRECT_MOD','OemAcPowerBootHook','Verify power restoration behavior
 set('SYS02 SYS06','READ_ONLY','OemBluetoothRemoteHook / OEM state, no replacement reconnect service','Verify HID remote pairing and retained AutoPair/reconnect owners');
 set('SYS03 SYS05','BLOCKED','8054 automatic recovery replacement disabled','Do not replace TimeService/source boot owner without proven transaction/rollback');
 set('SYS04','READ_ONLY','OemThermalTelemetryHook','Compare sensor names/readings, no fan control');
-set('SYS07','NOT_IMPLEMENTED','OEM_ROUTE_UNCONFIRMED: stock shutdown service and tip dialog only','Find an editable stock timer entry on 8054');
+set('SYS07','DELEGATED_OEM','OemStockUserSettings opens exact-stock TimerSetActivity and TimerFragment power schedule','Verify editor navigation, permitted schedule edit, power-off trigger and manual restore; separate from idle policy');
 set('SYS08','DELEGATED_OEM','Existing OEM hotkey owner and MOD legacy Intent handlers','Verify physical Settings button resolution with KuSettings enabled');
 set('SYS09','READ_ONLY','Package/compatibility diagnostics; app list remains stock','Check inventory and OEM package visibility');
 

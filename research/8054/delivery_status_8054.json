@@ -2,9 +2,9 @@
   "meaning": "Current code delivery; no MIGRATED/FEATURE_COMPLETE claim. BUILT_UNTESTED refers to compiled conditional path, not hardware availability. Group OEM navigation does not prove individual feature presence. Null build/runtime state means no implemented feature to verify.",
   "counts": {
     "DIRECT_MOD": 22,
-    "DELEGATED_OEM": 19,
+    "DELEGATED_OEM": 20,
     "READ_ONLY": 19,
-    "NOT_IMPLEMENTED": 23,
+    "NOT_IMPLEMENTED": 22,
     "BLOCKED": 11,
     "HIDDEN": 2
   },
@@ -948,12 +948,12 @@
     {
       "id": "SYS07",
       "function": "OEM Timer выключения",
-      "delivery": "NOT_IMPLEMENTED",
-      "implementation": "OEM_ROUTE_UNCONFIRMED: stock shutdown service and tip dialog only",
-      "next_check": "Find an editable stock timer entry on 8054",
+      "delivery": "DELEGATED_OEM",
+      "implementation": "OemStockUserSettings opens exact-stock TimerSetActivity and TimerFragment power schedule",
+      "next_check": "Verify editor navigation, permitted schedule edit, power-off trigger and manual restore; separate from idle policy",
       "fallback": null,
-      "build_state": null,
-      "runtime_state": null,
+      "build_state": "BUILT_UNTESTED",
+      "runtime_state": "RUNTIME_TEST_REQUIRED",
       "feature_complete": false,
       "scope": "CURRENT",
       "evidence_status": "UNKNOWN"

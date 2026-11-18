@@ -12,26 +12,35 @@ final class OemStockUserSettings {
     private OemStockUserSettings() {}
 
     static boolean installAudioOutput(Context context,Object group,Class<?> pref) {
-        String target = target("AUDIO_OUTPUT");
+        return installActivity(context,group,pref,"AUDIO_OUTPUT","projectorsoft_audio_output","Аудиовыход",246);
+    }
+
+    private static boolean installActivity(Context context,Object group,Class<?> pref,
+                                           String route,String key,String title,int order) {
+        String target=target(route);
         if (target.isEmpty() || !"8054".equals(OemHdmiPortInfo.machineId())) return false;
         try {
-            ComponentName component = new ComponentName(context,target);
-            PackageManager pm = context.getPackageManager();
-            ActivityInfo info = pm.getActivityInfo(component,0);
-            if (!info.enabled || info.applicationInfo == null || !info.applicationInfo.enabled
-                    || pm.getComponentEnabledSetting(component) > PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-                    || (info.permission != null && !info.permission.isEmpty()
-                        && context.checkSelfPermission(info.permission) != PackageManager.PERMISSION_GRANTED)) return false;
-            Object row = row(context,pref,"projectorsoft_audio_output","Аудиовыход",246);
+            ComponentName component=new ComponentName(context,target);
+            PackageManager pm=context.getPackageManager();
+            ActivityInfo info=pm.getActivityInfo(component,0);
+            if (!context.getPackageName().equals(info.packageName)
+                    || !info.enabled || info.applicationInfo==null || !info.applicationInfo.enabled
+                    || pm.getApplicationEnabledSetting(info.packageName)>PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                    || pm.getComponentEnabledSetting(component)>PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                    || (info.permission!=null && !info.permission.isEmpty()
+                        && context.checkSelfPermission(info.permission)!=PackageManager.PERMISSION_GRANTED)) return false;
+            Object row=row(context,pref,key,title,order);
             pref.getMethod("setIntent",Intent.class).invoke(row,new Intent().setComponent(component));
             return add(group,pref,row);
         } catch (Exception | LinkageError ex) {
-            Log.w("TvSettingsPlusMOD","Stock audio-output screen unavailable",ex);
+            Log.w("TvSettingsPlusMOD","Stock screen unavailable: "+route,ex);
             return false;
         }
     }
 
     static boolean installSwitchOffTimer(Context context,Object group,Class<?> pref) {
+        if (installActivity(context,group,pref,"TIMER_ACTIVITY","projectorsoft_switch_off_timer",
+                "Таймер выключения",287)) return true;
         String target = target("TIMER_FRAGMENT");
         if (target.isEmpty() || !"8054".equals(OemHdmiPortInfo.machineId())) return false;
         try {

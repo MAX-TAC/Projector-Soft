@@ -22,6 +22,7 @@ EXACT = {
     "TimerFragment": {"onCreatePreferences", "onResume", "createPreferences"},
     "TimerSetActivity": {"createSettingsFragment", "onCreate"},
     "BootupReceiver": {"onReceive"},
+    "IntentUtils": {"startTime", "startSourceService", "isServiceRunning"},
     "MySetTimeService": {"onCreate", "onStartCommand", "onDestroy"},
     "SoundFragment": {"createPreferences"},
     "ProgressBarDialog": {"onStart"},

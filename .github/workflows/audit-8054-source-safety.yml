@@ -155,3 +155,5 @@ jobs:
           python-version: '3.12'
       - name: Verify host preflight with mock ADB
         run: python -m unittest discover -s install-kit -p "test_*.py" -v
+      - name: Verify stock timer route detection
+        run: python -m unittest discover -s tools -p "test_find_8054_user_routes.py" -v
