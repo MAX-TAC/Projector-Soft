@@ -113,10 +113,7 @@ public final class OemHardwareDelegatedSettings {
     public static void installProjectionLinks(Context context,Object projectionCategory,
                                               Class<?> preferenceClass) {
         if(context==null||projectionCategory==null||preferenceClass==null)return;
-        add(context,projectionCategory,preferenceClass,
-            "projectorsoft_calibration_oem","Фокус и коррекция трапеции",
-            "Оригинальные экраны автофокуса и калибровки четырёх углов",
-            "android.settings.SETTINGS",251);
+        OemProjectionPanel.install(context,projectionCategory,preferenceClass);
     }
 
     public static boolean installPictureLink(Context context,Object category,Class<?> preferenceClass) {

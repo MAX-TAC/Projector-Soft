@@ -27,6 +27,10 @@ jobs:
           node-version: '24'
       - name: Validate evidence classifications
         run: node tools/validate_8054_graph.js research/8054/dependency_graph_8054.json
+      - name: Validate current 96-function delivery inventory
+        run: |
+          node tools/generate_8054_delivery_status.js research/8054
+          git diff --exit-code -- research/8054/delivery_status_8054.json research/8054/DELIVERY_STATUS_8054.md
       - name: Compile Android bridge against API 33
         run: |
           set -euo pipefail
@@ -77,14 +81,23 @@ jobs:
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/Hdmi8054Policy.java \
             app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/Hdmi8054PolicyTest.java
           java -cp /tmp/picture-state-tests dev.projectorsoft.tvsettings.Hdmi8054PolicyTest
-      - name: Test production picture adapter against isolated Android fakes
+          javac -d /tmp/picture-state-tests \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/Projection8054Policy.java \
+            app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/Projection8054PolicyTest.java
+          java -cp /tmp/picture-state-tests dev.projectorsoft.tvsettings.Projection8054PolicyTest
+      - name: Test production picture and brightness adapters against isolated Android fakes
         run: |
           mkdir -p /tmp/picture-adapter-tests
           javac -d /tmp/picture-adapter-tests \
             $(find app/tvsettingsplus-mod/src/testFixtures/java -name '*.java') \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/PictureStateTransaction.java \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/Projection8054Policy.java \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/ProjectorCapabilities.java \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/LightSourceBrightnessController.java \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/KuSourceRjBrightnessGateway.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemPictureState.java
           java -cp /tmp/picture-adapter-tests dev.projectorsoft.tvsettings.OemPictureAdapterTest
+          java -cp /tmp/picture-adapter-tests dev.projectorsoft.tvsettings.Brightness8054AdapterTest
       - name: Check Android entry-point wiring remains conservative
         run: |
           set -euo pipefail
@@ -93,3 +106,4 @@ jobs:
           grep -Fq 'return "8052".equals(machineId)' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/EdidPortPolicy.java
           grep -Fq 'mayOfferLegacyOrientation(machineId())' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemProjectorOrientationHook.java
           grep -Fq 'autoPairSetting(context)' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemBluetoothRemoteHook.java
+

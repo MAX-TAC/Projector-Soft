@@ -426,10 +426,10 @@ jobs:
           Preserves focus/keystone calibration classes and OEM resources,
           retains customer-specific light mode, hides Bluetooth speaker menu
           entry, and keeps nine legacy settings Intents.
-          For customerId=0 with reachable OEM BrightReceiver and readable
-          persist.bright.model, switch to in-pane four-option receiver UI.
-          Other customers retain original MtkUtil three-option control.
-          If receiver/property inaccessible, original fullscreen remains as fallback.
+          For 8054, legacy MOD optical brightness writes are blocked; original
+          customer-specific brightness UI and checked OEM BrightActivity are retained.
+          Do not equate the retained OEM controls with transferred native MOD controls.
+          The brightness adapter rejects 8054/unknown writes before receiver lookup/broadcast.
           8054 TimeService replacement is gated off pending bytecode and hardware proof.
           Legacy fixed-HW6 EDID selector is hidden on 8054 until per-port mapping is proven.
           This is NOT complete KuSettings migration and KuSettings must remain installed.
@@ -444,4 +444,5 @@ jobs:
             /tmp/tv33/report/
           retention-days: 14
           if-no-files-found: warn
+
 

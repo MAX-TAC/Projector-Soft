@@ -83,8 +83,8 @@ public final class KuSourceRjBrightnessGateway
         if (hardwareId < 0 || hardwareId > 3) {
             throw new IllegalArgumentException("Non-OEM brightness mode");
         }
-        if (!("8052".equals(firmwareId) || "8054".equals(firmwareId)))
-            throw new IllegalStateException("Unknown board");
+        if (!Projection8054Policy.mayUseLegacyBrightness(firmwareId))
+            throw new IllegalStateException("Use original OEM brightness UI until 8054 transaction and rollback are verified");
         requireReceiver();
         Intent intent=new Intent(ACTION);
         intent.setComponent(new ComponentName(PACKAGE, RECEIVER));
@@ -93,3 +93,4 @@ public final class KuSourceRjBrightnessGateway
         // sendBroadcast is asynchronous. Controller refresh must verify state.
     }
 }
+
