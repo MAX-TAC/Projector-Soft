@@ -64,6 +64,7 @@ jobs:
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemEarcPolicy.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/KuSourceRecoveryActivationPolicy.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/EdidPortPolicy.java \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/CecAutoOff8054.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/Hdmi8054Policy.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/HdmiViewLifecycle.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/MenuInstallation.java \
