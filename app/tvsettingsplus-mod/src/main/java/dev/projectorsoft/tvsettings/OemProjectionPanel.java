@@ -14,6 +14,10 @@ public final class OemProjectionPanel {
             "Масштаб изображения; это не яркость LED и не управление мотором",
             "com.rjpj.tcorrection","com.rjpj.tcorrection.DigitalZoomActivity",Intent.ACTION_MAIN,252);
         if ("8054".equals(OemHdmiPortInfo.machineId())) {
+            // Exact stock KeystoneSettingsSecondaryController.gotoKeystoneCorrection intent.
+            add(context,category,pref,"keystone","Коррекция трапеции · штатный экран",null,
+                "com.android.tv.settings",
+                "com.android.tv.settings.uicustom.fragment.projector.KeystoneCalibrationActivity",null,256);
             OemLightSourcePreference.install(context,category,pref);
             OemFocusPreferences.install(context,category,pref);
         } else {

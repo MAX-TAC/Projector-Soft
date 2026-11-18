@@ -58,10 +58,11 @@ public final class KuSourceRjBrightnessGateway
 
     private void requireReceiver() throws PackageManager.NameNotFoundException {
         ComponentName receiver = new ComponentName(PACKAGE, RECEIVER);
-        // A receiver from another APK cannot be called without being exported.
         ActivityInfo info = context.getPackageManager().getReceiverInfo(receiver, 0);
-        if (info == null || !info.enabled || !info.exported) {
-            throw new IllegalStateException("Brightness receiver unavailable/not exported");
+        // stock8054Path verifies the receiver is exported or the installed APKs share an actual UID.
+        if (info == null || !info.enabled
+                || (!info.exported && (!"8054".equals(firmwareId) || !stock8054Path.getAsBoolean()))) {
+            throw new IllegalStateException("Brightness receiver unavailable");
         }
     }
 

@@ -30,8 +30,9 @@ final class OemLightSourcePreference {
             String owner = KuSourceRjBrightnessGateway.PACKAGE;
             ComponentName component = new ComponentName(owner,KuSourceRjBrightnessGateway.RECEIVER);
             ActivityInfo receiver = pm.getReceiverInfo(component,0);
-            return receiver.enabled && receiver.exported && receiver.applicationInfo != null
+            return receiver.enabled && receiver.applicationInfo != null
                     && receiver.applicationInfo.enabled
+                    && (receiver.exported || receiver.applicationInfo.uid == context.getApplicationInfo().uid)
                     && (receiver.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0
                     && pm.getApplicationEnabledSetting(owner) <= PackageManager.COMPONENT_ENABLED_STATE_ENABLED
                     && pm.getComponentEnabledSetting(component) <= PackageManager.COMPONENT_ENABLED_STATE_ENABLED

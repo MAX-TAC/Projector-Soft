@@ -307,45 +307,36 @@ jobs:
           mkdir -p /tmp/tv33/framework
           apktool if /tmp/flix8054_erofs/system_a_tree/system/framework/framework-res.apk -p /tmp/tv33/framework
           apktool d -f -r -p /tmp/tv33/framework /tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk -o /tmp/tv33/decoded
-          # Exact stock call sites for the projection and picture integration, before any patches.
+          # Verify the original callbacks and fallback entry on the exact unmodified APK.
           python3 - <<'PY'
           import pathlib, re
           root = pathlib.Path('/tmp/tv33/decoded')
-          for path in sorted(root.glob('smali*/**/uicustom/**/*.smali')):
-              owner = path.stem.split('$')[0]
-              text = path.read_text()
-              if path.stem == 'FocusSettingsSecondaryController':
-                  for setter, key in {'setPowerOnAutoFocus': 'persist.rjpj.autofocus.poweron',
-                                      'setMoveAutoFocus': 'persist.rjpj.autofocus.move'}.items():
-                      method = re.search(r'(?ms)^\.method private '+setter+r'\(Z\)V\n.*?^\.end method', text)
-                      assert method, setter
-                      body = method.group()
-                      calls = re.findall(r'(?m)^\s+invoke-\S+ \{[^}]*\}, (\S+)$', body)
-                      assert calls.count('Lcom/android/tv/settings/uicustom/util/SystemPropertiesUtil;->set(Ljava/lang/String;Ljava/lang/String;)V') == 1, calls
-                      assert all(call.startswith(('Ljava/lang/String;->valueOf(', 'Lcom/android/tv/settings/uicustom/util/SystemPropertiesUtil;->set('))
-                                 for call in calls), calls
-                      assert re.findall(r'const-string(?:/jumbo)? \S+, "([^"]+)"', body) == [key], body
-                      assert ':try_' not in body and 'iget-' not in body, body
-                      print('PASS standalone stock focus callback', setter, key)
-              for match in re.finditer(r'(?ms)^\.method [^\n]+\n.*?^\.end method', text):
-                  body = match.group()
-                  if ((path.stem == 'KeystoneSettingsSecondaryController'
-                       and re.search(r' (?:setMoveAutoKeystone|gotoKeystoneCorrection|onAttach)\(',body.splitlines()[0]))
-                      or ('FourCornerActivity' in body or 'DigitalZoomActivity' in body)
-                      or ('$' in path.stem and 'Landroid/content/Intent;->' in body
-                          and owner == 'KeystoneSettingsSecondaryController')):
-                      print('EXACT STOCK', path.name, body)
-              if owner in {'FocusSettingsSecondaryController', 'KeystoneSettingsSecondaryController',
-                           'GeneralSubMenuController', 'PictureSubMenuController',
-                           'PictureModeValueSecondaryController', 'ColorTempValueSecondaryController'}:
-                  for match in re.finditer(r'(?ms)^\.method [^\n]+\n.*?^\.end method', text):
-                      body = match.group()
-                      signals = re.findall(r'(?m)^\s+(?:(?:invoke|const-string|iget|sget|iput)[^\n]*'
-                          r'(?:Focus|focus|Keystone|keystone|tsv_|SettingsUtil|SystemProperties|tcorrection|'
-                          r'BRIGHT_SETTINGS|A_RJ_CUSTOMER_ID|showSecondary|startActivity|setOnClick|setOnChecked)[^\n]*)$', body)
-                      if signals:
-                          print(path.name, body.splitlines()[0])
-                          print('\n'.join(line.strip() for line in signals))
+
+          def stock_method(owner, signature):
+              paths = list(root.glob('smali*/**/projector/'+owner+'.smali'))
+              assert len(paths) == 1, paths
+              method = re.search(r'(?ms)^\.method private '+re.escape(signature)+r'\n.*?^\.end method',
+                                 paths[0].read_text())
+              assert method, signature
+              return method.group()
+
+          for setter, key in {'setPowerOnAutoFocus': 'persist.rjpj.autofocus.poweron',
+                              'setMoveAutoFocus': 'persist.rjpj.autofocus.move'}.items():
+              body = stock_method('FocusSettingsSecondaryController',setter+'(Z)V')
+              calls = re.findall(r'(?m)^\s+invoke-\S+ \{[^}]*\}, (\S+)$', body)
+              assert calls == [
+                  'Ljava/lang/String;->valueOf(I)Ljava/lang/String;',
+                  'Lcom/android/tv/settings/uicustom/util/SystemPropertiesUtil;->set(Ljava/lang/String;Ljava/lang/String;)V'
+              ], calls
+              assert re.findall(r'const-string(?:/jumbo)? \S+, "([^"]+)"',body) == [key], body
+              assert ':try_' not in body and 'iget-' not in body, body
+              print('PASS standalone stock focus callback',setter,key)
+
+          launch = stock_method('KeystoneSettingsSecondaryController','gotoKeystoneCorrection()V')
+          assert 'const-class v2, Lcom/android/tv/settings/uicustom/fragment/projector/KeystoneCalibrationActivity;' in launch
+          assert 'Landroid/content/Intent;-><init>(Landroid/content/Context;Ljava/lang/Class;)V' in launch
+          assert 'Landroid/content/Context;->startActivity(Landroid/content/Intent;)V' in launch
+          print('PASS stock keystone fallback Intent')
           PY
           python3 tools/patch_customer0_lightmode_smali.py /tmp/tv33/decoded /tmp/tv33/brightness_report.json
           python3 tools/patch_aosp_root_menu_smali.py /tmp/tv33/decoded /tmp/tv33/navigation_report.json

@@ -16,6 +16,7 @@ public final class Brightness8054AdapterTest {
         new KuSourceRjBrightnessGateway(legacy,"8052").applyMode(1);
         check(legacy.broadcasts==1&&legacy.manager.receiverLookups==1); // Dispatch positive control; not a HAL assertion.
         Context inline=new Context();
+        inline.manager.receiverExported=false; // Opt-in gate represents an authorized same-UID receiver.
         boolean[] customerRoute={false};
         KuSourceRjBrightnessGateway candidate=new KuSourceRjBrightnessGateway(inline,"8054",()->customerRoute[0]);
         check(candidate.readSupportedModes().isEmpty());
@@ -26,6 +27,9 @@ public final class Brightness8054AdapterTest {
         try {candidate.applyMode(2);throw new AssertionError("Stale route accepted");}
         catch(IllegalStateException expected){}
         check(inline.broadcasts==1&&inline.manager.receiverLookups==2);
+        legacy.manager.receiverExported=false;
+        try {new KuSourceRjBrightnessGateway(legacy,"8052").applyMode(1);throw new AssertionError("Unexported legacy route accepted");}
+        catch(IllegalStateException expected){}
         System.out.println("PASS production brightness gateway: no receiver lookup/broadcast for8054/unknown; legacy dispatch retained");
     }
 }
