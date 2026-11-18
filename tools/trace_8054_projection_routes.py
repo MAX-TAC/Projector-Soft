@@ -6,7 +6,7 @@ from pathlib import Path
 METHOD = re.compile(r"(?ms)^\.method [^\n]*?([^\s(]+)\([^\n]*\n.*?^\.end method$")
 ROUTE = re.compile(r"FourCornerActivity|DigitalZoomActivity|HVKeystoneActivity|KeystoneCalibrationActivity|"
                    r"four_corner|digital_zoom|digitalZoom|FOUR_CORNER|DIGITAL_ZOOM|"
-                   r"getDigitalZoom|setDigitalZoom", re.I)
+                   r"getDigitalZoom|setDigitalZoom|rjpj\.action\.keystone\.HV", re.I)
 DETAIL = {
     'FourCornerActivity': r'on.*|init.*|.*(?:[Kk]eystone|[Pp]oint|[Rr]eset|[Kk]ey).*',
     'DigitalZoomActivity': r'on.*|init.*|.*(?:[Zz]oom|[Ss]cale|[Kk]ey).*',
@@ -14,6 +14,15 @@ DETAIL = {
     'TCorrectionBroadcastReceiver': r'onReceive',
     'KeystoneCalibrationActivity': r'on.*|init.*',
     'KeystoneSettingsSecondaryController': r'.*(?:[Cc]orrection|[Ff]our|[Zz]oom|[Oo]bstacle|[Ss]creen).*',
+    'FloatMenuManager': r'jumpByAction|jumpToExternalActivity',
+    'ProjectorFragment': r'access\$400|jumpByAction|initView|initData',
+    'ProjectorSubMenuController': r'initView|initData',
+    'IntentUtils': r'intentAction|fourPointIntent|imageDigitalIntent',
+    'KeystoneUtil': r'(?:set.*Offset|setDigitalZoom|.*[Zz]oom.*)',
+    'SoundFragment': r'createPreferences',
+    'AdvancedFragment': r'onCreatePreferences',
+    'DTSFragment': r'onCreatePreferences',
+    'DTSStudioSoundFragment': r'onCreatePreferences',
     'ProjectionActivity': r'onCreate|init.*|onClick|.*lambda.*',
 }
 KEY = re.compile(r"invoke-|const-string|const-class|putExtra|get.*Extra|[is][gp]et|[a-z]-switch|return|if-|:cond|0x")
