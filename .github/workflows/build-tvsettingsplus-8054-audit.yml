@@ -8,7 +8,7 @@ on:
       - 'app/tvsettingsplus-mod/src/main/java/**'
       - 'app/tvsettingsplus-mod/src/test/java/**'
       - 'tools/patch_*.py'
-      - 'tools/trace_8054_hdmi_source.py'
+      - 'tools/trace_8054_hdmi_controls.py'
   workflow_dispatch:
 concurrency:
   group: tvsettings-exact-8054-v33-build
@@ -92,52 +92,13 @@ jobs:
           mkdir -p /tmp/tv33/framework
           apktool if /tmp/flix8054_erofs/system_a_tree/system/framework/framework-res.apk -p /tmp/tv33/framework
           apktool d -f -r -p /tmp/tv33/framework /tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk -o /tmp/tv33/decoded
-          KU_SOURCE=/tmp/flix8054_erofs/system_a_tree/system/app/KuSourceRJ/KuSourceRJ.apk
-          sha256sum "$KU_SOURCE"
-          apktool d -f -r -p /tmp/tv33/framework "$KU_SOURCE" -o /tmp/tv33/kusource
-          python3 tools/trace_8054_hdmi_source.py /tmp/tv33/decoded /tmp/tv33/kusource
-          LIVE_TV=/tmp/flix8054_erofs/system_ext_a_tree/priv-app/LiveTV/LiveTV.apk
-          aapt dump badging "$LIVE_TV" | grep "^package: name='com.mediatek.wwtv.tvcenter'"
-          aapt dump xmltree "$LIVE_TV" AndroidManifest.xml > /tmp/tv33/live-tv-manifest.txt
-          python3 - <<'PY'
-          import pathlib, re
-          manifest = pathlib.Path('/tmp/tv33/live-tv-manifest.txt').read_text()
-          activity = None
-          filters = []
-          for line in manifest.splitlines():
-              tag = re.match(r'^(\s*)E: ([\w-]+)\b', line)
-              if not tag:
-                  if filters and filters[-1][0] is not None:
-                      filters[-1][2].append(line)
-                  elif activity and 'android:name(' in line and not activity[1]:
-                      activity[1] = line.strip()
-                  continue
-              indent, name = len(tag[1]), tag[2]
-              if filters and filters[-1][0] is not None and indent <= filters[-1][0]:
-                  filters[-1][0] = None
-              if activity and indent <= activity[0]:
-                  activity = None
-              if name in ('activity', 'activity-alias'):
-                  activity = [indent, '']
-              if name == 'intent-filter' and activity:
-                  filters.append([indent, activity[1], []])
-          routes = 0
-          for _, owner, attributes in filters:
-              details = '\n'.join(attributes)
-              if ('"android.intent.action.VIEW"' not in details
-                      or '"android.intent.category.DEFAULT"' not in details):
-                  continue
-              print('HDMI8054 LiveTV default VIEW', owner)
-              for line in attributes:
-                  if any(field in line for field in ('android:scheme', 'android:host', 'android:path', 'android:mimeType')):
-                      print('HDMI8054 LiveTV data', line.strip())
-              # AOSP TvProvider returns channel-item MIME for passthrough channel URIs.
-              if ('"vnd.android.cursor.item/channel"' in details
-                      and 'android:scheme' not in details and 'android:host' not in details
-                      and 'android:path' not in details):
-                  routes += 1
-          print('HDMI8054 LiveTV default VIEW channel MIME candidates', routes)
-          PY
+          STOCK=/tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk
+          SERVICE=/tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvServices/TvServices.apk
+          echo "2934ca9334afd0a2af85786aa0593d27da216086c7eb9b0c9b801f412516b77d  $SERVICE" | sha256sum -c -
+          apktool d -f -r -p /tmp/tv33/framework "$SERVICE" -o /tmp/tv33/tvservices
+          python3 tools/trace_8054_hdmi_controls.py /tmp/tv33/decoded /tmp/tv33/tvservices
+          aapt dump --values resources "$STOCK" > /tmp/tv33/stock-resources.txt
+          grep -Ei -A 5 'spec resource .*:(string|id)/[^ ]*(edid|hdmi1_4|hdmi2_0|hdmi2_1|hdmi_1_4|hdmi_2_0|hdmi_2_1)' /tmp/tv33/stock-resources.txt | head -n 130 || true
           python3 tools/find_8054_keystone_layout.py \
             /tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk \
             /tmp/tv33/Exact8054ProjectionResources.java
