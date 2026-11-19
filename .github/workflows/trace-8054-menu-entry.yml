@@ -32,15 +32,4 @@ jobs:
           "$AAPT" dump xmltree /tmp/stock.apk AndroidManifest.xml > /tmp/stock-manifest-tree.txt
           grep -n -E -C 6 'android.settings.SETTINGS|com.android.tv.settings.MainSettings|uicustom.MainActivity' /tmp/stock-manifest-tree.txt
           sed -n '502,575p' /tmp/stock-manifest-tree.txt
-          while read -r layout; do
-            "$AAPT" dump xmltree /tmp/stock.apk "$layout" > /tmp/layout.txt
-            if grep -q 'tciv_general_screensaver_settings' /tmp/layout.txt; then
-              echo "$layout"
-              cat /tmp/layout.txt
-            fi
-          done < <(zipinfo -1 /tmp/stock.apk 'res/layout/*general*.xml')
-          "$AAPT" dump resources /tmp/stock.apk > /tmp/resources.txt
-          grep -i -A 6 -B 1 -E '0x7f0d006f|tciv_general_screensaver_settings|layout/[^ ]*general[^ ]*' /tmp/resources.txt | head -n 180
-          while read -r path; do
-            "$AAPT" dump xmltree /tmp/stock.apk "$path" | grep -Ei 'E: |android:id' | head -n 90
-          done < <(grep -A 3 'spec resource 0x7f0d006f' /tmp/resources.txt | grep -oE 'res/[^ ]+\.xml' | sort -u)
+          PATH="$(dirname "$AAPT"):$PATH" python3 tools/verify_8054_general_layout.py /tmp/stock.apk

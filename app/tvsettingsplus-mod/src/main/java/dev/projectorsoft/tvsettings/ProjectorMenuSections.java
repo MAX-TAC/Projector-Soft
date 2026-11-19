@@ -10,6 +10,7 @@ final class ProjectorMenuSections {
     private static final MenuInstallation INSTALLATION=new MenuInstallation();
 
     interface Work { void run() throws Exception; }
+    interface Check { boolean run() throws Exception; }
     interface Populate { void run(Object category) throws Exception; }
 
     final Class<?> preference;
@@ -55,18 +56,14 @@ final class ProjectorMenuSections {
                     return;
                 }
             }
-            if(!required && count==0)return;
-            if(required) {
-                Object status=preference.getConstructor(Context.class).newInstance(context);
-                preference.getMethod("setKey",String.class).invoke(status,key+"_availability");
-                preference.getMethod("setTitle",CharSequence.class).invoke(status,
-                        "Параметры сейчас недоступны");
-                preference.getMethod("setSelectable",boolean.class).invoke(status,false);
-                if(!Boolean.TRUE.equals(categoryType.getMethod("addPreference",preference).invoke(category,status)))
-                    throw new IllegalStateException("Category rejected availability row");
-            } else {
-                return;
-            }
+            if(!required)return;
+            Object status=preference.getConstructor(Context.class).newInstance(context);
+            preference.getMethod("setKey",String.class).invoke(status,key+"_availability");
+            preference.getMethod("setTitle",CharSequence.class).invoke(status,
+                    "Параметры сейчас недоступны");
+            preference.getMethod("setSelectable",boolean.class).invoke(status,false);
+            if(!Boolean.TRUE.equals(categoryType.getMethod("addPreference",preference).invoke(category,status)))
+                throw new IllegalStateException("Category rejected availability row");
             transaction.commit();
             Log.i(TAG,"menu section="+key+" stage=read-only-status");
         } catch(Exception | LinkageError problem) {
@@ -75,8 +72,15 @@ final class ProjectorMenuSections {
     }
 
     static void optional(String key,Work work) {
-        try {work.run();}
-        catch(Exception | LinkageError problem) {Log.w(TAG,"menu stage="+key,problem);}
+        available(key,()->{work.run();return true;});
+    }
+
+    static boolean available(String key,Check check) {
+        try {return check.run();}
+        catch(Exception | LinkageError problem) {
+            Log.w(TAG,"menu stage="+key,problem);
+            return false;
+        }
     }
 
     private void remove(Object category,String key) {

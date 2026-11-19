@@ -139,17 +139,16 @@ public final class OemInlinePreferencesHook {
     }
 
     private static void populateSources(Context context,Object category,Class<?> pref,boolean exact) {
-        boolean[] nativeControls=new boolean[2];
         ProjectorMenuSections.optional("hdmi-ports",()->OemHdmiPortInfo.install(context,category,pref));
         ProjectorMenuSections.optional("hdmi-edid",()->OemHdmiEdidHook.install(context,category,pref));
         ProjectorMenuSections.optional("hdmi-autoplay",()->OemHdmiAutoPlayHook.install(context,category,pref));
         ProjectorMenuSections.optional("hdmi-boot-source",()->OemPowerOnSourceHook.install(context,category,pref));
-        ProjectorMenuSections.optional("hdmi-boot-app",
-                ()->nativeControls[0]=OemPowerOnAppHook.install(context,category,pref));
-        ProjectorMenuSections.optional("hdmi-cec",
-                ()->nativeControls[1]=exact ? OemCecAutoOff8054.install(context,category,pref)
-                                           : OemHdmiCecHook.install(context,category,pref));
-        OemHardwareDelegatedSettings.installSourceLinks(context,category,pref,nativeControls[1],nativeControls[0]);
+        boolean hasBootApp=ProjectorMenuSections.available("hdmi-boot-app",
+                ()->OemPowerOnAppHook.install(context,category,pref));
+        boolean hasCec=ProjectorMenuSections.available("hdmi-cec",
+                ()->exact ? OemCecAutoOff8054.install(context,category,pref)
+                          : OemHdmiCecHook.install(context,category,pref));
+        OemHardwareDelegatedSettings.installSourceLinks(context,category,pref,hasCec,hasBootApp);
     }
 
     static void populateSound(Context context,Object category,Class<?> pref,Runnable soundModeChanged) throws Exception {
