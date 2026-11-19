@@ -66,14 +66,21 @@ final class OemProjectionSwitches implements View.OnAttachStateChangeListener,
                         case "onPreferenceChange":
                             if (!(args[1] instanceof Boolean)) return false;
                             ProjectionToggleState.Result result = state.change((Boolean) args[1]);
-                            row.render();
+                            try {
+                                row.render();
+                            } catch (ReflectiveOperationException error) {
+                                Log.w(TAG, "Projection switch render failed", error);
+                            }
                             for (Row other : rows) {
                                 if (other != row) refresh(other);
                             }
                             if (result != ProjectionToggleState.Result.CONFIRMED) {
-                                String message = result == ProjectionToggleState.Result.STALE
-                                        ? "Настройка уже изменилась. Проверьте новое значение"
-                                        : "Изменение не подтверждено";
+                                String message = "Изменение не подтверждено";
+                                if (result == ProjectionToggleState.Result.STALE) {
+                                    message = "Настройка уже изменилась. Проверьте новое значение";
+                                } else if (result == ProjectionToggleState.Result.OEM_REQUIRED) {
+                                    message = "Для выключения откройте штатные настройки проектора";
+                                }
                                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                             }
                             // This preference is non-persistent: only the OEM callback writes.

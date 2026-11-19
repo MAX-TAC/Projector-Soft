@@ -27,6 +27,10 @@ public final class Projection8054Policy {
                 && mayNavigate(activityEnabled,appEnabled,sameUid,exported,permissionGranted);
     }
 
+    static boolean canDisableMovement(String screen, String obstacle, String vertical) {
+        return "0".equals(screen) && "0".equals(obstacle) && "0".equals(vertical);
+    }
+
     static boolean mayUseOemToggle(String machine, boolean system, boolean enabled,
                                    long installedVersion, long expectedVersion) {
         return "8054".equals(machine) && system && enabled && installedVersion == expectedVersion;

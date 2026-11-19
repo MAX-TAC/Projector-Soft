@@ -5,9 +5,10 @@ final class ProjectionToggleState {
     interface Backend {
         String read() throws Exception;
         void write(boolean value) throws Exception;
+        default boolean canWrite(boolean value) throws Exception { return true; }
     }
 
-    enum Result { CONFIRMED, STALE, UNAVAILABLE, FAILED }
+    enum Result { CONFIRMED, STALE, UNAVAILABLE, OEM_REQUIRED, FAILED }
 
     private final Backend backend;
     private Boolean value;
@@ -38,6 +39,12 @@ final class ProjectionToggleState {
         if (before == null) return Result.UNAVAILABLE;
         if (!before.equals(displayed)) return Result.STALE;
         if (before == requested) return Result.CONFIRMED;
+
+        try {
+            if (!backend.canWrite(requested)) return Result.OEM_REQUIRED;
+        } catch (Exception error) {
+            return Result.OEM_REQUIRED;
+        }
 
         boolean completed = false;
         try {

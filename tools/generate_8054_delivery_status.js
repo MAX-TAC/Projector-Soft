@@ -14,6 +14,7 @@ set('NAV11','DELEGATED_OEM','Existing OEM update page link, deferred scope','No 
 set('NAV12','DELEGATED_OEM','Legacy intent aliases; compatibility diagnostics omitted from the normal 8054 menu','Test Settings key routing without disabling KuSettings');
 set('PIC01 PIC02 PIC03 PIC04 PIC05 PIC06 PIC07 PIC08 PIC09 PIC10 PIC11 PIC12','READ_ONLY','OemPicturePanel native stored-value rows; editing BLOCKED_BY_RUNTIME','Establish the active input/PQ context and the stock callback/limits before direct writes');
 set('SND01 SND02 SND03 SND04 SND05 SND06 SND07','DIRECT_MOD','OemSoundPanel / sound guards / OemKeyToneHook / OEM capability gates','SOUND_DEVICE_CHECKLIST_8054.md: mode/output/focus, readback and audible effect','DELEGATED_OEM');
+set('SND08','NOT_IMPLEMENTED','No MOD editor; exact Factory PEQ uses sound mode, band index and saveAudioIni','Require a stock consumer editor or proven output/profile, units and restoration');
 set('SND09','DELEGATED_OEM','Stock AdvancedFragment through sound_dap and the original Dolby Atmos capability set','Verify eligible Dolby type, native fragment navigation and output');
 set('SND10','DELEGATED_OEM','Stock DTSFragment with isAdvanceFunctionSupport and sound_dts_truvolumehd in its group','Verify DTS loudness row, actual effect and manual restore for supported output');
 set('SND11','DELEGATED_OEM','OEM SOUND_SETTINGS and stock AudioOutputActivity','Verify CEC/ARC/eARC and output-specific behavior');
@@ -31,7 +32,7 @@ set('PRJ01 PRJ04','DELEGATED_OEM','OemProjectionPanel: checked stock projection 
 set('PRJ08','DELEGATED_OEM','Stock projection entry; movement correction gates the obstacle toggle','Confirm sensor capability and behavior; stock keystone initialization clears dependent values when movement correction is off');
 set('PRJ09','DELEGATED_OEM','Stock projection entry; customer 0 opens AutomaticAdmissionActivity instead of the stock switch','Confirm customer ID, sensor support and geometry restore; keep stock route');
 set('PRJ02 PRJ03','DIRECT_MOD','OemFocusPreferences: two stock callbacks, stale-state gate and property readback on return','Verify autofocus behavior separately for startup and movement','DELEGATED_OEM');
-set('PRJ05','DIRECT_MOD','OemMoveKeystonePreference: stock callback bound to original layout, stale-state gate and property readback on return','Verify OEM view inflation and motion correction without changing manual correction','DELEGATED_OEM');
+set('PRJ05','DIRECT_MOD','OemMoveKeystonePreference: stock callback with original layout, stale-state gate and all-dependents-off guard for disabling','Verify storage and OEM fallback separately; active or unknown dependents require the stock UI','DELEGATED_OEM');
 set('PRJ06','DELEGATED_OEM','Separate FourCornerActivity via the verified stock FOUR_CORNER action','Verify opening and return without geometry change, D-pad and manual restore');
 set('PRJ07','DELEGATED_OEM','Separate HVKeystoneActivity via the verified stock HV action','Verify axis controls, D-pad/Back and restore shared geometry');
 set('PRJ10','DELEGATED_OEM','Separate DigitalZoomActivity via the verified stock DIGITAL_ZOOM action','Verify zoom bounds, shared geometry, Back/D-pad and restore');

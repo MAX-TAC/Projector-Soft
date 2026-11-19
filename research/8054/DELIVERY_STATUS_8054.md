@@ -45,7 +45,7 @@ DIRECT_MOD 22; DELEGATED_OEM 22; READ_ONLY 19; NOT_IMPLEMENTED 20; BLOCKED 11; H
 | SND05 | Автогромкость | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | SOUND_DEVICE_CHECKLIST_8054.md: mode/output/focus, readback and audible effect |
 | SND06 | Звуки интерфейса | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | SOUND_DEVICE_CHECKLIST_8054.md: mode/output/focus, readback and audible effect |
 | SND07 | 5-полосный EQ | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | SOUND_DEVICE_CHECKLIST_8054.md: mode/output/focus, readback and audible effect |
-| SND08 | 13-полосный PEQ | NOT_IMPLEMENTED | — | — | — | Масштаб gain/Q, влияние sound mode, hardware support, выходы |
+| SND08 | 13-полосный PEQ | NOT_IMPLEMENTED | — | — | — | Require a stock consumer editor or proven output/profile, units and restoration |
 | SND09 | Dolby DAP | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify eligible Dolby type, native fragment navigation and output |
 | SND10 | DTS Loudness | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify DTS loudness row, actual effect and manual restore for supported output |
 | SND11 | ARC/eARC | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify CEC/ARC/eARC and output-specific behavior |
@@ -65,7 +65,7 @@ DIRECT_MOD 22; DELEGATED_OEM 22; READ_ONLY 19; NOT_IMPLEMENTED 20; BLOCKED 11; H
 | PRJ02 | Автофокус при включении | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify autofocus behavior separately for startup and movement |
 | PRJ03 | Автофокус при перемещении | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify autofocus behavior separately for startup and movement |
 | PRJ04 | Ручная фокусировка | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm placement and focus return through the stock UI |
-| PRJ05 | Автоматическая трапеция | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify OEM view inflation and motion correction without changing manual correction |
+| PRJ05 | Автоматическая трапеция | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify storage and OEM fallback separately; active or unknown dependents require the stock UI |
 | PRJ06 | 4-угольная коррекция | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify opening and return without geometry change, D-pad and manual restore |
 | PRJ07 | Горизонтальная/вертикальная трапеция | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify axis controls, D-pad/Back and restore shared geometry |
 | PRJ08 | Обнаружение препятствия | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm sensor capability and behavior; stock keystone initialization clears dependent values when movement correction is off |

@@ -9,12 +9,19 @@ public final class ProjectionToggleStateTest {
         boolean failRead;
         boolean failWrite;
         boolean apply = true;
+        boolean allowed = true;
+        boolean failGate;
         boolean loseReadback;
         int writes;
 
         @Override public String read() throws Exception {
             if (failRead) throw new Exception("getter failed");
             return available ? persisted : null;
+        }
+
+        @Override public boolean canWrite(boolean value) throws Exception {
+            if (failGate) throw new Exception("dependency getter failed");
+            return allowed;
         }
 
         @Override public void write(boolean value) throws Exception {
@@ -56,6 +63,21 @@ public final class ProjectionToggleStateTest {
         check(state.change(true) == UNAVAILABLE && stock.writes == 0, "failed getter blocks writes");
     }
 
+    private static void delegatesWithUnavailableDependencies() {
+        Stock stock = new Stock();
+        stock.persisted = "1";
+        ProjectionToggleState state = new ProjectionToggleState(stock);
+        state.refresh();
+        stock.allowed = false;
+        check(state.change(false) == OEM_REQUIRED && stock.writes == 0, "active dependent uses OEM");
+        stock.allowed = true;
+        stock.failGate = true;
+        check(state.change(false) == OEM_REQUIRED && stock.writes == 0, "dependency read failure uses OEM");
+        check(Boolean.TRUE.equals(state.value()), "retain observed value when blocked by OEM gate");
+        stock.failGate = false;
+        check(state.change(false) == CONFIRMED && stock.writes == 1, "all dependents confirmed off");
+    }
+
     private static void setterAndReadbackFailures() {
         Stock stock = new Stock();
         ProjectionToggleState state = new ProjectionToggleState(stock);
@@ -80,6 +102,7 @@ public final class ProjectionToggleStateTest {
         staleAndReopen();
         unavailableAndInvalid();
         setterAndReadbackFailures();
+        delegatesWithUnavailableDependencies();
         System.out.println("PASS projection switch snapshots, stale writes, failure and readback");
     }
 }
