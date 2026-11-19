@@ -1,0 +1,33 @@
+name: Trace exact 8054 settings entry
+on:
+  push:
+    branches: [audit/8054-tvsettingsplus-20261117]
+    paths: ['tools/trace_8054_menu_entry.py', '.github/workflows/trace-8054-menu-entry.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  trace:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Decode only pinned STOCK TvSettingsPlus on the runner
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/14430334607/zip" > /tmp/original-kit.zip
+          echo '3936f22e740b5126398e55984f49fb7f6622676ff0226e353519825faecf33ba  /tmp/original-kit.zip' | sha256sum -c -
+          unzip -p /tmp/original-kit.zip assets/STOCK-TvSettingsPlus-8054.apk > /tmp/stock.apk
+          echo 'f8e0c6fe0f46e7eb8db651c31d85ef8b32a769b37e4dd0f96ed19a64725d74ee  /tmp/stock.apk' | sha256sum -c -
+          curl -fsSL --retry 3 https://github.com/iBotPeaches/Apktool/releases/download/v2.11.1/apktool_2.11.1.jar -o /tmp/apktool.jar
+          java -jar /tmp/apktool.jar d -r /tmp/stock.apk -o /tmp/stock-ui
+          python3 tools/trace_8054_menu_entry.py /tmp/stock-ui
+          AAPT="$(find "$ANDROID_HOME/build-tools" -type f -name aapt | sort -Vr | head -n 1)"
+          "$AAPT" dump xmltree /tmp/stock.apk AndroidManifest.xml > /tmp/stock-manifest-tree.txt
+          grep -n -E -C 6 'android.settings.SETTINGS|com.android.tv.settings.MainSettings|uicustom.MainActivity' /tmp/stock-manifest-tree.txt
