@@ -234,7 +234,7 @@ def collect(kit, serial, destination, adb='adb', aapt='aapt', apksigner='apksign
             package['paths'] = paths
             for namespace, key in INACTIVITY:
                 evidence = namespace + '_' + key
-                capture(evidence, ['shell', 'settings', 'get', namespace, key])
+                capture(evidence, ['shell', 'settings', 'get', '--user', '0', namespace, key])
                 raw = value(evidence)
                 valid = raw == 'null' or (bool(re.fullmatch(r'0|-?[1-9][0-9]{0,9}', raw))
                                           and -(2**31) <= int(raw) < 2**31)

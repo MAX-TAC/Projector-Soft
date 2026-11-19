@@ -75,9 +75,13 @@ jobs:
           path: /tmp/exact8054-kit/
           if-no-files-found: error
           retention-days: 90
-      - name: Record delivered ZIP digest
+      - name: Verify delivered ZIP bytes and record digest
         env:
+          ARTIFACT_ID: ${{ steps.delivery.outputs.artifact-id }}
           ZIP_SHA256: ${{ steps.delivery.outputs.artifact-digest }}
           ARTIFACT_URL: ${{ steps.delivery.outputs.artifact-url }}
         run: |
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$ARTIFACT_ID/zip" > "$INPUT/delivery.zip"
+          printf '%s  %s\n' "$ZIP_SHA256" "$INPUT/delivery.zip" | sha256sum --check
           printf 'Archive SHA-256: `%s`\n\n[Verified kit](%s)\n' "$ZIP_SHA256" "$ARTIFACT_URL" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '\nOFFLINE_KIT_VERIFIED · STOCK_DIAGNOSTICS_PREPARED · ROLLBACK_NOT_VERIFIED · BUILT_UNTESTED · NOT_READY_FOR_DEVICE_INSTALL\n' >> "$GITHUB_STEP_SUMMARY"

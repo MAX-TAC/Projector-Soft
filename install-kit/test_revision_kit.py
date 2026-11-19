@@ -73,12 +73,12 @@ class RevisionKitTests(unittest.TestCase):
             return 0, 'pulled', ''
         self.assertEqual(command[0], 'shell')
         shell = command[1:]
-        read_settings = [['settings', 'get', *item] for item in preflight.INACTIVITY]
+        read_settings = [['settings', 'get', '--user', '0', *item] for item in preflight.INACTIVITY]
         self.assertIn(shell, list(preflight.commands().values()) + read_settings)
         self.assertFalse(set(shell) & {'install', 'uninstall', 'uninstall-system-updates', 'root',
                                        'remount', 'reboot', 'reset', 'put', 'delete', 'disable', 'start'})
         if shell in read_settings:
-            return 0, 'null' if shell[2:] == ['system', 'sleep_timeout'] else '30000', ''
+            return 0, 'null' if shell[4:] == ['system', 'sleep_timeout'] else '30000', ''
         if shell[:2] == ['dumpsys', 'package']:
             return 0, ('pkgFlags=[ SYSTEM ]\nversionCode=1\n'
                        'User 0: installed=true hidden=false suspended=false enabled=0\n'
@@ -156,7 +156,7 @@ class RevisionKitTests(unittest.TestCase):
                 (('shell', 'pm', 'path', kit_common.PACKAGE), ''),
                 (('shell', 'pm', 'help'), (1, '', 'Permission denied')),
                 (('shell', 'dumpsys', 'activity', 'services', 'com.coolux.source'), 'TimeService in stale description'),
-                (('shell', 'settings', 'get', 'secure', 'sleep_timeout'), 'unknown'),
+                (('shell', 'settings', 'get', '--user', '0', 'secure', 'sleep_timeout'), 'unknown'),
                 (('shell', 'dumpsys', 'package', kit_common.PACKAGE), (
                      'pkgFlags=[ SYSTEM UPDATED_SYSTEM_APP ]\nversionCode=1\n'
                      'User 0: installed=true hidden=false suspended=false enabled=0\nsharedUser=system'))):
