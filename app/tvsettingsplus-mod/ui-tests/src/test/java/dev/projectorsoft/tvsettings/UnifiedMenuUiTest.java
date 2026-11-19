@@ -65,7 +65,8 @@ public class UnifiedMenuUiTest {
             assertTrue(page+" row is focused",content.isFocused());
             controller.pause().resume();
             shadowOf(Looper.getMainLooper()).idle();
-            assertTrue(page+" replacement row restores focus",activity.findViewById(content.getId()).isFocused());
+            assertSame(page+" section preserves the row View",content,activity.findViewById(content.getId()));
+            assertTrue(page+" row retains its focus",content.isFocused());
             activity.onBackPressed();
             assertTrue(activity.isFinishing());
             controller.pause().stop().destroy();

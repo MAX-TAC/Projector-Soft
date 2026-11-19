@@ -116,7 +116,10 @@ public abstract class ModSettingsActivity extends Activity {
 
     private void showContent(int focus) {
         heading.setText(selected.title);
-        content.removeAllViews();
+        // Section rows keep their View identity while live values are refreshed.
+        // Replacing the focused child on resume leaves ScrollView free to take focus.
+        boolean build=page()==null || content.getChildCount()==0;
+        if(build)content.removeAllViews();
         int index=0;
         if(page()==null) {
             addRow(index++,"Открыть раздел","",()->openPage(selected));
@@ -131,9 +134,11 @@ public abstract class ModSettingsActivity extends Activity {
             }
             for(ModMenuCatalog.Row spec:ModMenuCatalog.rows(selected)) {
                 if(spec.kind==ModMenuCatalog.Kind.GROUP) {
-                    TextView group=text(spec.title,16,SECONDARY);
-                    group.setPadding(dp(12),dp(12),dp(12),dp(4));
-                    content.addView(group);
+                    if(build) {
+                        TextView group=text(spec.title,16,SECONDARY);
+                        group.setPadding(dp(12),dp(12),dp(12),dp(4));
+                        content.addView(group);
+                    }
                 } else {
                     ModMenuBackend.State state=backend.state(spec,()->{
                         if(!isFinishing() && !isDestroyed())showContent(focusedId());
@@ -156,16 +161,24 @@ public abstract class ModSettingsActivity extends Activity {
     }
 
     private void addRow(int index,String title,String detail,Runnable action) {
-        TextView view=rowText(title,detail);
-        view.setId(ROW_BASE+index);
+        int id=ROW_BASE+index;
+        TextView view=content.findViewById(id);
+        if(view==null) {
+            view=rowText(title,detail);
+            view.setId(id);
+            content.addView(view,rowParams());
+        } else {
+            view.setText(detail.isEmpty()?title:title+"\n"+detail);
+        }
         view.setNextFocusLeftId(NAV_BASE+selected.ordinal());
         if(action==null){
+            view.setOnClickListener(null);
             view.setClickable(false);
             view.setTextColor(SECONDARY);
         } else {
+            view.setTextColor(Color.WHITE);
             view.setOnClickListener(ignored->action.run());
         }
-        content.addView(view,rowParams());
     }
 
     private void openPage(ModMenuCatalog.Page target) {
