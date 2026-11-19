@@ -33,6 +33,7 @@ public abstract class ModSettingsActivity extends Activity {
     private TextView heading;
     private ModMenuBackend backend;
     private int restoreFocus=View.NO_ID;
+    private int lastFocused=View.NO_ID;
 
     /** Subclasses select a fixed page. The root previews all pages. */
     abstract ModMenuCatalog.Page page();
@@ -83,7 +84,9 @@ public abstract class ModSettingsActivity extends Activity {
             entry.setId(NAV_BASE+item.ordinal());
             entry.setOnClickListener(view->openPage(item));
             entry.setOnFocusChangeListener((view,focused)->{
-                if(focused && page()==null && selected!=item){
+                if(!focused)return;
+                lastFocused=view.getId();
+                if(page()==null && selected!=item){
                     selected=item;
                     showContent(View.NO_ID);
                     right.scrollTo(0,0);
@@ -166,6 +169,9 @@ public abstract class ModSettingsActivity extends Activity {
         if(view==null) {
             view=rowText(title,detail);
             view.setId(id);
+            view.setOnFocusChangeListener((row,focused)->{
+                if(focused)lastFocused=row.getId();
+            });
             content.addView(view,rowParams());
         } else {
             view.setText(detail.isEmpty()?title:title+"\n"+detail);
@@ -232,8 +238,9 @@ public abstract class ModSettingsActivity extends Activity {
     }
 
     private int focusedId() {
-        View focused=getCurrentFocus();
-        return focused==null?View.NO_ID:focused.getId();
+        View focused=content.findFocus();
+        if(focused==null)focused=nav.findFocus();
+        return focused==null || focused.getId()==View.NO_ID?lastFocused:focused.getId();
     }
 
     private TextView rowText(String label,String detail) {
