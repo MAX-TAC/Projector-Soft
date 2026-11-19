@@ -22,8 +22,8 @@ final class OemSoundDelayPanel implements View.OnAttachStateChangeListener,
     private static final String GROUP="projectorsoft_sound_category";
     private static final WeakHashMap<Object,WeakReference<OemSoundDelayPanel>> PANELS=new WeakHashMap<>();
     private final List<Row> rows=new ArrayList<>();
-    private View root;
-    private boolean attached;
+    private WeakReference<View> root=new WeakReference<>(null);
+    private ViewTreeObserver observer;
 
     static void install(Context context,Object group,Class<?> pref) {
         if (!"8054".equals(OemHdmiPortInfo.machineId())) return;
@@ -58,7 +58,7 @@ final class OemSoundDelayPanel implements View.OnAttachStateChangeListener,
     }
 
     static void bind(Object fragment,View view) {
-        if (view==null || !"8054".equals(OemHdmiPortInfo.machineId())) return;
+        if (fragment==null || !"8054".equals(OemHdmiPortInfo.machineId())) return;
         try {
             Object group=fragment.getClass().getMethod("findPreference",CharSequence.class).invoke(fragment,GROUP);
             WeakReference<OemSoundDelayPanel> reference=PANELS.get(group);
@@ -76,32 +76,34 @@ final class OemSoundDelayPanel implements View.OnAttachStateChangeListener,
     }
 
     private void rebind(View view) {
-        if (view==root) return;
-        if (root!=null) {
-            onViewDetachedFromWindow(root);
-            root.removeOnAttachStateChangeListener(this);
+        View previous=root.get();
+        if (view==previous) return;
+        if (previous!=null) {
+            onViewDetachedFromWindow(previous);
+            previous.removeOnAttachStateChangeListener(this);
         }
-        root=view;
+        root=new WeakReference<>(view);
+        if(view==null)return;
         view.addOnAttachStateChangeListener(this);
         if (view.isAttachedToWindow()) onViewAttachedToWindow(view);
     }
 
     @Override public void onViewAttachedToWindow(View view) {
-        if (view!=root || attached) return;
-        attached=true;
-        view.getViewTreeObserver().addOnWindowFocusChangeListener(this);
+        if (view!=root.get() || observer!=null) return;
+        observer=view.getViewTreeObserver();
+        observer.addOnWindowFocusChangeListener(this);
         refresh();
     }
 
     @Override public void onViewDetachedFromWindow(View view) {
-        if (view!=root || !attached) return;
-        attached=false;
-        ViewTreeObserver observer=view.getViewTreeObserver();
-        if (observer.isAlive()) observer.removeOnWindowFocusChangeListener(this);
+        if (view!=root.get() || observer==null) return;
+        ViewTreeObserver active=observer.isAlive() ? observer : view.getViewTreeObserver();
+        if (active.isAlive()) active.removeOnWindowFocusChangeListener(this);
+        observer=null;
     }
 
     @Override public void onWindowFocusChanged(boolean focused) {
-        if (focused && attached) refresh();
+        if (focused && observer!=null) refresh();
     }
 
     private void refresh() {

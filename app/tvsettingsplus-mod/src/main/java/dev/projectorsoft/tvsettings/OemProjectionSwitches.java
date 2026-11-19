@@ -20,7 +20,7 @@ final class OemProjectionSwitches implements View.OnAttachStateChangeListener,
     private static final WeakHashMap<Object, WeakReference<OemProjectionSwitches>> PANELS =
             new WeakHashMap<>();
     private final List<Row> rows = new ArrayList<>();
-    private View root;
+    private WeakReference<View> root = new WeakReference<>(null);
     private ViewTreeObserver observer;
 
     static void add(Context context, Object group, Class<?> pref, String key, String title,
@@ -36,7 +36,7 @@ final class OemProjectionSwitches implements View.OnAttachStateChangeListener,
     }
 
     static void bind(Object fragment, View root) {
-        if (root == null || !"8054".equals(OemHdmiPortInfo.machineId())) return;
+        if (fragment == null || !"8054".equals(OemHdmiPortInfo.machineId())) return;
         try {
             Object group = fragment.getClass().getMethod("findPreference", CharSequence.class)
                     .invoke(fragment, GROUP);
@@ -100,25 +100,27 @@ final class OemProjectionSwitches implements View.OnAttachStateChangeListener,
     }
 
     private void rebind(View view) {
-        if (view == root) return;
-        if (root != null) {
-            onViewDetachedFromWindow(root);
-            root.removeOnAttachStateChangeListener(this);
+        View previous = root.get();
+        if (view == previous) return;
+        if (previous != null) {
+            onViewDetachedFromWindow(previous);
+            previous.removeOnAttachStateChangeListener(this);
         }
-        root = view;
+        root = new WeakReference<>(view);
+        if (view == null) return;
         view.addOnAttachStateChangeListener(this);
         if (view.isAttachedToWindow()) onViewAttachedToWindow(view);
     }
 
     @Override public void onViewAttachedToWindow(View view) {
-        if (view != root || observer != null) return;
+        if (view != root.get() || observer != null) return;
         observer = view.getViewTreeObserver();
         observer.addOnWindowFocusChangeListener(this);
         refresh();
     }
 
     @Override public void onViewDetachedFromWindow(View view) {
-        if (view != root || observer == null) return;
+        if (view != root.get() || observer == null) return;
         if (observer.isAlive()) observer.removeOnWindowFocusChangeListener(this);
         else if (view.getViewTreeObserver().isAlive()) {
             view.getViewTreeObserver().removeOnWindowFocusChangeListener(this);

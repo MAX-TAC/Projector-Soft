@@ -152,6 +152,7 @@ jobs:
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/PicturePanelState.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/PanelCacheReadout.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemPanelInfoHook.java \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemProjectionSwitches.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/CheckedPreferenceLaunch.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemHdmiAutoPlayHook.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/ProjectionToggleState.java \

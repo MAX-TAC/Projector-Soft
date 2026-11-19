@@ -70,6 +70,33 @@ public final class MenuIntegrationAdapterTest {
         check(replacement.count()==0 && replacement.getViewTreeObserver().count()==0,"teardown leaked");
     }
 
+    private static void projectionLifecycle(Context context) throws Exception {
+        Fragment fragment=new Fragment(context);
+        PreferenceGroup category=new PreferenceGroup(context);
+        category.setKey("projectorsoft_placement_category");
+        fragment.group.addPreference(category);
+        String[] stored={"0"};
+        int[] writes={0};
+        OemProjectionSwitches.add(context,category,Preference.class,"move","Move",1,
+                new ProjectionToggleState.Backend() {
+                    public String read(){return stored[0];}
+                    public void write(boolean value){writes[0]++;}
+                });
+        View first=new View(context);
+        first.setAttached(true);
+        OemProjectionSwitches.bind(fragment,first);
+        View second=new View(context);
+        second.setAttached(true);
+        stored[0]="1";
+        OemProjectionSwitches.bind(fragment,second);
+        SwitchPreference row=(SwitchPreference)fragment.findPreference("move");
+        check(row.checked && first.count()==0 && first.getViewTreeObserver().count()==0,
+                "projection rebind retains stale view or cached value");
+        OemProjectionSwitches.bind(fragment,null);
+        check(second.count()==0 && second.getViewTreeObserver().count()==0 && writes[0]==0,
+                "projection teardown must release view with zero writes");
+    }
+
     private static void launch(Context context) throws Exception {
         Preference row=new Preference(context);
         Intent intent=new Intent("settings").setComponent(new ComponentName("vendor","Screen"));
@@ -116,8 +143,9 @@ public final class MenuIntegrationAdapterTest {
     public static void main(String[] args) throws Exception {
         Context context=new Context();
         panelLifecycle(context);
+        projectionLifecycle(context);
         launch(context);
         autoplay(context);
-        System.out.println("PASS production PIC18 lifecycle, checked navigation and HDMI autoplay");
+        System.out.println("PASS production PIC18/projection lifecycle, checked navigation and HDMI autoplay");
     }
 }
