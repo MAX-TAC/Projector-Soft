@@ -4,12 +4,15 @@ import sys
 from pathlib import Path
 
 CLASSES = {
-    'com/android/tv/settings/MainSettings': r'get.*Fragment|onCreate|onNewIntent',
+    'com/android/tv/settings/MainSettings': r'.',
     'com/android/tv/settings/MainFragment': r'onCreate(View|Preferences)?|onViewCreated|onResume',
     'com/android/tv/settings/TvSettingsActivity': r'onCreate|onNewIntent|Fragment',
     'com/android/tv/settings/SettingsPreferenceFragment': r'onCreate|onViewCreated|Preference',
-    'com/android/tv/settings/uicustom/MainActivity': r'onCreate|onNewIntent|initView|switchPage',
-    'com/android/tv/settings/uicustom/fragment/general/GeneralFragment': r'initView',
+    'com/android/tv/settings/uicustom/MainActivity': r'onCreate|onNewIntent|initView|initData|switchPage',
+    'com/android/tv/settings/uicustom/fragment/general/GeneralFragment': r'Layout|initView',
+    'com/android/tv/settings/uicustom/fragment/general/GeneralFragment$4': r'onClick',
+    'com/android/tv/settings/uicustom/floatmenu/FloatMenuService': r'on(StartCommand|Bind)|command',
+    'com/android/tv/settings/uicustom/floatmenu/controller/general/GeneralSubMenuController$4': r'onClick',
 }
 
 root = Path(sys.argv[1])
@@ -24,7 +27,7 @@ for suffix, selectors in CLASSES.items():
         declaration = body.splitlines()[0]
         if re.search(selectors, declaration):
             print('\n'.join(line for line in body.splitlines()
-                            if '.method ' in line or re.search(r'invoke-|new-instance|const-string|return|^    if-|^    iget|^    sget', line)))
+                            if '.method ' in line or re.search(r'invoke-|new-instance|const[- /]|return|^    if-|^    iget|^    sget', line)))
 
 for file in root.glob('smali*/**/GeneralSubMenuController.smali'):
     text = file.read_text(encoding='utf-8')

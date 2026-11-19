@@ -31,3 +31,11 @@ jobs:
           AAPT="$(find "$ANDROID_HOME/build-tools" -type f -name aapt | sort -Vr | head -n 1)"
           "$AAPT" dump xmltree /tmp/stock.apk AndroidManifest.xml > /tmp/stock-manifest-tree.txt
           grep -n -E -C 6 'android.settings.SETTINGS|com.android.tv.settings.MainSettings|uicustom.MainActivity' /tmp/stock-manifest-tree.txt
+          sed -n '502,575p' /tmp/stock-manifest-tree.txt
+          while read -r layout; do
+            "$AAPT" dump xmltree /tmp/stock.apk "$layout" > /tmp/layout.txt
+            if grep -q 'tciv_general_screensaver_settings' /tmp/layout.txt; then
+              echo "$layout"
+              cat /tmp/layout.txt
+            fi
+          done < <(zipinfo -1 /tmp/stock.apk 'res/layout/*general*.xml')
