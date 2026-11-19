@@ -149,7 +149,9 @@ public abstract class ModSettingsActivity extends Activity {
         }
         if(focus!=View.NO_ID) {
             View target=findViewById(focus);
-            if(target!=null)target.requestFocus();
+            if(target!=null && !target.requestFocus())target.post(()->{
+                if(target.isAttachedToWindow())target.requestFocus();
+            });
         }
     }
 

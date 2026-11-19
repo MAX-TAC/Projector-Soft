@@ -2,6 +2,7 @@ package dev.projectorsoft.tvsettings;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Looper;
 import android.provider.Settings;
 import android.view.KeyEvent;
 import android.view.View;
@@ -45,7 +46,7 @@ public class UnifiedMenuUiTest {
                 .putExtra("component","com.my.settings").putExtra("hdmi","HW7");
         for(ModMenuCatalog.Page page:ModMenuCatalog.Page.values()) {
             ActivityController<? extends Activity> controller=Robolectric
-                    .buildActivity(ModSettingsActivity.activityFor(page),crafted).setup();
+                    .buildActivity(ModSettingsActivity.activityFor(page),crafted).setup().windowFocusChanged(true);
             Activity activity=controller.get();
             List<String> labels=new ArrayList<>();
             gather(activity.findViewById(android.R.id.content),labels);
@@ -59,9 +60,12 @@ public class UnifiedMenuUiTest {
             TextView content=activity.findViewById(1000);
             assertEquals(100+page.ordinal(),content.getNextFocusLeftId());
             assertEquals(1000,activity.findViewById(100+page.ordinal()).getNextFocusRightId());
-            content.requestFocus();
+            shadowOf(Looper.getMainLooper()).idle();
+            assertTrue(page+" row receives focus",content.requestFocus());
+            assertTrue(page+" row is focused",content.isFocused());
             controller.pause().resume();
-            assertEquals(content.getId(),activity.getCurrentFocus().getId());
+            shadowOf(Looper.getMainLooper()).idle();
+            assertTrue(page+" replacement row restores focus",activity.findViewById(content.getId()).isFocused());
             activity.onBackPressed();
             assertTrue(activity.isFinishing());
             controller.pause().stop().destroy();

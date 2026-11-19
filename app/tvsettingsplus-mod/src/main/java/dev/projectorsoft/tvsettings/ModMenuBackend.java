@@ -235,11 +235,13 @@ final class ModMenuBackend {
             if(Boolean.TRUE.equals(accepted)) {
                 if(value instanceof String)row.getClass().getMethod("setValue",String.class).invoke(row,value);
                 else if(value instanceof Boolean)row.getClass().getMethod("setChecked",boolean.class).invoke(row,value);
-            } else {
+            } else if(!"projection_light".equals(key)) {
                 Toast.makeText(activity,"Значение не принято. Данные перечитаны.",Toast.LENGTH_SHORT).show();
             }
         });
         activity.getWindow().getDecorView().post(refresh);
+        if("projection_light".equals(key))
+            activity.getWindow().getDecorView().postDelayed(refresh,3200);
     }
 
     private boolean supportedIntent(Intent intent){
