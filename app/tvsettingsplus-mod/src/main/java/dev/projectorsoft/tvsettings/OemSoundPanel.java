@@ -7,6 +7,11 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewTreeObserver;
+import java.lang.ref.WeakReference;
+import java.util.Arrays;
+import java.util.WeakHashMap;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
@@ -14,6 +19,11 @@ import java.util.List;
 import java.util.Map;
 
 public final class OemSoundPanel {
+    private static final WeakHashMap<Object,WeakReference<OemSoundPanel>> PANELS=new WeakHashMap<>();
+    private static final WeakHashMap<Object,WeakReference<FocusBinding>> BINDINGS=new WeakHashMap<>();
+    private boolean snapshotValid;
+    private List<Integer> volumeSnapshot;
+    private String autoVolumeSnapshot;
     private final Context context;
     private final Object group;
     private final Class<?> preference;
@@ -25,7 +35,9 @@ public final class OemSoundPanel {
         this.context=context;this.group=group;this.preference=preference;
     }
     public static void install(Context context,Object group,Class<?> preference) throws Exception {
-        new OemSoundPanel(context,group,preference).install();
+        OemSoundPanel panel=new OemSoundPanel(context,group,preference);
+        panel.install();
+        PANELS.put(group,new WeakReference<>(panel));
     }
     private void install() throws Exception {
         OemHardwareDelegatedSettings.installSoundLink(context,group,preference);
@@ -55,13 +67,26 @@ public final class OemSoundPanel {
     }
 
     private void refresh() throws Exception {
-        OemSoundDelayPanel.refresh(group);
+        refresh(true);
+    }
+
+    private void refresh(boolean force) throws Exception {
+        if(force)OemSoundDelayPanel.refresh(group);
+        Map<String,String> previous=state.current();
         boolean stable=false;
         try {
             stable=state.refresh(key->Settings.Global.getString(context.getContentResolver(),key));
         } catch(RuntimeException unavailable) {
             Log.w("TvSettingsPlusMOD","Sound snapshot unavailable",unavailable);
         }
+        List<Integer> volume=volumeContext();
+        String autoVolume=OemInlinePreferencesHook.readAutoVolume(context);
+        if(!force && stable==snapshotValid && previous.equals(state.current())
+                && java.util.Objects.equals(volume,volumeSnapshot)
+                && java.util.Objects.equals(autoVolume,autoVolumeSnapshot)) return;
+        snapshotValid=stable;
+        volumeSnapshot=volume;
+        autoVolumeSnapshot=autoVolume;
         Class<?> type = group.getClass();
         Method child = type.getMethod("getPreference",int.class);
         Method remove = type.getMethod("removePreference",preference);
@@ -78,7 +103,80 @@ public final class OemSoundPanel {
             Log.w("TvSettingsPlusMOD","Media volume unavailable",ex);
         }
         if(stable)try {OemInlinePreferencesHook.populateSound(context,group,preference,this::refreshAfterModeChange);}
-        catch(Exception ex){Log.w("TvSettingsPlusMOD","Partial sound UI; keeping OEM link and refresh",ex);}
+        catch(Exception ex){
+            snapshotValid=false;
+            Log.w("TvSettingsPlusMOD","Partial sound UI; keeping OEM link and refresh",ex);
+        }
+    }
+
+    private List<Integer> volumeContext() {
+        try {
+            if (!"8054".equals(OemHdmiPortInfo.machineId())
+                    || context.checkSelfPermission(android.Manifest.permission.MODIFY_AUDIO_SETTINGS)
+                        != PackageManager.PERMISSION_GRANTED) return null;
+            AudioManager audio=context.getSystemService(AudioManager.class);
+            if(audio==null||audio.isVolumeFixed())return null;
+            int stream=AudioManager.STREAM_MUSIC;
+            return Arrays.asList(audio.getStreamMinVolume(stream),audio.getStreamMaxVolume(stream),
+                    audio.getStreamVolume(stream));
+        } catch (RuntimeException unavailable) { return null; }
+    }
+
+    static void bind(Object fragment,View view) {
+        WeakReference<FocusBinding> ref=BINDINGS.get(fragment);
+        FocusBinding previous=ref==null ? null : ref.get();
+        try {
+            Object group=view==null ? null : fragment.getClass().getMethod("findPreference",CharSequence.class)
+                    .invoke(fragment,"projectorsoft_sound_category");
+            WeakReference<OemSoundPanel> panelRef=PANELS.get(group);
+            OemSoundPanel panel=panelRef==null ? null : panelRef.get();
+            if(previous!=null && previous.view==view && previous.panel==panel)return;
+            if(previous!=null)previous.close();
+            BINDINGS.remove(fragment);
+            if(panel==null)return;
+            FocusBinding binding=new FocusBinding(view,panel);
+            view.addOnAttachStateChangeListener(binding);
+            BINDINGS.put(fragment,new WeakReference<>(binding));
+            if(view.isAttachedToWindow())binding.onViewAttachedToWindow(view);
+        } catch (Exception | LinkageError unavailable) {
+            Log.w("TvSettingsPlusMOD","Sound view binding unavailable",unavailable);
+        }
+    }
+
+    private static final class FocusBinding implements View.OnAttachStateChangeListener,
+            ViewTreeObserver.OnWindowFocusChangeListener {
+        final View view;
+        final OemSoundPanel panel;
+        ViewTreeObserver observer;
+
+        FocusBinding(View view,OemSoundPanel panel){this.view=view;this.panel=panel;}
+
+        @Override public void onViewAttachedToWindow(View view) {
+            if(observer!=null)return;
+            observer=view.getViewTreeObserver();
+            observer.addOnWindowFocusChangeListener(this);
+            onWindowFocusChanged(true);
+        }
+
+        @Override public void onViewDetachedFromWindow(View view) {
+            if(observer==null)return;
+            ViewTreeObserver active=observer.isAlive() ? observer : view.getViewTreeObserver();
+            if(active.isAlive())active.removeOnWindowFocusChangeListener(this);
+            observer=null;
+        }
+
+        @Override public void onWindowFocusChanged(boolean focused) {
+            if(!focused||observer==null)return;
+            try {panel.refresh(false);}
+            catch(Exception | LinkageError unavailable){
+                Log.w("TvSettingsPlusMOD","Sound readback unavailable",unavailable);
+            }
+        }
+
+        void close(){
+            onViewDetachedFromWindow(view);
+            view.removeOnAttachStateChangeListener(this);
+        }
     }
 
     private void addMediaVolume() throws Exception {

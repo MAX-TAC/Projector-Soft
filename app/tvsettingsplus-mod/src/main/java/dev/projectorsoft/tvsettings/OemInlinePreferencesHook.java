@@ -195,7 +195,10 @@ public final class OemInlinePreferencesHook {
                         try {OemSoundDelayPanel.bind(fragment,root);}
                         finally {
                             try {OemProjectionSwitches.bind(fragment,root);}
-                            finally {OemPanelInfoHook.bind(fragment,root);}
+                            finally {
+                                try {OemPanelInfoHook.bind(fragment,root);}
+                                finally {OemSoundPanel.bind(fragment,root);}
+                            }
                         }
                     }
                 }
@@ -262,6 +265,13 @@ public final class OemInlinePreferencesHook {
         }
     }
 
+    static String readAutoVolume(Context context) {
+        try {
+            String key=vendorKey("KEY_SOUND_AUTO_VOLUME_CONTROL");
+            return key==null ? null : Settings.Global.getString(context.getContentResolver(),key);
+        } catch (RuntimeException unavailable) { return null; }
+    }
+
     private static String vendorKey(String fieldName) {
         try {
             Class<?> cls=Class.forName(
@@ -305,7 +315,8 @@ public final class OemInlinePreferencesHook {
                     int target=(Boolean)args[1]?1:0;
                     String before=Settings.Global.getString(resolver,oemKey);
                     if (!displayed[0].equals(before)) return false;
-                    if (oemKey.startsWith("sound_") && !openedModeMatches(resolver,openedMode)) return false;
+                    if (!oemKey.startsWith("picture_") && !oemKey.startsWith("tv_picture_")
+                            && !openedModeMatches(resolver,openedMode)) return false;
                     if (before.equals(Integer.toString(target))) return true;
                     if (!Settings.Global.putInt(resolver,oemKey,target)) return false;
                     if (Settings.Global.getInt(resolver,oemKey,-999)!=target) return false;
