@@ -4,16 +4,18 @@ import sys
 from pathlib import Path
 
 METHOD = re.compile(r'(?ms)^\.method [^\n]+\n.*?^\.end method$')
-CLASS = re.compile(r'(?m)^\.class [^\n]* (L[^;]+;)')
 OWNER = ('MtkTvFApiDisplay', 'MtkTvFApiDisplayBase', 'MtkTvFApiDisplayTypes$PanelInfo',
-         'MtkTvFApiCusdataIniManager', 'PanelInfoViewHolder', 'InfoViewHolder')
-REF = re.compile(r'->(?:loadPanelInfo|getPanelIni|getPanelInfoByKey|getPanel(?:Type|Version|Width|Height)|'
+         'MtkTvFApiCusdataIniManager', 'MtkTvFApiDisplayIniManager', 'MtkTvFApiIniManager',
+         'MtkTvFApiDisplayWrapper', 'MtkTvFApiInformationWrapper', 'MtkTvFApiSystemWrapper',
+         'MtkTvFApiSystemBase', 'PanelInfoViewHolder', 'InfoViewHolder')
+REF = re.compile(r'MtkTvFApiDisplay;->getInstance\(|'
+                 r'->(?:loadPanelInfo|getPanelIni|getPanelInfoByKey|getPanel(?:Type|Version|Width|Height)|'
                  r'getChip(?:ID|Id|Name|Type|Info)|init(?:TvFApi|Factory|DisplayIni)\w*)\(|'
                  r'->(?:panelInfo|E_MTK_FAPI_KEY_TYPE_PANEL_(?:TYPE|VERSION|WIDTH|HEIGHT)):|'
                  r'"[^"\n]*(?:[Pp]anel[^"\n]*\.ini|ro\.soc\.(?:model|manufacturer))[^"\n]*"')
 OP = re.compile(r'^\s*(?:invoke-|const|move-result|if-|goto|[ais]get|[ais]put|new-instance|[a-z]+-switch|return|throw|:[a-z])')
 SELECTED = re.compile(r'^(?:<init>|<clinit>|getInstance|init\w*|loadPanelInfo|getPanel\w+|getIniParameter|'
-                      r'getCusIniPath|buildKeys|read\w+|onCreate)$')
+                      r'getCusIniPath|getPath|getData|buildPaths|buildKeys|read\w+|onCreate)$')
 INIT = re.compile(r'->(?:init\w*|getInstance)\(')
 
 def trace(root):

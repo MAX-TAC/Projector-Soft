@@ -96,6 +96,15 @@ public final class OemSystemInfoHook {
                     "Контроль охлаждения (конфигурация)",
                     thermalWatchdogConfiguration(context),285);
             count++;
+            if (Build.VERSION.SDK_INT >= 31) {
+                String soc = SocInfoLabel.format(OemHdmiPortInfo.machineId(),
+                        Build.SOC_MANUFACTURER, Build.SOC_MODEL);
+                if (soc != null) {
+                    entry(category,prefClass,context,"projectorsoft_soc_info",
+                            "Чип (по данным Android)",soc,289);
+                    count++;
+                }
+            }
             if (OemThermalTelemetryHook.install(context,category,prefClass)) count++;
             return count>0;
         }catch(Exception e){
@@ -104,3 +113,4 @@ public final class OemSystemInfoHook {
         }
     }
 }
+

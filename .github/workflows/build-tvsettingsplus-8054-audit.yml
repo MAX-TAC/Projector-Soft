@@ -98,6 +98,8 @@ jobs:
           apktool d -f -r -p /tmp/tv33/framework "$FACTORY" -o /tmp/tv33/Factory
           python3 tools/trace_8054_panel_info.py /tmp/tv33/decoded /tmp/tv33/Factory
           find /tmp/flix8054_erofs -type f -iname '*panel*.ini' -printf 'PIC18_CANDIDATE_INI %p\n'
+          find /tmp/flix8054_erofs -type f -name build.prop \
+            -exec grep -H -E '^ro\.soc\.(model|manufacturer)=' {} + || true
           for apk in /tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk "$FACTORY"; do
             echo "PIC18 application and process declarations: $apk"
             aapt dump xmltree "$apk" AndroidManifest.xml | awk '/E: application|A: android:process|sharedUserId|A: package|FactoryMenuActivity|DesignMenuActivity/ { print }'
