@@ -435,7 +435,7 @@ jobs:
         if: always()
         run: |
           mkdir -p /tmp/tv33/report
-          python3 tools/trace_8054_unified_inputs.py /tmp/tv33/decoded /tmp/flix8054_erofs +            > /tmp/tv33/report/stock-input-routes.txt
+          python3 tools/trace_8054_unified_inputs.py /tmp/tv33/decoded /tmp/flix8054_erofs > /tmp/tv33/report/stock-input-routes.txt
           cat /tmp/tv33/report/stock-input-routes.txt
           cat > /tmp/tv33/report/README.txt <<'EOF'
           WARNING: EXPERIMENTAL. Not tested on actual projector; DO NOT install as production.
