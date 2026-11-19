@@ -96,6 +96,7 @@ public final class OemSystemInfoHook {
                     "Контроль охлаждения (конфигурация)",
                     thermalWatchdogConfiguration(context),285);
             count++;
+            if (OemThermalTelemetryHook.install(context,category,prefClass)) count++;
             return count>0;
         }catch(Exception e){
             Log.w(TAG,"OEM info unavailable",e);

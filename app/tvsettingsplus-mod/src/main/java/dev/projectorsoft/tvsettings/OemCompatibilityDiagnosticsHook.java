@@ -104,7 +104,10 @@ public final class OemCompatibilityDiagnosticsHook {
         sb.append("СТАТУС OEM\n");
         sb.append("KuSettings: ").append(legacyStatus(context)).append("\n");
         sb.append("KuSourceRJ: ").append(brightnessReceiver(context)).append("\n");
-        sb.append("TimeService/вентиляторы: работа не подтверждена этой проверкой\n");
+        sb.append("ПРОВЕРКА СЛУЖБ (только чтение)\n");
+        sb.append(OemKuSourceServiceAudit.inspect(context)).append("\n");
+        sb.append("Вентиляторы и защита от перегрева: работа не подтверждена этим отчётом\n\n");
+        sb.append(OemLegacyIntentAudit.collect(context)).append("\n\n");
         sb.append("HDMI-CEC/eARC/MEMC/DSP: требуется аппаратное тестирование\n\n");
         sb.append("ВАЖНО: не отключайте KuSettings и не устанавливайте сборку 8052 ");
         sb.append("на проектор 8054. Диагностика ничего не изменяет.");

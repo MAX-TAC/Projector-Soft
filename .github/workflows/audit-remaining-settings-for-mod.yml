@@ -1,0 +1,37 @@
+name: Audit remaining KuSettings controls for native migration
+on:
+  push:
+    paths:
+      - '.github/workflows/audit-remaining-settings-for-mod.yml'
+      - 'tools/audit_remaining_settings_for_mod.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download JADX
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 3 https://github.com/skylot/jadx/releases/download/v1.5.6/jadx-1.5.6.zip -o /tmp/jadx.zip
+          mkdir -p /tmp/jadx /tmp/native-audit
+          unzip -q /tmp/jadx.zip -d /tmp/jadx
+      - name: Extract exact OEM behavior from stock APKs
+        run: |
+          set -euo pipefail
+          for app in KuSettings TvSettingsPlus; do
+            /tmp/jadx/bin/jadx --no-res --no-imports --threads-count 3 --deobf \
+              -d "/tmp/native-audit/$app" "vendor/reference/8052/APK/$app.apk" >/tmp/jadx-$app.log 2>&1 || true
+          done
+          python3 tools/audit_remaining_settings_for_mod.py /tmp/native-audit > /tmp/remaining_controls.json
+          python3 -m json.tool /tmp/remaining_controls.json >/dev/null
+          cat /tmp/remaining_controls.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: remaining-settings-call-evidence
+          path: /tmp/remaining_controls.json
+          retention-days: 7

@@ -12,6 +12,29 @@ import java.lang.reflect.Method;
 public final class OemMenuVisibilityHook {
     private OemMenuVisibilityHook() {}
 
+    /** Hide the factory General / Screensaver submenu on both OEM menu flavors. */
+    public static void hideSleepControls(Object viewOrController) {
+        View root=viewOrController instanceof View?(View)viewOrController:
+            findRoot(viewOrController);
+        if(root==null)return;
+        try {
+            Context context=root.getContext();
+            int id=context.getResources().getIdentifier(
+                "tciv_general_screensaver_settings","id",context.getPackageName());
+            if(id==0)return;
+            View button=root.findViewById(id);
+            if(button!=null){
+                button.setVisibility(View.GONE);
+                button.setEnabled(false);
+                button.setFocusable(false);
+                button.setOnClickListener(null);
+            }
+            OemScreenTimeoutSafetyHook.ensureNever(context);
+        }catch(Exception e){
+            android.util.Log.w("TvSettingsPlusMOD","Could not hide factory sleep screen",e);
+        }
+    }
+
     public static void hideBluetoothSpeaker(Object controller) {
         View root=findRoot(controller);
         if (root==null) return;

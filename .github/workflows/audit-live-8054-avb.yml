@@ -1,0 +1,31 @@
+name: Read-only inspect live 8054 AVB signatures (GitHub release)
+on:
+  push:
+    paths:
+      - 'tools/audit_live_8054_avb.py'
+      - '.github/workflows/audit-live-8054-avb.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download owner's public release and Android avbtool
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/live8054
+          gh release download FlixTone_8054_Backup \
+             --repo MAX-TAC/FlixTone_8054_Backup --dir /tmp/live8054 \
+             --pattern '*.img'
+          curl -fsSL --retry 3 https://raw.githubusercontent.com/LineageOS/android_external_avb/lineage-22.2/avbtool.py -o /tmp/avbtool.py
+          curl -fsSL --retry 3 https://raw.githubusercontent.com/LineageOS/android_external_avb/lineage-22.2/test/data/testkey_rsa4096_pub.pem -o /tmp/aosp_testkey_rsa4096_pub.pem
+          ls -lh /tmp/live8054
+      - name: Cryptographically verify AVB headers; print sanitized characteristics
+        run: |
+          set -euo pipefail
+          python3 tools/audit_live_8054_avb.py /tmp/live8054 /tmp/avbtool.py
