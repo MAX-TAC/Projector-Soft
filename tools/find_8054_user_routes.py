@@ -124,7 +124,9 @@ def discover(apk, decoded):
     format_activity = list(decoded.glob("smali*/**/partnercustomizer/picture/DisplayModeActivity.smali"))
     format_fragment = list(decoded.glob("smali*/**/partnercustomizer/picture/DisplayModeFragment.smali"))
     format_arrays = ()
-    if len(format_activity) == len(format_fragment) == 1:
+    format_utils = list(decoded.glob("smali*/**/tvsettingservice/util/PreferenceConfigUtils.smali"))
+    if len(format_activity) == len(format_fragment) == len(format_utils) == 1 and (
+            '.method public isHDMISource(Landroid/content/Context;)Z' in format_utils[0].read_text()):
         format_arrays = stock_picture_format(manifest, format_activity[0].read_text(), format_fragment[0].read_text())
     print("Stock picture format activity:", PICTURE_FORMAT_ACTIVITY if format_arrays else "unconfirmed")
     print("Stock power schedule activity:", TIMER_ACTIVITY if activity_proven else "unconfirmed")

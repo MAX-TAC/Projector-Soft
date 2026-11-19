@@ -59,10 +59,11 @@ final class OemStockUserSettings {
         if (intent==null) return null;
         Class<?> utils=Class.forName(
                 "com.android.tv.settings.partnercustomizer.tvsettingservice.util.PreferenceConfigUtils");
-        if (!Boolean.TRUE.equals(utils.getMethod("isHDMISource",Context.class).invoke(null,context))) {
+        Object screen=utils.getMethod("getInstance",Context.class).invoke(null,context);
+        if (screen==null || !Boolean.TRUE.equals(
+                utils.getMethod("isHDMISource",Context.class).invoke(screen,context))) {
             return null;
         }
-        Object screen=utils.getMethod("getInstance",Context.class).invoke(null,context);
         Object supported=utils.getMethod("getSupportScreenModes").invoke(screen);
         if (!(supported instanceof int[])) return null;
         Class<?> configClass=Class.forName("com.android.tv.settings.partnercustomizer.tvsettingservice.TVSettingConfig");
