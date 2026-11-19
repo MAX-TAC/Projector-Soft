@@ -77,6 +77,7 @@ final class OemLightSourcePreference {
             Method getEntry = list.getMethod("getEntry");
             Method summary = pref.getMethod("setSummary",CharSequence.class);
             Method enabled = pref.getMethod("setEnabled",boolean.class);
+            Method value = list.getMethod("getValue");
             setValue.invoke(item,Integer.toString(initial.currentId));
             summary.invoke(item,getEntry.invoke(item));
             Handler main = new Handler(Looper.getMainLooper());
@@ -86,10 +87,24 @@ final class OemLightSourcePreference {
                         switch (method.getName()) {
                             case "onPreferenceChange":
                                 LightSourceBrightnessController.Snapshot current = model.refresh();
-                                if (!current.enabled || current.pendingId != null) return false;
+                                if (!current.enabled) {
+                                    enabled.invoke(item,false);
+                                    summary.invoke(item,"Режим недоступен");
+                                    return false;
+                                }
+                                if (current.pendingId != null) return false;
+                                if (!Integer.toString(current.currentId).equals(value.invoke(item))) {
+                                    setValue.invoke(item,Integer.toString(current.currentId));
+                                    summary.invoke(item,getEntry.invoke(item));
+                                    return false;
+                                }
                                 LightSourceBrightnessController.Mode requested = modeByValue.get(args[1]);
                                 if (requested == null) return false;
                                 if (!model.select(requested.hardwareId)) {
+                                    LightSourceBrightnessController.Snapshot actual=model.currentSnapshot();
+                                    if(actual.enabled)setValue.invoke(item,Integer.toString(actual.currentId));
+                                    summary.invoke(item,actual.enabled ? getEntry.invoke(item) : "Режим недоступен");
+                                    enabled.invoke(item,actual.enabled);
                                     Toast.makeText(context,"Не удалось выбрать режим",Toast.LENGTH_SHORT).show();
                                     return false;
                                 }

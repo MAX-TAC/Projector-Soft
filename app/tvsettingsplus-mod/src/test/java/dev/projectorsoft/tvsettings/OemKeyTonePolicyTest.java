@@ -31,6 +31,8 @@ public final class OemKeyTonePolicyTest {
         check(OemKeyTonePolicy.apply(original,false),"turn off");
         check("0".equals(original.raw) && original.writes==2,"persist 0");
         check(!OemKeyTonePolicy.apply(original,"true"),"reject non-Boolean");
+        Fake stale=new Fake("1");
+        check(!OemKeyTonePolicy.apply(stale,false,false) && stale.writes==0,"stale key tone UI");
         Fake denied=new Fake("0");
         denied.permit=false;
         check(!OemKeyTonePolicy.apply(denied,true) && "0".equals(denied.raw),"denied write");
@@ -43,3 +45,4 @@ public final class OemKeyTonePolicyTest {
         System.out.println("PASS: factory sound-effects key with default, state gate and verified writes");
     }
 }
+

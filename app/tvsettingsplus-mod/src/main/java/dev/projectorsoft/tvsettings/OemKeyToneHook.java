@@ -49,6 +49,7 @@ public final class OemKeyToneHook {
             };
             String initial=store.read();
             if(!OemKeyTonePolicy.valid(initial))return false;
+            Boolean[] displayed={OemKeyTonePolicy.checked(initial)};
             Class<?> toggle=Class.forName("androidx.preference.SwitchPreference");
             Object item=toggle.getConstructor(Context.class).newInstance(context);
             preference.getMethod("setKey",String.class).invoke(item,"projectorsoft_key_tone");
@@ -65,7 +66,8 @@ public final class OemKeyToneHook {
                 String name=method.getName();
                 if("onPreferenceChange".equals(name)) {
                     if(args==null || args.length<2)return false;
-                    boolean applied=OemKeyTonePolicy.apply(store,args[1]);
+                    boolean applied=OemKeyTonePolicy.apply(store,displayed[0],args[1]);
+                    if(applied)displayed[0]=(Boolean)args[1];
                     if(!applied)Log.w(TAG,"OEM key tone write was not verified");
                     return applied;
                 }
@@ -87,3 +89,4 @@ public final class OemKeyToneHook {
         }
     }
 }
+

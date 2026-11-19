@@ -27,6 +27,7 @@ public final class OemFontScaleHook {
             };
             float current=store.read();
             int initial=OemFontScalePolicy.index(current);
+            int[] displayed={initial};
             if(initial<0)return false;
             String[] titles=OemFontScalePolicy.labels();
             float[] values=OemFontScalePolicy.values();
@@ -54,11 +55,12 @@ public final class OemFontScaleHook {
                 String name=method.getName();
                 if("onPreferenceChange".equals(name)){
                     if(args==null || args.length<2)return false;
-                    boolean success=OemFontScalePolicy.apply(store,args[1]);
+                    boolean success=OemFontScalePolicy.apply(store,displayed[0],args[1]);
                     if(success){
                         try {
                             float wanted=Float.parseFloat(String.valueOf(args[1]));
                             int index=OemFontScalePolicy.index(wanted);
+                            displayed[0]=index;
                             if(index>=0)preference.getMethod("setSummary",CharSequence.class)
                                     .invoke(item,titles[index]);
                         }catch(Exception e){Log.w(TAG,"Could not update font summary",e);}
@@ -82,3 +84,4 @@ public final class OemFontScaleHook {
         }
     }
 }
+

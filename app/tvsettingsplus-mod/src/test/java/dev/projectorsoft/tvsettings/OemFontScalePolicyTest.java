@@ -31,6 +31,8 @@ public final class OemFontScalePolicyTest {
         ok(OemFontScalePolicy.apply(store,"1.15") && store.writes==1,"idempotent");
         ok(OemFontScalePolicy.apply(store,"0.85"),"set small");
         ok(!OemFontScalePolicy.apply(store,"2.0"),"no unsupported scale");
+        Fake stale=new Fake(1.15f);
+        ok(!OemFontScalePolicy.apply(stale,1,"0.85") && stale.writes==0,"stale font scale UI");
         Fake denied=new Fake(1.0f);
         denied.permit=false;
         ok(!OemFontScalePolicy.apply(denied,"1.3"),"fail closed on deny");
@@ -46,3 +48,4 @@ public final class OemFontScalePolicyTest {
         System.out.println("PASS: four exact OEM font scales and fail-closed store writes");
     }
 }
+
