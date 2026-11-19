@@ -42,7 +42,7 @@ Python fixtures проверяют отбор реальных инструкц�
 
 ## PIC18 — данные панели
 
-Exact Factory `PanelInfoViewHolder.onCreate` получает type, version, width и height из `MtkTvFApiDisplay`. В TvSettingsPlus обнаружены те же getters: они возвращают кэш `MtkTvFApiDisplayBase.panelInfo`. `loadPanelInfo` заполняет его из INI по ключам `PANEL_TYPE/VERSION/WIDTH/HEIGHT`. Заполнение этого кэша в обычном процессе MOD и безопасный самостоятельный потребительский вызов загрузки не подтверждены. Оставляем PIC18 `NOT_IMPLEMENTED`. Размер из panel INI характеризует конфигурацию панели. Логический режим Android, активный HDMI-тайминг и оптическое разрешение требуют самостоятельных источников данных. [Exact Factory и TvSettingsPlus](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44479103148/job/135406710836)
+[Отдельная трасса жизненного цикла панели](PANEL_INFO_8054.md) содержит актуальные сведения о штатном кэше и границе реализации.
 
 ## Контрольная сборка
 

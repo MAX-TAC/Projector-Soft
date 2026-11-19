@@ -3,8 +3,8 @@
   "counts": {
     "DIRECT_MOD": 22,
     "DELEGATED_OEM": 23,
-    "READ_ONLY": 19,
-    "NOT_IMPLEMENTED": 19,
+    "READ_ONLY": 21,
+    "NOT_IMPLEMENTED": 17,
     "BLOCKED": 11,
     "HIDDEN": 2
   },
@@ -415,12 +415,12 @@
     {
       "id": "PIC18",
       "function": "Panel Info",
-      "delivery": "NOT_IMPLEMENTED",
-      "implementation": "Factory and TvSettingsPlus expose cached panel INI fields; no proven user-process initialization",
-      "next_check": "Prove a safe read-only stock initializer and label values as panel configuration",
+      "delivery": "READ_ONLY",
+      "implementation": "Existing Settings-owned panel INI cache: available type, version and positive dimensions; no initialization",
+      "next_check": "Cold open and return after stock projector menu; compare available config fields and keep unavailable fields hidden",
       "fallback": null,
-      "build_state": null,
-      "runtime_state": null,
+      "build_state": "BUILT_UNTESTED",
+      "runtime_state": "RUNTIME_TEST_REQUIRED",
       "feature_complete": false,
       "scope": "CURRENT",
       "evidence_status": "UNKNOWN"
@@ -987,12 +987,12 @@
     {
       "id": "FAC01",
       "function": "Глубокая информация о чипе",
-      "delivery": "NOT_IMPLEMENTED",
-      "implementation": "No current MOD path demonstrated",
-      "next_check": "Установить точные безопасность/поддержку на 8054",
+      "delivery": "READ_ONLY",
+      "implementation": "Android Build SoC manufacturer/model for 8054; no Factory calls",
+      "next_check": "Compare Android-reported fields with the installed ROM; no physical chip identification",
       "fallback": null,
-      "build_state": null,
-      "runtime_state": null,
+      "build_state": "BUILT_UNTESTED",
+      "runtime_state": "RUNTIME_TEST_REQUIRED",
       "feature_complete": false,
       "scope": "CURRENT",
       "evidence_status": "UNKNOWN"

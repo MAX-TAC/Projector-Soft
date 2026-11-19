@@ -2,7 +2,7 @@
 
 DIRECT_MOD — код контрола/платформенной интеграции; DELEGATED_OEM — только штатная навигация; READ_ONLY — только информация; HIDDEN — прямой MOD-контрол скрыт; BLOCKED — запрещённый путь; NOT_IMPLEMENTED — реализации MOD нет. OEM ссылка не MIGRATED и не FEATURE_COMPLETE. Наличие отдельного подменю и аппаратуры надо подтвердить на устройстве. BUILT_UNTESTED относится к условному пути в APK, а не к переносу всей функции. — означает отсутствие активной реализации, не успешную сборку функции. Все hardware результаты отсутствуют.
 
-DIRECT_MOD 22; DELEGATED_OEM 23; READ_ONLY 19; NOT_IMPLEMENTED 19; BLOCKED 11; HIDDEN 2
+DIRECT_MOD 22; DELEGATED_OEM 23; READ_ONLY 21; NOT_IMPLEMENTED 17; BLOCKED 11; HIDDEN 2
 
 | ID | Функция | Доставка | Fallback | Код | Аппаратура | Следующая проверка |
 |---|---|---|---|---|---|---|
@@ -37,7 +37,7 @@ DIRECT_MOD 22; DELEGATED_OEM 23; READ_ONLY 19; NOT_IMPLEMENTED 19; BLOCKED 11; H
 | PIC15 | Тестовые картинки | NOT_IMPLEMENTED | — | — | — | Разработать watchdog восстановления паттерна |
 | PIC16 | Non-Linear PQ | BLOCKED | — | — | — | Не записывать calibration |
 | PIC17 | White Balance заводской | BLOCKED | — | — | — | Не заменять RGB ползунок Factory WB API |
-| PIC18 | Panel Info | NOT_IMPLEMENTED | — | — | — | Prove a safe read-only stock initializer and label values as panel configuration |
+| PIC18 | Panel Info | READ_ONLY | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Cold open and return after stock projector menu; compare available config fields and keep unavailable fields hidden |
 | SND01 | Режим звука | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | SOUND_DEVICE_CHECKLIST_8054.md: mode/output/focus, readback and audible effect |
 | SND02 | Низкие частоты | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | SOUND_DEVICE_CHECKLIST_8054.md: mode/output/focus, readback and audible effect |
 | SND03 | Высокие частоты | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | SOUND_DEVICE_CHECKLIST_8054.md: mode/output/focus, readback and audible effect |
@@ -81,7 +81,7 @@ DIRECT_MOD 22; DELEGATED_OEM 23; READ_ONLY 19; NOT_IMPLEMENTED 19; BLOCKED 11; H
 | SYS07 | OEM Timer выключения | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify editor navigation, permitted schedule edit, power-off trigger and manual restore; separate from idle policy |
 | SYS08 | Кнопка Settings на пульте | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify physical Settings button resolution with KuSettings enabled |
 | SYS09 | Установленные/предустановочные приложения | READ_ONLY | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Check inventory and OEM package visibility |
-| FAC01 | Глубокая информация о чипе | NOT_IMPLEMENTED | — | — | — | Установить точные безопасность/поддержку на 8054 |
+| FAC01 | Глубокая информация о чипе | READ_ONLY | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Compare Android-reported fields with the installed ROM; no physical chip identification |
 | FAC02 | Информация о панели и PQ | NOT_IMPLEMENTED | — | — | — | Установить точные безопасность/поддержку на 8054 |
 | FAC03 | PEQ/GEQ | NOT_IMPLEMENTED | — | — | — | Установить точные безопасность/поддержку на 8054 |
 | FAC04 | DTS/Dolby | NOT_IMPLEMENTED | — | — | — | Установить точные безопасность/поддержку на 8054 |
