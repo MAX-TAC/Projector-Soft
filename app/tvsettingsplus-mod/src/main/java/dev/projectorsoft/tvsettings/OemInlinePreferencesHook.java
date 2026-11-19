@@ -134,7 +134,8 @@ public final class OemInlinePreferencesHook {
             });
         }
         ProjectorMenuSections.optional("picture-sliders",()->OemInlineSlidersHook.installPicture(context,category,pref));
-        if(!exact || OemPictureState.mayEdit())OemPictureState.install(context,category,pref);
+        if(!exact || OemPictureState.mayEdit())
+            ProjectorMenuSections.optional("picture-state",()->OemPictureState.install(context,category,pref));
     }
 
     private static void populateSources(Context context,Object category,Class<?> pref,boolean exact) {

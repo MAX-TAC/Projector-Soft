@@ -227,14 +227,7 @@ def patch_manifest(data, projector_entry=False):
     fragment+=startnode(tag_action,[attr(uridx,nameidx,main_action)])+endnode(tag_action)
     for category in (regular,leanback):
         fragment+=startnode(tag_category,[attr(uridx,nameidx,category)])+endnode(tag_category)
-    fragment+=endnode(tag_filter)
-    if projector_entry:
-        action=pool.index("dev.projectorsoft.settings.OPEN_PROJECTOR_MENU")
-        fragment+=startnode(tag_filter)
-        fragment+=startnode(tag_action,[attr(uridx,nameidx,action)])+endnode(tag_action)
-        fragment+=startnode(tag_category,[attr(uridx,nameidx,category_default)])+endnode(tag_category)
-        fragment+=endnode(tag_filter)
-    fragment+=endnode(tag_alias)
+    fragment+=endnode(tag_filter)+endnode(tag_alias)
     print("Inserted Android TV Settings launcher: localized label, settings gear icon 0x7f08022e, banner",hex(application_banner))
 
     # Recovery is cold-boot activated ONLY IF the stock KuSettings package was

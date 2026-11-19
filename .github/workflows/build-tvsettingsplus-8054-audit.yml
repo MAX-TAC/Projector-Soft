@@ -10,6 +10,7 @@ on:
       - 'tools/patch_*.py'
       - 'tools/find_8054_panel_cache.py'
       - 'tools/find_8054_user_routes.py'
+      - 'tools/verify_8054_general_layout.py'
   workflow_dispatch:
 concurrency:
   group: tvsettings-exact-8054-v33-build
@@ -451,7 +452,6 @@ jobs:
                       "android.intent.action.MAIN",
                       "android.intent.category.LAUNCHER",
                       "android.intent.category.LEANBACK_LAUNCHER",
-                      "dev.projectorsoft.settings.OPEN_PROJECTOR_MENU",
                       "Настройки проектора (MOD)"):
               assert tag in section, "Missing launcher field: "+tag
           assert "android:label" in section, "Launcher missing distinct MOD label attribute"

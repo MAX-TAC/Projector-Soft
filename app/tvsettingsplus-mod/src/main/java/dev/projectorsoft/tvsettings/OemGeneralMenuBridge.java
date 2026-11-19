@@ -3,7 +3,6 @@ package dev.projectorsoft.tvsettings;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,9 @@ import java.lang.reflect.Field;
 /** The exact 8054 OEM General list links to its existing Android TV Settings host. */
 public final class OemGeneralMenuBridge {
     private static final String TAG="TvSettingsPlusMOD";
-    private static final String ROW="projectorsoft_open_projector_menu";
+    // Stable across OEM FloatMenu recreation so its focus_id can select this row.
+    // STOCK view resources use the 0x7f package; framework resources use 0x01.
+    private static final int ROW=0x7e080054;
     private static final String FLOAT_CONTROLLER="com.android.tv.settings.uicustom.floatmenu.controller.general.GeneralSubMenuController";
     private static final String FLOAT_MANAGER="com.android.tv.settings.uicustom.floatmenu.FloatMenuManager";
     static final String ALIAS="com.android.tv.settings.mod.SettingsLauncher";
@@ -58,9 +59,9 @@ public final class OemGeneralMenuBridge {
         LinearLayout list=(LinearLayout)anchor.getParent();
         if(list.getOrientation()!=LinearLayout.VERTICAL)
             throw new IllegalStateException("OEM General list is not vertical");
-        if(list.findViewWithTag(ROW)!=null)return;
+        if(list.findViewById(ROW)!=null)return;
         Button button=new Button(anchor.getContext());
-        button.setTag(ROW);
+        button.setId(ROW);
         button.setText(TITLE);
         button.setAllCaps(false);
         button.setFocusable(true);
@@ -77,14 +78,10 @@ public final class OemGeneralMenuBridge {
         }
         try {
             if(!CheckedPreferenceLaunch.accessible(context,target))return false;
-            Intent action=new Intent(ACTION);
-            android.content.pm.ResolveInfo match=context.getPackageManager().resolveActivity(action,
-                    PackageManager.MATCH_DEFAULT_ONLY);
-            if(match==null || match.activityInfo==null
-                    || !target.equals(new ComponentName(match.activityInfo.packageName,match.activityInfo.name)))return false;
             Class<?> manager=Class.forName(FLOAT_MANAGER);
             Object current=manager.getMethod("getInstance",Context.class).invoke(null,context);
-            manager.getMethod("jumpByAction",String.class).invoke(current,ACTION);
+            manager.getMethod("jumpToExternalActivity",Intent.class).invoke(current,
+                    new Intent(ACTION).setComponent(target));
             return true;
         } catch(Exception | LinkageError failure) {
             Log.w(TAG,"menu stage=oem-float-launch",failure);
