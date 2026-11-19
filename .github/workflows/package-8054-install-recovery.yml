@@ -2,7 +2,7 @@ name: Package pinned 8054 install recovery review kit
 on:
   push:
     branches: [audit/8054-tvsettingsplus-20261117]
-    paths: ['install-kit/**', '.github/workflows/package-8054-install-recovery.yml']
+    paths: ['install-kit/provenance.json']
   workflow_dispatch:
 permissions:
   contents: read

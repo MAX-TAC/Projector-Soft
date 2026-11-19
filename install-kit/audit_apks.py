@@ -12,7 +12,7 @@ import zipfile
 import zlib
 from pathlib import Path
 
-from kit_common import MOD_SHA, STOCK_SHA, sha256
+from kit_common import MOD_SHA, STOCK_SHA, apk_hashes, sha256, trusted_revision
 
 
 DEX = re.compile(r"classes\d*\.dex")
@@ -54,7 +54,14 @@ def smali_inventory(root, module=False):
 
 
 def audit(args, report):
-    if sha256(args.stock) != STOCK_SHA or sha256(args.mod) != MOD_SHA:
+    pins = trusted_revision(args.revision) if args.revision else None
+    hashes = {label: sha256(getattr(args, label)) for label in ("stock", "mod")}
+    if pins:
+        commit = subprocess.check_output(["git", "-C", str(args.source), "rev-parse", "HEAD"], text=True).strip()
+        if commit != pins["mod_code_commit"]:
+            raise ValueError("Audit source does not match pinned MOD commit")
+        report.update(revision=args.revision, mod_code_commit=commit, apk_sha256=hashes)
+    if hashes != (apk_hashes(pins) if pins else {"stock": STOCK_SHA, "mod": MOD_SHA}):
         raise ValueError("Audit input does not match pinned APK bytes")
     sys.path.insert(0,str(args.source/"tools"))
     from patch_axml_compat_aliases import patch_manifest
@@ -141,6 +148,7 @@ def main():
     for name in ("stock","mod","source","reports","apktool"):
         parser.add_argument("--"+name,required=True,type=Path)
     parser.add_argument("--zipalign",default="zipalign")
+    parser.add_argument("--revision")
     args = parser.parse_args()
     result = {"status":"FAIL","device_compatibility":"LIVE_PACKAGE_MANAGER_REQUIRED"}
     try:

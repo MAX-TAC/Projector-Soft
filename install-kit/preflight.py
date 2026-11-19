@@ -7,7 +7,7 @@ from pathlib import Path
 sys.dont_write_bytecode = True
 from kit_common import PACKAGE, STOCK_SHA, output_dir, run, save_json, sha256
 from verify_offline import verify
-from verify_files import verify_files
+from verify_files import read_report, verify_files, verify_revision_kit
 
 CRITICAL = {'KuSettings': 'com.my.settings', 'KuSourceRJ': 'com.coolux.source',
             'TvServices': 'com.mediatek.tv.service', 'RuiAutoFocus': 'com.hysd.screen',
@@ -15,6 +15,16 @@ CRITICAL = {'KuSettings': 'com.my.settings', 'KuSourceRJ': 'com.coolux.source',
 BUILTIN = '/system_ext/priv-app/TvSettingsPlus/TvSettingsPlus.apk'
 EDID_KEY = 'tv_input_hdmi_edid_version'
 PICTURE_KEYS = ('picture_mode', 'picture_brightness', 'picture_contrast', 'picture_saturation')
+INACTIVITY = (('system', 'screen_off_timeout'), ('system', 'sleep_timeout'),
+              ('secure', 'sleep_timeout'), ('secure', 'screensaver_enabled'))
+IDENTITY = ('api', 'release', 'user', 'shell_identity', 'selinux', 'fingerprint', 'build')
+TIME_SERVICE = re.compile(r'\bServiceRecord\{[^}\n]*\bcom\.coolux\.source/'
+                          r'(?:com\.coolux\.source)?\.service\.TimeService(?=[\s}])')
+DENIED = re.compile(r'permission denial|permission denied|securityexception', re.I)
+
+
+def valid_serial(serial):
+    return bool(serial and re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.:%\[\]-]*', serial))
 
 
 def commands():
@@ -160,32 +170,47 @@ def package_state(text, user):
             'shared_uid_evidence': bool(re.search(r'sharedUser=|sharedUserId=', text))}
 
 
-def collect(kit, serial, destination, adb='adb', aapt='aapt', apksigner='apksigner', runner=run):
+def collect(kit, serial, destination, adb='adb', aapt='aapt', apksigner='apksigner', runner=run, revision=None):
     checks, captured = [], {}
+    package, inactivity, apks = {}, {}, {}
     def check(name, passed, detail):
         checks.append(dict(name=name, status='PASS' if passed else 'FAIL', detail=detail))
         print(('PASS ' if passed else 'FAIL ') + name + ': ' + detail)
     def capture(name, args):
         captured[name] = capture_adb(runner, adb, serial, destination, name, args)
         return captured[name]['code'] == 0
-    connected = capture('connection', ['get-state']) and captured['connection']['stdout'] == 'device'
+    def value(key):
+        record = captured[key]
+        if record['code'] != 0 or DENIED.search(record['stdout'] + '\n' + record['stderr']):
+            return ''
+        return record['stdout']
+
+    connected = (valid_serial(serial) and capture('connection', ['get-state'])
+                 and value('connection') == 'device')
     check('ADB_connection', connected, 'selected serial only; no device selection by guess')
     if connected:
         capture('machine', ['shell', 'getprop', 'ro.rjpj.machine.id'])
-        connected = captured['machine']['code'] == 0 and captured['machine']['stdout'] == '8054'
+        connected = value('machine') == '8054'
         check('machine_8054', connected, captured['machine']['stdout'] or 'unavailable; STOP')
     if connected:
-        capture('adb_version', ['version']); capture('adb_help', ['help'])
-        for name, command in commands().items():
-            if name != 'machine': capture(name, ['shell'] + command)
-        value = lambda key: captured[key]['stdout'] if captured[key]['code'] == 0 else ''
+        for name in IDENTITY:
+            capture(name, ['shell'] + commands()[name])
         user = value('user')
         check('API33', value('api') == '33', value('api') or 'unavailable')
         check('build_recorded', bool(value('fingerprint') and value('build')), 'Compare fingerprint/build to owner backup manually')
         check('owner_user0', user == '0', user or 'unknown')
         check('SELinux_Enforcing', value('selinux') == 'Enforcing', value('selinux') or 'unknown; never change enforcement')
-        check('ordinary_ADB_shell', bool(re.search(r'uid=2000\b', value('shell_identity'))), 'No adb root/remount is requested')
+        check('ordinary_ADB_shell', bool(re.match(r'uid=2000\b', value('shell_identity'))), 'Ordinary shell UID required')
+        if revision:
+            check('Android13', value('release') == '13', value('release') or 'unavailable')
+    if connected and all(item['status'] == 'PASS' for item in checks):
+        capture('adb_version', ['version'])
+        capture('adb_help', ['help'])
+        for name, command in commands().items():
+            if name not in ('machine', *IDENTITY):
+                capture(name, ['shell'] + command)
         state = package_state(value('settings_package'), user if user.isdigit() else 'INVALID')
+        package = state
         check('system_package', state['system'], json.dumps(state))
         check('settings_user_enabled', state['enabled_installed_user'], 'installed/enabled/hidden/suspended for selected owner')
         check('shared_UID_visible', state['shared_uid_evidence'], 'Inspect raw package dump plus pulled APK sharedUserId')
@@ -195,21 +220,42 @@ def collect(kit, serial, destination, adb='adb', aapt='aapt', apksigner='apksign
             data = value('critical_' + label)
             check('critical_' + label, bool(data) and package_state(data, user)['enabled_installed_user'],
                   'Package presence/enabled only; not proof of service or hardware health')
-        check('TimeService_observed', 'com.coolux.source.service.TimeService' in value('source_services'),
+        service_dump = value('source_services')
+        observed = (bool(TIME_SERVICE.search(service_dump)) if revision else
+                    'com.coolux.source.service.TimeService' in service_dump)
+        check('TimeService_observed', observed,
               'Missing/denied services observation is STOP, not permission to replace watchdog')
         paths = re.findall(r'^package:(/[^\r\n]+\.apk)$', value('settings_path'), re.M)
-        check('one_base_no_splits', len(paths) == 1, f'{len(paths)} paths; split installs unsupported')
+        path_only = len(paths) == 1 and value('settings_path') == 'package:' + paths[0]
+        check('one_base_no_splits', path_only, f'{len(paths)} paths; split installs unsupported')
+        if revision:
+            check('stock_PM_state', path_only and paths[0] == BUILTIN and not state['updated_system']
+                  and state['version_codes'] == ['1'], 'Expected active built-in STOCK v1 for owner')
+            package['paths'] = paths
+            for namespace, key in INACTIVITY:
+                evidence = namespace + '_' + key
+                capture(evidence, ['shell', 'settings', 'get', namespace, key])
+                raw = value(evidence)
+                valid = raw == 'null' or (bool(re.fullmatch(r'0|-?[1-9][0-9]{0,9}', raw))
+                                          and -(2**31) <= int(raw) < 2**31)
+                inactivity[namespace + '/' + key] = {'raw': raw or None,
+                                                       'status': ('ABSENT' if raw == 'null' else
+                                                                  'PRESENT' if valid else 'UNAVAILABLE')}
+                check(evidence, valid, 'Owner 0 baseline only')
         live = destination / 'LIVE-base.apk'
-        safe = len(paths) == 1 and bool(re.fullmatch(r'/(?:system|system_ext|product|data)/[A-Za-z0-9_./+=@~-]+\.apk', paths[0]))
+        safe = (path_only and not {'.', '..', ''}.intersection(paths[0][1:].split('/'))
+                and bool(re.fullmatch(r'/(?:system|system_ext|product|data)/[A-Za-z0-9_./+=@~-]+\.apk', paths[0])))
         pulled = safe and capture('pull_live', ['pull', paths[0], str(live)]) and live.is_file()
         check('live_APK_pulled', pulled, 'Read via ADB sync protocol, no shell output redirection')
         builtin = destination / 'BUILTIN-base.apk'
         builtin_ok = capture('pull_builtin', ['pull', BUILTIN, str(builtin)]) and builtin.is_file()
-        check('builtin_matches_backup', builtin_ok and sha256(builtin) == STOCK_SHA,
+        apks = {'live_sha256': sha256(live) if pulled else None,
+                'builtin_sha256': sha256(builtin) if builtin_ok else None}
+        check('builtin_matches_backup', apks['builtin_sha256'] == STOCK_SHA,
               'Built-in original required for update-removal route; no assumption from /data update')
         if pulled:
             offline_dir = destination / 'apk-verification'; offline_dir.mkdir()
-            report = verify(kit, offline_dir, aapt, apksigner, live, runner)
+            report = verify(kit, offline_dir, aapt, apksigner, live, runner, revision)
             check('stock_mod_live_identity', report['status'] == 'PASS', 'Actual cert/package/version/SDK/sharedUID/permissions/splits, exact stock bytes before first install')
         else: check('stock_mod_live_identity', False, 'Cannot prove live identity without APK')
         help_text = value('pm_help') + '\n' + value('cmd_package_help')
@@ -218,6 +264,7 @@ def collect(kit, serial, destination, adb='adb', aapt='aapt', apksigner='apksign
         for key in ['privapp_allowlist', 'privapp_denylist', 'stock_selinux_label']:
             check(key, captured[key]['code'] == 0 and bool(value(key)), 'Manual review required; no permission or SELinux changes')
     result = dict(readiness='NOT_READY', install_state='NOT_READY_FOR_DEVICE_INSTALL', checks=checks,
+                  revision=revision, package=package, inactivity=inactivity, apks=apks,
                   device_changes=False, serial=serial,
                   rollback_route_A='NOT_VERIFIED: package-scoped system update removal',
                   rollback_route_B='STANDARD_REPLACE_DOWNGRADE_BLOCKED: STOCK v1 over MOD v33; no approved exception',
@@ -229,19 +276,41 @@ def collect(kit, serial, destination, adb='adb', aapt='aapt', apksigner='apksign
     return result
 
 
+def verify_host(kit, destination, aapt, apksigner, revision, runner=run):
+    verify_files(kit)
+    archived = verify_revision_kit(kit, revision) if revision else None
+    if read_report(kit, 'manifest.json').get('integration_audit') != 'PASS':
+        raise ValueError('Pinned archive integration audit did not pass')
+    report = verify(kit, destination, aapt, apksigner, runner=runner, revision=revision)
+    if report['status'] != 'PASS':
+        raise ValueError('Host APK verification failed')
+    if archived and archived['records'] != json.loads(json.dumps(report['records'])):
+        raise ValueError('Archived manifest or signer metadata differs from fresh APK verification')
+    return report
+
+
+class PreflightArguments(argparse.ArgumentParser):
+    def error(self, message):
+        self.exit(1, 'STOP: ' + message + '\n')
+
+
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = PreflightArguments(description=__doc__)
     modes = parser.add_mutually_exclusive_group()
     modes.add_argument('--hdmi-stock', action='store_true', help='Read-only exact STOCK EDID and HDMI dumps')
     modes.add_argument('--picture-stock', action='store_true', help='Read-only exact STOCK picture snapshot; no install assets needed')
-    parser.add_argument('--serial', required=True, help='Explicit approved device; never auto-select')
+    modes.add_argument('--offline', action='store_true', help='Verify a complete kit without ADB')
+    parser.add_argument('--serial', help='Explicit approved device; never auto-select')
+    parser.add_argument('--revision', help='Exact pinned kit revision')
     parser.add_argument('--kit', type=Path, default=Path(__file__).resolve().parent)
     parser.add_argument('--out', help='New host directory; Linux /tmp only')
     parser.add_argument('--adb', default='adb'); parser.add_argument('--aapt', default='aapt'); parser.add_argument('--apksigner', default='apksigner')
     args = parser.parse_args()
-    if not args.serial.strip() or args.serial.startswith('-') or any(c in args.serial for c in '\r\n\0'):
+    if (not args.offline and not valid_serial(args.serial)) or (args.offline and args.serial is not None):
         print('FAIL explicit serial / NOT_READY'); return 1
     if args.picture_stock or args.hdmi_stock:
+        if args.revision is not None:
+            parser.error('Stock-only snapshots do not select a kit revision')
         try:
             prefix = 'tvsettings8054-stock-hdmi-' if args.hdmi_stock else 'tvsettings8054-stock-picture-'
             destination = output_dir(args.out, prefix)
@@ -252,16 +321,19 @@ def main():
         print(result['status'] + ': private local report: ' + str(destination))
         return {'CAPTURED': 0, 'STOP': 1, 'PARTIAL': 2}[result['status']]
     try:
+        kit = args.kit.resolve()
+        if args.out and Path(args.out).resolve().is_relative_to(kit):
+            raise ValueError('Output must be outside the verified kit')
         destination = output_dir(args.out, 'tvsettings8054-preflight-')
-        verify_files(args.kit.resolve())
-        assembled = json.loads((args.kit/'manifest.json').read_text(encoding='utf-8'))
-        if assembled.get('integration_audit') != 'PASS':
-            raise ValueError('Pinned archive integration audit did not pass')
         host = destination/'host-assets'; host.mkdir()
-        if verify(args.kit.resolve(), host, args.aapt, args.apksigner)['status'] != 'PASS':
-            print('FAIL host assets; no ADB called / NOT_READY'); return 1
-    except (OSError, ValueError) as exc: print('FAIL host preconditions: '+str(exc)+' / NOT_READY'); return 1
-    result = collect(args.kit.resolve(), args.serial, destination, args.adb, args.aapt, args.apksigner)
+        verify_host(kit, host, args.aapt, args.apksigner, args.revision, run)
+        if args.offline:
+            print('OFFLINE_KIT_VERIFIED: ' + str(destination))
+            return 0
+        result = collect(kit, args.serial, destination, args.adb, args.aapt, args.apksigner, run, args.revision)
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        print('STOP: ' + str(exc) + ' / NOT_READY_FOR_DEVICE_INSTALL')
+        return 1
     print('Private local report: ' + str(destination))
     return 1 if any(c['status'] == 'FAIL' for c in result['checks']) else 2  # 2 = diagnostics pass, install readiness still NOT_READY.
 

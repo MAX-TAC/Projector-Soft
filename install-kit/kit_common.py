@@ -13,6 +13,33 @@ STOCK_SHA = 'f8e0c6fe0f46e7eb8db651c31d85ef8b32a769b37e4dd0f96ed19a64725d74ee'
 MOD_SHA = '05f74576f6b777eb8c7b73699bdda47212280185fc1324ff45dc43166f9cbf3f'
 
 
+def trusted_revision(revision):
+    if not re.fullmatch(r'[a-f0-9]{7,40}', revision):
+        raise ValueError('Invalid kit revision')
+    path = Path(__file__).resolve().parent / 'revisions' / (revision + '.json')
+    pins = json.loads(path.read_text(encoding='utf-8'))
+    if (pins['revision'] != revision or not pins['mod_code_commit'].startswith(revision)
+            or (pins['package'], pins['machine_id'], pins['api']) != (PACKAGE, '8054', '33')):
+        raise ValueError('Invalid trusted kit profile')
+    return pins
+
+
+def load_pins(kit, revision):
+    pins = json.loads((kit / 'provenance.json').read_text(encoding='utf-8-sig'))
+    if not isinstance(pins, dict):
+        raise ValueError('Invalid kit provenance')
+    if revision is not None:
+        if pins != trusted_revision(revision):
+            raise ValueError('Kit provenance differs from selected revision')
+    elif ('revision' in pins or pins.get('stock_sha256') != STOCK_SHA or pins.get('mod_sha256') != MOD_SHA):
+        raise ValueError('Provenance differs from legacy pins; select the exact revision explicitly')
+    return pins
+
+
+def apk_hashes(pins):
+    return {label: pins[label + '_sha256'] for label in ('stock', 'mod')}
+
+
 def sha256(path):
     h = hashlib.sha256()
     with Path(path).open('rb') as stream:

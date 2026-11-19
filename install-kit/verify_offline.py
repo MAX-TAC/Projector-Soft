@@ -6,7 +6,7 @@ import sys
 import subprocess
 from pathlib import Path
 sys.dont_write_bytecode = True
-from kit_common import PACKAGE, STOCK_SHA, MOD_SHA, output_dir, run, save_json, sha256
+from kit_common import PACKAGE, apk_hashes, load_pins, output_dir, run, save_json, sha256
 
 
 def parse_metadata(badging, tree, permissions, signer):
@@ -92,7 +92,7 @@ def assess_versions(records):
     return result
 
 
-def verify(kit, destination, aapt='aapt', apksigner='apksigner', live=None, runner=run):
+def verify(kit, destination, aapt='aapt', apksigner='apksigner', live=None, runner=run, revision=None):
     report = dict(status='FAIL', readiness='NOT_READY', install_state='NOT_READY_FOR_DEVICE_INSTALL',
                   records={}, failures=[], live_identity='NOT_TESTED',
                   static_identity='NOT_VERIFIED', upgrade='NOT_VERIFIED',
@@ -100,14 +100,16 @@ def verify(kit, destination, aapt='aapt', apksigner='apksigner', live=None, runn
                   remaining_proofs=['live package identity/state', 'critical services', 'device rollback support/drill',
                                     'reliable out-of-band ADB after approved reboot', 'owner installation permission'])
     try:
-        pins = json.loads((kit / 'provenance.json').read_text(encoding='utf-8-sig'))
+        pins = load_pins(kit, revision)
+        if revision is not None:
+            report.update(revision=revision, mod_code_commit=pins['mod_code_commit'])
         paths = {'stock': kit / pins['stock_file'], 'mod': kit / pins['mod_file']}
         if any(not path.resolve().is_relative_to(kit.resolve()) for path in paths.values()):
             raise ValueError('Asset path leaves kit directory')
-        expected = {'stock': STOCK_SHA, 'mod': MOD_SHA}
-        if pins['stock_sha256'] != STOCK_SHA or pins['mod_sha256'] != MOD_SHA:
-            raise ValueError('Provenance pins differ from reviewed script pins')
-        if live: paths['live'] = Path(live); expected['live'] = STOCK_SHA
+        expected = apk_hashes(pins)
+        if live:
+            paths['live'] = Path(live)
+            expected['live'] = pins['stock_sha256']
         for label, path in paths.items():
             # Verify all bytes before invoking tools or accepting any metadata.
             if sha256(path) != expected[label]: raise ValueError(f'{label}: pinned SHA256 mismatch; STOP')
@@ -115,6 +117,13 @@ def verify(kit, destination, aapt='aapt', apksigner='apksigner', live=None, runn
             report['records'][label] = inspect(path, aapt, apksigner, destination, runner)
             report['records'][label]['sha256'] = expected[label]
         report['failures'] = compare(report['records'])
+        if revision is not None:
+            for label, record in report['records'].items():
+                version = pins['mod_version_code' if label == 'mod' else 'stock_version_code']
+                if record['version_code'] != version:
+                    report['failures'].append(f'{label}: versionCode differs from revision')
+                if record['shared_user_id'] != pins['shared_user_id'] or record['cert_sha256'] != [pins['signer_sha256']]:
+                    report['failures'].append(f'{label}: shared UID or signer differs from revision')
         if live: report['live_identity'] = 'PASS' if not report['failures'] else 'FAIL'
         report['static_identity'] = 'FAIL' if report['failures'] else 'PASS'
         report.update(assess_versions(report['records']))
@@ -140,10 +149,11 @@ def main():
     parser.add_argument('--out', help='New host directory; on Linux must be under /tmp')
     parser.add_argument('--aapt', default='aapt'); parser.add_argument('--apksigner', default='apksigner')
     parser.add_argument('--live', type=Path, help='Previously pulled installed BASE APK, never an install action')
+    parser.add_argument('--revision', help='Exact pinned kit revision')
     args = parser.parse_args()
     try: destination = output_dir(args.out, 'tvsettings8054-offline-')
     except (OSError, ValueError) as exc: print('FAIL host output: '+str(exc)+' / NOT_READY'); return 1
-    report = verify(args.kit.resolve(), destination, args.aapt, args.apksigner, args.live)
+    report = verify(args.kit.resolve(), destination, args.aapt, args.apksigner, args.live, revision=args.revision)
     print('Host report: ' + str(destination))
     return 0 if report['status'] == 'PASS' else 1
 

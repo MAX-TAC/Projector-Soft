@@ -93,7 +93,7 @@ class KitTests(unittest.TestCase):
     def test_hash_mismatch_never_invokes_tools(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary); (root/'stock.apk').write_bytes(b'wrong'); (root/'mod.apk').write_bytes(b'wrong')
-            pins = dict(stock_file='stock.apk', mod_file='mod.apk', stock_sha256=verify_offline.STOCK_SHA, mod_sha256=verify_offline.MOD_SHA)
+            pins = dict(stock_file='stock.apk', mod_file='mod.apk', stock_sha256=kit_common.STOCK_SHA, mod_sha256=kit_common.MOD_SHA)
             (root/'provenance.json').write_text(json.dumps(pins), encoding='utf-8')
             def forbidden(args): raise AssertionError('Tool invoked before pin check')
             report = verify_offline.verify(root, root, runner=forbidden)
