@@ -131,7 +131,10 @@ public final class OemInlinePreferencesHook {
                 }
             }
 
-            if(exactBoard)OemPicturePanel.install(context,pictureCategory,preference);
+            if(exactBoard) {
+                OemPicturePanel.install(context,pictureCategory,preference);
+                OemStockUserSettings.installPictureFormat(context,pictureCategory,preference);
+            }
             else OemHardwareDelegatedSettings.installPictureLink(context,pictureCategory,preference);
             try {
                 if(!exactBoard)OemInlineSlidersHook.installPictureReadout(context,pictureCategory,preference);

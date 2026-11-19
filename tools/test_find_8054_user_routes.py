@@ -1,5 +1,6 @@
 import unittest
-from find_8054_user_routes import TIMER_ACTIVITY, stock_timer_activity
+from find_8054_user_routes import (PICTURE_FORMAT_ACTIVITY, TIMER_ACTIVITY,
+                                   stock_picture_format, stock_timer_activity)
 
 
 MANIFEST = f'''
@@ -33,6 +34,29 @@ class TimerRouteTest(unittest.TestCase):
         self.assertFalse(stock_timer_activity(MANIFEST, ACTIVITY.replace("TimerFragment", "OtherFragment"), FRAGMENT))
         self.assertFalse(stock_timer_activity(MANIFEST, ACTIVITY, ""))
 
+
+class PictureFormatRouteTest(unittest.TestCase):
+    def test_stock_activity_and_exact_array_ids(self):
+        manifest = MANIFEST.replace(TIMER_ACTIVITY, PICTURE_FORMAT_ACTIVITY)
+        activity = ACTIVITY.replace("timer/TimerFragment", "picture/DisplayModeFragment")
+        fragment = """
+.method private getSupportPictureFormatArrValue(I)[Ljava/lang/String;
+    const v1, 0x7f0300db
+    .line 41
+    invoke-virtual {v0, v1}, Landroid/content/res/Resources;->getStringArray(I)[Ljava/lang/String;
+    const v2, 0x7f0300dc
+    invoke-virtual {v1, v2}, Landroid/content/res/Resources;->getStringArray(I)[Ljava/lang/String;
+    invoke-virtual {p0}, Lvendor/Config;->getSupportScreenModes()[I
+.end method
+    const-string v0, "g_fusion_picture__pictrue_format"
+    const-string v1, "picture_format"
+"""
+        self.assertEqual(stock_picture_format(manifest, activity, fragment), (0x7f0300db, 0x7f0300dc))
+        self.assertFalse(stock_picture_format(MANIFEST, activity, fragment))
+        self.assertFalse(stock_picture_format(manifest, activity.replace("0x0", "0x1"), fragment))
+        self.assertFalse(stock_picture_format(manifest, activity, fragment.replace("0x7f0300dc", "0x7f0300db")))
+        self.assertFalse(stock_picture_format(manifest, activity, fragment.replace("getSupportScreenModes", "unknown")))
+        self.assertFalse(stock_picture_format(manifest, activity, fragment + "    invoke-virtual {p0}, LX;->getArguments()Landroid/os/Bundle;"))
 
 if __name__ == "__main__":
     unittest.main()

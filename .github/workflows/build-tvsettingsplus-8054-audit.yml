@@ -113,9 +113,11 @@ jobs:
           python3 tools/find_8054_keystone_layout.py \
             /tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk \
             /tmp/tv33/Exact8054ProjectionResources.java
+          python3 tools/test_find_8054_user_routes.py
           python3 tools/find_8054_user_routes.py \
             /tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk \
             /tmp/tv33/decoded /tmp/tv33/Exact8054UserRoutes.java
+          grep -F 'PICTURE_FORMAT = "com.android.tv.settings.partnercustomizer.picture.DisplayModeActivity"' /tmp/tv33/Exact8054UserRoutes.java
           javac -source 8 -target 8 -cp "$ANDROID_JAR" -d /tmp/tv33/classes \
             /tmp/tv33/Exact8054ProjectionResources.java /tmp/tv33/Exact8054UserRoutes.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/*.java
