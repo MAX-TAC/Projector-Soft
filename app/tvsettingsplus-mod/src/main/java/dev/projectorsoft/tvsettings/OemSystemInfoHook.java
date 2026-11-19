@@ -105,6 +105,7 @@ public final class OemSystemInfoHook {
                     count++;
                 }
             }
+            OemPanelInfoHook.install(context, category, prefClass);
             if (OemThermalTelemetryHook.install(context,category,prefClass)) count++;
             return count>0;
         }catch(Exception e){

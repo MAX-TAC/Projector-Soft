@@ -4,11 +4,11 @@ import sys
 from pathlib import Path
 
 METHOD = re.compile(r'(?ms)^\.method [^\n]+\n.*?^\.end method$')
-OWNER = ('MtkTvFApiDisplay', 'MtkTvFApiDisplayBase', 'MtkTvFApiDisplayTypes$PanelInfo',
+OWNER = ('ProjectorManager', 'MtkTvFApiDisplay', 'MtkTvFApiDisplayBase', 'MtkTvFApiDisplayTypes$PanelInfo',
          'MtkTvFApiCusdataIniManager', 'MtkTvFApiDisplayIniManager', 'MtkTvFApiIniManager',
          'MtkTvFApiDisplayWrapper', 'MtkTvFApiInformationWrapper', 'MtkTvFApiSystemWrapper',
          'MtkTvFApiSystemBase', 'PanelInfoViewHolder', 'InfoViewHolder')
-REF = re.compile(r'MtkTvFApiDisplay;->getInstance\(|'
+REF = re.compile(r'(?:ProjectorManager|MtkTvFApiDisplay);->getInstance\(|'
                  r'->(?:loadPanelInfo|getPanelIni|getPanelInfoByKey|getPanel(?:Type|Version|Width|Height)|'
                  r'getChip(?:ID|Id|Name|Type|Info)|init(?:TvFApi|Factory|DisplayIni)\w*)\(|'
                  r'->(?:panelInfo|E_MTK_FAPI_KEY_TYPE_PANEL_(?:TYPE|VERSION|WIDTH|HEIGHT)):|'

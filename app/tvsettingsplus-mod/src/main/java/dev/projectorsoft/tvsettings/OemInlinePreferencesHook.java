@@ -192,7 +192,10 @@ public final class OemInlinePreferencesHook {
                     try {OemPicturePanel.bind(fragment,root);}
                     finally {
                         try {OemSoundDelayPanel.bind(fragment,root);}
-                        finally {OemProjectionSwitches.bind(fragment,root);}
+                        finally {
+                            try {OemProjectionSwitches.bind(fragment,root);}
+                            finally {OemPanelInfoHook.bind(fragment,root);}
+                        }
                     }
                 }
             }
