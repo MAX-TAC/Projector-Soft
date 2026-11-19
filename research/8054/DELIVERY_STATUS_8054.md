@@ -2,7 +2,7 @@
 
 DIRECT_MOD — код контрола/платформенной интеграции; DELEGATED_OEM — только штатная навигация; READ_ONLY — только информация; HIDDEN — прямой MOD-контрол скрыт; BLOCKED — запрещённый путь; NOT_IMPLEMENTED — реализации MOD нет. OEM ссылка не MIGRATED и не FEATURE_COMPLETE. Наличие отдельного подменю и аппаратуры надо подтвердить на устройстве. BUILT_UNTESTED относится к условному пути в APK, а не к переносу всей функции. — означает отсутствие активной реализации, не успешную сборку функции. Все hardware результаты отсутствуют.
 
-DIRECT_MOD 22; DELEGATED_OEM 20; READ_ONLY 19; NOT_IMPLEMENTED 22; BLOCKED 11; HIDDEN 2
+DIRECT_MOD 22; DELEGATED_OEM 22; READ_ONLY 19; NOT_IMPLEMENTED 20; BLOCKED 11; HIDDEN 2
 
 | ID | Функция | Доставка | Fallback | Код | Аппаратура | Следующая проверка |
 |---|---|---|---|---|---|---|
@@ -46,8 +46,8 @@ DIRECT_MOD 22; DELEGATED_OEM 20; READ_ONLY 19; NOT_IMPLEMENTED 22; BLOCKED 11; H
 | SND06 | Звуки интерфейса | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | SOUND_DEVICE_CHECKLIST_8054.md: mode/output/focus, readback and audible effect |
 | SND07 | 5-полосный EQ | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | SOUND_DEVICE_CHECKLIST_8054.md: mode/output/focus, readback and audible effect |
 | SND08 | 13-полосный PEQ | NOT_IMPLEMENTED | — | — | — | Масштаб gain/Q, влияние sound mode, hardware support, выходы |
-| SND09 | Dolby DAP | NOT_IMPLEMENTED | — | — | — | По фото DAP OFF, реальная поддержка неизвестна |
-| SND10 | DTS Loudness | NOT_IMPLEMENTED | — | — | — | Доказать support |
+| SND09 | Dolby DAP | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify eligible Dolby type, native fragment navigation and output |
+| SND10 | DTS Loudness | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify DTS loudness row, actual effect and manual restore for supported output |
 | SND11 | ARC/eARC | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify CEC/ARC/eARC and output-specific behavior |
 | SND12 | Задержка аудио | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify per-output min/max, pending readback and audio timing on 8054 |
 | SND13 | Bluetooth Speaker / A2DP sink | HIDDEN | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Deferred speaker-mode scope; no service disable |

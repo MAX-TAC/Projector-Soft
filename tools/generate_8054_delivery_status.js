@@ -14,6 +14,8 @@ set('NAV11','DELEGATED_OEM','Existing OEM update page link, deferred scope','No 
 set('NAV12','DELEGATED_OEM','Legacy intent aliases; compatibility diagnostics omitted from the normal 8054 menu','Test Settings key routing without disabling KuSettings');
 set('PIC01 PIC02 PIC03 PIC04 PIC05 PIC06 PIC07 PIC08 PIC09 PIC10 PIC11 PIC12','READ_ONLY','OemPicturePanel native stored-value rows; editing BLOCKED_BY_RUNTIME','Establish the active input/PQ context and the stock callback/limits before direct writes');
 set('SND01 SND02 SND03 SND04 SND05 SND06 SND07','DIRECT_MOD','OemSoundPanel / sound guards / OemKeyToneHook / OEM capability gates','SOUND_DEVICE_CHECKLIST_8054.md: mode/output/focus, readback and audible effect','DELEGATED_OEM');
+set('SND09','DELEGATED_OEM','Stock AdvancedFragment through sound_dap and the original Dolby Atmos capability set','Verify eligible Dolby type, native fragment navigation and output');
+set('SND10','DELEGATED_OEM','Stock DTSFragment with isAdvanceFunctionSupport and sound_dts_truvolumehd in its group','Verify DTS loudness row, actual effect and manual restore for supported output');
 set('SND11','DELEGATED_OEM','OEM SOUND_SETTINGS and stock AudioOutputActivity','Verify CEC/ARC/eARC and output-specific behavior');
 set('SND12','DIRECT_MOD','Native speaker and SPDIF delay with exact OEM availability guards, provider and MediaTek readback','Verify per-output min/max, pending readback and audio timing on 8054','DELEGATED_OEM');
 set('SND13 DBL05','HIDDEN','OemMenuVisibilityHook hides BT speaker entry only; service retained','Deferred speaker-mode scope; no service disable');

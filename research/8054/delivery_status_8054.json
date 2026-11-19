@@ -2,9 +2,9 @@
   "meaning": "Current code delivery; no MIGRATED/FEATURE_COMPLETE claim. BUILT_UNTESTED refers to compiled conditional path, not hardware availability. Group OEM navigation does not prove individual feature presence. Null build/runtime state means no implemented feature to verify.",
   "counts": {
     "DIRECT_MOD": 22,
-    "DELEGATED_OEM": 20,
+    "DELEGATED_OEM": 22,
     "READ_ONLY": 19,
-    "NOT_IMPLEMENTED": 22,
+    "NOT_IMPLEMENTED": 20,
     "BLOCKED": 11,
     "HIDDEN": 2
   },
@@ -532,12 +532,12 @@
     {
       "id": "SND09",
       "function": "Dolby DAP",
-      "delivery": "NOT_IMPLEMENTED",
-      "implementation": "No current MOD path demonstrated",
-      "next_check": "По фото DAP OFF, реальная поддержка неизвестна",
+      "delivery": "DELEGATED_OEM",
+      "implementation": "Stock AdvancedFragment through sound_dap and the original Dolby Atmos capability set",
+      "next_check": "Verify eligible Dolby type, native fragment navigation and output",
       "fallback": null,
-      "build_state": null,
-      "runtime_state": null,
+      "build_state": "BUILT_UNTESTED",
+      "runtime_state": "RUNTIME_TEST_REQUIRED",
       "feature_complete": false,
       "scope": "CURRENT",
       "evidence_status": "UNKNOWN"
@@ -545,12 +545,12 @@
     {
       "id": "SND10",
       "function": "DTS Loudness",
-      "delivery": "NOT_IMPLEMENTED",
-      "implementation": "No current MOD path demonstrated",
-      "next_check": "Доказать support",
+      "delivery": "DELEGATED_OEM",
+      "implementation": "Stock DTSFragment with isAdvanceFunctionSupport and sound_dts_truvolumehd in its group",
+      "next_check": "Verify DTS loudness row, actual effect and manual restore for supported output",
       "fallback": null,
-      "build_state": null,
-      "runtime_state": null,
+      "build_state": "BUILT_UNTESTED",
+      "runtime_state": "RUNTIME_TEST_REQUIRED",
       "feature_complete": false,
       "scope": "CURRENT",
       "evidence_status": "UNKNOWN"

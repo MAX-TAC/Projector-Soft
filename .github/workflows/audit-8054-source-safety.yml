@@ -69,6 +69,13 @@ jobs:
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/CecAutoOff8054.java \
             app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/CecAutoOff8054Test.java
           java -cp /tmp/8054-cec-tests dev.projectorsoft.tvsettings.CecAutoOff8054Test
+      - name: Test stock Dolby and DTS capability checks
+        run: |
+          mkdir -p /tmp/audio-effects-tests
+          javac -d /tmp/audio-effects-tests \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/AdvancedSound8054Policy.java \
+            app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/AdvancedSound8054PolicyTest.java
+          java -cp /tmp/audio-effects-tests dev.projectorsoft.tvsettings.AdvancedSound8054PolicyTest
       - name: Test OEM delay units and asynchronous confirmation
         run: |
           mkdir -p /tmp/audio-delay-tests
