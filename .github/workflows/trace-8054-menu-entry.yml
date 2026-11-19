@@ -39,3 +39,8 @@ jobs:
               cat /tmp/layout.txt
             fi
           done < <(zipinfo -1 /tmp/stock.apk 'res/layout/*general*.xml')
+          "$AAPT" dump resources /tmp/stock.apk > /tmp/resources.txt
+          grep -i -A 6 -B 1 -E '0x7f0d006f|tciv_general_screensaver_settings|layout/[^ ]*general[^ ]*' /tmp/resources.txt | head -n 180
+          while read -r path; do
+            "$AAPT" dump xmltree /tmp/stock.apk "$path" | grep -Ei 'E: |android:id' | head -n 90
+          done < <(grep -A 3 'spec resource 0x7f0d006f' /tmp/resources.txt | grep -oE 'res/[^ ]+\.xml' | sort -u)

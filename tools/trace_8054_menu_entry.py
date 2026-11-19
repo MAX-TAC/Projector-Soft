@@ -12,6 +12,9 @@ CLASSES = {
     'com/android/tv/settings/uicustom/fragment/general/GeneralFragment': r'Layout|initView',
     'com/android/tv/settings/uicustom/fragment/general/GeneralFragment$4': r'onClick',
     'com/android/tv/settings/uicustom/floatmenu/FloatMenuService': r'on(StartCommand|Bind)|command',
+    'com/android/tv/settings/uicustom/floatmenu/FloatMenuManager': r'jumpByAction|jumpToExternalActivity',
+    'com/android/tv/settings/uicustom/floatmenu/controller/general/GeneralSubMenuController': r'Layout|initView',
+    'com/android/tv/settings/uicustom/floatmenu/controller/general/ScreensaverSecondaryController': r'set|onClick',
     'com/android/tv/settings/uicustom/floatmenu/controller/general/GeneralSubMenuController$4': r'onClick',
 }
 
