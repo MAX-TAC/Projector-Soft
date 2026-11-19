@@ -12,6 +12,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.ResolveInfo;
 import android.provider.Settings;
 import android.util.Log;
+import android.widget.SeekBar;
 import android.widget.Toast;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -169,6 +170,8 @@ final class ModMenuBackend {
         }));
         if(change!=null && hasMethod(row,"getEntryValues"))return new State(detail,()->safe("list-"+key,
                 ()->choose(row,key,refresh)));
+        if(change!=null && key.endsWith("_delay") && hasMethod(row,"getMax"))
+            return new State(detail,()->safe("delay-"+key,()->chooseDelay(row,detail,refresh)));
         if(change!=null && hasMethod(row,"isChecked")) {
             boolean checked=Boolean.TRUE.equals(invoke(row,"isChecked"));
             return new State((checked?"Включено":"Выключено")+(detail.isEmpty()?"":" · "+detail),
@@ -193,13 +196,50 @@ final class ModMenuBackend {
                 }).setNegativeButton("Отмена",null).show();
     }
 
+    private void chooseDelay(Object row,String detail,Runnable refresh) throws Exception {
+        if(!detail.matches("-?\\d+ мс"))return;
+        int current=(Integer)invoke(row,"getValue");
+        int max=(Integer)invoke(row,"getMax");
+        int base=Integer.parseInt(detail.substring(0,detail.indexOf(' ')))-current*SoundDelayState.STEP_MS;
+        if(max<1 || current<0 || current>max)return;
+        SeekBar slider=new SeekBar(activity);
+        slider.setMax(max);
+        slider.setProgress(current);
+        slider.setKeyProgressIncrement(1);
+        slider.setFocusable(true);
+        AlertDialog dialog=new AlertDialog.Builder(activity)
+                .setTitle((CharSequence)invoke(row,"getTitle"))
+                .setMessage(detail)
+                .setView(slider)
+                .setNegativeButton("Отмена",null)
+                .setPositiveButton("Применить",(d,w)->{
+                    int selected=slider.getProgress();
+                    if(selected==current)return;
+                    safe("sound-delay-change",()->preference.getMethod("callChangeListener",Object.class)
+                            .invoke(row,selected));
+                    refresh.run();
+                    activity.getWindow().getDecorView().postDelayed(refresh,1300);
+                }).show();
+        slider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override public void onProgressChanged(SeekBar bar,int tick,boolean fromUser){
+                dialog.setMessage((base+tick*SoundDelayState.STEP_MS)+" мс");
+            }
+            @Override public void onStartTrackingTouch(SeekBar bar){}
+            @Override public void onStopTrackingTouch(SeekBar bar){}
+        });
+    }
+
     private void apply(Object row,Object value,String key,Runnable refresh) {
         safe("change-"+key,()->{
             Object accepted=preference.getMethod("callChangeListener",Object.class).invoke(row,value);
-            if(!Boolean.TRUE.equals(accepted))
+            if(Boolean.TRUE.equals(accepted)) {
+                if(value instanceof String)row.getClass().getMethod("setValue",String.class).invoke(row,value);
+                else if(value instanceof Boolean)row.getClass().getMethod("setChecked",boolean.class).invoke(row,value);
+            } else {
                 Toast.makeText(activity,"Значение не принято. Данные перечитаны.",Toast.LENGTH_SHORT).show();
+            }
         });
-        refresh.run();
+        activity.getWindow().getDecorView().post(refresh);
     }
 
     private boolean supportedIntent(Intent intent){

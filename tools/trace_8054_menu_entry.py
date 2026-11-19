@@ -16,6 +16,10 @@ CLASSES = {
     'com/android/tv/settings/uicustom/floatmenu/controller/general/GeneralSubMenuController': r'Layout|initView',
     'com/android/tv/settings/uicustom/floatmenu/controller/general/ScreensaverSecondaryController': r'set|onClick',
     'com/android/tv/settings/uicustom/floatmenu/controller/general/GeneralSubMenuController$4': r'onClick',
+    'androidx/preference/PreferenceManager': r'createPreferenceScreen|<init>',
+    'androidx/preference/Preference': r'getOnPreference|performClick|callChangeListener|onAttachedToHierarchy',
+    'androidx/preference/PreferenceScreen': r'<init>',
+    'androidx/preference/SeekBarPreference': r'getMax|getMin|getValue',
 }
 
 root = Path(sys.argv[1])

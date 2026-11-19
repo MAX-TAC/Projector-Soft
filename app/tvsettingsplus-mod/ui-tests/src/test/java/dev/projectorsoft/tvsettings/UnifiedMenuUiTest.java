@@ -3,6 +3,7 @@ package dev.projectorsoft.tvsettings;
 import android.app.Activity;
 import android.content.Intent;
 import android.provider.Settings;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -80,6 +81,17 @@ public class UnifiedMenuUiTest {
                     assertFalse(row.title,view.isClickable());
             }
         }
+    }
+
+    @Test public void foregroundKeysUseOnlyExplicitInPackageRoutes() {
+        ModMainSettingsActivity root=Robolectric.buildActivity(ModMainSettingsActivity.class).setup().get();
+        assertTrue(root.onKeyUp(KeyEvent.KEYCODE_TV_INPUT,new KeyEvent(KeyEvent.ACTION_UP,KeyEvent.KEYCODE_TV_INPUT)));
+        assertEquals(SourcesSettingsActivity.class.getName(),
+                shadowOf(root).getNextStartedActivity().getComponent().getClassName());
+        SourcesSettingsActivity section=Robolectric.buildActivity(SourcesSettingsActivity.class).setup().get();
+        assertTrue(section.onKeyUp(KeyEvent.KEYCODE_SETTINGS,new KeyEvent(KeyEvent.ACTION_UP,KeyEvent.KEYCODE_SETTINGS)));
+        assertEquals(ModMainSettingsActivity.class.getName(),
+                shadowOf(section).getNextStartedActivity().getComponent().getClassName());
     }
 
     private void gather(View view,List<String> labels){

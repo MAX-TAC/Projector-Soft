@@ -12,6 +12,7 @@ on:
       - 'tools/find_8054_user_routes.py'
       - 'tools/compose_brightness_v3_apk.py'
       - 'tools/verify_8054_unified.py'
+      - 'tools/trace_8054_unified_inputs.py'
   workflow_dispatch:
 concurrency:
   group: tvsettings-exact-8054-v33-build
@@ -434,6 +435,8 @@ jobs:
         if: always()
         run: |
           mkdir -p /tmp/tv33/report
+          python3 tools/trace_8054_unified_inputs.py /tmp/tv33/decoded /tmp/flix8054_erofs +            > /tmp/tv33/report/stock-input-routes.txt
+          cat /tmp/tv33/report/stock-input-routes.txt
           cat > /tmp/tv33/report/README.txt <<'EOF'
           WARNING: EXPERIMENTAL. Not tested on actual projector; DO NOT install as production.
           TvSettingsPlus 8054 EXACT-BUILD platform-signature-matched v35.

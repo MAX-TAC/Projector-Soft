@@ -2,17 +2,20 @@ package dev.projectorsoft.tvsettings;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.ActivityNotFoundException;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /** A standalone TV focus surface with a left section rail and right settings pane. */
 public abstract class ModSettingsActivity extends Activity {
@@ -28,6 +31,7 @@ public abstract class ModSettingsActivity extends Activity {
     private LinearLayout nav;
     private ScrollView right;
     private TextView heading;
+    private ModMenuBackend backend;
     private int restoreFocus=View.NO_ID;
 
     /** Subclasses select a fixed page. The root previews all pages. */
@@ -92,6 +96,7 @@ public abstract class ModSettingsActivity extends Activity {
 
     @Override protected void onResume() {
         super.onResume();
+        backend=null;
         int target=restoreFocus==View.NO_ID ? NAV_BASE+selected.ordinal() : restoreFocus;
         showContent(target);
         restoreFocus=View.NO_ID;
@@ -120,15 +125,19 @@ public abstract class ModSettingsActivity extends Activity {
                     addRow(index++,spec.title,"",null);
             }
         } else {
-            ModMenuBackend backend=new ModMenuBackend(this,selected);
-            backend.load();
+            if(backend==null) {
+                backend=new ModMenuBackend(this,selected);
+                backend.load();
+            }
             for(ModMenuCatalog.Row spec:ModMenuCatalog.rows(selected)) {
                 if(spec.kind==ModMenuCatalog.Kind.GROUP) {
                     TextView group=text(spec.title,16,SECONDARY);
                     group.setPadding(dp(12),dp(12),dp(12),dp(4));
                     content.addView(group);
                 } else {
-                    ModMenuBackend.State state=backend.state(spec,()->showContent(focusedId()));
+                    ModMenuBackend.State state=backend.state(spec,()->{
+                        if(!isFinishing() && !isDestroyed())showContent(focusedId());
+                    });
                     addRow(index++,spec.title,state.detail,state.action);
                 }
             }
@@ -163,9 +172,34 @@ public abstract class ModSettingsActivity extends Activity {
             if(first!=null)first.requestFocus();
             return;
         }
-        selected=target;
-        startActivity(new Intent(this,activityFor(target)));
-        if(page()!=null)finish();
+        if(open(new Intent(this,activityFor(target)))) {
+            selected=target;
+            if(page()!=null)finish();
+        }
+    }
+
+    @Override public boolean onKeyUp(int code,KeyEvent event) {
+        if(code==KeyEvent.KEYCODE_SETTINGS) {
+            if(page()!=null && open(new Intent(this,ModMainSettingsActivity.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP)))finish();
+            return true;
+        }
+        if(code==KeyEvent.KEYCODE_TV_INPUT) {
+            openPage(ModMenuCatalog.Page.SOURCES);
+            return true;
+        }
+        return super.onKeyUp(code,event);
+    }
+
+    private boolean open(Intent intent) {
+        try {
+            startActivity(intent);
+            return true;
+        }catch(ActivityNotFoundException | SecurityException failure){
+            android.util.Log.w("TvSettingsPlusMOD","Unified settings section unavailable",failure);
+            Toast.makeText(this,"Раздел недоступен",Toast.LENGTH_SHORT).show();
+            return false;
+        }
     }
 
     static Class<? extends Activity> activityFor(ModMenuCatalog.Page target) {
@@ -193,6 +227,7 @@ public abstract class ModSettingsActivity extends Activity {
         row.setPadding(dp(12),dp(8),dp(12),dp(8));
         row.setMinHeight(dp(50));
         row.setFocusable(true);
+        row.setFocusableInTouchMode(true);
         StateListDrawable states=new StateListDrawable();
         states.addState(new int[]{android.R.attr.state_focused},tile(FOCUS));
         states.addState(new int[]{android.R.attr.state_activated},tile(0xff303943));
