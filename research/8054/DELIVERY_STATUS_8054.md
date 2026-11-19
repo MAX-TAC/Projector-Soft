@@ -61,15 +61,15 @@ DIRECT_MOD 22; DELEGATED_OEM 22; READ_ONLY 19; NOT_IMPLEMENTED 20; BLOCKED 11; H
 | HDMI08 | Приложение при старте | DIRECT_MOD | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify target activity and persisted OEM property |
 | HDMI09 | USB local media | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Deferred player scope, navigation only |
 | HDMI10 | Аналоговые входы VGA/SCART/Tuner | BLOCKED | — | — | — | Проверить зависимости HDMI arbitration |
-| PRJ01 | Положение: Front/Rear/Ceiling | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm the original subcontrols, fullscreen routes and return path |
+| PRJ01 | Положение: Front/Rear/Ceiling | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm placement and focus return through the stock UI |
 | PRJ02 | Автофокус при включении | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify autofocus behavior separately for startup and movement |
 | PRJ03 | Автофокус при перемещении | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify autofocus behavior separately for startup and movement |
-| PRJ04 | Ручная фокусировка | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm the original subcontrols, fullscreen routes and return path |
+| PRJ04 | Ручная фокусировка | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm placement and focus return through the stock UI |
 | PRJ05 | Автоматическая трапеция | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify OEM view inflation and motion correction without changing manual correction |
 | PRJ06 | 4-угольная коррекция | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify opening and return without geometry change, D-pad and manual restore |
 | PRJ07 | Горизонтальная/вертикальная трапеция | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify axis controls, D-pad/Back and restore shared geometry |
-| PRJ08 | Обнаружение препятствия | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm the original subcontrols, fullscreen routes and return path |
-| PRJ09 | Автоматическое выравнивание / экран | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm the original subcontrols, fullscreen routes and return path |
+| PRJ08 | Обнаружение препятствия | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm sensor capability and behavior; stock keystone initialization clears dependent values when movement correction is off |
+| PRJ09 | Автоматическое выравнивание / экран | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm customer ID, sensor support and geometry restore; keep stock route |
 | PRJ10 | Цифровой зум | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify zoom bounds, shared geometry, Back/D-pad and restore |
 | PRJ11 | Оптическая яркость LED | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify available customer profile, OEM readback, actual brightness and thermal behavior |
 | SYS01 | Питание при подключении сети | DIRECT_MOD | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify power restoration behavior without modifying thermal services |

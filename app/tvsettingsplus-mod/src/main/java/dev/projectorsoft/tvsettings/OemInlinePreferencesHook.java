@@ -187,7 +187,10 @@ public final class OemInlinePreferencesHook {
                 try {OemHdmiPortInfo.bind(fragment,root);}
                 finally {
                     try {OemPicturePanel.bind(fragment,root);}
-                    finally {OemSoundDelayPanel.bind(fragment,root);}
+                    finally {
+                        try {OemSoundDelayPanel.bind(fragment,root);}
+                        finally {OemProjectionSwitches.bind(fragment,root);}
+                    }
                 }
             }
         }

@@ -45,6 +45,13 @@ public final class Projection8054PolicyTest {
         check(!Projection8054Policy.mayNavigate(false,true,true,true,true));
         check(!Projection8054Policy.mayNavigate(true,false,true,true,true));
         check(!Projection8054Policy.mayNavigate(true,true,false,true,false));
+        check(Projection8054Policy.mayUseOemToggle("8054",true,true,4,4));
+        check(Projection8054Policy.mayUseOemToggle("8054",true,true,33,33));
+        check(!Projection8054Policy.mayUseOemToggle("8052",true,true,4,4));
+        check(!Projection8054Policy.mayUseOemToggle(null,true,true,4,4));
+        check(!Projection8054Policy.mayUseOemToggle("8054",false,true,4,4));
+        check(!Projection8054Policy.mayUseOemToggle("8054",true,false,4,4));
+        check(!Projection8054Policy.mayUseOemToggle("8054",true,true,34,33));
         testStockEditor();
         System.out.println("PASS projection OEM eligibility, permission/exported/disabled gates and 8054 brightness write gate");
     }

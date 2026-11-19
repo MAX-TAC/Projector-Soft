@@ -94,14 +94,15 @@ jobs:
           apktool if /tmp/flix8054_erofs/system_a_tree/system/framework/framework-res.apk -p /tmp/tv33/framework
           apktool d -f -r -p /tmp/tv33/framework /tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk -o /tmp/tv33/decoded
           STOCK_TREE=/tmp/flix8054_erofs/system_a_tree/system
-          for target in "$STOCK_TREE/app/RuiAutoFocus/RuiAutoFocus.apk" \
+          for target in "$STOCK_TREE/app/KuSourceRJ/KuSourceRJ.apk" \
+              "$STOCK_TREE/app/RuiAutoFocus/RuiAutoFocus.apk" \
               "$STOCK_TREE/app/trdservice/trdservice.apk" \
               "$STOCK_TREE/priv-app/KeystoneCorrection/KeystoneCorrection.apk" \
               /tmp/flix8054_erofs/system_ext_a_tree/app/Factory/Factory.apk; do
             sha256sum "$target"
             apktool d -f -r -p /tmp/tv33/framework "$target" -o "/tmp/tv33/$(basename "$target" .apk)"
           done
-          python3 tools/trace_8054_projection_interlocks.py /tmp/tv33/decoded /tmp/tv33/RuiAutoFocus /tmp/tv33/trdservice /tmp/tv33/KeystoneCorrection /tmp/tv33/Factory
+          python3 tools/trace_8054_projection_interlocks.py /tmp/tv33/decoded /tmp/tv33/RuiAutoFocus /tmp/tv33/trdservice /tmp/tv33/KeystoneCorrection /tmp/tv33/Factory /tmp/tv33/KuSourceRJ
           python3 tools/find_8054_keystone_layout.py \
             /tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk \
             /tmp/tv33/Exact8054ProjectionResources.java

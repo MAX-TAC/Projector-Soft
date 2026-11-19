@@ -118,6 +118,10 @@ jobs:
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/Projection8054Policy.java \
             app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/Projection8054PolicyTest.java
           java -cp /tmp/picture-state-tests dev.projectorsoft.tvsettings.Projection8054PolicyTest
+          javac -d /tmp/picture-state-tests \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/ProjectionToggleState.java \
+            app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/ProjectionToggleStateTest.java
+          java -cp /tmp/picture-state-tests dev.projectorsoft.tvsettings.ProjectionToggleStateTest
           javac -cp /tmp/picture-state-tests -d /tmp/picture-state-tests \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/StandardAndroidNavigationPolicy.java \
             app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/StandardAndroidNavigationPolicyTest.java

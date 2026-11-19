@@ -27,6 +27,11 @@ public final class Projection8054Policy {
                 && mayNavigate(activityEnabled,appEnabled,sameUid,exported,permissionGranted);
     }
 
+    static boolean mayUseOemToggle(String machine, boolean system, boolean enabled,
+                                   long installedVersion, long expectedVersion) {
+        return "8054".equals(machine) && system && enabled && installedVersion == expectedVersion;
+    }
+
     public static boolean mayUseLegacyBrightness(String machine) {return "8052".equals(machine);}
     public static boolean mayNavigate(boolean activityEnabled,boolean appEnabled,boolean samePackage,
                                       boolean exported,boolean permissionGranted) {

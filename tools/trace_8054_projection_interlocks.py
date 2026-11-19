@@ -5,7 +5,7 @@ from pathlib import Path
 
 METHOD = re.compile(r"(?ms)^\.method [^\n]*?([^\s(]+)\([^\n]*\n.*?^\.end method$")
 REF = re.compile(r"persist\.rjpj\.(obstacle\.avoidance|screen\.alignment|autokeystone\.move)|"
-                 r"->(setAutoObstacleAvoidance|setAutoScreen|setMoveAutoKeystone|setPEQ|getPEQ)\(|"
+                 r"->(setAutoObstacleAvoidance|setAutoScreen|setMoveAutoKeystone|(?:set|get)(?:PEQ|Peq)\w*|saveAudioIni)\(|"
                  r"\b(?:peq13|PEQ13|PEQ_13|peq_13)\b")
 CONTROLLER = re.compile(r"(^|\$)(?:init.*|on.*|setAuto.*|setMove.*|update.*|lambda.*)$")
 BODY = re.compile(r"invoke-|const[-/ ]|if-|:[\w_]+|[ip]get|[is]put|[a-z]-switch|return|move-result")
@@ -15,12 +15,17 @@ def trace(root):
     for file in sorted(root.glob("smali*/**/*.smali")):
         owner = file.stem.split("$")[0]
         content = file.read_text(encoding="utf-8")
-        editor = owner in ("KeystoneSettingsSecondaryController", "KeystoneSettingsFragment")
-        if not editor and not REF.search(content):
+        editor = owner in ("KeystoneSettingsSecondaryController", "KeystoneSettingsFragment",
+                           "AutomaticAdmissionActivity", "FocusSettingsSecondaryController",
+                           "ProjectionModeSecondaryController", "PEQAdjustViewHolder")
+        helper = owner == "TitleSwitchView"
+        if not editor and not helper and not REF.search(content):
             continue
         for m in METHOD.finditer(content):
             name, body = m[1], m[0]
-            if not REF.search(body) and not (editor and CONTROLLER.search(name)):
+            if not (REF.search(body)
+                    or editor and (CONTROLLER.search(name) or name in ("<init>", "gotoActivity"))
+                    or helper and name in ("setSwitchEnable", "setDisableFocus")):
                 continue
             lines = body.splitlines()
             start = content.count("\n", 0, m.start()) + 1

@@ -27,9 +27,11 @@ set('HDMI06','DIRECT_MOD','OemHdmiAutoPlayHook','Verify OEM autoplay state and s
 set('HDMI07','DIRECT_MOD','OemPowerOnSourceHook; boot property only','Verify exact8054 accepted IDs and cold boot per input');
 set('HDMI08','DIRECT_MOD','OemPowerOnAppHook','Verify target activity and persisted OEM property');
 set('HDMI09','DELEGATED_OEM','OEM source USB page','Deferred player scope, navigation only');
-set('PRJ01 PRJ04 PRJ08 PRJ09','DELEGATED_OEM','OemProjectionPanel: checked stock projection entry and original correction UI; manual focus uses remote keys','Confirm the original subcontrols, fullscreen routes and return path');
-set('PRJ02 PRJ03','DIRECT_MOD','OemFocusPreferences: two stock callbacks and property readback','Verify autofocus behavior separately for startup and movement','DELEGATED_OEM');
-set('PRJ05','DIRECT_MOD','OemMoveKeystonePreference: stock callback bound to original layout and property readback','Verify OEM view inflation and motion correction without changing manual correction','DELEGATED_OEM');
+set('PRJ01 PRJ04','DELEGATED_OEM','OemProjectionPanel: checked stock projection entry; manual focus uses OEM remote keys','Confirm placement and focus return through the stock UI');
+set('PRJ08','DELEGATED_OEM','Stock projection entry; movement correction gates the obstacle toggle','Confirm sensor capability and behavior; stock keystone initialization clears dependent values when movement correction is off');
+set('PRJ09','DELEGATED_OEM','Stock projection entry; customer 0 opens AutomaticAdmissionActivity instead of the stock switch','Confirm customer ID, sensor support and geometry restore; keep stock route');
+set('PRJ02 PRJ03','DIRECT_MOD','OemFocusPreferences: two stock callbacks, stale-state gate and property readback on return','Verify autofocus behavior separately for startup and movement','DELEGATED_OEM');
+set('PRJ05','DIRECT_MOD','OemMoveKeystonePreference: stock callback bound to original layout, stale-state gate and property readback on return','Verify OEM view inflation and motion correction without changing manual correction','DELEGATED_OEM');
 set('PRJ06','DELEGATED_OEM','Separate FourCornerActivity via the verified stock FOUR_CORNER action','Verify opening and return without geometry change, D-pad and manual restore');
 set('PRJ07','DELEGATED_OEM','Separate HVKeystoneActivity via the verified stock HV action','Verify axis controls, D-pad/Back and restore shared geometry');
 set('PRJ10','DELEGATED_OEM','Separate DigitalZoomActivity via the verified stock DIGITAL_ZOOM action','Verify zoom bounds, shared geometry, Back/D-pad and restore');
