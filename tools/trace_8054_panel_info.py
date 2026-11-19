@@ -7,10 +7,11 @@ METHOD = re.compile(r'(?ms)^\.method [^\n]+\n.*?^\.end method$')
 OWNER = ('ProjectorManager', 'MtkTvFApiDisplay', 'MtkTvFApiDisplayBase', 'MtkTvFApiDisplayTypes$PanelInfo',
          'MtkTvFApiCusdataIniManager', 'MtkTvFApiDisplayIniManager', 'MtkTvFApiIniManager',
          'MtkTvFApiDisplayWrapper', 'MtkTvFApiInformationWrapper', 'MtkTvFApiSystemWrapper',
-         'MtkTvFApiSystemBase', 'PanelInfoViewHolder', 'InfoViewHolder')
+         'MtkTvFApiManagerProxy', 'MtkTvFApiSystemBase', 'PanelInfoViewHolder', 'InfoViewHolder')
 REF = re.compile(r'(?:ProjectorManager|MtkTvFApiDisplay);->getInstance\(|'
                  r'->(?:loadPanelInfo|getPanelIni|getPanelInfoByKey|getPanel(?:Type|Version|Width|Height)|'
                  r'getChip(?:ID|Id|Name|Type|Info)|init(?:TvFApi|Factory|DisplayIni)\w*)\(|'
+                 r'->iniPaths:\[Ljava/lang/String;|->E_MTK_FAPI_INI_TYPE_PANEL:|'
                  r'->(?:panelInfo|E_MTK_FAPI_KEY_TYPE_PANEL_(?:TYPE|VERSION|WIDTH|HEIGHT)):|'
                  r'"[^"\n]*(?:[Pp]anel[^"\n]*\.ini|ro\.soc\.(?:model|manufacturer))[^"\n]*"')
 OP = re.compile(r'^\s*(?:invoke-|const|move-result|if-|goto|[ais]get|[ais]put|new-instance|[a-z]+-switch|return|throw|:[a-z])')
@@ -26,6 +27,10 @@ def trace(root):
         code = path.read_text(encoding='utf-8')
         relative = path.relative_to(root).as_posix()
         keyed = owner in OWNER
+        if owner == 'MtkTvFApiDisplayIniManager':
+            for field in code.splitlines():
+                if field.startswith('.field ') and 'iniPaths:' in field:
+                    print(f'PIC18_PATH_FIELD {root.name}/{relative}: {field}')
         lifecycle = bool(re.search(r'/(?:Factory.*Activity|DesignMenuActivity|[^/]*Application|TvSettingsApplication|MainSettings)\.smali$', relative))
         if not (keyed or lifecycle or REF.search(code)):
             continue
@@ -44,7 +49,7 @@ def trace(root):
                 if not OP.search(line):
                     continue
                 if len(body) > 600 and (name in ('buildKeys', '<clinit>') or around_init):
-                    if not (REF.search(line) or INIT.search(line)):
+                    if not (REF.search(line) or INIT.search(line) or name == 'buildKeys' and 'const-string' in line):
                         continue
                 print(f'PIC18_LINE {offset+i} {line.strip()}')
     if not count:
