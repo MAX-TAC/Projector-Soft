@@ -13,6 +13,8 @@ set('NAV09','DIRECT_MOD','OemScreenTimeoutSafetyHook','Verify Never/no dream pol
 set('NAV11','DELEGATED_OEM','Existing OEM update page link, deferred scope','No OTA work/actions in current milestone');
 set('NAV12','DELEGATED_OEM','Legacy intent aliases; compatibility diagnostics omitted from the normal 8054 menu','Test Settings key routing without disabling KuSettings');
 set('PIC01 PIC02 PIC03 PIC04 PIC05 PIC06 PIC07 PIC08 PIC09 PIC10 PIC11 PIC12','READ_ONLY','OemPicturePanel native stored-value rows; editing BLOCKED_BY_RUNTIME','Establish the active input/PQ context and the stock callback/limits before direct writes');
+set('PIC14','DELEGATED_OEM','HDMI-native format row launches exact stock DisplayModeActivity only with OEM support; factory overscan excluded','Verify live format, scope and manual restore on HW6/HW7 with the stock editor');
+set('PIC18','NOT_IMPLEMENTED','Factory and TvSettingsPlus expose cached panel INI fields; no proven user-process initialization','Prove a safe read-only stock initializer and label values as panel configuration');
 set('SND01 SND02 SND03 SND04 SND05 SND06 SND07','DIRECT_MOD','OemSoundPanel / sound guards / OemKeyToneHook / OEM capability gates','SOUND_DEVICE_CHECKLIST_8054.md: mode/output/focus, readback and audible effect','DELEGATED_OEM');
 set('SND08','NOT_IMPLEMENTED','No MOD editor; exact Factory PEQ uses sound mode, band index and saveAudioIni','Require a stock consumer editor or proven output/profile, units and restoration');
 set('SND09','DELEGATED_OEM','Stock AdvancedFragment through sound_dap and the original Dolby Atmos capability set','Verify eligible Dolby type, native fragment navigation and output');

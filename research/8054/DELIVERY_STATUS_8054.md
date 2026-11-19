@@ -2,7 +2,7 @@
 
 DIRECT_MOD — код контрола/платформенной интеграции; DELEGATED_OEM — только штатная навигация; READ_ONLY — только информация; HIDDEN — прямой MOD-контрол скрыт; BLOCKED — запрещённый путь; NOT_IMPLEMENTED — реализации MOD нет. OEM ссылка не MIGRATED и не FEATURE_COMPLETE. Наличие отдельного подменю и аппаратуры надо подтвердить на устройстве. BUILT_UNTESTED относится к условному пути в APK, а не к переносу всей функции. — означает отсутствие активной реализации, не успешную сборку функции. Все hardware результаты отсутствуют.
 
-DIRECT_MOD 22; DELEGATED_OEM 22; READ_ONLY 19; NOT_IMPLEMENTED 20; BLOCKED 11; HIDDEN 2
+DIRECT_MOD 22; DELEGATED_OEM 23; READ_ONLY 19; NOT_IMPLEMENTED 19; BLOCKED 11; HIDDEN 2
 
 | ID | Функция | Доставка | Fallback | Код | Аппаратура | Следующая проверка |
 |---|---|---|---|---|---|---|
@@ -33,11 +33,11 @@ DIRECT_MOD 22; DELEGATED_OEM 22; READ_ONLY 19; NOT_IMPLEMENTED 20; BLOCKED 11; H
 | PIC11 | HDR | READ_ONLY | — | SOURCE_ONLY | RUNTIME_TEST_REQUIRED | Establish the active input/PQ context and the stock callback/limits before direct writes |
 | PIC12 | MEMC/MJC | READ_ONLY | — | SOURCE_ONLY | RUNTIME_TEST_REQUIRED | Establish the active input/PQ context and the stock callback/limits before direct writes |
 | PIC13 | MEMC Demo | NOT_IMPLEMENTED | — | — | — | Доказать support, убрать если не работает |
-| PIC14 | Overscan / масштаб входа | NOT_IMPLEMENTED | — | — | — | Различать factory calibration и user per-HDMI crop |
+| PIC14 | Overscan / масштаб входа | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify live format, scope and manual restore on HW6/HW7 with the stock editor |
 | PIC15 | Тестовые картинки | NOT_IMPLEMENTED | — | — | — | Разработать watchdog восстановления паттерна |
 | PIC16 | Non-Linear PQ | BLOCKED | — | — | — | Не записывать calibration |
 | PIC17 | White Balance заводской | BLOCKED | — | — | — | Не заменять RGB ползунок Factory WB API |
-| PIC18 | Panel Info | NOT_IMPLEMENTED | — | — | — | Не трактовать как оптическое разрешение |
+| PIC18 | Panel Info | NOT_IMPLEMENTED | — | — | — | Prove a safe read-only stock initializer and label values as panel configuration |
 | SND01 | Режим звука | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | SOUND_DEVICE_CHECKLIST_8054.md: mode/output/focus, readback and audible effect |
 | SND02 | Низкие частоты | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | SOUND_DEVICE_CHECKLIST_8054.md: mode/output/focus, readback and audible effect |
 | SND03 | Высокие частоты | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | SOUND_DEVICE_CHECKLIST_8054.md: mode/output/focus, readback and audible effect |
