@@ -20,6 +20,18 @@ final class OemPanelInfoHook {
 
     private OemPanelInfoHook() {}
 
+    static String[] readExisting(Context context) throws ReflectiveOperationException {
+        return readExisting(context.getClassLoader());
+    }
+
+    private static String[] readExisting(ClassLoader loader) throws ReflectiveOperationException {
+        Class<?> exact = Class.forName("dev.projectorsoft.tvsettings.Exact8054PanelCache",false,loader);
+        return PanelCacheReadout.read(OemHdmiPortInfo.machineId(),loader,
+                (String)exact.getField("MANAGER").get(null),
+                (String)exact.getField("SINGLETON").get(null),
+                (String)exact.getField("DISPLAY").get(null));
+    }
+
     static void install(Context context, Object group, Class<?> pref) {
         if (!"8054".equals(OemHdmiPortInfo.machineId())) return;
         try {
@@ -125,11 +137,7 @@ final class OemPanelInfoHook {
 
         private void refresh() {
             try {
-                Class<?> exact = Class.forName("dev.projectorsoft.tvsettings.Exact8054PanelCache", false, loader);
-                String[] values = PanelCacheReadout.read(OemHdmiPortInfo.machineId(), loader,
-                        (String) exact.getField("MANAGER").get(null),
-                        (String) exact.getField("SINGLETON").get(null),
-                        (String) exact.getField("DISPLAY").get(null));
+                String[] values = readExisting(loader);
                 boolean any = false;
                 for (int i = 0; i < rows.length; i++) {
                     summary.invoke(rows[i], values[i]);

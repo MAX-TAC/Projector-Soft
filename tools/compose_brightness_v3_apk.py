@@ -7,6 +7,7 @@ import sys,re,zipfile,copy,json,argparse
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 from patch_axml_compat_aliases import patch_manifest
 from patch_axml_version import change_version_code
+from patch_8054_unified_manifest import patch_unified
 rx=re.compile(r"classes\d*\.dex$")
 SIG=(".RSA",".DSA",".EC",".SF",".MF")
 def main():
@@ -16,8 +17,9 @@ def main():
  p.add_argument("compiled_dex",type=Path)
  p.add_argument("patch_report",type=Path)
  p.add_argument("output",type=Path)
- p.add_argument("--version-code",type=int,default=3,choices=(3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,27,28,29,30,31,32,33,34))
+ p.add_argument("--version-code",type=int,default=3,choices=(3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,27,28,29,30,31,32,33,34,35))
  p.add_argument("--projector-entry",action="store_true")
+ p.add_argument("--unified-8054",action="store_true")
  a=p.parse_args()
  meta=json.loads(a.patch_report.read_text())
  modified=set(meta["edited_dex"])
@@ -28,8 +30,14 @@ def main():
    raise ValueError("Unexpected original/modified DEX file set")
   if not a.compiled_dex.read_bytes().startswith(b"dex\n"):
    raise ValueError("Bad Android classes17 DEX")
-  manifest,actions=patch_manifest(src.read("AndroidManifest.xml"),projector_entry=a.projector_entry)
-  manifest=change_version_code(manifest,2,a.version_code)
+  if a.unified_8054:
+   if modified or a.projector_entry or a.version_code<35:
+    raise ValueError("Unified menu requires stock OEM DEX and versionCode 35 or later")
+   manifest=patch_unified(src.read("AndroidManifest.xml"),a.version_code)
+   actions=[]
+  else:
+   manifest,actions=patch_manifest(src.read("AndroidManifest.xml"),projector_entry=a.projector_entry)
+   manifest=change_version_code(manifest,2,a.version_code)
   a.output.parent.mkdir(parents=True,exist_ok=True)
   with zipfile.ZipFile(a.output,"w",allowZip64=True) as result:
    for i in src.infolist():

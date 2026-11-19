@@ -13,18 +13,11 @@ public final class OemProjectionPanel {
                     "Штатные настройки проектора","Положение, фокус и коррекция",intent,251);
         }catch(Exception ex){Log.w("TvSettingsPlusMOD","OEM projection menu unavailable",ex);}
         if ("8054".equals(OemHdmiPortInfo.machineId())) {
-            addEditor(context,category,pref,"zoom","Цифровой зум",Projection8054Policy.DIGITAL_ZOOM,252);
-            addEditor(context,category,pref,"four_corner","Коррекция четырёх углов",
-                    Projection8054Policy.FOUR_CORNER,254);
-            addEditor(context,category,pref,"hv_keystone","Горизонтальная и вертикальная коррекция",
-                    Projection8054Policy.HORIZONTAL_VERTICAL,255);
+            installUnified(context,category,pref);
             // Exact stock KeystoneSettingsSecondaryController.gotoKeystoneCorrection intent.
             add(context,category,pref,"keystone","Коррекция трапеции · штатный экран",null,
                 "com.android.tv.settings",
                 "com.android.tv.settings.uicustom.fragment.projector.KeystoneCalibrationActivity",null,256);
-            OemLightSourcePreference.install(context,category,pref);
-            OemFocusPreferences.install(context,category,pref);
-            OemMoveKeystonePreference.install(context,category,pref);
         } else {
             add(context,category,pref,"zoom","Цифровой зум · OEM",null,
                 "com.rjpj.tcorrection","com.rjpj.tcorrection.DigitalZoomActivity",Intent.ACTION_MAIN,252);
@@ -32,6 +25,18 @@ public final class OemProjectionPanel {
                 "Оригинальный экран с OEM ограничениями охлаждения",
                 "com.coolux.source","com.coolux.source.activity.BrightActivity",Intent.ACTION_MAIN,253);
         }
+    }
+
+    static void installUnified(Context context,Object category,Class<?> pref) {
+        if (!"8054".equals(OemHdmiPortInfo.machineId()))return;
+        addEditor(context,category,pref,"zoom","Цифровой зум",Projection8054Policy.DIGITAL_ZOOM,252);
+        addEditor(context,category,pref,"four_corner","Коррекция четырёх углов",
+                Projection8054Policy.FOUR_CORNER,254);
+        addEditor(context,category,pref,"hv_keystone","Горизонтальная и вертикальная коррекция",
+                Projection8054Policy.HORIZONTAL_VERTICAL,255);
+        OemLightSourcePreference.install(context,category,pref);
+        OemFocusPreferences.install(context,category,pref);
+        OemMoveKeystonePreference.install(context,category,pref);
     }
 
     static Intent projectionIntent(Context context) throws PackageManager.NameNotFoundException {

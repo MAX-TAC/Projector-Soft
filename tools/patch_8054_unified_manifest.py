@@ -1,0 +1,91 @@
+"""Append the isolated UI and disabled recovery to the original 8054 manifest."""
+from patch_axml_compat_aliases import (
+    END, NO, RESMAP, START, STRINGS, XML, StringPool, attr, chunkinfo, endnode,
+    p32, refattr, startnode, u16, u32,
+)
+from patch_axml_version import change_version_code
+
+PREFIX = 'dev.projectorsoft.tvsettings.'
+ACTIVITIES = (
+    ('ModMainSettingsActivity', 'Настройки Android TV (MOD)'),
+    ('NetworkSettingsActivity', 'Wi-Fi и сеть'),
+    ('BluetoothSettingsActivity', 'Bluetooth'),
+    ('SourcesSettingsActivity', 'Источники'),
+    ('ProjectionSettingsActivity', 'Проекция'),
+    ('PictureSettingsActivity', 'Изображение'),
+    ('SoundSettingsActivity', 'Звук'),
+    ('AppsSettingsActivity', 'Приложения'),
+    ('SystemSettingsActivity', 'Система'),
+)
+DISABLED = (('receiver', 'KuSourceRecoveryBootReceiver'), ('service', 'KuSourceRecoveryService'))
+
+
+def patch_unified(data, version):
+    if u16(data, 0) != XML or u32(data, 4) != len(data):
+        raise ValueError('Invalid original 8054 manifest')
+    offset = u16(data, 2)
+    chunks = []
+    pool = None
+    resource_map = None
+    while offset < len(data):
+        kind, header, size = chunkinfo(data, offset)
+        chunk = data[offset:offset + size]
+        if kind == STRINGS:
+            pool = StringPool(chunk)
+        elif kind == RESMAP:
+            resource_map = [u32(chunk, i) for i in range(header, size, 4)]
+        chunks.append((kind, chunk))
+        offset += size
+    if pool is None or resource_map is None:
+        raise ValueError('Missing stock manifest resources')
+    android = pool.lookup['http://schemas.android.com/apk/res/android']
+    for key in ('name', 'label', 'enabled', 'exported', 'icon', 'banner'):
+        index = pool.lookup[key]
+        if index >= len(resource_map) or not resource_map[index]:
+            raise ValueError('Missing Android resource-map attribute: ' + key)
+    application = [i for i, (kind, chunk) in enumerate(chunks)
+                   if kind == END and pool.values[u32(chunk, 20)] == 'application']
+    if len(application) != 1:
+        raise ValueError('Expected one stock application')
+    if any(PREFIX + name in pool.lookup for name, _ in ACTIVITIES):
+        raise ValueError('Already patched manifest or conflicting class name')
+
+    def attributes(name, exported, enabled):
+        return [attr(android, pool.index('name'), pool.index(PREFIX + name)),
+                attr(android, pool.index('exported'), exported),
+                attr(android, pool.index('enabled'), enabled)]
+
+    def intent_item(tag, value):
+        return startnode(tag, [attr(android, pool.index('name'), pool.index(value))]) + endnode(tag)
+
+    def activity_filter():
+        tag = pool.index('intent-filter')
+        result = startnode(tag)
+        result += intent_item(pool.index('action'), 'android.intent.action.MAIN')
+        for category in ('LAUNCHER', 'LEANBACK_LAUNCHER'):
+            result += intent_item(pool.index('category'), 'android.intent.category.' + category)
+        return result + endnode(tag)
+
+    extension = b''
+    activity = pool.index('activity')
+    for idx, (name, label) in enumerate(ACTIVITIES):
+        attrs = attributes(name, True, True)
+        attrs.append(attr(android, pool.index('label'), pool.index(label)))
+        if idx == 0:
+            # exact-8054 stock MainSettings already uses these verified TV gear and banner resources.
+            attrs.append(refattr(android, pool.index('icon'), 0x7f08022e))
+            attrs.append(refattr(android, pool.index('banner'), 0x7f080142))
+        extension += startnode(activity, attrs)
+        if idx == 0:
+            extension += activity_filter()
+        extension += endnode(activity)
+    for tag, name in DISABLED:
+        node = pool.index(tag)
+        extension += startnode(node, attributes(name, False, False))
+        extension += endnode(node)
+
+    rebuilt = [pool.output() if kind == STRINGS else chunk for kind, chunk in chunks]
+    rebuilt.insert(application[0], extension)
+    updated = bytearray(data[:u16(data, 2)] + b''.join(rebuilt))
+    p32(updated, 4, len(updated))
+    return change_version_code(bytes(updated), 1, version)
