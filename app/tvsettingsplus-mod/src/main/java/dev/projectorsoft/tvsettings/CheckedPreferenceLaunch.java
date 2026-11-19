@@ -48,7 +48,7 @@ final class CheckedPreferenceLaunch {
         }
     }
 
-    private static boolean accessible(Context context, ComponentName component)
+    static boolean accessible(Context context, ComponentName component)
             throws PackageManager.NameNotFoundException {
         if (component == null) return false;
         PackageManager pm = context.getPackageManager();

@@ -123,7 +123,7 @@ def startnode(tag,attrs=None,ns=NO):
     ext=struct.pack("<IHHHHHH",tag,20,20,len(entries),0,0,0)
     return head+ext+b"".join(entries)
 
-def patch_manifest(data):
+def patch_manifest(data, projector_entry=False):
     b=data
     if len(b)<8 or u16(b,0)!=XML or u32(b,4)!=len(b):
         raise ValueError("invalid Android binary manifest")
@@ -211,8 +211,11 @@ def patch_manifest(data):
         attr(uridx,enabled,True),attr(uridx,exported,True)]
     # Reuse the original localized application label instead of a Russian-only
     # literal. Existing ru resources already translate Settings to Настройки.
-    launcher_attrs.append(refattr(uridx,label_name,application_label) if application_label
-                          else attr(uridx,label_name,launcher_label))
+    if projector_entry:
+        launcher_attrs.append(attr(uridx,label_name,pool.index("Настройки проектора (MOD)")))
+    else:
+        launcher_attrs.append(refattr(uridx,label_name,application_label) if application_label
+                              else attr(uridx,label_name,launcher_label))
     # Original 8052 resources.arsc contains a Settings gear and TV banner.
     # Fail closed on an incompatible manifest rather than inserting dead icons.
     if application_icon != 0x7f0802cb or application_banner != 0x7f080142:
@@ -224,7 +227,14 @@ def patch_manifest(data):
     fragment+=startnode(tag_action,[attr(uridx,nameidx,main_action)])+endnode(tag_action)
     for category in (regular,leanback):
         fragment+=startnode(tag_category,[attr(uridx,nameidx,category)])+endnode(tag_category)
-    fragment+=endnode(tag_filter)+endnode(tag_alias)
+    fragment+=endnode(tag_filter)
+    if projector_entry:
+        action=pool.index("dev.projectorsoft.settings.OPEN_PROJECTOR_MENU")
+        fragment+=startnode(tag_filter)
+        fragment+=startnode(tag_action,[attr(uridx,nameidx,action)])+endnode(tag_action)
+        fragment+=startnode(tag_category,[attr(uridx,nameidx,category_default)])+endnode(tag_category)
+        fragment+=endnode(tag_filter)
+    fragment+=endnode(tag_alias)
     print("Inserted Android TV Settings launcher: localized label, settings gear icon 0x7f08022e, banner",hex(application_banner))
 
     # Recovery is cold-boot activated ONLY IF the stock KuSettings package was
@@ -281,3 +291,4 @@ def main():
         assert c.read("AndroidManifest.xml")!=a.read("AndroidManifest.xml")
     print("Changed only original binary AndroidManifest, no resources/DEX/JNI changed")
 if __name__=="__main__":main()
+

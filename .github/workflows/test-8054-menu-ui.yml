@@ -1,0 +1,32 @@
+name: Test 8054 menu with AndroidX
+on:
+  push:
+    paths:
+      - 'app/tvsettingsplus-mod/src/main/java/**'
+      - 'app/tvsettingsplus-mod/ui-tests/**'
+      - '.github/workflows/test-8054-menu-ui.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  android-ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Execute the production menu with Android 13 and real AndroidX preferences
+        working-directory: app/tvsettingsplus-mod/ui-tests
+        run: gradle testDebugUnitTest --no-daemon --console=plain
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: android-8054-menu-test-results
+          path: app/tvsettingsplus-mod/ui-tests/build/test-results/testDebugUnitTest/
+          if-no-files-found: ignore

@@ -5,13 +5,9 @@ import android.content.Context;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.InvocationHandler;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,179 +29,127 @@ public final class OemInlinePreferencesHook {
     private static final String[] SOUND_TITLES={
         "Стандартный","Яркий","Спорт","Кино","Музыка","Новости","Пользовательский"};
     private static final int[] SOUND_VALUES={1,2,3,4,5,6,0};
-    private static final MenuInstallation INSTALLATION=new MenuInstallation();
-    private static final String CATEGORY_KEY="projectorsoft_picture_category";
     private OemInlinePreferencesHook() {}
 
     public static int[] pictureValues() {return PIC_VALUES.clone();}
     public static int[] colorValues() {return TEMP_VALUES.clone();}
     public static int[] soundValues() {return SOUND_VALUES.clone();}
 
+    /** Compatibility bridge for older build profiles; exact 8054 installs before view creation. */
     public static void install(Object fragment,View root) {
-        if (fragment==null) return;
-        Object screen=null;
-        Class<?> preference=null;
-        List<Object> categories=new ArrayList<>();
-        MenuInstallation.Attempt attempt=null;
+        populate(fragment);
+        bind(fragment,root);
+    }
+
+    public static void populate(Object fragment) {
+        if(fragment==null)return;
+        String stage="context";
         try {
             Object ctx=fragment.getClass().getMethod("getContext").invoke(fragment);
-            if (!(ctx instanceof Context)) return;
+            if(!(ctx instanceof Context))throw new IllegalStateException("Fragment has no Android context");
             Context context=(Context)ctx;
-            boolean exactBoard="8054".equals(OemHdmiPortInfo.machineId());
-            // Enforce the projector no-black-screen policy even when native
-            // preferences have already been inserted during fragment recreation.
-            OemScreenTimeoutSafetyHook.ensureNever(context);
-            preference=Class.forName("androidx.preference.Preference");
-            Class<?> categoryClass=Class.forName("androidx.preference.PreferenceCategory");
-            screen=fragment.getClass().getMethod("getPreferenceScreen").invoke(fragment);
-            if(screen==null)return;
-            attempt=INSTALLATION.begin(screen);
-            if(attempt==null)return;
-            Object pictureCategory=addCategory(attempt,categories,screen,preference,categoryClass,
-                    context,CATEGORY_KEY,"Изображение · Проектор",210);
-            if(pictureCategory==null)return;
-            Object soundCategory=addCategory(attempt,categories,screen,preference,categoryClass,
-                    context,"projectorsoft_sound_category","Звук · Проектор",230);
-            if(soundCategory==null)return;
-            Object remoteCategory=addCategory(attempt,categories,screen,preference,categoryClass,
-                    context,"projectorsoft_remote_category","Bluetooth · Проектор",242);
-            if(remoteCategory!=null && !OemBluetoothRemoteHook.install(
-                    context,remoteCategory,preference)) {
-                screen.getClass().getMethod("removePreference",preference)
-                    .invoke(screen,remoteCategory);
-            }
-            Object placementCategory=addCategory(attempt,categories,screen,preference,categoryClass,
-                    context,"projectorsoft_placement_category","Проекция · Проектор",250);
-            if(placementCategory==null)return;
-            Object systemCategory=addCategory(attempt,categories,screen,preference,categoryClass,
-                    context,"projectorsoft_system_category","Об устройстве · Проектор",280);
-            if(systemCategory!=null) {
-                boolean androidNavigation=OemStandardAndroidNavigation.install(context,systemCategory,preference);
-                boolean info=OemSystemInfoHook.install(context,systemCategory,preference);
-                boolean preflight=!exactBoard && OemCompatibilityDiagnosticsHook.install(
-                        context,systemCategory,preference);
-                boolean firmware=OemHardwareDelegatedSettings.installSystemLinks(
-                        context,systemCategory,preference);
-                boolean screenStatus=!exactBoard && OemScreenTimeoutSafetyHook.installStatus(
-                        context,systemCategory,preference);
-                if(!androidNavigation && !info && !preflight && !firmware && !screenStatus) {
-                    screen.getClass().getMethod("removePreference",preference)
-                            .invoke(screen,systemCategory);
+            stage="preference-screen";
+            Object screen=fragment.getClass().getMethod("getPreferenceScreen").invoke(fragment);
+            if(screen==null)throw new IllegalStateException("PreferenceScreen not created");
+            stage="androidx-reflection";
+            ProjectorMenuSections sections=new ProjectorMenuSections(context,screen);
+            Class<?> pref=sections.preference;
+            boolean exact="8054".equals(OemHdmiPortInfo.machineId());
+            ProjectorMenuSections.optional("inactivity-policy",()->OemScreenTimeoutSafetyHook.ensureNever(context));
+            stage="sections";
+            sections.add("projectorsoft_picture_category","Изображение · Проектор",210,exact,
+                    category->populatePicture(context,category,pref,exact));
+            sections.add("projectorsoft_sound_category","Звук · Проектор",230,exact,
+                    category->OemSoundPanel.install(context,category,pref));
+            sections.add("projectorsoft_remote_category","Bluetooth · Проектор",242,false,
+                    category->OemBluetoothRemoteHook.install(context,category,pref));
+            sections.add("projectorsoft_placement_category","Проекция · Проектор",250,exact,category->{
+                ProjectorMenuSections.optional("projection-orientation",
+                        ()->OemProjectorOrientationHook.install(context,category,pref));
+                OemHardwareDelegatedSettings.installProjectionLinks(context,category,pref);
+            });
+            sections.add("projectorsoft_interface_category","Интерфейс · Проектор",255,false,
+                    category->OemFontScaleHook.install(context,category,pref));
+            sections.add("projectorsoft_power_category","Питание · Проектор",260,exact,category->{
+                ProjectorMenuSections.optional("power-ac",()->OemAcPowerBootHook.install(context,category,pref));
+                if(exact)ProjectorMenuSections.optional("power-inactivity",
+                        ()->OemScreenTimeoutSafetyHook.installStatus(context,category,pref));
+                OemStockUserSettings.installSwitchOffTimer(context,category,pref);
+            });
+            sections.add("projectorsoft_hdmi_category","Источники HDMI · Проектор",270,exact,
+                    category->populateSources(context,category,pref,exact));
+            sections.add("projectorsoft_system_category","Об устройстве · Проектор",280,exact,category->{
+                ProjectorMenuSections.optional("system-navigation",
+                        ()->OemStandardAndroidNavigation.install(context,category,pref));
+                ProjectorMenuSections.optional("system-info",()->OemSystemInfoHook.install(context,category,pref));
+                ProjectorMenuSections.optional("system-firmware",
+                        ()->OemHardwareDelegatedSettings.installSystemLinks(context,category,pref));
+                if(!exact) {
+                    ProjectorMenuSections.optional("system-compatibility",
+                            ()->OemCompatibilityDiagnosticsHook.install(context,category,pref));
+                    OemScreenTimeoutSafetyHook.installStatus(context,category,pref);
                 }
-            }
-            Object interfaceCategory=addCategory(attempt,categories,screen,preference,categoryClass,
-                    context,"projectorsoft_interface_category","Интерфейс · Проектор",255);
-            if(interfaceCategory!=null && !OemFontScaleHook.install(
-                    context,interfaceCategory,preference)) {
-                screen.getClass().getMethod("removePreference",preference)
-                    .invoke(screen,interfaceCategory);
-            }
-            Object powerCategory=addCategory(attempt,categories,screen,preference,categoryClass,
-                    context,"projectorsoft_power_category","Питание · Проектор",260);
-            if(powerCategory!=null) {
-                boolean acPower=OemAcPowerBootHook.install(context,powerCategory,preference);
-                boolean idle=exactBoard && OemScreenTimeoutSafetyHook.installStatus(context,powerCategory,preference);
-                boolean timer=OemStockUserSettings.installSwitchOffTimer(context,powerCategory,preference);
-                if(!acPower && !idle && !timer) {
-                    screen.getClass().getMethod("removePreference",preference).invoke(screen,powerCategory);
-                }
-            }
-            Object hdmiCategory=addCategory(attempt,categories,screen,preference,categoryClass,
-                    context,"projectorsoft_hdmi_category","Источники · Проектор",270);
-            if(hdmiCategory!=null) {
-                boolean hasPorts=OemHdmiPortInfo.install(context,hdmiCategory,preference);
-                boolean hasEdid=OemHdmiEdidHook.install(context,hdmiCategory,preference);
-                boolean hasAutoplay=OemHdmiAutoPlayHook.install(context,hdmiCategory,preference);
-                boolean hasBootSource=OemPowerOnSourceHook.install(context,hdmiCategory,preference);
-                boolean hasBootApp=OemPowerOnAppHook.install(context,hdmiCategory,preference);
-                boolean hasCec=exactBoard
-                        ? OemCecAutoOff8054.install(context,hdmiCategory,preference)
-                        : OemHdmiCecHook.install(context,hdmiCategory,preference);
-                boolean hasOemLinks=OemHardwareDelegatedSettings.installSourceLinks(
-                        context,hdmiCategory,preference,hasCec,hasBootApp);
-                if(!hasPorts && !hasEdid && !hasAutoplay && !hasBootSource && !hasBootApp
-                        && !hasCec && !hasOemLinks) {
-                    // Never present an empty category or unsupported HDMI options.
-                    screen.getClass().getMethod("removePreference",preference)
-                            .invoke(screen,hdmiCategory);
-                }
-            }
-
-            if(exactBoard) {
-                OemPicturePanel.install(context,pictureCategory,preference);
-                OemStockUserSettings.installPictureFormat(context,pictureCategory,preference);
-            }
-            else OemHardwareDelegatedSettings.installPictureLink(context,pictureCategory,preference);
-            try {
-                if(!exactBoard)OemInlineSlidersHook.installPictureReadout(context,pictureCategory,preference);
-            } catch (Exception ex) {
-                Log.w(TAG,"Picture readout unavailable",ex);
-            }
-            // Direct MOD picture controls stay hidden until the profile/input is verified.
-            if(OemPictureState.mayEdit()) addList(pictureCategory,preference,context,"projectorsoft_picture_mode",
-                    "Режим изображения","picture_mode",PIC_TITLES,PIC_VALUES,7,211);
-            addList(pictureCategory,preference,context,"projectorsoft_color_temp",
-                    "Цветовая температура","picture_color_temperature",
-                    TEMP_TITLES,TEMP_VALUES,2,212);
-            OemSoundPanel.install(context,soundCategory,preference);
-
-            // Native Android TV seekbars: exact limits read from factory layout XML.
-            // They remain hidden until the OEM Settings.Global value exists.
-            OemInlineSlidersHook.installPicture(context,pictureCategory,preference);
-            // OEM controller AdvanceSettingsSecondaryController provides
-            // explicit 0/1 HDR and 0..3 MEMC options. No guessed HAL APIs.
-            // Hide them until the factory settings provider already holds state.
-            String hdrKey="picture_list_hdr";
-            if(OemPictureState.mayEdit()) addSwitchIfPresent(pictureCategory,preference,context,
-                    "projectorsoft_hdr","HDR (OEM)",hdrKey,230);
-
-            String mjcKey="tv_picture_advance_video_mjc_effect";
-            String mjcRaw=Settings.Global.getString(context.getContentResolver(),mjcKey);
-            if (OemPictureState.mayEdit() && mjcRaw != null && mjcRaw.matches("[0-3]")) {
-                String[] effects={"Выключено","Низкий","Средний","Высокий"};
-                int[] ids={0,1,2,3};
-                addList(pictureCategory,preference,context,"projectorsoft_memc",
-                        "MEMC (OEM)",mjcKey,effects,ids,Integer.parseInt(mjcRaw),231);
-            }
-            // HDMI game mode is intentionally NOT a raw Settings.Global toggle.
-            // SourceSubMenuController triggers resetTrapezoid() when enabled;
-            // keep its original handler until the complete side-effect chain
-            // is safely transferred.
-            // Stock ProjectorManager orientation codes, not calibration/keystone.
-            OemProjectorOrientationHook.install(context,placementCategory,preference);
-            OemHardwareDelegatedSettings.installProjectionLinks(
-                    context,placementCategory,preference);
-            // Five genuine OEM bands via stock PartnerSettingsConfig only.
-            // Uses original ProgressDialog scale but native TV SeekBar widgets.
-
-            if(!exactBoard || OemPictureState.mayEdit())OemPictureState.install(context,pictureCategory,preference);
-            attempt.commit();
-        } catch(Throwable e) {
-            Log.w(TAG,"OEM quick controls unavailable; keep original settings",e);
-        } finally {
-            try {
-                try {if(attempt!=null)attempt.close();}
-                catch(RuntimeException error){Log.w(TAG,"Could not finish menu rollback",error);}
-                for(Object category:categories)removeIfEmpty(screen,preference,category);
-            } finally {
-                try {OemHdmiPortInfo.bind(fragment,root);}
-                finally {
-                    try {OemPicturePanel.bind(fragment,root);}
-                    finally {
-                        try {OemSoundDelayPanel.bind(fragment,root);}
-                        finally {
-                            try {OemProjectionSwitches.bind(fragment,root);}
-                            finally {
-                                try {OemPanelInfoHook.bind(fragment,root);}
-                                finally {OemSoundPanel.bind(fragment,root);}
-                            }
-                        }
-                    }
-                }
-            }
+            });
+        } catch(Exception | LinkageError problem) {
+            Log.w(TAG,"menu stage="+stage,problem);
         }
     }
 
+    public static void bind(Object fragment,View root) {
+        ProjectorMenuSections.optional("bind-hdmi",()->OemHdmiPortInfo.bind(fragment,root));
+        ProjectorMenuSections.optional("bind-picture",()->OemPicturePanel.bind(fragment,root));
+        ProjectorMenuSections.optional("bind-sound-delay",()->OemSoundDelayPanel.bind(fragment,root));
+        ProjectorMenuSections.optional("bind-projection",()->OemProjectionSwitches.bind(fragment,root));
+        ProjectorMenuSections.optional("bind-panel-info",()->OemPanelInfoHook.bind(fragment,root));
+        ProjectorMenuSections.optional("bind-sound",()->OemSoundPanel.bind(fragment,root));
+    }
+
+    private static void populatePicture(Context context,Object category,Class<?> pref,boolean exact) {
+        if(exact) {
+            ProjectorMenuSections.optional("picture-readout",()->OemPicturePanel.install(context,category,pref));
+            ProjectorMenuSections.optional("picture-format",
+                    ()->OemStockUserSettings.installPictureFormat(context,category,pref));
+        } else {
+            ProjectorMenuSections.optional("picture-oem",
+                    ()->OemHardwareDelegatedSettings.installPictureLink(context,category,pref));
+            ProjectorMenuSections.optional("picture-legacy-readout",
+                    ()->OemInlineSlidersHook.installPictureReadout(context,category,pref));
+        }
+        // Keep existing context gates. The 8054 picture values remain read-only.
+        if(OemPictureState.mayEdit()) {
+            ProjectorMenuSections.optional("picture-mode",()->addList(category,pref,context,
+                    "projectorsoft_picture_mode","Режим изображения","picture_mode",PIC_TITLES,PIC_VALUES,7,211));
+            ProjectorMenuSections.optional("picture-temperature",()->addList(category,pref,context,
+                    "projectorsoft_color_temp","Цветовая температура","picture_color_temperature",
+                    TEMP_TITLES,TEMP_VALUES,2,212));
+            ProjectorMenuSections.optional("picture-hdr",()->addSwitchIfPresent(category,pref,context,
+                    "projectorsoft_hdr","HDR (OEM)","picture_list_hdr",230));
+            ProjectorMenuSections.optional("picture-memc",()->{
+                String key="tv_picture_advance_video_mjc_effect";
+                String value=Settings.Global.getString(context.getContentResolver(),key);
+                if(value!=null && value.matches("[0-3]"))
+                    addList(category,pref,context,"projectorsoft_memc","MEMC (OEM)",key,
+                        new String[]{"Выключено","Низкий","Средний","Высокий"},
+                        new int[]{0,1,2,3},Integer.parseInt(value),231);
+            });
+        }
+        ProjectorMenuSections.optional("picture-sliders",()->OemInlineSlidersHook.installPicture(context,category,pref));
+        if(!exact || OemPictureState.mayEdit())OemPictureState.install(context,category,pref);
+    }
+
+    private static void populateSources(Context context,Object category,Class<?> pref,boolean exact) {
+        boolean[] nativeControls=new boolean[2];
+        ProjectorMenuSections.optional("hdmi-ports",()->OemHdmiPortInfo.install(context,category,pref));
+        ProjectorMenuSections.optional("hdmi-edid",()->OemHdmiEdidHook.install(context,category,pref));
+        ProjectorMenuSections.optional("hdmi-autoplay",()->OemHdmiAutoPlayHook.install(context,category,pref));
+        ProjectorMenuSections.optional("hdmi-boot-source",()->OemPowerOnSourceHook.install(context,category,pref));
+        ProjectorMenuSections.optional("hdmi-boot-app",
+                ()->nativeControls[0]=OemPowerOnAppHook.install(context,category,pref));
+        ProjectorMenuSections.optional("hdmi-cec",
+                ()->nativeControls[1]=exact ? OemCecAutoOff8054.install(context,category,pref)
+                                           : OemHdmiCecHook.install(context,category,pref));
+        OemHardwareDelegatedSettings.installSourceLinks(context,category,pref,nativeControls[1],nativeControls[0]);
+    }
 
     static void populateSound(Context context,Object category,Class<?> pref,Runnable soundModeChanged) throws Exception {
             addList(category,pref,context,"projectorsoft_sound_mode",
@@ -234,35 +178,6 @@ public final class OemInlinePreferencesHook {
 
         OemInlineSlidersHook.installSound(context,category,pref);
         OemFiveBandEqualizerHook.install(context,category,pref);
-    }
-
-    private static Object addCategory(MenuInstallation.Attempt attempt,List<Object> categories,Object screen,Class<?> preference,
-                                      Class<?> categoryClass,Context context,
-                                      String key,String title,int order) throws Exception {
-        Object category=categoryClass.getConstructor(Context.class).newInstance(context);
-        categoryClass.getMethod("setKey",String.class).invoke(category,key);
-        categoryClass.getMethod("setTitle",CharSequence.class).invoke(category,title);
-        categoryClass.getMethod("setOrder",int.class).invoke(category,order);
-        Method remove=screen.getClass().getMethod("removePreference",preference);
-        attempt.track(()-> {
-            try {remove.invoke(screen,category);}
-            catch(ReflectiveOperationException ex){Log.w(TAG,"Cannot roll back menu section "+key,ex);}
-        });
-        Object added=screen.getClass().getMethod("addPreference",preference)
-                .invoke(screen,category);
-        if(!Boolean.TRUE.equals(added))return null;
-        categories.add(category);
-        return category;
-    }
-
-    private static void removeIfEmpty(Object screen,Class<?> preference,Object category) {
-        try {
-            if(Integer.valueOf(0).equals(category.getClass().getMethod("getPreferenceCount").invoke(category))) {
-                screen.getClass().getMethod("removePreference",preference).invoke(screen,category);
-            }
-        } catch(Exception ex) {
-            Log.w(TAG,"Could not remove an empty projector section",ex);
-        }
     }
 
     static String readAutoVolume(Context context) {

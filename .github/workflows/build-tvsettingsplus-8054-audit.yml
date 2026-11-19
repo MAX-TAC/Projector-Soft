@@ -398,8 +398,9 @@ jobs:
           print('PASS stock keystone fallback Intent')
           PY
           python3 tools/patch_customer0_lightmode_smali.py /tmp/tv33/decoded /tmp/tv33/brightness_report.json
-          python3 tools/patch_aosp_root_menu_smali.py /tmp/tv33/decoded /tmp/tv33/navigation_report.json
-          python3 tools/patch_oem_sleep_menu_smali.py /tmp/tv33/decoded /tmp/tv33/sleep_menu_report.json
+          python3 tools/patch_aosp_root_menu_smali.py /tmp/tv33/decoded /tmp/tv33/navigation_report.json --exact-8054
+          python3 tools/verify_8054_general_layout.py /tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk
+          python3 tools/patch_oem_sleep_menu_smali.py /tmp/tv33/decoded /tmp/tv33/sleep_menu_report.json --exact-8054
           python3 - <<'PY'
           import json,re
           from pathlib import Path
@@ -415,15 +416,15 @@ jobs:
           assert {"classes13.dex","classes14.dex"}.issubset(set(b["edited_dex"])),b
           assert all(re.fullmatch(r"classes(?:[1-9]|1[0-6])?\.dex", item) for item in b["edited_dex"]),b
           assert len(b["edited_smali"])==8,b
-          assert s["hides"]==["tciv_general_screensaver_settings"],s
+          assert s["hides"]==[] and s["links"]==["projector-settings"],s
           (path/"patch_report.json").write_text(json.dumps(b,indent=2)+"\n")
           print("Edited OEM classes:",b["edited_smali"])
           PY
           apktool b -p /tmp/tv33/framework /tmp/tv33/decoded -o /tmp/tv33/rebuilt.apk
           python3 tools/compose_brightness_v3_apk.py \
              /tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk /tmp/tv33/rebuilt.apk \
-             /tmp/tv33/dex/classes.dex /tmp/tv33/patch_report.json /tmp/tv33/unsigned.apk --version-code 33
-          aapt dump badging /tmp/tv33/unsigned.apk | grep "name='com.android.tv.settings' versionCode='33'"
+             /tmp/tv33/dex/classes.dex /tmp/tv33/patch_report.json /tmp/tv33/unsigned.apk --version-code 34 --projector-entry
+          aapt dump badging /tmp/tv33/unsigned.apk | grep "name='com.android.tv.settings' versionCode='34'"
           aapt dump xmltree /tmp/tv33/unsigned.apk AndroidManifest.xml > /tmp/tv33/manifest-tree.txt
           aapt dump permissions /tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk | grep -F 'android.permission.RECEIVE_BOOT_COMPLETED'
           aapt dump permissions /tmp/tv33/unsigned.apk | grep -F 'android.permission.RECEIVE_BOOT_COMPLETED'
@@ -449,9 +450,11 @@ jobs:
           for tag in ("com.android.tv.settings.MainSettings",
                       "android.intent.action.MAIN",
                       "android.intent.category.LAUNCHER",
-                      "android.intent.category.LEANBACK_LAUNCHER"):
+                      "android.intent.category.LEANBACK_LAUNCHER",
+                      "dev.projectorsoft.settings.OPEN_PROJECTOR_MENU",
+                      "Настройки проектора (MOD)"):
               assert tag in section, "Missing launcher field: "+tag
-          assert "android:label" in section, "Launcher missing localized label attribute"
+          assert "android:label" in section, "Launcher missing distinct MOD label attribute"
           assert "android:icon" in section and "android:banner" in section, "Launcher gear icon and TV banner required"
           print("PASS: TvSettingsPlus alias appears for both Android TV and conventional launchers")
           PY
@@ -470,23 +473,23 @@ jobs:
           test "$ORIGINAL" = "$PLATFORM"
           zipalign -f -p 4 /tmp/tv33/unsigned.apk /tmp/tv33/aligned.apk
           apksigner sign --key /tmp/tv33/keys/platform.pk8 --cert /tmp/tv33/keys/platform.x509.pem \
-            --v1-signing-enabled true --v2-signing-enabled true --v3-signing-enabled true --out /tmp/tv33/TvSettingsPlus-8054-v33-NATIVE-CONTROLS-EXPERIMENTAL.apk /tmp/tv33/aligned.apk
-          CANDIDATE=/tmp/tv33/TvSettingsPlus-8054-v33-NATIVE-CONTROLS-EXPERIMENTAL.apk
+            --v1-signing-enabled true --v2-signing-enabled true --v3-signing-enabled true --out /tmp/tv33/TvSettingsPlus-8054-v34-MENU-INTEGRATION-EXPERIMENTAL.apk /tmp/tv33/aligned.apk
+          CANDIDATE=/tmp/tv33/TvSettingsPlus-8054-v34-MENU-INTEGRATION-EXPERIMENTAL.apk
           apksigner verify --verbose --print-certs "$CANDIDATE"
           MOD="$(apksigner verify --print-certs "$CANDIDATE" | awk -F ': ' '/Signer #1 certificate SHA-256 digest:/ {print $2}')"
           test -n "$MOD" && test "$MOD" = "$ORIGINAL"
           grep -F 'android:sharedUserId(0x0101000b)="android.uid.system"' /tmp/tv33/manifest-tree.txt
-          aapt dump badging /tmp/tv33/TvSettingsPlus-8054-v33-NATIVE-CONTROLS-EXPERIMENTAL.apk | grep "name='com.android.tv.settings' versionCode='33'"
-          sha256sum /tmp/tv33/TvSettingsPlus-8054-v33-NATIVE-CONTROLS-EXPERIMENTAL.apk
+          aapt dump badging /tmp/tv33/TvSettingsPlus-8054-v34-MENU-INTEGRATION-EXPERIMENTAL.apk | grep "name='com.android.tv.settings' versionCode='34'"
+          sha256sum /tmp/tv33/TvSettingsPlus-8054-v34-MENU-INTEGRATION-EXPERIMENTAL.apk
       - name: Experimental-only metadata
         if: always()
         run: |
           mkdir -p /tmp/tv33/report
           cat > /tmp/tv33/report/README.txt <<'EOF'
           WARNING: EXPERIMENTAL. Not tested on actual projector; DO NOT install as production.
-          TvSettingsPlus 8054 EXACT-BUILD platform-signature-matched v33.
+          TvSettingsPlus 8054 EXACT-BUILD platform-signature-matched v34.
           Static verification only. Code and CI links are in the integration audit for this commit.
-          Package com.android.tv.settings, versionCode 33, original 8054 signing certificate.
+          Package com.android.tv.settings, versionCode 34, original 8054 signing certificate.
           PIC18 reads only an existing stock panel cache. No new hardware settings on startup.
           Existing Android idle/screen-saver policy can still apply on Settings entry and at boot.
           OEM routes remain conditional. Geometry editors and HDMI/audio changes require separate tests.
@@ -494,16 +497,16 @@ jobs:
           Installation and rollback readiness require the owner's separately authorized read-only preflight.
           EOF
           printf '%s\n' "$GITHUB_SHA" > /tmp/tv33/report/source-commit.txt
-          if [ -f /tmp/tv33/TvSettingsPlus-8054-v33-NATIVE-CONTROLS-EXPERIMENTAL.apk ]; then
-            (cd /tmp/tv33 && sha256sum TvSettingsPlus-8054-v33-NATIVE-CONTROLS-EXPERIMENTAL.apk) > /tmp/tv33/report/SHA256SUMS
+          if [ -f /tmp/tv33/TvSettingsPlus-8054-v34-MENU-INTEGRATION-EXPERIMENTAL.apk ]; then
+            (cd /tmp/tv33 && sha256sum TvSettingsPlus-8054-v34-MENU-INTEGRATION-EXPERIMENTAL.apk) > /tmp/tv33/report/SHA256SUMS
           fi
           cp /tmp/tv33/patch_report.json /tmp/tv33/report/patch_report.json 2>/dev/null || true
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: success()
         with:
-          name: tvsettingsplus-8054-audit-source-experimental
+          name: tvsettingsplus-8054-v34-menu-experimental
           path: |
-            /tmp/tv33/TvSettingsPlus-8054-v33-NATIVE-CONTROLS-EXPERIMENTAL.apk
+            /tmp/tv33/TvSettingsPlus-8054-v34-MENU-INTEGRATION-EXPERIMENTAL.apk
             /tmp/tv33/report/
           retention-days: 14
           if-no-files-found: warn

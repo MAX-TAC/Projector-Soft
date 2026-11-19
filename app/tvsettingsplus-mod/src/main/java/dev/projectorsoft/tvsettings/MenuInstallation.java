@@ -1,26 +1,32 @@
 package dev.projectorsoft.tvsettings;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.WeakHashMap;
 
-/** One main-thread installation per tree. Failed attempts undo only their own rows. */
+/** Main-thread transactions for independent sections in one preference tree. */
 final class MenuInstallation {
-    private final WeakHashMap<Object,Boolean> screens=new WeakHashMap<>();
+    private final WeakHashMap<Object,Set<String>> screens=new WeakHashMap<>();
 
     Attempt begin(Object screen) {
-        if(screens.containsKey(screen))return null;
-        screens.put(screen,false);
-        return new Attempt(screen);
+        return begin(screen,"");
+    }
+
+    Attempt begin(Object screen,String key) {
+        Set<String> sections=screens.computeIfAbsent(screen,ignored->new HashSet<>());
+        return sections.add(key) ? new Attempt(screen,key) : null;
     }
 
     final class Attempt implements AutoCloseable {
         private final Object screen;
+        private final String key;
         private final List<Runnable> undo=new ArrayList<>();
         private boolean committed;
-        Attempt(Object screen){this.screen=screen;}
+        Attempt(Object screen,String key){this.screen=screen;this.key=key;}
         void track(Runnable remove){undo.add(remove);}
-        void commit(){committed=true;screens.put(screen,true);}
+        void commit(){committed=true;}
         @Override public void close(){
             if(committed)return;
             try {
@@ -33,7 +39,9 @@ final class MenuInstallation {
                 }
                 if (failure != null) throw failure;
             } finally {
-                screens.remove(screen);
+                Set<String> sections=screens.get(screen);
+                sections.remove(key);
+                if(sections.isEmpty())screens.remove(screen);
             }
         }
     }
