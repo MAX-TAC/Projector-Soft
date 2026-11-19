@@ -5,7 +5,7 @@ const graph=JSON.parse(fs.readFileSync(root+'/dependency_graph_8054.json','utf8'
 const states=new Set(['DIRECT_MOD','DELEGATED_OEM','READ_ONLY','HIDDEN','BLOCKED','NOT_IMPLEMENTED']);
 const overrides={};
 function set(ids,state,path,next,fallback=null){for(const id of ids.split(' '))overrides[id]={delivery:state,implementation:path,next_check:next,fallback};}
-set('NAV01','DIRECT_MOD','OemRootMenuHook + Android TV MainFragment','D-pad root navigation on8054');
+set('NAV01','DIRECT_MOD','OemRootMenuHook + Android TV MainFragment','Check D-pad and Back on 8054; follow phase A of DEVICE_TEST_MATRIX_8054.md');
 set('NAV02 NAV03 NAV04 NAV05 NAV06 NAV10','DELEGATED_OEM','OemStandardAndroidNavigation for NAV02-06; retained stock reset page NAV10, no reset action','Confirm target screen and Back navigation, no reset action');
 set('NAV07 NAV14','READ_ONLY','OemSystemInfoHook','Compare displayed values to original platform values');
 set('NAV08','DIRECT_MOD','OemFontScaleHook','Verify four OEM scale values and persistence');
@@ -14,9 +14,9 @@ set('NAV11','DELEGATED_OEM','Existing OEM update page link, deferred scope','No 
 set('NAV12','DELEGATED_OEM','Legacy intent aliases; compatibility diagnostics omitted from the normal 8054 menu','Test Settings key routing without disabling KuSettings');
 set('PIC01 PIC02 PIC03 PIC04 PIC05 PIC06 PIC07 PIC08 PIC09 PIC10 PIC11 PIC12','READ_ONLY','OemPicturePanel native stored-value rows; editing BLOCKED_BY_RUNTIME','Establish the active input/PQ context and the stock callback/limits before direct writes');
 set('PIC14','DELEGATED_OEM','HDMI-native format row launches exact stock DisplayModeActivity only with OEM support; factory overscan excluded','Verify live format, scope and manual restore on HW6/HW7 with the stock editor');
-set('PIC18','READ_ONLY','Existing Settings-owned panel INI cache: available type, version and positive dimensions; no initialization','Cold open and return after stock projector menu; compare available config fields and keep unavailable fields hidden');
+set('PIC18','READ_ONLY','Existing Settings-owned panel INI cache: available type, version and positive dimensions; no initialization','Repeat cold open, restored View and OEM return; compare only available configuration fields');
 set('FAC01','READ_ONLY','Android Build SoC manufacturer/model for 8054; no Factory calls','Compare Android-reported fields with the installed ROM; no physical chip identification');
-set('SND01 SND02 SND03 SND04 SND05 SND06 SND07','DIRECT_MOD','OemSoundPanel / sound guards / OemKeyToneHook / OEM capability gates','SOUND_DEVICE_CHECKLIST_8054.md: mode/output/focus, readback and audible effect','DELEGATED_OEM');
+set('SND01 SND02 SND03 SND04 SND05 SND06 SND07','DIRECT_MOD','OemSoundPanel / sound guards / OemKeyToneHook / OEM capability gates','Verify mode/output, D-pad after OEM return, provider readback and audible effect','DELEGATED_OEM');
 set('SND08','NOT_IMPLEMENTED','No MOD editor; exact Factory PEQ uses sound mode, band index and saveAudioIni','Require a stock consumer editor or proven output/profile, units and restoration');
 set('SND09','DELEGATED_OEM','Stock AdvancedFragment through sound_dap and the original Dolby Atmos capability set','Verify eligible Dolby type, native fragment navigation and output');
 set('SND10','DELEGATED_OEM','Stock DTSFragment with isAdvanceFunctionSupport and sound_dts_truvolumehd in its group','Verify DTS loudness row, actual effect and manual restore for supported output');
@@ -27,9 +27,9 @@ set('HDMI01 HDMI02','DIRECT_MOD','OemHdmiPortInfo HW6/HW7: verified input ID and
 set('HDMI03','READ_ONLY','OemHdmiEdidHook displays the single stored Global code; OEM editor retained','Verify EDID target scope for both inputs, renegotiation and restore','DELEGATED_OEM');
 set('HDMI04','DIRECT_MOD','OemCecAutoOff8054: main CEC status and native standby-on-sleep switch; main CEC remains OEM','Verify CEC availability, standby behavior, ARC/eARC and original power confirmation','DELEGATED_OEM');
 set('HDMI05','DELEGATED_OEM','OEM source game mode; resetTrapezoid is part of enable','Trace reset scope and restore correction before allowing a native toggle');
-set('HDMI06','DIRECT_MOD','OemHdmiAutoPlayHook','Verify OEM autoplay state and startup side effects');
-set('HDMI07','DIRECT_MOD','OemPowerOnSourceHook; boot property only','Verify exact8054 accepted IDs and cold boot per input');
-set('HDMI08','DIRECT_MOD','OemPowerOnAppHook','Verify target activity and persisted OEM property');
+set('HDMI06','DIRECT_MOD','OemHdmiAutoPlayHook','Verify stale-state refusal, focus refresh and independent HW6/HW7 hotplug behavior');
+set('HDMI07','DIRECT_MOD','OemPowerOnSourceHook; boot property only','Verify accepted IDs, shared property with boot app and cold boot per input');
+set('HDMI08','DIRECT_MOD','OemPowerOnAppHook','Verify launchability, shared persisted source, and manual restore');
 set('HDMI09','DELEGATED_OEM','OEM source USB page','Deferred player scope, navigation only');
 set('PRJ01 PRJ04','DELEGATED_OEM','OemProjectionPanel: checked stock projection entry; manual focus uses OEM remote keys','Confirm placement and focus return through the stock UI');
 set('PRJ08','DELEGATED_OEM','Stock projection entry; movement correction gates the obstacle toggle','Confirm sensor capability and behavior; stock keystone initialization clears dependent values when movement correction is off');
@@ -39,7 +39,7 @@ set('PRJ05','DIRECT_MOD','OemMoveKeystonePreference: stock callback with origina
 set('PRJ06','DELEGATED_OEM','Separate FourCornerActivity via the verified stock FOUR_CORNER action','Verify opening and return without geometry change, D-pad and manual restore');
 set('PRJ07','DELEGATED_OEM','Separate HVKeystoneActivity via the verified stock HV action','Verify axis controls, D-pad/Back and restore shared geometry');
 set('PRJ10','DELEGATED_OEM','Separate DigitalZoomActivity via the verified stock DIGITAL_ZOOM action','Verify zoom bounds, shared geometry, Back/D-pad and restore');
-set('PRJ11','DIRECT_MOD','OemLightSourcePreference: four KuSourceRJ modes for the verified customer-zero runtime path','Verify available customer profile, OEM readback, actual brightness and thermal behavior','DELEGATED_OEM');
+set('PRJ11','DIRECT_MOD','OemLightSourcePreference: four KuSourceRJ modes for the verified customer-zero runtime path','Verify customer-profile gate, stale rejection, OEM readback, real brightness and thermal behavior','DELEGATED_OEM');
 set('SYS01','DIRECT_MOD','OemAcPowerBootHook','Verify power restoration behavior without modifying thermal services');
 set('SYS02 SYS06','READ_ONLY','OemBluetoothRemoteHook / OEM state, no replacement reconnect service','Verify HID remote pairing and retained AutoPair/reconnect owners');
 set('SYS03 SYS05','BLOCKED','8054 automatic recovery replacement disabled','Do not replace TimeService/source boot owner without proven transaction/rollback');

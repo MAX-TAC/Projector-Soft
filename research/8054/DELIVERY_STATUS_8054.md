@@ -6,7 +6,7 @@ DIRECT_MOD 22; DELEGATED_OEM 23; READ_ONLY 21; NOT_IMPLEMENTED 17; BLOCKED 11; H
 
 | ID | Функция | Доставка | Fallback | Код | Аппаратура | Следующая проверка |
 |---|---|---|---|---|---|---|
-| NAV01 | Открытие системных настроек | DIRECT_MOD | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | D-pad root navigation on8054 |
+| NAV01 | Открытие системных настроек | DIRECT_MOD | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Check D-pad and Back on 8054; follow phase A of DEVICE_TEST_MATRIX_8054.md |
 | NAV02 | Wi-Fi / Ethernet | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm target screen and Back navigation, no reset action |
 | NAV03 | Дата и время | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm target screen and Back navigation, no reset action |
 | NAV04 | Часовой пояс | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm target screen and Back navigation, no reset action |
@@ -37,14 +37,14 @@ DIRECT_MOD 22; DELEGATED_OEM 23; READ_ONLY 21; NOT_IMPLEMENTED 17; BLOCKED 11; H
 | PIC15 | Тестовые картинки | NOT_IMPLEMENTED | — | — | — | Разработать watchdog восстановления паттерна |
 | PIC16 | Non-Linear PQ | BLOCKED | — | — | — | Не записывать calibration |
 | PIC17 | White Balance заводской | BLOCKED | — | — | — | Не заменять RGB ползунок Factory WB API |
-| PIC18 | Panel Info | READ_ONLY | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Cold open and return after stock projector menu; compare available config fields and keep unavailable fields hidden |
-| SND01 | Режим звука | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | SOUND_DEVICE_CHECKLIST_8054.md: mode/output/focus, readback and audible effect |
-| SND02 | Низкие частоты | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | SOUND_DEVICE_CHECKLIST_8054.md: mode/output/focus, readback and audible effect |
-| SND03 | Высокие частоты | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | SOUND_DEVICE_CHECKLIST_8054.md: mode/output/focus, readback and audible effect |
-| SND04 | Surround | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | SOUND_DEVICE_CHECKLIST_8054.md: mode/output/focus, readback and audible effect |
-| SND05 | Автогромкость | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | SOUND_DEVICE_CHECKLIST_8054.md: mode/output/focus, readback and audible effect |
-| SND06 | Звуки интерфейса | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | SOUND_DEVICE_CHECKLIST_8054.md: mode/output/focus, readback and audible effect |
-| SND07 | 5-полосный EQ | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | SOUND_DEVICE_CHECKLIST_8054.md: mode/output/focus, readback and audible effect |
+| PIC18 | Panel Info | READ_ONLY | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Repeat cold open, restored View and OEM return; compare only available configuration fields |
+| SND01 | Режим звука | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify mode/output, D-pad after OEM return, provider readback and audible effect |
+| SND02 | Низкие частоты | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify mode/output, D-pad after OEM return, provider readback and audible effect |
+| SND03 | Высокие частоты | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify mode/output, D-pad after OEM return, provider readback and audible effect |
+| SND04 | Surround | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify mode/output, D-pad after OEM return, provider readback and audible effect |
+| SND05 | Автогромкость | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify mode/output, D-pad after OEM return, provider readback and audible effect |
+| SND06 | Звуки интерфейса | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify mode/output, D-pad after OEM return, provider readback and audible effect |
+| SND07 | 5-полосный EQ | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify mode/output, D-pad after OEM return, provider readback and audible effect |
 | SND08 | 13-полосный PEQ | NOT_IMPLEMENTED | — | — | — | Require a stock consumer editor or proven output/profile, units and restoration |
 | SND09 | Dolby DAP | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify eligible Dolby type, native fragment navigation and output |
 | SND10 | DTS Loudness | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify DTS loudness row, actual effect and manual restore for supported output |
@@ -56,9 +56,9 @@ DIRECT_MOD 22; DELEGATED_OEM 23; READ_ONLY 21; NOT_IMPLEMENTED 17; BLOCKED 11; H
 | HDMI03 | EDID version | READ_ONLY | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify EDID target scope for both inputs, renegotiation and restore |
 | HDMI04 | HDMI-CEC | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify CEC availability, standby behavior, ARC/eARC and original power confirmation |
 | HDMI05 | Game mode | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Trace reset scope and restore correction before allowing a native toggle |
-| HDMI06 | HDMI Plug autoplay | DIRECT_MOD | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify OEM autoplay state and startup side effects |
-| HDMI07 | Источник при старте | DIRECT_MOD | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify exact8054 accepted IDs and cold boot per input |
-| HDMI08 | Приложение при старте | DIRECT_MOD | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify target activity and persisted OEM property |
+| HDMI06 | HDMI Plug autoplay | DIRECT_MOD | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify stale-state refusal, focus refresh and independent HW6/HW7 hotplug behavior |
+| HDMI07 | Источник при старте | DIRECT_MOD | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify accepted IDs, shared property with boot app and cold boot per input |
+| HDMI08 | Приложение при старте | DIRECT_MOD | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify launchability, shared persisted source, and manual restore |
 | HDMI09 | USB local media | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Deferred player scope, navigation only |
 | HDMI10 | Аналоговые входы VGA/SCART/Tuner | BLOCKED | — | — | — | Проверить зависимости HDMI arbitration |
 | PRJ01 | Положение: Front/Rear/Ceiling | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm placement and focus return through the stock UI |
@@ -71,7 +71,7 @@ DIRECT_MOD 22; DELEGATED_OEM 23; READ_ONLY 21; NOT_IMPLEMENTED 17; BLOCKED 11; H
 | PRJ08 | Обнаружение препятствия | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm sensor capability and behavior; stock keystone initialization clears dependent values when movement correction is off |
 | PRJ09 | Автоматическое выравнивание / экран | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm customer ID, sensor support and geometry restore; keep stock route |
 | PRJ10 | Цифровой зум | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify zoom bounds, shared geometry, Back/D-pad and restore |
-| PRJ11 | Оптическая яркость LED | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify available customer profile, OEM readback, actual brightness and thermal behavior |
+| PRJ11 | Оптическая яркость LED | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify customer-profile gate, stale rejection, OEM readback, real brightness and thermal behavior |
 | SYS01 | Питание при подключении сети | DIRECT_MOD | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify power restoration behavior without modifying thermal services |
 | SYS02 | Автосопряжение Bluetooth пульта | READ_ONLY | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify HID remote pairing and retained AutoPair/reconnect owners |
 | SYS03 | Восстановление термослужбы | BLOCKED | — | — | — | Do not replace TimeService/source boot owner without proven transaction/rollback |
