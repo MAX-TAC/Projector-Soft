@@ -8,7 +8,7 @@ on:
       - 'app/tvsettingsplus-mod/src/main/java/**'
       - 'app/tvsettingsplus-mod/src/test/java/**'
       - 'tools/patch_*.py'
-      - 'tools/trace_8054_projection_interlocks.py'
+      - 'tools/trace_8054_picture_format.py'
       - 'tools/find_8054_user_routes.py'
   workflow_dispatch:
 concurrency:
@@ -93,16 +93,21 @@ jobs:
           mkdir -p /tmp/tv33/framework
           apktool if /tmp/flix8054_erofs/system_a_tree/system/framework/framework-res.apk -p /tmp/tv33/framework
           apktool d -f -r -p /tmp/tv33/framework /tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk -o /tmp/tv33/decoded
-          STOCK_TREE=/tmp/flix8054_erofs/system_a_tree/system
-          for target in "$STOCK_TREE/app/KuSourceRJ/KuSourceRJ.apk" \
-              "$STOCK_TREE/app/RuiAutoFocus/RuiAutoFocus.apk" \
-              "$STOCK_TREE/app/trdservice/trdservice.apk" \
-              "$STOCK_TREE/priv-app/KeystoneCorrection/KeystoneCorrection.apk" \
-              /tmp/flix8054_erofs/system_ext_a_tree/app/Factory/Factory.apk; do
+          STOCK_EXT=/tmp/flix8054_erofs/system_ext_a_tree
+          for target in "$STOCK_EXT/priv-app/TvServices/TvServices.apk" \
+              "$STOCK_EXT/priv-app/MtkTvInput/MtkTvInput.apk" \
+              "$STOCK_EXT/priv-app/LiveTV/LiveTV.apk" \
+              "$STOCK_EXT/app/Factory/Factory.apk"; do
             sha256sum "$target"
             apktool d -f -r -p /tmp/tv33/framework "$target" -o "/tmp/tv33/$(basename "$target" .apk)"
           done
-          python3 tools/trace_8054_projection_interlocks.py /tmp/tv33/decoded /tmp/tv33/RuiAutoFocus /tmp/tv33/trdservice /tmp/tv33/KeystoneCorrection /tmp/tv33/Factory /tmp/tv33/KuSourceRJ
+          python3 tools/trace_8054_picture_format.py /tmp/tv33/decoded /tmp/tv33/TvServices /tmp/tv33/MtkTvInput /tmp/tv33/LiveTV /tmp/tv33/Factory > /tmp/tv33/picture-format.txt
+          grep -E '^PIC14_(SCANNED|METHOD) ' /tmp/tv33/picture-format.txt
+          awk '/^PIC14_METHOD / { show = $0 !~ /\/LiveTV\// || tolower($0) ~ /aspect|overscan|screenmode|picture.?size|panel/ } /^PIC14_LINE / && show { print } /^PIC14_METHOD / && show { print }' /tmp/tv33/picture-format.txt
+          for target in "$STOCK_EXT/priv-app/TvSettingsPlus/TvSettingsPlus.apk" "$STOCK_EXT/priv-app/LiveTV/LiveTV.apk"; do
+            echo "PIC14 resources: $target"
+            aapt dump resources "$target" | awk 'tolower($0) ~ /:((string|xml|id|layout|array)\/[^ ]*(aspect|overscan|screen.?fit|just.?scan|wide.?mode|screen.?mode|picture.?size|panel.?info))/ { print }'
+          done
           python3 tools/find_8054_keystone_layout.py \
             /tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk \
             /tmp/tv33/Exact8054ProjectionResources.java
