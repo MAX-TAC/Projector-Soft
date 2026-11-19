@@ -66,11 +66,11 @@ DIRECT_MOD 22; DELEGATED_OEM 20; READ_ONLY 19; NOT_IMPLEMENTED 22; BLOCKED 11; H
 | PRJ03 | Автофокус при перемещении | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify autofocus behavior separately for startup and movement |
 | PRJ04 | Ручная фокусировка | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm the original subcontrols, fullscreen routes and return path |
 | PRJ05 | Автоматическая трапеция | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify OEM view inflation and motion correction without changing manual correction |
-| PRJ06 | 4-угольная коррекция | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm the original subcontrols, fullscreen routes and return path |
-| PRJ07 | Горизонтальная/вертикальная трапеция | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm the original subcontrols, fullscreen routes and return path |
+| PRJ06 | 4-угольная коррекция | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify opening and return without geometry change, D-pad and manual restore |
+| PRJ07 | Горизонтальная/вертикальная трапеция | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify axis controls, D-pad/Back and restore shared geometry |
 | PRJ08 | Обнаружение препятствия | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm the original subcontrols, fullscreen routes and return path |
 | PRJ09 | Автоматическое выравнивание / экран | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Confirm the original subcontrols, fullscreen routes and return path |
-| PRJ10 | Цифровой зум | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify stock digital zoom entry and Back/D-pad |
+| PRJ10 | Цифровой зум | DELEGATED_OEM | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify zoom bounds, shared geometry, Back/D-pad and restore |
 | PRJ11 | Оптическая яркость LED | DIRECT_MOD | DELEGATED_OEM | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify available customer profile, OEM readback, actual brightness and thermal behavior |
 | SYS01 | Питание при подключении сети | DIRECT_MOD | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify power restoration behavior without modifying thermal services |
 | SYS02 | Автосопряжение Bluetooth пульта | READ_ONLY | — | BUILT_UNTESTED | RUNTIME_TEST_REQUIRED | Verify HID remote pairing and retained AutoPair/reconnect owners |

@@ -25,10 +25,12 @@ set('HDMI06','DIRECT_MOD','OemHdmiAutoPlayHook','Verify OEM autoplay state and s
 set('HDMI07','DIRECT_MOD','OemPowerOnSourceHook; boot property only','Verify exact8054 accepted IDs and cold boot per input');
 set('HDMI08','DIRECT_MOD','OemPowerOnAppHook','Verify target activity and persisted OEM property');
 set('HDMI09','DELEGATED_OEM','OEM source USB page','Deferred player scope, navigation only');
-set('PRJ01 PRJ04 PRJ06 PRJ07 PRJ08 PRJ09','DELEGATED_OEM','OemProjectionPanel: checked stock projection entry and original correction UI; manual focus uses remote keys','Confirm the original subcontrols, fullscreen routes and return path');
+set('PRJ01 PRJ04 PRJ08 PRJ09','DELEGATED_OEM','OemProjectionPanel: checked stock projection entry and original correction UI; manual focus uses remote keys','Confirm the original subcontrols, fullscreen routes and return path');
 set('PRJ02 PRJ03','DIRECT_MOD','OemFocusPreferences: two stock callbacks and property readback','Verify autofocus behavior separately for startup and movement','DELEGATED_OEM');
 set('PRJ05','DIRECT_MOD','OemMoveKeystonePreference: stock callback bound to original layout and property readback','Verify OEM view inflation and motion correction without changing manual correction','DELEGATED_OEM');
-set('PRJ10','DELEGATED_OEM','Original projection menu; standalone DigitalZoomActivity launch is unconfirmed on 8054','Verify stock digital zoom entry and Back/D-pad');
+set('PRJ06','DELEGATED_OEM','Separate FourCornerActivity via the verified stock FOUR_CORNER action','Verify opening and return without geometry change, D-pad and manual restore');
+set('PRJ07','DELEGATED_OEM','Separate HVKeystoneActivity via the verified stock HV action','Verify axis controls, D-pad/Back and restore shared geometry');
+set('PRJ10','DELEGATED_OEM','Separate DigitalZoomActivity via the verified stock DIGITAL_ZOOM action','Verify zoom bounds, shared geometry, Back/D-pad and restore');
 set('PRJ11','DIRECT_MOD','OemLightSourcePreference: four KuSourceRJ modes for the verified customer-zero runtime path','Verify available customer profile, OEM readback, actual brightness and thermal behavior','DELEGATED_OEM');
 set('SYS01','DIRECT_MOD','OemAcPowerBootHook','Verify power restoration behavior without modifying thermal services');
 set('SYS02 SYS06','READ_ONLY','OemBluetoothRemoteHook / OEM state, no replacement reconnect service','Verify HID remote pairing and retained AutoPair/reconnect owners');

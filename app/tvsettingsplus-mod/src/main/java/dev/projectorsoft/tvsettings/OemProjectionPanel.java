@@ -13,6 +13,11 @@ public final class OemProjectionPanel {
                     "Штатные настройки проектора","Положение, фокус и коррекция",intent,251);
         }catch(Exception ex){Log.w("TvSettingsPlusMOD","OEM projection menu unavailable",ex);}
         if ("8054".equals(OemHdmiPortInfo.machineId())) {
+            addEditor(context,category,pref,"zoom","Цифровой зум",Projection8054Policy.DIGITAL_ZOOM,252);
+            addEditor(context,category,pref,"four_corner","Коррекция четырёх углов",
+                    Projection8054Policy.FOUR_CORNER,254);
+            addEditor(context,category,pref,"hv_keystone","Горизонтальная и вертикальная коррекция",
+                    Projection8054Policy.HORIZONTAL_VERTICAL,255);
             // Exact stock KeystoneSettingsSecondaryController.gotoKeystoneCorrection intent.
             add(context,category,pref,"keystone","Коррекция трапеции · штатный экран",null,
                 "com.android.tv.settings",
@@ -45,6 +50,70 @@ public final class OemProjectionPanel {
             }
         }
         return OemHardwareDelegatedSettings.mainActivityIntent(context,"android.settings.SETTINGS");
+    }
+
+    private static Intent editorIntent(Context context,String action) {
+        try {
+            String machine=OemHdmiPortInfo.machineId();
+            if (!"8054".equals(machine)) return null;
+            String owner=Projection8054Policy.CORRECTION_PACKAGE;
+            // The stock direct launchers use the action and NEW_TASK without extras.
+            Intent intent=new Intent(action).setPackage(owner).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            PackageManager pm=context.getPackageManager();
+            ResolveInfo resolved=pm.resolveActivity(intent,PackageManager.MATCH_DEFAULT_ONLY);
+            ActivityInfo info=resolved==null ? null : resolved.activityInfo;
+            if (info==null || info.applicationInfo==null || info.packageName==null || info.name==null)
+                return null;
+            ComponentName component=new ComponentName(info.packageName,info.name);
+            boolean permission=info.permission==null || info.permission.isEmpty()
+                    || context.checkSelfPermission(info.permission)==PackageManager.PERMISSION_GRANTED;
+            if (!Projection8054Policy.mayOpenStockEditor(machine,action,intent.getExtras()!=null,info.packageName,info.name,
+                    (info.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM)!=0,
+                    info.enabled && pm.getComponentEnabledSetting(component)<=PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                    info.applicationInfo.enabled && pm.getApplicationEnabledSetting(owner)<=PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                    info.applicationInfo.uid==context.getApplicationInfo().uid,info.exported,permission))
+                return null;
+            return intent.setComponent(component);
+        } catch (Exception | LinkageError ex) {
+            Log.w("TvSettingsPlusMOD","Stock projection editor unavailable: "+action,ex);
+            return null;
+        }
+    }
+
+    private static void addEditor(Context context,Object category,Class<?> pref,String key,String title,
+                                  String action,int order) {
+        if (editorIntent(context,action)==null) return;
+        try {
+            Object item=pref.getConstructor(Context.class).newInstance(context);
+            pref.getMethod("setKey",String.class).invoke(item,"projectorsoft_projection_"+key);
+            pref.getMethod("setTitle",CharSequence.class).invoke(item,title);
+            pref.getMethod("setOrder",int.class).invoke(item,order);
+            Class<?> listener=Class.forName("androidx.preference.Preference$OnPreferenceClickListener");
+            Object callback=java.lang.reflect.Proxy.newProxyInstance(listener.getClassLoader(),
+                    new Class<?>[]{listener},(proxy,method,args)-> {
+                        switch(method.getName()){
+                            case "onPreferenceClick":
+                                Intent intent=editorIntent(context,action);
+                                if (intent!=null) {
+                                    try {context.startActivity(intent);return true;}
+                                    catch (RuntimeException error) {
+                                        Log.w("TvSettingsPlusMOD","Cannot open "+action,error);
+                                    }
+                                }
+                                android.widget.Toast.makeText(context,"Штатный редактор недоступен",
+                                        android.widget.Toast.LENGTH_SHORT).show();
+                                return true;
+                            case "hashCode":return System.identityHashCode(proxy);
+                            case "equals":return args!=null && args.length==1 && proxy==args[0];
+                            case "toString":return action;
+                            default:return null;
+                        }
+                    });
+            pref.getMethod("setOnPreferenceClickListener",listener).invoke(item,callback);
+            category.getClass().getMethod("addPreference",pref).invoke(category,item);
+        } catch (Exception | LinkageError error) {
+            Log.w("TvSettingsPlusMOD","Projection row unavailable: "+action,error);
+        }
     }
 
     private static boolean accessible(Context context,PackageManager pm,ComponentName component,ActivityInfo info) {
