@@ -96,6 +96,7 @@ public final class OemFiveBandEqualizerHook {
                 seek.getMethod("setUpdatesContinuously",boolean.class).invoke(item,false);
                 seek.getMethod("setValue",int.class).invoke(item,current);
                 final int lo=bounds[0],hi=bounds[1];
+                String[] displayed={raw};
                 InvocationHandler callback=(proxy,method,args)->{
                     String methodName=method.getName();
                     if ("onPreferenceChange".equals(methodName)&&args!=null&&args.length>=2) {
@@ -103,10 +104,15 @@ public final class OemFiveBandEqualizerHook {
                         int value=(Integer)args[1];
                         if (value<lo||value>hi)return false;
                         try {
-                            if(!OemSoundValuePolicy.acceptsBandChange(Settings.Global.getString(resolver,key),
+                            String before=Settings.Global.getString(resolver,key);
+                            if (!displayed[0].equals(before)) return false;
+                            if(!OemSoundValuePolicy.acceptsBandChange(before,
                                     value,lo,hi,openedMode,Settings.Global.getString(resolver,"sound_style")))return false;
+                            if (Integer.toString(value).equals(before)) return true;
                             if (!Settings.Global.putInt(resolver,key,value))return false;
-                            return Settings.Global.getInt(resolver,key,Integer.MIN_VALUE)==value;
+                            if (Settings.Global.getInt(resolver,key,Integer.MIN_VALUE)!=value) return false;
+                            displayed[0]=Integer.toString(value);
+                            return true;
                         } catch(Exception ex) {
                             Log.w(TAG,"EQ band update failed "+key,ex);
                             return false;

@@ -184,7 +184,8 @@ public final class OemInlinePreferencesHook {
             Log.w(TAG,"OEM quick controls unavailable; keep original settings",e);
         } finally {
             try {
-                if(attempt!=null)attempt.close();
+                try {if(attempt!=null)attempt.close();}
+                catch(RuntimeException error){Log.w(TAG,"Could not finish menu rollback",error);}
                 for(Object category:categories)removeIfEmpty(screen,preference,category);
             } finally {
                 try {OemHdmiPortInfo.bind(fragment,root);}
@@ -288,6 +289,7 @@ public final class OemInlinePreferencesHook {
         final String openedMode=Settings.Global.getString(resolver,"sound_style");
         String initial=Settings.Global.getString(resolver,oemKey);
         if (!"0".equals(initial) && !"1".equals(initial)) return;
+        String[] displayed = {initial};
         Class<?> switchType=Class.forName("androidx.preference.SwitchPreference");
         Object item=switchType.getConstructor(Context.class).newInstance(context);
         pref.getMethod("setKey",String.class).invoke(item,uiKey);
@@ -301,9 +303,14 @@ public final class OemInlinePreferencesHook {
                 try {
                     if (!(args[1] instanceof Boolean)) return false;
                     int target=(Boolean)args[1]?1:0;
-                    if("sound_sound_surround".equals(oemKey)&&!OemSoundValuePolicy.acceptsControlChange(oemKey,Settings.Global.getString(resolver,oemKey),target,openedMode,Settings.Global.getString(resolver,"sound_style")))return false;
+                    String before=Settings.Global.getString(resolver,oemKey);
+                    if (!displayed[0].equals(before)) return false;
+                    if (oemKey.startsWith("sound_") && !openedModeMatches(resolver,openedMode)) return false;
+                    if (before.equals(Integer.toString(target))) return true;
                     if (!Settings.Global.putInt(resolver,oemKey,target)) return false;
-                    return Settings.Global.getInt(resolver,oemKey,-999)==target;
+                    if (Settings.Global.getInt(resolver,oemKey,-999)!=target) return false;
+                    displayed[0]=Integer.toString(target);
+                    return true;
                 } catch(Exception e) {
                     Log.w(TAG,"OEM toggle rejected "+oemKey,e);
                     return false;
@@ -318,6 +325,11 @@ public final class OemInlinePreferencesHook {
                 new Class<?>[]{listener},callback);
         pref.getMethod("setOnPreferenceChangeListener",listener).invoke(item,fn);
         category.getClass().getMethod("addPreference",pref).invoke(category,item);
+    }
+
+    private static boolean openedModeMatches(ContentResolver resolver,String openedMode) {
+        return openedMode!=null && openedMode.matches("[0-6]")
+                && openedMode.equals(Settings.Global.getString(resolver,"sound_style"));
     }
 
     private static void addList(Object category,Class<?> pref,Context context,
@@ -348,6 +360,7 @@ public final class OemInlinePreferencesHook {
         final int current;
         try {current=Integer.parseInt(raw);} catch(NumberFormatException ex){return;}
         if (!valueToTitle.containsKey(current)) return; // don't invent vendor state
+        String[] displayed = {raw};
 
         Class<?> listType=Class.forName("androidx.preference.ListPreference");
         Object preference=listType.getConstructor(Context.class).newInstance(context);
@@ -369,6 +382,9 @@ public final class OemInlinePreferencesHook {
                 try {
                     int requested=Integer.parseInt(String.valueOf(args[1]));
                     if (!valueToTitle.containsKey(requested)) return false;
+                    String before=Settings.Global.getString(resolver,oemKey);
+                    if (!displayed[0].equals(before)) return false;
+                    if (Integer.toString(requested).equals(before)) return true;
                     if (oemKey.startsWith("picture_")) {
                         if(!OemPictureState.write(context,oemKey,requested))return false;
                     } else {
@@ -376,6 +392,7 @@ public final class OemInlinePreferencesHook {
                         if(!Settings.Global.putInt(resolver,oemKey,requested))return false;
                     }
                     if (Settings.Global.getInt(resolver,oemKey,-999)!=requested) return false;
+                    displayed[0]=Integer.toString(requested);
                     pref.getMethod("setSummary",CharSequence.class)
                             .invoke(preference,valueToTitle.get(requested));
                     if ("sound_style".equals(oemKey) && requested != current && soundModeChanged != null) {

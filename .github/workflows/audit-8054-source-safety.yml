@@ -150,10 +150,16 @@ jobs:
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/KuSourceRjBrightnessGateway.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemPictureState.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/PicturePanelState.java \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/PanelCacheReadout.java \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemPanelInfoHook.java \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/CheckedPreferenceLaunch.java \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemHdmiAutoPlayHook.java \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/ProjectionToggleState.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemPicturePanel.java
           java -cp /tmp/picture-adapter-tests dev.projectorsoft.tvsettings.OemPictureAdapterTest
           java -cp /tmp/picture-adapter-tests dev.projectorsoft.tvsettings.OemPicturePanelAdapterTest
           java -cp /tmp/picture-adapter-tests dev.projectorsoft.tvsettings.Brightness8054AdapterTest
+          java -cp /tmp/picture-adapter-tests dev.projectorsoft.tvsettings.MenuIntegrationAdapterTest
       - name: Check Android entry-point wiring remains conservative
         run: |
           set -euo pipefail

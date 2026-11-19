@@ -24,7 +24,14 @@ final class MenuInstallation {
         @Override public void close(){
             if(committed)return;
             try {
-                for(int i=undo.size()-1;i>=0;i--)undo.get(i).run();
+                RuntimeException failure = null;
+                for (int i = undo.size() - 1; i >= 0; i--) {
+                    try { undo.get(i).run(); }
+                    catch (RuntimeException error) {
+                        if (failure == null) failure = error;
+                    }
+                }
+                if (failure != null) throw failure;
             } finally {
                 screens.remove(screen);
             }

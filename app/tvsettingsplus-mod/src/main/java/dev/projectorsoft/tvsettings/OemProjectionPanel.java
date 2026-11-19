@@ -144,7 +144,7 @@ public final class OemProjectionPanel {
         pref.getMethod("setTitle",CharSequence.class).invoke(item,title);
         pref.getMethod("setSummary",CharSequence.class).invoke(item,summary);
         pref.getMethod("setOrder",int.class).invoke(item,order);
-        pref.getMethod("setIntent",Intent.class).invoke(item,intent);
+        CheckedPreferenceLaunch.attach(context,pref,item,intent,()->intent);
         category.getClass().getMethod("addPreference",pref).invoke(category,item);
     }
 }

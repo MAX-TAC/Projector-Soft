@@ -28,7 +28,7 @@ public final class OemPowerOnSourceHook {
     private static String propGet() throws Exception {
         Class<?> cls=Class.forName("android.os.SystemProperties");
         return (String)cls.getMethod("get",String.class,String.class)
-                .invoke(null,PROPERTY,"HOME");
+                .invoke(null,PROPERTY,"8054".equals(OemHdmiPortInfo.machineId()) ? "" : "HOME");
     }
 
     private static boolean propSet(String choice) throws Exception {

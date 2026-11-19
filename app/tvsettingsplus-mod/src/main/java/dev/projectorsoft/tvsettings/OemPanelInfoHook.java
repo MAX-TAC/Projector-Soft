@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import java.lang.reflect.Method;
+import java.lang.ref.WeakReference;
 import java.util.WeakHashMap;
 
 /** Presentation of the existing Settings-owned panel configuration. */
@@ -15,7 +16,7 @@ final class OemPanelInfoHook {
     private static final String[] TITLES = {
             "Тип панели", "Версия панели", "Ширина панели по конфигурации", "Высота панели по конфигурации"
     };
-    private static final WeakHashMap<View, Boolean> BOUND = new WeakHashMap<>();
+    private static final WeakHashMap<Object, WeakReference<Binding>> BOUND = new WeakHashMap<>();
 
     private OemPanelInfoHook() {}
 
@@ -47,10 +48,20 @@ final class OemPanelInfoHook {
     }
 
     static void bind(Object fragment, View root) {
-        if (root == null || BOUND.containsKey(root) || !"8054".equals(OemHdmiPortInfo.machineId())) return;
+        if (fragment == null) return;
+        WeakReference<Binding> ref = BOUND.get(fragment);
+        Binding previous = ref == null ? null : ref.get();
+        if (root == null || !"8054".equals(OemHdmiPortInfo.machineId())) {
+            if (previous != null) previous.close();
+            BOUND.remove(fragment);
+            return;
+        }
         try {
             Method find = fragment.getClass().getMethod("findPreference", CharSequence.class);
             Object panel = find.invoke(fragment, KEY);
+            if (previous != null && previous.root == root && previous.panel == panel) return;
+            if (previous != null) previous.close();
+            BOUND.remove(fragment);
             if (panel == null) return;
             Object[] rows = new Object[FIELDS.length];
             for (int i = 0; i < FIELDS.length; i++) {
@@ -58,18 +69,21 @@ final class OemPanelInfoHook {
                 if (rows[i] == null) return;
             }
             Class<?> pref = Class.forName("androidx.preference.Preference");
-            Binding binding = new Binding(root.getContext().getClassLoader(), panel, rows,
+            Binding binding = new Binding(root, panel, rows,
                     pref.getMethod("setVisible", boolean.class), pref.getMethod("setSummary", CharSequence.class));
-            BOUND.put(root, true);
             root.addOnAttachStateChangeListener(binding);
+            BOUND.put(fragment, new WeakReference<>(binding));
             if (root.isAttachedToWindow()) binding.onViewAttachedToWindow(root);
         } catch (Exception | LinkageError unavailable) {
+            if (previous != null) previous.close();
+            BOUND.remove(fragment);
             Log.d(TAG, "Panel configuration view unavailable");
         }
     }
 
     private static final class Binding implements View.OnAttachStateChangeListener,
             ViewTreeObserver.OnWindowFocusChangeListener {
+        private final View root;
         private final ClassLoader loader;
         private final Object panel;
         private final Object[] rows;
@@ -77,8 +91,9 @@ final class OemPanelInfoHook {
         private final Method summary;
         private ViewTreeObserver observer;
 
-        Binding(ClassLoader loader, Object panel, Object[] rows, Method visible, Method summary) {
-            this.loader = loader;
+        Binding(View root, Object panel, Object[] rows, Method visible, Method summary) {
+            this.root = root;
+            this.loader = root.getContext().getClassLoader();
             this.panel = panel;
             this.rows = rows;
             this.visible = visible;
@@ -94,8 +109,14 @@ final class OemPanelInfoHook {
 
         @Override public void onViewDetachedFromWindow(View view) {
             if (observer == null) return;
-            if (observer.isAlive()) observer.removeOnWindowFocusChangeListener(this);
+            ViewTreeObserver active = observer.isAlive() ? observer : view.getViewTreeObserver();
+            if (active.isAlive()) active.removeOnWindowFocusChangeListener(this);
             observer = null;
+        }
+
+        void close() {
+            onViewDetachedFromWindow(root);
+            root.removeOnAttachStateChangeListener(this);
         }
 
         @Override public void onWindowFocusChanged(boolean focused) {
@@ -117,7 +138,17 @@ final class OemPanelInfoHook {
                 }
                 visible.invoke(panel, any);
             } catch (Exception | LinkageError unavailable) {
+                hide(panel);
+                for (Object row : rows) hide(row);
                 Log.d(TAG, "Panel configuration refresh unavailable");
+            }
+        }
+
+        private void hide(Object row) {
+            try {
+                visible.invoke(row, false);
+            } catch (Exception | LinkageError unavailable) {
+                Log.d(TAG, "Panel configuration row could not be hidden");
             }
         }
     }

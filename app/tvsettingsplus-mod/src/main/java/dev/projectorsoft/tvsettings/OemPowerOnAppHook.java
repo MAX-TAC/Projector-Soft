@@ -34,7 +34,7 @@ public final class OemPowerOnAppHook {
         Method setter=cls.getMethod("set",String.class,String.class);
         return new OemPowerOnAppPolicy.Property() {
             @Override public String read() throws Exception {
-                Object value=getter.invoke(null,PROPERTY,"HOME");
+                Object value=getter.invoke(null,PROPERTY,"8054".equals(OemHdmiPortInfo.machineId()) ? "" : "HOME");
                 return value instanceof String?(String)value:null;
             }
             @Override public boolean write(String value) throws Exception {
@@ -121,26 +121,30 @@ public final class OemPowerOnAppHook {
                     if(args==null || args.length<2)return false;
                     if (!(args[1] instanceof String)) return false;
                     String chosen=(String)args[1];
-                    Set<String> installed=candidates(context).keySet();
-                    if (!OemPowerOnAppPolicy.allowed(chosen,apps)
-                            || !OemPowerOnAppPolicy.allowed(chosen,installed)
-                            || !displayedValue[0].equals(prop.read())) {
-                        Toast.makeText(context,"Параметр запуска изменился. Переоткройте настройки.",Toast.LENGTH_SHORT).show();
+                    try {
+                        Set<String> installed=candidates(context).keySet();
+                        if (!OemPowerOnAppPolicy.allowed(chosen,apps)
+                                || !OemPowerOnAppPolicy.allowed(chosen,installed)) {
+                            Toast.makeText(context,"Параметр запуска изменился. Переоткройте настройки.",Toast.LENGTH_SHORT).show();
+                            return false;
+                        }
+                        boolean success=OemPowerOnAppPolicy.apply(prop,installed,displayedValue[0],chosen);
+                        if(success) {
+                            displayedValue[0]=chosen;
+                            String label="HOME".equals(chosen)
+                                    ? "Не запускать приложение":nameByPackage.get(chosen);
+                            try {
+                                preference.getMethod("setSummary",CharSequence.class)
+                                        .invoke(item,label);
+                            }catch(Exception e){Log.w(TAG,"Could not refresh boot-app label",e);}
+                        }else {
+                            Log.w(TAG,"Factory boot-app property write not confirmed");
+                        }
+                        return success;
+                    } catch (Exception | LinkageError unavailable) {
+                        Log.w(TAG,"Startup application unavailable",unavailable);
                         return false;
                     }
-                    boolean success=OemPowerOnAppPolicy.apply(prop,installed,chosen);
-                    if(success) {
-                        displayedValue[0]=chosen;
-                        String label="HOME".equals(chosen)
-                                ? "Не запускать приложение":nameByPackage.get(chosen);
-                        try {
-                            preference.getMethod("setSummary",CharSequence.class)
-                                    .invoke(item,label);
-                        }catch(Exception e){Log.w(TAG,"Could not refresh boot-app label",e);}
-                    }else {
-                        Log.w(TAG,"Factory boot-app property write not confirmed");
-                    }
-                    return success;
                 }
                 if("toString".equals(methodName))return "OemPowerOnAppNative";
                 if("hashCode".equals(methodName))return System.identityHashCode(proxy);

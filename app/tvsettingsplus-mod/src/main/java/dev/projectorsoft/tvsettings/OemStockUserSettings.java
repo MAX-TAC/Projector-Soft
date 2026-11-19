@@ -85,7 +85,7 @@ final class OemStockUserSettings {
             Intent intent=stockActivityIntent(context,target);
             if (intent==null) return false;
             Object row=row(context,pref,key,title,order);
-            pref.getMethod("setIntent",Intent.class).invoke(row,intent);
+            CheckedPreferenceLaunch.attach(context,pref,row,intent,()->stockActivityIntent(context,target));
             return add(group,pref,row);
         } catch (Exception | LinkageError ex) {
             Log.w("TvSettingsPlusMOD","Stock screen unavailable: "+route,ex);

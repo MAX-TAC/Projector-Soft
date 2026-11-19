@@ -30,11 +30,15 @@ public final class OemPowerOnAppPolicy {
     }
 
     public static boolean apply(Property property,Set<String> installedApps,Object nextValue) {
+        return apply(property,installedApps,null,nextValue);
+    }
+
+    static boolean apply(Property property,Set<String> installedApps,String displayed,Object nextValue) {
         if(property==null || !(nextValue instanceof String) || !allowed((String)nextValue,installedApps))
             return false;
         try {
             String current=property.read();
-            if(!expose(current,installedApps))return false;
+            if(!expose(current,installedApps) || displayed!=null && !displayed.equals(current))return false;
             String next=(String)nextValue;
             if(current.equals(next))return true;
             if(!property.write(next))return false;
@@ -44,3 +48,4 @@ public final class OemPowerOnAppPolicy {
         }
     }
 }
+

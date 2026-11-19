@@ -154,6 +154,7 @@ public final class OemInlineSlidersHook {
         try { initial=Integer.parseInt(raw); }
         catch(NumberFormatException e) { return; }
         if (initial<spec.min || initial>spec.max) return;
+        String[] displayed={raw};
         if(spec.key.startsWith("sound_")&&!OemSoundValuePolicy.acceptsControlChange(spec.key,raw,initial,openedMode,openedMode))return;
 
         Class<?> bar=Class.forName("androidx.preference.SeekBarPreference");
@@ -181,13 +182,18 @@ public final class OemInlineSlidersHook {
                     // with the exact same global key, which delegates to the
                     // platform Settings provider. We re-read instead of silently
                     // accepting a failed provider write.
+                    String before=Settings.Global.getString(resolver,spec.key);
+                    if (!displayed[0].equals(before)) return false;
+                    if (Integer.toString(newValue).equals(before)) return true;
                     if(spec.key.startsWith("picture_")) {
                         if(!OemPictureState.write(context,spec.key,newValue))return false;
                     } else {
                         if(!OemSoundValuePolicy.acceptsControlChange(spec.key,Settings.Global.getString(resolver,spec.key),newValue,openedMode,Settings.Global.getString(resolver,"sound_style")))return false;
                         if(!Settings.Global.putInt(resolver,spec.key,newValue))return false;
                     }
-                    return Settings.Global.getInt(resolver,spec.key,-99999)==newValue;
+                    if (Settings.Global.getInt(resolver,spec.key,-99999)!=newValue) return false;
+                    displayed[0]=Integer.toString(newValue);
+                    return true;
                 } catch (Exception e) {
                     Log.w(TAG,"OEM seekbar write failed: "+spec.key,e);
                     return false;

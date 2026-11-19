@@ -56,7 +56,12 @@ public final class OemSoundPanel {
 
     private void refresh() throws Exception {
         OemSoundDelayPanel.refresh(group);
-        boolean stable=state.refresh(key->Settings.Global.getString(context.getContentResolver(),key));
+        boolean stable=false;
+        try {
+            stable=state.refresh(key->Settings.Global.getString(context.getContentResolver(),key));
+        } catch(RuntimeException unavailable) {
+            Log.w("TvSettingsPlusMOD","Sound snapshot unavailable",unavailable);
+        }
         Class<?> type = group.getClass();
         Method child = type.getMethod("getPreference",int.class);
         Method remove = type.getMethod("removePreference",preference);
@@ -100,6 +105,7 @@ public final class OemSoundPanel {
         bar.getMethod("setShowSeekBarValue",boolean.class).invoke(item,true);
         bar.getMethod("setUpdatesContinuously",boolean.class).invoke(item,false);
 
+        int[] displayed={current};
         Class<?> listener = Class.forName("androidx.preference.Preference$OnPreferenceChangeListener");
         Object callback = Proxy.newProxyInstance(listener.getClassLoader(),new Class<?>[]{listener},
                 (proxy,method,args) -> {
@@ -111,8 +117,12 @@ public final class OemSoundPanel {
                                 if (target < min || target > max || audio.isVolumeFixed()
                                         || min != audio.getStreamMinVolume(stream)
                                         || max != audio.getStreamMaxVolume(stream)) return false;
+                                if (audio.getStreamVolume(stream)!=displayed[0]) return false;
+                                if (target==displayed[0]) return true;
                                 audio.setStreamVolume(stream,target,0);
-                                return audio.getStreamVolume(stream) == target;
+                                if (audio.getStreamVolume(stream)!=target) return false;
+                                displayed[0]=target;
+                                return true;
                             } catch (RuntimeException ex) {
                                 Log.w("TvSettingsPlusMOD","Media volume change unavailable",ex);
                                 return false;

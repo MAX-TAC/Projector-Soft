@@ -21,7 +21,8 @@ public final class OemStandardAndroidNavigation {
                 pref.getMethod("setTitle",CharSequence.class).invoke(item,titles[i]);
                 pref.getMethod("setSummary",CharSequence.class).invoke(item,"Открыть системный экран Android TV");
                 pref.getMethod("setOrder",int.class).invoke(item,290+i);
-                pref.getMethod("setIntent",Intent.class).invoke(item,target);
+                String action=actions[i];
+                CheckedPreferenceLaunch.attach(context,pref,item,target,()->resolve(context,action));
                 inserted=Boolean.TRUE.equals(category.getClass().getMethod("addPreference",pref).invoke(category,item))||inserted;
             }catch(Exception ex){Log.w("TvSettingsPlusMOD","System navigation entry unavailable",ex);}
         }

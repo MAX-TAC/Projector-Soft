@@ -54,7 +54,7 @@ public final class OemHardwareDelegatedSettings {
             preferenceClass.getMethod("setTitle",CharSequence.class).invoke(item,title);
             preferenceClass.getMethod("setSummary",CharSequence.class).invoke(item,summary);
             preferenceClass.getMethod("setOrder",int.class).invoke(item,order);
-            preferenceClass.getMethod("setIntent",Intent.class).invoke(item,intent);
+            CheckedPreferenceLaunch.attach(context,preferenceClass,item,intent,()->mainActivityIntent(context,action));
             Object inserted=category.getClass().getMethod("addPreference",preferenceClass)
                                     .invoke(category,item);
             return Boolean.TRUE.equals(inserted);

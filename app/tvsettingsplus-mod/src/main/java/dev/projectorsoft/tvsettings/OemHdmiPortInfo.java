@@ -107,7 +107,8 @@ public final class OemHdmiPortInfo {
             Method find=fragment.getClass().getMethod("findPreference",CharSequence.class);
             if(find.invoke(fragment,"projectorsoft_hdmi_info_HW6")==null
                     && find.invoke(fragment,"projectorsoft_hdmi_info_HW7")==null
-                    && find.invoke(fragment,OemHdmiEdidHook.STATUS_KEY)==null) {
+                    && find.invoke(fragment,OemHdmiEdidHook.STATUS_KEY)==null
+                    && find.invoke(fragment,OemHdmiAutoPlayHook.KEY)==null) {
                 if(observer!=null)observer.bind(null);
                 OBSERVERS.remove(fragment);
                 return;
@@ -191,6 +192,7 @@ public final class OemHdmiPortInfo {
                 }
                 Object edid=find.invoke(fragment,OemHdmiEdidHook.STATUS_KEY);
                 if(edid!=null)summary.invoke(edid,OemHdmiEdidHook.storedSummary(context));
+                OemHdmiAutoPlayHook.refresh(find.invoke(fragment,OemHdmiAutoPlayHook.KEY));
                 OemCecAutoOff8054.refresh(context,find.invoke(fragment,OemCecAutoOff8054.CEC_KEY),
                         find.invoke(fragment,OemCecAutoOff8054.OFF_KEY));
             }catch(Exception ex){Log.w("TvSettingsPlusMOD","HDMI refresh unavailable",ex);}

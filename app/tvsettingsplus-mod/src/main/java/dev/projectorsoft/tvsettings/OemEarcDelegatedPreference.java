@@ -37,7 +37,8 @@ public final class OemEarcDelegatedPreference {
             preferenceClass.getMethod("setOrder",int.class).invoke(item,219);
             Intent intent=new Intent("android.settings.SOUND_SETTINGS");
             intent.setComponent(target); // Never resolves to KuSettings.
-            preferenceClass.getMethod("setIntent",Intent.class).invoke(item,intent);
+            CheckedPreferenceLaunch.attach(context,preferenceClass,item,intent,()->
+                    OemHardwareDelegatedSettings.mainActivityIntent(context,"android.settings.SOUND_SETTINGS"));
             Object inserted=category.getClass().getMethod("addPreference",preferenceClass)
                     .invoke(category,item);
             return Boolean.TRUE.equals(inserted);
@@ -47,3 +48,4 @@ public final class OemEarcDelegatedPreference {
         }
     }
 }
+

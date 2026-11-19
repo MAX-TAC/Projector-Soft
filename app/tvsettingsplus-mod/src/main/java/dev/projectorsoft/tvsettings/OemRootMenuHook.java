@@ -39,7 +39,9 @@ public final class OemRootMenuHook {
         clazz.getMethod("setTitle",CharSequence.class).invoke(preference,title);
         clazz.getMethod("setSummary",CharSequence.class).invoke(preference,summary);
         clazz.getMethod("setOrder",int.class).invoke(preference,order);
-        clazz.getMethod("setIntent",Intent.class).invoke(preference,intent);
+        CheckedPreferenceLaunch.attach(context,clazz,preference,intent,()->
+                "projectorsoft_projection".equals(key) ? OemProjectionPanel.projectionIntent(context)
+                        : OemHardwareDelegatedSettings.mainActivityIntent(context,action));
         // Category already belongs to MainFragment's preference tree.
         category.getClass().getMethod("addPreference",clazz).invoke(category,preference);
     }

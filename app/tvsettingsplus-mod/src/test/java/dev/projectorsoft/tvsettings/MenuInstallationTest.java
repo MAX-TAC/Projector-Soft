@@ -30,6 +30,20 @@ public final class MenuInstallationTest {
         }
         if(installation.begin(screen)!=null || !rows.equals(Arrays.asList("stock","picture","sound")))
             throw new AssertionError("retry did not yield exactly one of each section");
+        Object second=new Object();
+        List<String> attempted=new ArrayList<>();
+        try (MenuInstallation.Attempt attempt=installation.begin(second)) {
+            attempt.track(()->attempted.add("first"));
+            attempt.track(()->{throw new IllegalStateException("undo failed");});
+            attempt.track(()->attempted.add("last"));
+        } catch (IllegalStateException expected) {
+            if(!"undo failed".equals(expected.getMessage()))throw expected;
+        }
+        if(!attempted.equals(Arrays.asList("last","first")))
+            throw new AssertionError("failed undo prevented other cleanup");
+        try (MenuInstallation.Attempt retry=installation.begin(second)) {
+            if(retry==null)throw new AssertionError("failed cleanup prevented retry");
+        }
         System.out.println("PASS menu installation: partial failure rolls back, reopen installs once");
     }
 }

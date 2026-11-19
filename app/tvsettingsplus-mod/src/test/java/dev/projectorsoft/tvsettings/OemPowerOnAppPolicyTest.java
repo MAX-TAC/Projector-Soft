@@ -37,6 +37,9 @@ public final class OemPowerOnAppPolicyTest {
         ok(!OemPowerOnAppPolicy.apply(f,apps,"com.my.settings")
            && !OemPowerOnAppPolicy.apply(f,apps,"com.evil.unknown"),"not whitelisted");
         ok(OemPowerOnAppPolicy.apply(f,apps,"HOME"),"restore Android TV");
+        Fake stale=new Fake("com.example.tv");
+        ok(!OemPowerOnAppPolicy.apply(stale,apps,"HOME","org.example.player")
+           && stale.writes==0,"stale displayed launch source must never write");
         Fake blocked=new Fake("HOME");
         blocked.permit=false;
         ok(!OemPowerOnAppPolicy.apply(blocked,apps,"org.example.player"),"reject denial");
@@ -49,3 +52,4 @@ public final class OemPowerOnAppPolicyTest {
         System.out.println("PASS: launchable-package whitelist, source fallback and verified writes");
     }
 }
+
