@@ -726,11 +726,14 @@ Disassembly of section .plt:
 
 ## C2. Resolve unlabeled JNI BLX via ARM PLT/GOT (exact address evidence)
 
-- JNI direct BLX destinations: 
+- JNI direct BLX destinations: 0x7ae90
 - Sections:
 
 ```text
-NO_MATCH
+[11] .rel.plt          REL             0001d4ac 01d4ac 001870 08  AI  3  20  4
+[15] .plt              PROGBITS        000796b0 0786b0 003100 00  AX  0   0 16
+[19] .got              PROGBITS        0007d8dc 07b8dc 000120 00  WA  0   0  4
+[20] .got.plt          PROGBITS        0007d9fc 07b9fc 000c44 00  WA  0   0  4
 ```
 
 - R_ARM_JUMP_SLOT entries surrounding the config setter (order preserved):
@@ -747,6 +750,33 @@ index=382: 0007e000  00011e16 R_ARM_JUMP_SLOT        00000000   a_mtktvapi_confi
 index=383: 0007e004  00011f16 R_ARM_JUMP_SLOT        00000000   a_mtktvapi_config_is_enabled
 index=384: 0007e008  00012016 R_ARM_JUMP_SLOT        00000000   a_mtktvapi_config_reset_values
 index=385: 0007e00c  00012116 R_ARM_JUMP_SLOT        00000000   __open_2@LIBC
+```
+
+- Disassembly around direct JNI branch target 0x7ae90:
+
+```asm
+
+/tmp/flix8054_erofs/vendor_a_tree/lib/libcom_mediatek_twoworlds_tv_jni.so:     file format elf32-littlearm
+
+
+Disassembly of section .plt:
+
+0007ae78 <.plt+0x17c8>:
+   7ae78:	e5bcf178 	ldr	pc, [ip, #376]!	@ 0x178
+   7ae7c:	d4d4d4d4 	ldrble	sp, [r4], #1236	@ 0x4d4
+   7ae80:	e28fc600 	add	ip, pc, #0, 12
+   7ae84:	e28cca03 	add	ip, ip, #12288	@ 0x3000
+   7ae88:	e5bcf16c 	ldr	pc, [ip, #364]!	@ 0x16c
+   7ae8c:	d4d4d4d4 	ldrble	sp, [r4], #1236	@ 0x4d4
+   7ae90:	e28fc600 	add	ip, pc, #0, 12
+   7ae94:	e28cca03 	add	ip, ip, #12288	@ 0x3000
+   7ae98:	e5bcf160 	ldr	pc, [ip, #352]!	@ 0x160
+   7ae9c:	d4d4d4d4 	ldrble	sp, [r4], #1236	@ 0x4d4
+   7aea0:	e28fc600 	add	ip, pc, #0, 12
+   7aea4:	e28cca03 	add	ip, ip, #12288	@ 0x3000
+   7aea8:	e5bcf154 	ldr	pc, [ip, #340]!	@ 0x154
+   7aeac:	d4d4d4d4 	ldrble	sp, [r4], #1236	@ 0x4d4
+   7aeb0:	e28fc600 	add	ip, pc, #0, 12
 ```
 
 ## D. Automated interpretation (limited)
