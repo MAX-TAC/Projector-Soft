@@ -7,6 +7,8 @@ import com.android.tv.settings.SettingsPreferenceFragment;
 public final class AccessoriesFragment extends SettingsPreferenceFragment {
     @Override public int getPageId() { return 0; }
     @Override public void onCreatePreferences(Bundle state, String key) {
-        setPreferenceScreen(getPreferenceManager().createPreferenceScreen(requireContext()));
+        androidx.preference.PreferenceScreen screen = getPreferenceManager().createPreferenceScreen(requireContext());
+        screen.setTitle("Управление устройствами");
+        setPreferenceScreen(screen);
     }
 }

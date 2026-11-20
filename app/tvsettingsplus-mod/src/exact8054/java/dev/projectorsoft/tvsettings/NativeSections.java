@@ -231,8 +231,17 @@ public final class NativeSections {
     public static final class Picture extends Page {
         @Override NativePage section(){return NativePage.PICTURE;}
         @Override void populate(PreferenceScreen screen){
-            guarded("picture-read",()->OemPicturePanel.install(requireContext(),screen,Preference.class));
+            guarded("picture-read",()->OemPicturePanel.installSection(requireContext(),screen,Preference.class,false));
+            link(screen, NativePage.COLOR_TEMPERATURE, 228);
             OemStockUserSettings.installPictureFormat(requireContext(),screen,Preference.class);
+        }
+    }
+
+    public static final class ColorTemperature extends Page {
+        @Override NativePage section() { return NativePage.COLOR_TEMPERATURE; }
+        @Override void populate(PreferenceScreen screen) {
+            guarded("picture-color-read", () -> OemPicturePanel.installSection(
+                    requireContext(), screen, Preference.class, true));
         }
     }
 

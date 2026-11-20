@@ -12,24 +12,40 @@ import android.view.ViewTreeObserver;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Predicate;
 import java.util.WeakHashMap;
 
 /** Native Android TV rows for the picture state stored by the original backend. */
 final class OemPicturePanel {
     static final String STATUS="projectorsoft_picture_status";
     private static final String PREFIX="projectorsoft_picture_read_";
+    private static final Set<String> COLOR = Set.of(PicturePanelState.TEMPERATURE,
+            "picture_red_gain", "picture_green_gain", "picture_blue_gain");
     private static final String TAG="TvSettingsPlusMOD";
     private static final Map<Object,WeakReference<Binding>> BINDINGS=new WeakHashMap<>();
 
     private OemPicturePanel(){}
 
     static void install(Context context,Object group,Class<?> pref) throws ReflectiveOperationException {
-        row(context,group,pref,STATUS,"Изображение","Подготовка значений…",210);
+        installRows(context, group, pref, key -> true, true);
+    }
+
+    static void installSection(Context context, Object group, Class<?> pref, boolean colorOnly)
+            throws ReflectiveOperationException {
+        installRows(context, group, pref, key -> COLOR.contains(key) == colorOnly, !colorOnly);
+    }
+
+    private static void installRows(Context context, Object group, Class<?> pref,
+                                    Predicate<String> include, boolean includeReset)
+            throws ReflectiveOperationException {
+        row(context,group,pref,STATUS,"Состояние изображения","Подготовка значений…",210);
         for(int i=0;i<PicturePanelState.KEYS.length;i++){
+            if (!include.test(PicturePanelState.KEYS[i])) continue;
             row(context,group,pref,PREFIX+PicturePanelState.KEYS[i],
                     PicturePanelState.TITLES[i],"Ожидание чтения",211+i);
         }
-        row(context,group,pref,"projectorsoft_picture_reset_state","Сброс параметров изображения",
+        if (includeReset) row(context,group,pref,"projectorsoft_picture_reset_state","Сброс параметров изображения",
                 "Недоступен до подтверждения штатной процедуры для активного профиля",230);
     }
 

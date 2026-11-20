@@ -30,10 +30,10 @@ for path in sorted(root.glob('smali*/**/*.smali')):
                             print(neighbor)
 resources = subprocess.check_output([aapt, 'dump', 'resources', apk], text=True)
 for line in resources.splitlines():
-    if 'config_settings_flavor' in line:
+    if 'config_tvSettingsFlavor' in line:
         print(line)
 manifest = subprocess.check_output([aapt, 'dump', 'xmltree', apk, 'AndroidManifest.xml'], text=True)
-for node in re.split(r'(?m)^    E: ', manifest):
+for node in re.split(r'(?m)^ +E: ', manifest):
     if node.startswith(('activity ', 'activity-alias ')) and re.search(
             r'About|HomeSettings|Dream|ScreenSaver|Screensaver|PowerActivity|AccessoriesActivity|Reset|DeviceName|MultiCast',
             node):

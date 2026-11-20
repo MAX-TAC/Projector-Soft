@@ -318,6 +318,38 @@ public class UnifiedMenuUiTest {
         assertNull(shadowOf(two).getNextStartedActivity());
     }
 
+    @Test public void fontScaleSummaryRendersLiteralPercent() {
+        SystemSettingsActivity activity = Robolectric.buildActivity(SystemSettingsActivity.class).setup().get();
+        NativeSections.System page = (NativeSections.System)
+                activity.getSupportFragmentManager().findFragmentById(android.R.id.content);
+        Preference row = page.findPreference("projectorsoft_font_scale");
+        assertNotNull(row);
+        assertTrue(row.getSummary().toString().contains("100%"));
+        assertFalse(row.getSummary().toString().contains("%%"));
+    }
+
+    @Test public void rgbHasItsOwnReadOnlyColorTemperatureScreen() {
+        PictureSettingsActivity activity = Robolectric.buildActivity(PictureSettingsActivity.class).setup().get();
+        NativeSections.Picture picture = (NativeSections.Picture)
+                activity.getSupportFragmentManager().findFragmentById(android.R.id.content);
+        assertNotNull(picture.findPreference("projectorsoft_page_COLOR_TEMPERATURE"));
+        assertNull(picture.findPreference("projectorsoft_picture_read_picture_red_gain"));
+
+        ColorTemperatureSettingsActivity colors = Robolectric.buildActivity(ColorTemperatureSettingsActivity.class)
+                .setup().get();
+        NativeSections.ColorTemperature fragment = (NativeSections.ColorTemperature)
+                colors.getSupportFragmentManager().findFragmentById(android.R.id.content);
+        for (String key : new String[]{"picture_color_temperature", "picture_red_gain", "picture_green_gain",
+                "picture_blue_gain"}) {
+            Preference row = fragment.findPreference("projectorsoft_picture_read_" + key);
+            assertNotNull(row);
+            assertFalse(row.isSelectable());
+            assertNull(row.getOnPreferenceChangeListener());
+        }
+        assertNull(fragment.findPreference("projectorsoft_picture_read_picture_brightness"));
+        assertNull(Settings.Global.getString(colors.getContentResolver(), "picture_red_gain"));
+    }
+
     @Test @GraphicsMode(GraphicsMode.Mode.NATIVE)
     public void captureLeanbackFixtureScreensAt720p() throws Exception {
         capture("root",MainSettings.class);
