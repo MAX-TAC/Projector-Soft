@@ -286,8 +286,8 @@ def main():
                         got = struct.unpack_from("<I",blob,off)[0]
                         if got == val:
                             hits.append(a)
-        rows += ["- exact BpHw set function pointer \`0x" + f"{val:x}" +
-                 "\` in this vtable object: " +
+        rows += ["- exact BpHw set function pointer `0x" + f"{val:x}" +
+                 "` in this vtable object: " +
                  (", ".join(f"0x{a:x} (raw offset +0x{a-base:x})" for a in hits) or "NOT_FOUND")]
     else:
         rows.append("- exported BpHw setter not found")
