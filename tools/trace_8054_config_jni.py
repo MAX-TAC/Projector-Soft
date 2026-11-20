@@ -226,11 +226,11 @@ def main() -> None:
     jni_insns = disassemble(jni_path, JNI)
     jni_branch_addresses = []
     for line in named_calls(jni_insns):
-        m = re.search(r"\\bblx?\\s+([0-9a-f]+)\\s+<", line, re.I)
+        m = re.search(r"\bblx?\s+([0-9a-f]+)\s+<", line, re.I)
         if m:
             jni_branch_addresses.append(int(m.group(1), 16))
     shdr = run(["readelf", "-SW", str(jni_path)]).splitlines()
-    plt_sections = [line.strip() for line in shdr if re.search(r"\\.(?:plt|got|rel\\.plt)\\b", line)]
+    plt_sections = [line.strip() for line in shdr if re.search(r"\.(?:plt|got|rel\.plt)\b", line)]
     jmp_relocations = [line.strip() for line in run(["readelf", "-rW", str(jni_path)]).splitlines()
                        if "R_ARM_JUMP_SLOT" in line]
     setter_indices = [i for i, line in enumerate(jmp_relocations) if SET in line and ALL not in line]
