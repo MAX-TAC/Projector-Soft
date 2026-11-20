@@ -127,13 +127,13 @@ def main() -> None:
         "",
         "## Reproduction and tool versions",
         "",
-        "\`\`\`sh",
+        "```sh",
         "python3 tools/trace_8054_config_jni.py --vendor-lib /tmp/flix8054_erofs/vendor_a_tree/lib --out /tmp/flix8054_native_report",
-        "\`\`\`",
+        "```",
         "",
     ]
     for cmd in ("readelf", "arm-linux-gnueabihf-objdump", "c++filt"):
-        result.append("- " + cmd + ": \`" + run([cmd, "--version"]).splitlines()[0] + "\`")
+        result.append("- " + cmd + ": `" + run([cmd, "--version"]).splitlines()[0] + "`")
     result += [
         "",
         "## A. ELF inputs (contents are NOT published)",
@@ -142,7 +142,7 @@ def main() -> None:
         "|---|---|",
     ]
     for filename, digest in EXPECTED.items():
-        result.append(f"| \`vendor_a/lib/{filename}\` | \`{digest}\` |")
+        result.append(f"| `vendor_a/lib/{filename}` | `{digest}` |")
     result += [
         "", "## B. Dynamic symbols and relocations",
         "",
@@ -170,23 +170,23 @@ def main() -> None:
                               or any(x in name for x in ("config_set_valueE", "config_get_valueE",
                                  "config_set_value_for_all_elemsE", "_hidl_a_hidl_a_mtktvapi_config_set_valueE")))]
         # C++ HIDL symbols are long; limit print per library while preserving names.
-        result += ["", f"### {label}: \`{filename}\`", "", f"- \`{machine}\`",
+        result += ["", f"### {label}: `{filename}`", "", f"- `{machine}`",
                    "- DT_NEEDED contains the following selected dependencies: " +
-                   ", ".join("\`" + m + "\`" for m in re.findall(r"Shared library: \[([^]]+)\]", deps)
+                   ", ".join("`" + m + "`" for m in re.findall(r"Shared library: \[([^]]+)\]", deps)
                              if "mtktv" in m or "hidl" in m or "rpc" in m) or "(none selected)",
                    "- Focused symbol rows (type, value, size, section, symbol):", "",
-                   "\`\`\`text"]
+                   "```text"]
         result += focus_symbol_rows[:45] or ["NO_MATCH"]
-        result += ["\`\`\`", "", "- Relevant relocations:", "", "\`\`\`text"]
+        result += ["```", "", "- Relevant relocations:", "", "```text"]
         matching_reloc = [r.strip() for r in reloc if any(x in r for x in (SET, GET, ALL))]
         result += matching_reloc[:45] or ["NO_MATCH"]
-        result += ["\`\`\`"]
+        result += ["```"]
         if "HIDL interface" == label:
             hidl_names = [name for name, _ in symbols if "config_set_valueE" in name or "config_set_value_for_all_elemsE" in name]
             result += ["", "- ABI-derived C++ signatures from **exported** HIDL symbols:", "",
-                       "\`\`\`text"]
+                       "```text"]
             result += [cxx_demangle(n) for n in hidl_names[:12]] or ["NO_MATCH"]
-            result += ["\`\`\`"]
+            result += ["```"]
     result += ["", "## C. Scoped machine disassembly", "",
                "Instruction addresses below are ELF virtual addresses, not runtime ASLR addresses.",
                "Raw calling instructions are shown as evidence; indirect register branches",
@@ -212,13 +212,13 @@ def main() -> None:
             excerpt = relevant_disassembly(lines)
             if label.startswith("JNI") and any(SET in x and "@" in x for x in calls):
                 edge_confirmed = True
-            result += [f"- Symbol: \`{name}\`", "- Demangled: \`" + cxx_demangle(name) + "\`",
+            result += [f"- Symbol: `{name}`", "- Demangled: `" + cxx_demangle(name) + "`",
                        f"- Scoped instructions: {sum(bool(ADDR.match(s)) for s in lines)};",
                        f" call-like instructions: {len(calls)}",
                        "",
-                       "\`\`\`asm"]
+                       "```asm"]
             result += excerpt or ["NO_SCOPED_DISASSEMBLY (review symbol/Thumb handling)"]
-            result += ["\`\`\`"]
+            result += ["```"]
     result += ["", "## D. Automated interpretation (limited)", "",
                f"- Direct labelled JNI branch to C-wrapper setter via PLT in scoped disassembly: **{'OBSERVED' if edge_confirmed else 'NOT_OBSERVED'}**.",
                "- **NOT_OBSERVED is not proof of absence.** Inspect indirect BLX, interposition,",
