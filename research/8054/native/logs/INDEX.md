@@ -14,6 +14,8 @@
 | 2026-11-20 | [NATIVE-005: HIDL service → RPC](2026-11-20_NATIVE-005.md) | exact service ELF SHA, init/VINTF, config API HIDL proxy/stub, service BLX 0x29e48 → PLT 0x43490 → GOT 0x47fa0, [final CI](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44804034895) SUCCESS | C-wrapper vtable→BpHw→server implementation, -1 / 3 semantics |
 | 2026-11-20 | [Product direction: нужен working PIC04, не абстрактный HIDL](2026-11-20_PRODUCT_DIRECTION_REVIEW.md) | Проанализированы TRACE_004/005, 96-функционная матрица, код v41; 0 app-файлов в PR #3 | **PRODUCT-001 / PIC04 — NEXT**; NATIVE-005b deferred |
 
+| 2026-11-20 | [PRODUCT-ARCH-001: без китайского UI в runtime](2026-11-20_PRODUCT-ARCH-001.md) | Зафиксирована правильная архитектура MOD→собственный обработчик→backend; полный KuSettings пока нельзя отключать из-за TimeService | PRODUCT-001 должен доказать независимость от GUI; выключение пакета — отдельный этап |
+
 ## Трассировки и статус
 
 | ID | Функция/уровень | Состояние | Документ |
