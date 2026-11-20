@@ -724,6 +724,31 @@ Disassembly of section .text:
 Disassembly of section .plt:
 ```
 
+## C2. Resolve unlabeled JNI BLX via ARM PLT/GOT (exact address evidence)
+
+- JNI direct BLX destinations: 
+- Sections:
+
+```text
+NO_MATCH
+```
+
+- R_ARM_JUMP_SLOT entries surrounding the config setter (order preserved):
+
+```text
+index=375: 0007dfe4  00011716 R_ARM_JUMP_SLOT        00000000   a_mtktvapi_rating_get_crnt_rating_info
+index=376: 0007dfe8  00011816 R_ARM_JUMP_SLOT        00000000   a_mtktvapi_rating_atsc_storage
+index=377: 0007dfec  00011916 R_ARM_JUMP_SLOT        00000000   a_mtktvapi_rating_op_vchip_reg_callback
+index=378: 0007dff0  00011a16 R_ARM_JUMP_SLOT        00000000   a_mtktvapi_config_reg_callback
+index=379: 0007dff4  00011b16 R_ARM_JUMP_SLOT        00000000   a_mtktvapi_config_get_minmaxvalue
+index=380: 0007dff8  00011c16 R_ARM_JUMP_SLOT        00000000   a_mtktvapi_config_set_value
+index=381: 0007dffc  00011d16 R_ARM_JUMP_SLOT        00000000   a_mtktvapi_config_set_value_for_all_elems
+index=382: 0007e000  00011e16 R_ARM_JUMP_SLOT        00000000   a_mtktvapi_config_is_visible
+index=383: 0007e004  00011f16 R_ARM_JUMP_SLOT        00000000   a_mtktvapi_config_is_enabled
+index=384: 0007e008  00012016 R_ARM_JUMP_SLOT        00000000   a_mtktvapi_config_reset_values
+index=385: 0007e00c  00012116 R_ARM_JUMP_SLOT        00000000   __open_2@LIBC
+```
+
 ## D. Automated interpretation (limited)
 
 - Direct labelled JNI branch to C-wrapper setter via PLT in scoped disassembly: **NOT_OBSERVED**.
