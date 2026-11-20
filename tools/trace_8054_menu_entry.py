@@ -20,6 +20,12 @@ CLASSES = {
     'androidx/preference/Preference': r'getOnPreference|performClick|callChangeListener|onAttachedToHierarchy',
     'androidx/preference/PreferenceScreen': r'<init>',
     'androidx/preference/SeekBarPreference': r'getMax|getMin|getValue',
+    'com/android/tv/settings/connectivity/NetworkActivity': r'createSettingsFragment',
+    'com/android/tv/settings/device/apps/AppsActivity': r'createSettingsFragment',
+    'com/android/tv/twopanelsettings/TwoPanelSettingsFragment': r'onPreference|Preview|onBack|onCreate',
+    'com/android/tv/settings/SettingsFragmentProvider': r'newSettingsFragment',
+    'com/android/tv/settings/overlay/FlavorUtils': r'isTwoPanel|getFeatureFactory',
+    'com/android/tv/settings/connectivity/NetworkFragment': r'onCreatePreferences|getPageId',
 }
 
 root = Path(sys.argv[1])
