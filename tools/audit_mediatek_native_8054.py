@@ -40,7 +40,14 @@ TARGET_CONFIG = {
     "g_fusion_picture__hdmi_edid_version",
 }
 MAX_KEY_STRINGS_PER_LIB = 80
-MAX_SYMBOLS_PER_LIB = 80
+MAX_SYMBOLS_PER_LIB = 120
+# Prioritize the actual UI/config call path over broad, unrelated TV API names.
+PRIORITY_SYMBOL_RE = re.compile(
+    r"(?:^Java_com_mediatek_twoworlds_tv_TVNative_.*(?:[Cc]onfig|[Vv]ideoInfo)"
+    r"|(?:a_mtktvapi_config_(?:get|set)[A-Za-z0-9_]*))"
+    r"|(?:a_mtktvfapi_.*(?:[Pp]eq|[Mm]jc|[Hh]dmi|[Cc]ec|[Pp]icture|[Cc]olor)))",
+    re.I,
+)
 
 
 def sha256_file(path: pathlib.Path) -> str:
@@ -73,7 +80,7 @@ def elf_metadata(path: pathlib.Path) -> tuple[str, list[str], list[str]]:
     _, dynamic = execute(["readelf", "-d", str(path)])
     deps = sorted(set(re.findall(r"Shared library: \[([^]]+)\]", dynamic)))
     _, symbols = execute(["readelf", "-Ws", "--wide", str(path)], timeout=180)
-    candidates = []
+    candidates = set()
     for line in symbols.splitlines():
         fields = line.split()
         if len(fields) < 8 or not fields[0].endswith(":"):
@@ -81,11 +88,12 @@ def elf_metadata(path: pathlib.Path) -> tuple[str, list[str], list[str]]:
         name = fields[-1].split("@@", 1)[0]
         if fields[6] == "UND":
             continue
-        if SYMBOL_RE.search(name) and name not in candidates:
-            candidates.append(name[:240])
-        if len(candidates) >= MAX_SYMBOLS_PER_LIB:
-            break
-    return machine, deps, candidates
+        if SYMBOL_RE.search(name):
+            candidates.add(name[:240])
+    ordered = sorted(candidates, key=lambda s: (
+        0 if PRIORITY_SYMBOL_RE.search(s) else 1,
+        0 if "setConfigValue" in s or "getConfigValue" in s else 1, s))
+    return machine, deps, ordered[:MAX_SYMBOLS_PER_LIB]
 
 
 def selected_strings(path: pathlib.Path) -> list[str]:
