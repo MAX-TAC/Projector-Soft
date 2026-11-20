@@ -12,6 +12,7 @@ import hashlib
 import pathlib
 import re
 import shutil
+import struct
 import subprocess
 import xml.etree.ElementTree as ET
 
@@ -228,6 +229,95 @@ def main():
                             rows += [f"- `{part}/{path.relative_to(tree)}`: "
                                      f"`{name}` instances "
                                      f"`{[i.text for i in hal.findall('.//instance') if i.text]}`"]
+    # Resolve specific vtable slot values from the SHA-verified ELF section bytes.
+    # An Itanium C++ vtable contains offset-to-top and typeinfo before address
+    # point (+8 on ARM32). Compare static function pointer to real dynsym value.
+    rows += ["", "## C2. Raw vtable slot +60 from exact ELF .data.rel.ro",
+             "", "The Itanium C++ vtable address point is vtable symbol + 8 on ARM32.",
+             "Static pointers carry Thumb state in bit0; compare against exact ELF symbol values.",
+             "", "| Vtable | Vtable address | pointer at address-point + 60 | matching exported method |",
+             "|---|---|---|---|"]
+    sections = []
+    for line in call(["readelf", "-SW", str(hidl)]).splitlines():
+        m = re.match(r"^\s*\[\s*\d+\]\s+(\S+)\s+\S+\s+([0-9a-f]+)\s+([0-9a-f]+)\s+([0-9a-f]+)", line)
+        if m:
+            sections.append((m.group(1), int(m.group(2), 16),
+                             int(m.group(3), 16), int(m.group(4), 16)))
+    blob = hidl.read_bytes()
+    for sym in vtables:
+        vaddr = int(sym["addr"], 16)
+        addr = vaddr + 8 + 60
+        sec = next((sec for sec in sections if sec[1] <= addr < sec[1]+sec[3]), None)
+        target = None
+        if sec:
+            off = sec[2] + addr - sec[1]
+            if off+4 <= len(blob):
+                target = struct.unpack_from("<I", blob, off)[0]
+        match = [z for z in syms if z["ndx"] != "UND" and z["type"] == "FUNC"
+                 and target is not None and int(z["addr"],16) == target]
+        table_name = demangle(sym["name"]).replace("vtable for ", "")
+        target_str = f"0x{target:08x}" if target is not None else "NOT_READ"
+        method = demangle(match[0]["name"]) if match else "NO_EXACT_FUNCTION_MATCH"
+        rows.append(f"| \`{table_name}\` | \`0x{vaddr:x}\` | \`{target_str}\` | \`{method}\` |")
+    rows += ["", "## C3. Original HIDL service binary import and registration evidence", ""]
+    service = args.root / "vendor_a_tree/bin/hw/vendor.mediatek.api.mtktvapi@1.0-service"
+    if not service.is_file():
+        rows += ["- SERVICE_EXECUTABLE_NOT_FOUND; cannot inspect service", ""]
+    else:
+        sh = hashlib.sha256(service.read_bytes()).hexdigest()
+        rows.append("- Exact service ELF SHA-256: \`" + sh + "\`.")
+        deps = call(["readelf", "-d", str(service)], allow_error=True)
+        needed = re.findall(r"Shared library: \[([^\]]+)\]", deps)
+        rows.append("- Selected DT_NEEDED: " +
+                    ", ".join("\`" + n + "\`" for n in needed if
+                              re.search("mtktv|mediatek_tv|rpc|hidl|vendor_agent", n, re.I)))
+        exported = elf_symbols(service)
+        for name in (SET_NAME, "a_mtktvapi_config_set_value_for_all_elems"):
+            matching = [z for z in exported if z["name"].split("@@")[0] == name]
+            rows.append("- Symbol \`" + name + "\`: " +
+                        ("; ".join(f"{z['ndx']} {z['type']} {z['addr']}" for z in matching[:4])
+                         or "NOT_FOUND"))
+        other = [z for z in exported if z["ndx"] != "UND" and
+                 re.search(r"(ConfigImpl|MtkTvApi.*Impl|MtkTvApiConfig|config_set_value)", z["name"])]
+        rows.append("- Selected **defined** service methods: " +
+                    str(len(other)) + " (absence is not proof of no implementation; symbols may be stripped).")
+        rows += ["", "\`\`\`text"]
+        rows += [z["line"][:350] for z in other[:30]] or ["NO_MATCHING_EXPORTED_DEFINITION"]
+        rows += ["\`\`\`", ""]
+        rows.append("- Relevant service relocations:")
+        rows += ["", "\`\`\`text"]
+        rows += [line.strip() for line in call(["readelf", "-rW", str(service)]).splitlines()
+                 if any(k in line for k in (SET_NAME, "registerAsService"))][:14] or ["NO_MATCH"]
+        rows += ["\`\`\`", ""]
+    rows += ["## C4. C-wrapper getService() exported helper and PLT indirection", ""]
+    service_getter = next((z for z in elf_symbols(cwrap)
+                           if z["name"].startswith("_Z") and "getMtkTvApiConfigService" in demangle(z["name"])
+                           and z["ndx"] != "UND"), None)
+    if service_getter:
+        rows += ["- Service getter: " + demangle(service_getter["name"]), "", "\`\`\`asm"]
+        rows += selected_disassembly(cwrap, service_getter["name"], cap=120)
+        rows += ["\`\`\`"]
+    else:
+        rows += ["- Named \`getMtkTvApiConfigService\` not found under mangled name; "
+                 "check plain C++ dynamic symbol.",
+                 ""]
+    rows += ["", "## C5. HIDL transaction number evidence", "",
+             "Outbound BpHw setter \`0x24a230 movs r1,#3\` directly precedes "
+             "\`0x24a232 blx r6\`, where r6 is obtained from the binder object's "
+             "virtual slot. This strongly indicates **HIDL transaction code 3**.",
+             "This numeric 3 belongs to the HIDL dispatch **and is not evidence** "
+             "that the distinct Java/C argument \`isUpdate=3\` means persistence.",
+             "Inbound BnHw onTransact dispatch should be separately cross-checked.", ""]
+    inbound = next((z for z in syms if z["ndx"] != "UND" and
+                    "BnHwMtkTvApiConfig9onTransact" in z["name"]), None)
+    if inbound:
+        rows += ["- Inbound onTransact: \`" + demangle(inbound["name"]) + "\`", "", "\`\`\`asm"]
+        rows += selected_disassembly(hidl, inbound["name"], cap=175)
+        rows += ["\`\`\`"]
+    else:
+        rows += ["- BnHw onTransact symbol unavailable for disassembly", ""]
+
+
     rows += ["", "## D. Evidence boundary (automatic, intentionally conservative)", "",
              "- The original JNI-to-C wrapper direct branch was already PROVEN_STATIC in TRACE_004.",
              "- HIDL BpHw/BnHw definitions and parcel-handling instructions are STATIC "
