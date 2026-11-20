@@ -13,7 +13,7 @@ public final class NativeRootFragment extends SettingsPreferenceFragment {
         screen.setTitle("Настройки");
         setPreferenceScreen(screen);
 
-        for(NativePage page:NativePage.values()){
+        for(NativePage page:NativePage.ROOT){
             Preference row=new Preference(requireContext());
             row.setKey(page.name());
             row.setTitle(page.title);

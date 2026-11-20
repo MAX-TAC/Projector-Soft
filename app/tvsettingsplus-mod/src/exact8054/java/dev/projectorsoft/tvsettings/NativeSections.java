@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.ResolveInfo;
-import android.media.AudioManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
@@ -15,7 +14,6 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceScreen;
-import androidx.preference.SwitchPreference;
 import com.android.tv.settings.SettingsPreferenceFragment;
 
 /** Each section owns its stock-rendered tree, observers and checked user actions. */
@@ -82,6 +80,21 @@ public final class NativeSections {
             });
         }
 
+        protected void link(PreferenceGroup group, NativePage page, int order) {
+            Context context = requireContext();
+            Preference row = new Preference(context);
+            row.setKey("projectorsoft_page_" + page.name());
+            row.setTitle(page.title);
+            row.setOrder(order);
+            row.setFragment(page.fragment);
+            row.setOnPreferenceClickListener(item -> {
+                if (!CheckedPreferenceLaunch.open(context, () -> new Intent(context, page.activity)))
+                    android.widget.Toast.makeText(context,"Экран недоступен",android.widget.Toast.LENGTH_SHORT).show();
+                return true;
+            });
+            group.addPreference(row);
+        }
+
         protected void stock(PreferenceGroup group,String key,String label,String name){
             action(group,key,label,()->new Intent().setComponent(new ComponentName(OWN,OWN+"."+name)));
         }
@@ -108,6 +121,15 @@ public final class NativeSections {
                 }
             });
             stock(screen,"bt-add","Добавить устройство","accessories.AddAccessoryActivity");
+            link(screen, NativePage.ACCESSORIES, 90);
+            link(screen, NativePage.REMOTE, 100);
+        }
+    }
+
+    public static final class Remote extends Page {
+        @Override NativePage section(){return NativePage.REMOTE;}
+        @Override void populate(PreferenceScreen screen){
+            Context context = requireContext();
             OemBluetoothRemoteHook.install(context,screen,Preference.class);
             guarded("bluetooth-autopair",()->info(screen,"bt-auto","Автоматическое подключение пульта",
                 OemBluetoothRemotePolicy.autoPairSettingSummary(Settings.Global.getString(
@@ -121,9 +143,15 @@ public final class NativeSections {
             Context context=requireContext();
             PreferenceCategory inputs=group(screen,"inputs","Выбор источника");
             action(inputs,"home","Android TV",()->home(context));
-            guarded("hdmi-ports",()->OemHdmiPortInfo.install(context,inputs,Preference.class));
+            guarded("hdmi-ports", () -> {
+                if (OemHdmiPortInfo.install(context, inputs, Preference.class)) {
+                    PreferenceCategory status = group(screen, "input_status", "Состояние входов");
+                    link(status, NativePage.HDMI1_INFO, 0);
+                    link(status, NativePage.HDMI2_INFO, 1);
+                }
+            });
             if(inputs.getPreferenceCount()==0)info(inputs,"inputs-unavailable","Источники","Нет подтверждённого маршрута");
-            guarded("hdmi-cec",()->OemCecAutoOff8054.install(context,screen,Preference.class));
+            link(screen, NativePage.HDMI_CEC, 200);
             guarded("hdmi-edid",()->OemHdmiEdidHook.install(context,screen,Preference.class));
             guarded("hdmi-autoplay",()->OemHdmiAutoPlayHook.install(context,screen,Preference.class));
             guarded("boot-destination",()->NativeBootDestination.install(context,screen));
@@ -131,8 +159,6 @@ public final class NativeSections {
 
         @Override public void onResume(){
             super.onResume();
-            guarded("cec-resume",()->OemCecAutoOff8054.refresh(requireContext(),
-                    findPreference(OemCecAutoOff8054.CEC_KEY),findPreference(OemCecAutoOff8054.OFF_KEY)));
             PreferenceScreen screen=getPreferenceScreen();
             if(screen!=null)NativeBootDestination.refresh(screen);
         }
@@ -148,10 +174,57 @@ public final class NativeSections {
         }
     }
 
+    public abstract static class PortStatus extends Page {
+        abstract String hardware();
+        @Override void populate(PreferenceScreen screen) {
+            info(screen, "projectorsoft_hdmi_info_" + hardware(), "Подключение",
+                    OemHdmiPortInfo.currentStatus(requireContext(), hardware()));
+        }
+        @Override public void onResume() {
+            super.onResume();
+            Preference row = findPreference("projectorsoft_hdmi_info_" + hardware());
+            if (row != null) row.setSummary(OemHdmiPortInfo.currentStatus(requireContext(), hardware()));
+        }
+    }
+
+    public static final class HdmiOne extends PortStatus {
+        @Override NativePage section() { return NativePage.HDMI1_INFO; }
+        @Override String hardware() { return "HW6"; }
+    }
+
+    public static final class HdmiTwo extends PortStatus {
+        @Override NativePage section() { return NativePage.HDMI2_INFO; }
+        @Override String hardware() { return "HW7"; }
+    }
+
+    public static final class Cec extends Page {
+        @Override NativePage section(){return NativePage.HDMI_CEC;}
+        @Override void populate(PreferenceScreen screen){
+            guarded("hdmi-cec",()->OemCecAutoOff8054.install(requireContext(),screen,Preference.class));
+        }
+        @Override public void onResume(){
+            super.onResume();
+            guarded("cec-resume",()->OemCecAutoOff8054.refresh(requireContext(),
+                    findPreference(OemCecAutoOff8054.CEC_KEY),findPreference(OemCecAutoOff8054.OFF_KEY)));
+        }
+    }
+
     public static final class Projection extends Page {
         @Override NativePage section(){return NativePage.PROJECTION;}
         @Override void populate(PreferenceScreen screen){
-            OemProjectionPanel.installUnified(requireContext(),screen,Preference.class);
+            Context context = requireContext();
+            PreferenceCategory light = group(screen, "projection_light", "Источник света");
+            OemLightSourcePreference.install(context, light, Preference.class);
+            if (light.getPreferenceCount() == 0) screen.removePreference(light);
+            PreferenceCategory focus = group(screen, "projection_focus", "Фокусировка");
+            OemFocusPreferences.install(context, focus, Preference.class);
+            if (focus.getPreferenceCount() == 0) screen.removePreference(focus);
+            PreferenceCategory geometry = group(screen, "projection_geometry", "Коррекция изображения");
+            OemMoveKeystonePreference.install(context, geometry, Preference.class);
+            Preference movement = geometry.findPreference("projectorsoft_keystone_move");
+            if (movement != null) movement.setOrder(200);
+            OemProjectionPanel.installEditors(context, geometry, Preference.class);
+            if (geometry.getPreferenceCount() == 0) screen.removePreference(geometry);
         }
     }
 
@@ -166,64 +239,85 @@ public final class NativeSections {
     public static final class Sound extends Page {
         @Override NativePage section(){return NativePage.SOUND;}
         @Override void populate(PreferenceScreen screen){
-            PreferenceCategory group=group(screen,"projectorsoft_sound_category","Звук");
-            guarded("sound",()->OemSoundPanel.installUnified(requireContext(),group,Preference.class));
-            guarded("mute",()->mute(screen));
+            Context context = requireContext();
+            link(screen, NativePage.EQUALIZER, 200);
+            OemStockUserSettings.installAudioOutput(context, screen, Preference.class);
+            PreferenceCategory effects = group(screen, "sound_processing", "Обработка звука");
+            effects.setOrder(300);
+            guarded("sound-processing", () -> OemInlinePreferencesHook.populateSoundProcessing(
+                    context, effects, Preference.class));
+            OemAdvancedSoundRoutes.install(context, effects, Preference.class);
+            if (effects.getPreferenceCount() == 0) screen.removePreference(effects);
+            link(screen, NativePage.DELAY, 400);
+            if (OemKeyToneHook.install(context, screen, Preference.class)) {
+                Preference tone = screen.findPreference("projectorsoft_key_tone");
+                if (tone != null) tone.setOrder(500);
+            }
         }
+    }
 
-        private void mute(PreferenceScreen screen){
-            Context context=requireContext();
-            AudioManager audio=context.getSystemService(AudioManager.class);
-            if(audio==null || audio.isVolumeFixed() || context.checkSelfPermission(
-                    android.Manifest.permission.MODIFY_AUDIO_SETTINGS)!=android.content.pm.PackageManager.PERMISSION_GRANTED)return;
-            int stream=AudioManager.STREAM_MUSIC;
-            SwitchPreference row=new SwitchPreference(context);
-            row.setKey("sound_mute");
-            row.setTitle("Без звука · медиа");
-            row.setPersistent(false);
-            row.setChecked(audio.isStreamMute(stream));
-            row.setOnPreferenceChangeListener((item,value)->{
-                guarded("mute-change",()->{
-                    if(!(value instanceof Boolean)||audio.isVolumeFixed())return;
-                    boolean initial=row.isChecked();
-                    boolean current=audio.isStreamMute(stream);
-                    if(current==initial && current!=(Boolean)value)
-                        audio.adjustStreamVolume(stream,(Boolean)value?AudioManager.ADJUST_MUTE:AudioManager.ADJUST_UNMUTE,0);
-                    boolean actual=audio.isStreamMute(stream);
-                    row.setChecked(actual);
-                    row.setSummary(actual==(Boolean)value?null:"Запрошенное состояние не подтверждено");
-                });
-                return false;
-            });
-            screen.addPreference(row);
+    public static final class Equalizer extends Page {
+        @Override NativePage section(){return NativePage.EQUALIZER;}
+        @Override void populate(PreferenceScreen screen){
+            PreferenceCategory controls = group(screen, "projectorsoft_sound_category", null);
+            guarded("equalizer", () -> OemSoundPanel.installEqualizer(requireContext(), controls, Preference.class));
+        }
+    }
+
+    public static final class Delay extends Page {
+        @Override NativePage section(){return NativePage.DELAY;}
+        @Override void populate(PreferenceScreen screen){
+            PreferenceCategory controls = group(screen, "projectorsoft_sound_category", null);
+            OemSoundDelayPanel.install(requireContext(), controls, Preference.class);
+            if (controls.getPreferenceCount() == 0) screen.removePreference(controls);
         }
     }
 
     public static final class System extends Page {
         @Override NativePage section(){return NativePage.SYSTEM;}
         @Override void populate(PreferenceScreen screen){
-            Context context=requireContext();
-            PreferenceCategory about=group(screen,"about","Об устройстве");
-            OemSystemInfoHook.install(context,about,Preference.class);
-            OemPanelInfoHook.install(context,about,Preference.class);
-            OemThermalTelemetryHook.install(context,about,Preference.class);
-            info(about,"kernel","Ядро",java.lang.System.getProperty("os.version","Нет данных"));
-            String machine=OemHdmiPortInfo.machineId();
-            info(about,"hardware","Аппаратная ревизия",machine.isEmpty()?"Нет данных":machine);
+            Context context = requireContext();
+            link(screen, NativePage.ABOUT, 0);
             stock(screen,"time","Дата и время","system.DateTimeActivity");
             stock(screen,"language","Язык и ввод","system.LanguageActivity");
             stock(screen,"accounts","Учётные записи","accounts.AccountsActivity");
             stock(screen,"storage","Хранилище","device.StorageResetActivity");
-            OemFontScaleHook.install(context,screen,Preference.class);
-            PreferenceCategory power=group(screen,"power","Питание");
-            OemAcPowerBootHook.install(context,power,Preference.class);
-            OemStockUserSettings.installSwitchOffTimer(context,power,Preference.class);
-            OemScreenTimeoutSafetyHook.installStatus(context,power,Preference.class);
-            if(power.getPreferenceCount()==0)screen.removePreference(power);
+            link(screen, NativePage.POWER, 20);
             stock(screen,"privacy","Конфиденциальность","enterprise.EnterprisePrivacySettingsActivity");
             stock(screen,"security","Безопасность","system.SecurityActivity");
             stock(screen,"accessibility","Специальные возможности","oemlink.AccessibilitySettingsActivity");
             stock(screen,"developer","Для разработчиков","system.development.DevelopmentActivity");
+            OemFontScaleHook.install(context,screen,Preference.class);
+        }
+    }
+
+    public static final class About extends Page {
+        @Override NativePage section(){return NativePage.ABOUT;}
+        @Override void populate(PreferenceScreen screen){
+            Context context = requireContext();
+            OemSystemInfoHook.install(context,screen,Preference.class);
+            OemPanelInfoHook.install(context,screen,Preference.class);
+            info(screen,"kernel","Ядро",java.lang.System.getProperty("os.version","Нет данных"));
+            String machine = OemHdmiPortInfo.machineId();
+            info(screen,"hardware","Аппаратная ревизия",machine.isEmpty()?"Нет данных":machine);
+            link(screen, NativePage.HARDWARE, 400);
+        }
+    }
+
+    public static final class Hardware extends Page {
+        @Override NativePage section(){return NativePage.HARDWARE;}
+        @Override void populate(PreferenceScreen screen){
+            OemThermalTelemetryHook.install(requireContext(),screen,Preference.class);
+        }
+    }
+
+    public static final class Power extends Page {
+        @Override NativePage section(){return NativePage.POWER;}
+        @Override void populate(PreferenceScreen screen){
+            Context context = requireContext();
+            OemAcPowerBootHook.install(context,screen,Preference.class);
+            OemStockUserSettings.installSwitchOffTimer(context,screen,Preference.class);
+            OemScreenTimeoutSafetyHook.installStatus(context,screen,Preference.class);
         }
     }
 

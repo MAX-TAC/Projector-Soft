@@ -1,6 +1,7 @@
 package dev.projectorsoft.tvsettings;
 
 import android.app.Activity;
+import java.util.List;
 
 /** Root order and the matching Activity and preview fragment. */
 enum NativePage {
@@ -13,7 +14,20 @@ enum NativePage {
     SOUND("Звук",SoundSettingsActivity.class,NativeSections.Sound.class.getName()),
     APPS("Приложения",AppsSettingsActivity.class,
             "com.android.tv.settings.device.apps.AppsFragment"),
-    SYSTEM("Настройки устройства",SystemSettingsActivity.class,NativeSections.System.class.getName());
+    SYSTEM("Настройки устройства",SystemSettingsActivity.class,NativeSections.System.class.getName()),
+    HDMI_CEC("HDMI-CEC",HdmiCecSettingsActivity.class,NativeSections.Cec.class.getName()),
+    EQUALIZER("Эквалайзер и звуковые профили",EqualizerSettingsActivity.class,NativeSections.Equalizer.class.getName()),
+    DELAY("Задержка звука",SoundDelaySettingsActivity.class,NativeSections.Delay.class.getName()),
+    ABOUT("Об устройстве",DeviceAboutSettingsActivity.class,NativeSections.About.class.getName()),
+    HARDWARE("Состояние оборудования",HardwareStatusSettingsActivity.class,NativeSections.Hardware.class.getName()),
+    POWER("Питание",ProjectorPowerSettingsActivity.class,NativeSections.Power.class.getName()),
+    REMOTE("Пульт управления",RemoteSettingsActivity.class,NativeSections.Remote.class.getName()),
+    HDMI1_INFO("HDMI 1",HdmiOneStatusActivity.class,NativeSections.HdmiOne.class.getName()),
+    HDMI2_INFO("HDMI 2",HdmiTwoStatusActivity.class,NativeSections.HdmiTwo.class.getName()),
+    ACCESSORIES("Управление устройствами",BluetoothDevicesSettingsActivity.class,"com.android.tv.settings.accessories.AccessoriesFragment");
+
+    static final List<NativePage> ROOT = List.of(NETWORK, BLUETOOTH, SOURCES, PROJECTION,
+            PICTURE, SOUND, APPS, SYSTEM);
 
     final String title;
     final Class<? extends Activity> activity;

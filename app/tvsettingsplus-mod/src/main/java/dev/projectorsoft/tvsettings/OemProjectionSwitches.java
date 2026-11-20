@@ -38,11 +38,13 @@ final class OemProjectionSwitches implements View.OnAttachStateChangeListener,
     static void bind(Object fragment, View root) {
         if (fragment == null || !"8054".equals(OemHdmiPortInfo.machineId())) return;
         try {
-            Object group = fragment.getClass().getMethod("findPreference", CharSequence.class)
-                    .invoke(fragment, GROUP);
-            WeakReference<OemProjectionSwitches> reference = PANELS.get(group);
-            OemProjectionSwitches panel = reference == null ? null : reference.get();
-            if (panel != null) panel.rebind(root);
+            Method find = fragment.getClass().getMethod("findPreference", CharSequence.class);
+            for (String key : new String[]{GROUP, "projection_focus", "projection_geometry"}) {
+                Object group = find.invoke(fragment, key);
+                WeakReference<OemProjectionSwitches> reference = PANELS.get(group);
+                OemProjectionSwitches panel = reference == null ? null : reference.get();
+                if (panel != null) panel.rebind(root);
+            }
         } catch (Exception error) {
             Log.w(TAG, "Projection switch view unavailable", error);
         }

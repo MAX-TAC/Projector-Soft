@@ -43,7 +43,7 @@ public final class StockMainSettingsMenu {
             added.setTitle(header.getTitle());
             added.setOrder(header.getOrder());
             if (!screen.addPreference(added)) return;
-            for (NativePage page : NativePage.values()) {
+            for (NativePage page : NativePage.ROOT) {
                 if (page == NativePage.APPS) {
                     Preference apps = screen.findPreference("applications");
                     if (apps != null && !apps.isVisible()) continue;
@@ -62,6 +62,7 @@ public final class StockMainSettingsMenu {
                 });
                 added.addPreference(row);
             }
+            screen.setTitle("Настройки Android TV");
             hideOriginal(screen);
         } catch (RuntimeException | LinkageError failure) {
             if (added != null) screen.removePreference(added);

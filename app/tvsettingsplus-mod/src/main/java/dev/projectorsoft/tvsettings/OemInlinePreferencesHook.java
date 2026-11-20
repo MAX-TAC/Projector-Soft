@@ -152,8 +152,24 @@ public final class OemInlinePreferencesHook {
     }
 
     static void populateSound(Context context,Object category,Class<?> pref,Runnable soundModeChanged) throws Exception {
-            addList(category,pref,context,"projectorsoft_sound_mode",
-                    "Режим звука","sound_style",SOUND_TITLES,SOUND_VALUES,1,213,soundModeChanged);
+        populateSoundProfile(context,category,pref,soundModeChanged);
+        populateSoundProcessing(context,category,pref);
+        OemKeyToneHook.install(context,category,pref);
+        if (!"8054".equals(OemHdmiPortInfo.machineId())) {
+            OemEarcDelegatedPreference.install(context,category,pref);
+        }
+        OemInlineSlidersHook.installSound(context,category,pref);
+        OemFiveBandEqualizerHook.install(context,category,pref);
+    }
+
+    static void populateSoundProfile(Context context,Object category,Class<?> pref,Runnable modeChanged)
+            throws Exception {
+        addList(category,pref,context,"projectorsoft_sound_mode",
+                "Звуковой профиль","sound_style",SOUND_TITLES,SOUND_VALUES,1,213,modeChanged);
+    }
+
+    static void populateSoundProcessing(Context context,Object category,Class<?> pref) throws Exception {
+
             // Factory SoundFragment and SoundSubMenuController implement
             // Surround and Auto-Volume as plain Settings.Global 0/1 writes.
             // Expose those two only when the OEM already saved a 0/1 value.
@@ -164,20 +180,6 @@ public final class OemInlinePreferencesHook {
             if(autoVolume!=null) addSwitchIfPresent(category,pref,context,
                     "projectorsoft_auto_volume","Автоматическая громкость",
                     autoVolume,218);
-            // Stock SoundFragment uses Settings.System
-            // Constant.SETTINGS_KEY_SOUND_EFFECTS_ENABLED with boolean 0/1.
-            // Keep the exact OEM key and verify the persisted value.
-            OemKeyToneHook.install(context,category,pref);
-
-            // Do NOT expose eARC as a raw toggle. Two factory screens disagree
-            // about KEY_SOUND_EARC polarity and the real audio API requires CEC.
-            // Keep original OEM sound control accessible as a safe fallback.
-            if (!"8054".equals(OemHdmiPortInfo.machineId())) {
-                OemEarcDelegatedPreference.install(context,category,pref);
-            }
-
-        OemInlineSlidersHook.installSound(context,category,pref);
-        OemFiveBandEqualizerHook.install(context,category,pref);
     }
 
     static String readAutoVolume(Context context) {

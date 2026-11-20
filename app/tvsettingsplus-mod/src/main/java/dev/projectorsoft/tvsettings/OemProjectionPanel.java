@@ -29,14 +29,20 @@ public final class OemProjectionPanel {
 
     static void installUnified(Context context,Object category,Class<?> pref) {
         if (!"8054".equals(OemHdmiPortInfo.machineId()))return;
-        addEditor(context,category,pref,"zoom","Цифровой зум",Projection8054Policy.DIGITAL_ZOOM,252);
+        installEditors(context,category,pref);
+        OemLightSourcePreference.install(context,category,pref);
+        OemFocusPreferences.install(context,category,pref);
+        OemMoveKeystonePreference.install(context,category,pref);
+    }
+
+    static void installEditors(Context context,Object category,Class<?> pref) {
+        if (!"8054".equals(OemHdmiPortInfo.machineId()))return;
+        addEditor(context,category,pref,"zoom","Цифровой зум",Projection8054Policy.DIGITAL_ZOOM,256);
         addEditor(context,category,pref,"four_corner","Коррекция четырёх углов",
                 Projection8054Policy.FOUR_CORNER,254);
         addEditor(context,category,pref,"hv_keystone","Горизонтальная и вертикальная коррекция",
                 Projection8054Policy.HORIZONTAL_VERTICAL,255);
-        OemLightSourcePreference.install(context,category,pref);
-        OemFocusPreferences.install(context,category,pref);
-        OemMoveKeystonePreference.install(context,category,pref);
+
     }
 
     static Intent projectionIntent(Context context) throws PackageManager.NameNotFoundException {

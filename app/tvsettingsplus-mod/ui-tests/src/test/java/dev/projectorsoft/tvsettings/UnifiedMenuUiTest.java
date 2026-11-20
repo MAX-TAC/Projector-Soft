@@ -48,7 +48,7 @@ public class UnifiedMenuUiTest {
         for (int i = 0; i < expected.length; i++) {
             Preference row = active.getPreference(i);
             assertEquals(expected[i], row.getTitle());
-            assertEquals(NativePage.values()[i].fragment, row.getFragment());
+            assertEquals(NativePage.ROOT.get(i).fragment, row.getFragment());
             assertNotNull(row.getOnPreferenceClickListener());
         }
         assertEquals("com.android.tv.settings.connectivity.NetworkActivity",
@@ -86,7 +86,7 @@ public class UnifiedMenuUiTest {
         for(int i=0;i<titles.length;i++){
             Preference row=screen.getPreference(i);
             assertEquals(titles[i],row.getTitle().toString());
-            assertEquals(NativePage.values()[i].fragment,row.getFragment());
+            assertEquals(NativePage.ROOT.get(i).fragment,row.getFragment());
             assertFalse(row.getFragment().contains("uicustom"));
             assertNull(row.getIntent());
         }
@@ -256,8 +256,8 @@ public class UnifiedMenuUiTest {
     }
 
     @Test public void nativeCecWidgetUsesFreshStateWithFalseListenerReturn(){
-        SourcesSettingsActivity activity=Robolectric.buildActivity(SourcesSettingsActivity.class).setup().get();
-        NativeSections.Sources fragment=(NativeSections.Sources)
+        HdmiCecSettingsActivity activity=Robolectric.buildActivity(HdmiCecSettingsActivity.class).setup().get();
+        NativeSections.Cec fragment=(NativeSections.Cec)
                 activity.getSupportFragmentManager().findFragmentById(android.R.id.content);
         PreferenceScreen screen=fragment.getPreferenceScreen();
         class Device implements CecAutoOff8054.Backend {
@@ -278,6 +278,44 @@ public class UnifiedMenuUiTest {
         assertFalse(row.callChangeListener(false));
         assertFalse(row.isEnabled());
         assertEquals(1,device.writes);
+    }
+
+    @Test public void soundRoutesKeepEqAndDelayOnSeparateScreensWithoutMediaVolume() {
+        SoundSettingsActivity activity = Robolectric.buildActivity(SoundSettingsActivity.class).setup().get();
+        NativeSections.Sound fragment = (NativeSections.Sound)
+                activity.getSupportFragmentManager().findFragmentById(android.R.id.content);
+        PreferenceScreen screen = fragment.getPreferenceScreen();
+        Preference equalizer = screen.findPreference("projectorsoft_page_EQUALIZER");
+        Preference delay = screen.findPreference("projectorsoft_page_DELAY");
+        assertEquals(NativePage.EQUALIZER.fragment, equalizer.getFragment());
+        assertEquals(NativePage.DELAY.fragment, delay.getFragment());
+        assertTrue(equalizer.getOrder() < delay.getOrder());
+        assertNull(screen.findPreference("projectorsoft_media_volume"));
+        assertNull(screen.findPreference("sound_mute"));
+        assertNull(screen.findPreference("projectorsoft_sound_mode"));
+
+        EqualizerSettingsActivity eq = Robolectric.buildActivity(EqualizerSettingsActivity.class).setup().get();
+        NativeSections.Equalizer eqPage = (NativeSections.Equalizer)
+                eq.getSupportFragmentManager().findFragmentById(android.R.id.content);
+        assertNull(eqPage.findPreference("projectorsoft_media_volume"));
+        assertNull(eqPage.findPreference("projectorsoft_page_DELAY"));
+    }
+
+    @Test public void directHdmiStatusDoesNotInventAnActivePortOrLaunchLiveTv() {
+        HdmiOneStatusActivity one = Robolectric.buildActivity(HdmiOneStatusActivity.class).setup().get();
+        HdmiTwoStatusActivity two = Robolectric.buildActivity(HdmiTwoStatusActivity.class).setup().get();
+        NativeSections.HdmiOne first = (NativeSections.HdmiOne)
+                one.getSupportFragmentManager().findFragmentById(android.R.id.content);
+        NativeSections.HdmiTwo second = (NativeSections.HdmiTwo)
+                two.getSupportFragmentManager().findFragmentById(android.R.id.content);
+        Preference hw6 = first.findPreference("projectorsoft_hdmi_info_HW6");
+        Preference hw7 = second.findPreference("projectorsoft_hdmi_info_HW7");
+        assertFalse(hw6.isSelectable());
+        assertFalse(hw7.isSelectable());
+        assertEquals("Вход недоступен", hw6.getSummary());
+        assertEquals("Вход недоступен", hw7.getSummary());
+        assertNull(shadowOf(one).getNextStartedActivity());
+        assertNull(shadowOf(two).getNextStartedActivity());
     }
 
     @Test @GraphicsMode(GraphicsMode.Mode.NATIVE)

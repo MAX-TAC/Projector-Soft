@@ -16,6 +16,7 @@ on:
       - 'tools/find_8054_user_routes.py'
       - 'tools/compose_brightness_v3_apk.py'
       - 'tools/verify_8054_unified.py'
+      - 'tools/verify_8054_smali_roundtrip.py'
       - 'tools/trace_8054_unified_inputs.py'
   workflow_dispatch:
 concurrency:
@@ -426,7 +427,8 @@ jobs:
           python3 tools/verify_8054_unified.py "$STOCK" /tmp/tv33/unsigned.apk \
             /tmp/tv33/stock-manifest-tree.txt /tmp/tv33/manifest-tree.txt
           apktool d -r -p /tmp/tv33/framework /tmp/tv33/unsigned.apk -o /tmp/tv33/candidate
-          diff -qr /tmp/tv33/decoded/smali_classes13 /tmp/tv33/candidate/smali_classes13
+          python3 tools/verify_8054_smali_roundtrip.py \
+            /tmp/tv33/decoded/smali_classes13 /tmp/tv33/candidate/smali_classes13
           sha256sum /tmp/tv33/stock-classes13/com/android/tv/settings/MainSettings.smali \
             /tmp/tv33/candidate/smali_classes13/com/android/tv/settings/MainSettings.smali
           python3 tools/collect_8054_ui_reference.py "$STOCK" /tmp/tv33/report/stock-ui-reference

@@ -15,6 +15,16 @@ ACTIVITIES = (
     ('SoundSettingsActivity', 'Звук'),
     ('AppsSettingsActivity', 'Приложения'),
     ('SystemSettingsActivity', 'Настройки устройства'),
+    ('HdmiCecSettingsActivity', 'HDMI-CEC'),
+    ('EqualizerSettingsActivity', 'Эквалайзер и звуковые профили'),
+    ('SoundDelaySettingsActivity', 'Задержка звука'),
+    ('DeviceAboutSettingsActivity', 'Об устройстве'),
+    ('HardwareStatusSettingsActivity', 'Состояние оборудования'),
+    ('ProjectorPowerSettingsActivity', 'Питание'),
+    ('RemoteSettingsActivity', 'Пульт управления'),
+    ('HdmiOneStatusActivity', 'HDMI 1'),
+    ('HdmiTwoStatusActivity', 'HDMI 2'),
+    ('BluetoothDevicesSettingsActivity', 'Управление устройствами'),
 )
 DISABLED = (('receiver', 'KuSourceRecoveryBootReceiver'), ('service', 'KuSourceRecoveryService'))
 

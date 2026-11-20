@@ -22,6 +22,7 @@ public final class OemSoundPanel {
     private static final WeakHashMap<Object,WeakReference<OemSoundPanel>> PANELS=new WeakHashMap<>();
     private static final WeakHashMap<Object,WeakReference<FocusBinding>> BINDINGS=new WeakHashMap<>();
     private boolean snapshotValid;
+    private boolean equalizerOnly;
     private List<Integer> volumeSnapshot;
     private String autoVolumeSnapshot;
     private final Context context;
@@ -37,7 +38,7 @@ public final class OemSoundPanel {
     public static void install(Context context,Object group,Class<?> preference) throws Exception {
         install(context,group,preference,false);
     }
-    static void installUnified(Context context,Object group,Class<?> preference) throws Exception {
+    static void installEqualizer(Context context,Object group,Class<?> preference) throws Exception {
         install(context,group,preference,true);
     }
     private static void install(Context context,Object group,Class<?> preference,boolean unified) throws Exception {
@@ -46,11 +47,14 @@ public final class OemSoundPanel {
         PANELS.put(group,new WeakReference<>(panel));
     }
     private void install(boolean unified) throws Exception {
-        if(!unified)OemHardwareDelegatedSettings.installSoundLink(context,group,preference);
-        OemStockUserSettings.installAudioOutput(context,group,preference);
-        OemAdvancedSoundRoutes.install(context,group,preference);
-        try {OemSoundDelayPanel.install(context,group,preference);}
-        catch (Exception | LinkageError ex) {Log.w("TvSettingsPlusMOD","OEM audio delay unavailable",ex);}
+        equalizerOnly=unified;
+        if(!equalizerOnly) {
+            OemHardwareDelegatedSettings.installSoundLink(context,group,preference);
+            OemStockUserSettings.installAudioOutput(context,group,preference);
+            OemAdvancedSoundRoutes.install(context,group,preference);
+            try {OemSoundDelayPanel.install(context,group,preference);}
+            catch (Exception | LinkageError ex) {Log.w("TvSettingsPlusMOD","OEM audio delay unavailable",ex);}
+        }
         refreshItem = action("projectorsoft_sound_refresh","Обновить настройки звука",249,this::refresh);
         action("projectorsoft_sound_original","Исходные значения звука",248,this::showOriginal);
         // PreferenceGroup sorts by order. Keep the static rows by identity, not by index.
@@ -77,7 +81,7 @@ public final class OemSoundPanel {
     }
 
     private void refresh(boolean force) throws Exception {
-        if(force)OemSoundDelayPanel.refresh(group);
+        if(force && !equalizerOnly)OemSoundDelayPanel.refresh(group);
         Map<String,String> previous=state.current();
         boolean stable=false;
         try {
@@ -85,8 +89,8 @@ public final class OemSoundPanel {
         } catch(RuntimeException unavailable) {
             Log.w("TvSettingsPlusMOD","Sound snapshot unavailable",unavailable);
         }
-        List<Integer> volume=volumeContext();
-        String autoVolume=OemInlinePreferencesHook.readAutoVolume(context);
+        List<Integer> volume=equalizerOnly ? null : volumeContext();
+        String autoVolume=equalizerOnly ? null : OemInlinePreferencesHook.readAutoVolume(context);
         if(!force && stable==snapshotValid && previous.equals(state.current())
                 && java.util.Objects.equals(volume,volumeSnapshot)
                 && java.util.Objects.equals(autoVolume,autoVolumeSnapshot)) return;
@@ -104,11 +108,18 @@ public final class OemSoundPanel {
         preference.getMethod("setSummary",CharSequence.class).invoke(refreshItem,
                 stable ? "Перечитать режим и значения" : "Режим недоступен или изменился. Повторите обновление");
         try {
-            addMediaVolume();
+            if(!equalizerOnly)addMediaVolume();
         } catch (Exception ex) {
             Log.w("TvSettingsPlusMOD","Media volume unavailable",ex);
         }
-        if(stable)try {OemInlinePreferencesHook.populateSound(context,group,preference,this::refreshAfterModeChange);}
+        if(stable)try {
+            if(equalizerOnly) {
+                OemInlinePreferencesHook.populateSoundProfile(context,group,preference,this::refreshAfterModeChange);
+                OemFiveBandEqualizerHook.install(context,group,preference);
+            } else {
+                OemInlinePreferencesHook.populateSound(context,group,preference,this::refreshAfterModeChange);
+            }
+        }
         catch(Exception ex){
             snapshotValid=false;
             Log.w("TvSettingsPlusMOD","Partial sound UI; keeping OEM link and refresh",ex);

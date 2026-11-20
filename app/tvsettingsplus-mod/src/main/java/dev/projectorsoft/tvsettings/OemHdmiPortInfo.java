@@ -49,6 +49,21 @@ public final class OemHdmiPortInfo {
         }catch(Exception ex){Log.w("TvSettingsPlusMOD","HDMI port inventory unavailable",ex);return false;}
     }
 
+    static String currentStatus(Context context, String hardware) {
+        try {
+            if (!"8054".equals(machineId())) return "Вход недоступен";
+            int count = Build.class.getField("A_RJ_HDMI_PORT_COUNT").getInt(null);
+            Object metadata = Build.class.getField("A_RJ_HDMI_PORTS").get(null);
+            TvInputManager tv = context.getSystemService(TvInputManager.class);
+            for (Hdmi8054Policy.Port port : ports(tv, count, metadata instanceof String ? (String) metadata : null)) {
+                if (port.hardware.equals(hardware)) return status(tv, port);
+            }
+        } catch (Exception unavailable) {
+            Log.w("TvSettingsPlusMOD", "HDMI input state unavailable", unavailable);
+        }
+        return "Вход недоступен";
+    }
+
     private static List<Hdmi8054Policy.Port> ports(TvInputManager tv,int count,String metadata) {
         List<String> ids=new ArrayList<>();
         List<TvInputInfo> inputs=tv==null?null:tv.getTvInputList();
