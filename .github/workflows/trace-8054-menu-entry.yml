@@ -54,3 +54,4 @@ jobs:
           done
           "$AAPT" dump --values resources /tmp/stock.apk > /tmp/pq-resources
           grep -m 25 -A 10 -E '^ +resource 0x7f030(0a[de]|10f|11[012]) ' /tmp/pq-resources
+          grep -m 30 -A 1 -E 'resource 0x7f10088[6-9a-d] |resource 0x7f0a036[89] ' /tmp/pq-resources
