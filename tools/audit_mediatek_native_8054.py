@@ -44,8 +44,8 @@ MAX_SYMBOLS_PER_LIB = 120
 # Prioritize the actual UI/config call path over broad, unrelated TV API names.
 PRIORITY_SYMBOL_RE = re.compile(
     r"(?:^Java_com_mediatek_twoworlds_tv_TVNative_.*(?:[Cc]onfig|[Vv]ideoInfo)"
-    r"|(?:a_mtktvapi_config_(?:get|set)[A-Za-z0-9_]*))"
-    r"|(?:a_mtktvfapi_.*(?:[Pp]eq|[Mm]jc|[Hh]dmi|[Cc]ec|[Pp]icture|[Cc]olor)))",
+    r"|a_mtktvapi_config_(?:get|set)[A-Za-z0-9_]*"
+    r"|a_mtktvfapi_.*(?:[Pp]eq|[Mm]jc|[Hh]dmi|[Cc]ec|[Pp]icture|[Cc]olor))",
     re.I,
 )
 
