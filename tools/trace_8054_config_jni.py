@@ -219,6 +219,48 @@ def main() -> None:
                        "```asm"]
             result += excerpt or ["NO_SCOPED_DISASSEMBLY (review symbol/Thumb handling)"]
             result += ["```"]
+    # Exact-ELF PLT/GOT correlation. GNU ARM objdump sometimes labels PLT entries
+    # with the nearest *unrelated* exported symbol rather than an @plt name.
+    # Print exact section range, JNI BLX destination and nearby jump relocations.
+    jni_path = lib / "libcom_mediatek_twoworlds_tv_jni.so"
+    jni_insns = disassemble(jni_path, JNI)
+    jni_branch_addresses = []
+    for line in named_calls(jni_insns):
+        m = re.search(r"\\bblx?\\s+([0-9a-f]+)\\s+<", line, re.I)
+        if m:
+            jni_branch_addresses.append(int(m.group(1), 16))
+    shdr = run(["readelf", "-SW", str(jni_path)]).splitlines()
+    plt_sections = [line.strip() for line in shdr if re.search(r"\\.(?:plt|got|rel\\.plt)\\b", line)]
+    jmp_relocations = [line.strip() for line in run(["readelf", "-rW", str(jni_path)]).splitlines()
+                       if "R_ARM_JUMP_SLOT" in line]
+    setter_indices = [i for i, line in enumerate(jmp_relocations) if SET in line and ALL not in line]
+    result += ["", "## C2. Resolve unlabeled JNI BLX via ARM PLT/GOT (exact address evidence)",
+               "", "- JNI direct BLX destinations: " +
+               ", ".join(f"0x{v:x}" for v in jni_branch_addresses),
+               "- Sections:", "", "```text"]
+    result += plt_sections or ["NO_MATCH"]
+    result += ["```", "", "- R_ARM_JUMP_SLOT entries surrounding the config setter (order preserved):",
+               "", "```text"]
+    for idx in setter_indices:
+        for k in range(max(0, idx - 5), min(len(jmp_relocations), idx + 6)):
+            result.append(f"index={k}: {jmp_relocations[k]}")
+    if not setter_indices:
+        result.append("SETTER_JUMP_RELOCATION_NOT_FOUND")
+    result += ["```"]
+    for dest in jni_branch_addresses:
+        # Constrain published disassembly to genuine .plt branch destinations,
+        # avoiding arbitrary data or strings from the original image.
+        if not any(".plt " in h for h in plt_sections):
+            continue
+        result += ["", f"- Disassembly around direct JNI branch target 0x{dest:x}:", "",
+                   "```asm"]
+        try:
+            result += run(["arm-linux-gnueabihf-objdump", "-drw", "-j", ".plt",
+                           f"--start-address=0x{max(0, dest-24):x}",
+                           f"--stop-address=0x{dest+36:x}", str(jni_path)]).splitlines()[:38]
+        except RuntimeError as exc:
+            result.append("PLT_DECODE_ERROR: " + str(exc))
+        result += ["```"]
     result += ["", "## D. Automated interpretation (limited)", "",
                f"- Direct labelled JNI branch to C-wrapper setter via PLT in scoped disassembly: **{'OBSERVED' if edge_confirmed else 'NOT_OBSERVED'}**.",
                "- **NOT_OBSERVED is not proof of absence.** Inspect indirect BLX, interposition,",
