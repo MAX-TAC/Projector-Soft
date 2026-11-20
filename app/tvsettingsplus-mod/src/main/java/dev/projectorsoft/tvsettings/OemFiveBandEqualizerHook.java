@@ -26,19 +26,19 @@ import java.util.List;
 public final class OemFiveBandEqualizerHook {
     private static final String TAG="TvSettingsPlusMOD";
     private static final String GROUP="sound_equalizer_detail";
-    private static final String[] KEYS={
+    static final String[] KEYS={
         "sound_equalizer_detail_120hz",
         "sound_equalizer_detail_500hz",
         "sound_equalizer_detail_1500hz",
         "sound_equalizer_detail_5000hz",
         "sound_equalizer_detail_10000hz"
     };
-    private static final String[] LABELS={"120 Гц","500 Гц","1,5 кГц","5 кГц","10 кГц"};
+    static final String[] LABELS={"120 Гц","500 Гц","1,5 кГц","5 кГц","10 кГц"};
 
     private OemFiveBandEqualizerHook() {}
 
     @SuppressWarnings("unchecked")
-    private static List<String> nativeAvailableBands() throws Exception {
+    static List<String> nativeAvailableBands() throws Exception {
         Class<?> config=Class.forName("com.mediatek.wwtv.tvcenter.util.PartnerSettingsConfig");
         Object list=config.getMethod("getSettingsList",String.class).invoke(null,GROUP);
         if (!(list instanceof List)) return null;
@@ -82,7 +82,7 @@ public final class OemFiveBandEqualizerHook {
                 try { current=Integer.parseInt(raw); }
                 catch(NumberFormatException malformed) { continue; }
                 if(current<bounds[0]||current>bounds[1])continue;
-                if(!OemSoundValuePolicy.acceptsBandChange(raw,current,bounds[0],bounds[1],openedMode,openedMode))continue;
+                if(!OemSoundValuePolicy.validProfile(openedMode))continue;
                 Object item=seek.getConstructor(Context.class).newInstance(ctx);
                 preferenceClass.getMethod("setKey",String.class).invoke(item,
                         "projectorsoft_eq_"+key);
@@ -95,6 +95,7 @@ public final class OemFiveBandEqualizerHook {
                 seek.getMethod("setShowSeekBarValue",boolean.class).invoke(item,true);
                 seek.getMethod("setUpdatesContinuously",boolean.class).invoke(item,false);
                 seek.getMethod("setValue",int.class).invoke(item,current);
+                preferenceClass.getMethod("setEnabled",boolean.class).invoke(item,"0".equals(openedMode));
                 final int lo=bounds[0],hi=bounds[1];
                 String[] displayed={raw};
                 InvocationHandler callback=(proxy,method,args)->{

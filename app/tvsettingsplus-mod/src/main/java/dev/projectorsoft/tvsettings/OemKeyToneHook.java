@@ -53,9 +53,9 @@ public final class OemKeyToneHook {
             Class<?> toggle=Class.forName("androidx.preference.SwitchPreference");
             Object item=toggle.getConstructor(Context.class).newInstance(context);
             preference.getMethod("setKey",String.class).invoke(item,"projectorsoft_key_tone");
-            preference.getMethod("setTitle",CharSequence.class).invoke(item,"Звук кнопок");
+            preference.getMethod("setTitle",CharSequence.class).invoke(item,"Системные звуки");
             preference.getMethod("setSummary",CharSequence.class).invoke(
-                    item,"Звуковое сопровождение нажатий пульта и меню");
+                    item,"Звуки нажатий кнопок пульта и навигации по меню");
             preference.getMethod("setOrder",int.class).invoke(item,219);
             preference.getMethod("setPersistent",boolean.class).invoke(item,false);
             toggle.getMethod("setChecked",boolean.class)

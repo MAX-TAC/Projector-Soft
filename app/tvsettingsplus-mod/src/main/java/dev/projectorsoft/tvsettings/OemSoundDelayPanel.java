@@ -33,6 +33,15 @@ final class OemSoundDelayPanel implements View.OnAttachStateChangeListener,
         if (!panel.rows.isEmpty()) PANELS.put(group,new WeakReference<>(panel));
     }
 
+    static String speakerUnavailableReason() {
+        try {
+            return available("sound_speaker_delay") ? "Штатный диапазон или значение недоступны"
+                    : "Штатный профиль устройства скрывает эту настройку";
+        } catch (ReflectiveOperationException | RuntimeException unavailable) {
+            return "Не удалось проверить поддержку динамиков";
+        }
+    }
+
     private static boolean available(String key) throws ReflectiveOperationException {
         boolean speaker="sound_speaker_delay".equals(key);
         Class<?> stock=Class.forName("com.mediatek.wwtv.tvcenter.util.PartnerSettingsConfig");

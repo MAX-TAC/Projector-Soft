@@ -25,6 +25,7 @@ enum NativePage {
     HDMI1_INFO("HDMI 1",HdmiOneStatusActivity.class,NativeSections.HdmiOne.class.getName()),
     HDMI2_INFO("HDMI 2",HdmiTwoStatusActivity.class,NativeSections.HdmiTwo.class.getName()),
     ACCESSORIES("Управление устройствами",BluetoothDevicesSettingsActivity.class,"com.android.tv.settings.accessories.AccessoriesFragment"),
+    MEMC("MEMC",MemcSettingsActivity.class,NativeSections.Memc.class.getName()),
     COLOR_TEMPERATURE("Цветовая температура",ColorTemperatureSettingsActivity.class,NativeSections.ColorTemperature.class.getName());
 
     static final List<NativePage> ROOT = List.of(NETWORK, BLUETOOTH, SOURCES, PROJECTION,

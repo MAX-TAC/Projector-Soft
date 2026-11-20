@@ -34,6 +34,7 @@ public final class OemInlinePreferencesHook {
     public static int[] pictureValues() {return PIC_VALUES.clone();}
     public static int[] colorValues() {return TEMP_VALUES.clone();}
     public static int[] soundValues() {return SOUND_VALUES.clone();}
+    static String[] soundTitles() {return SOUND_TITLES.clone();}
 
     /** Compatibility bridge for older build profiles; exact 8054 installs before view creation. */
     public static void install(Object fragment,View root) {

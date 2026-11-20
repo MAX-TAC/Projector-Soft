@@ -4,6 +4,11 @@ public final class OemSoundValuePolicyTest {
     public static void main(String[] args) {
         check(OemSoundValuePolicy.acceptsBandChange("50",60,0,100,"0","0"));
         check(!OemSoundValuePolicy.acceptsBandChange("50",60,0,100,"0","4"));
+        for (int preset = 1; preset <= 6; preset++) {
+            String mode = String.valueOf(preset);
+            check(OemSoundValuePolicy.validProfile(mode));
+            check(!OemSoundValuePolicy.acceptsBandChange("50",60,0,100,mode,mode));
+        }
         check(!OemSoundValuePolicy.acceptsBandChange(null,60,0,100,"0","0"));
         check(!OemSoundValuePolicy.acceptsBandChange("bad",60,0,100,"0","0"));
         check(!OemSoundValuePolicy.acceptsBandChange("201",60,0,100,"0","0"));

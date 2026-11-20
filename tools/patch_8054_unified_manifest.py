@@ -26,6 +26,7 @@ ACTIVITIES = (
     ('HdmiTwoStatusActivity', 'HDMI 2'),
     ('BluetoothDevicesSettingsActivity', 'Управление устройствами'),
     ('ColorTemperatureSettingsActivity', 'Цветовая температура'),
+    ('MemcSettingsActivity', 'MEMC'),
 )
 DISABLED = (('receiver', 'KuSourceRecoveryBootReceiver'), ('service', 'KuSourceRecoveryService'))
 

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceGroup;
@@ -192,21 +193,45 @@ public final class NativeSections {
         }
     }
 
-    public static final class Picture extends Page {
-        @Override NativePage section(){return NativePage.PICTURE;}
-        @Override void populate(PreferenceScreen screen){
-            guarded("picture-read",()->OemPicturePanel.installSection(requireContext(),screen,Preference.class,false));
-            link(screen, NativePage.COLOR_TEMPERATURE, 228);
-            OemStockUserSettings.installPictureFormat(requireContext(),screen,Preference.class);
+    public abstract static class PictureRows extends Page {
+        private NativePicturePanel panel;
+        abstract NativePicturePanel.Page picturePage();
+        @Override void populate(PreferenceScreen screen) {
+            panel = new NativePicturePanel(this, screen, picturePage());
+        }
+        @Override public void onStart() {
+            super.onStart();
+            if (panel != null) panel.start();
+        }
+        @Override public void onResume() {
+            super.onResume();
+            if (panel != null) panel.refresh();
+        }
+        @Override public void onStop() {
+            if (panel != null) panel.stop();
+            super.onStop();
         }
     }
 
-    public static final class ColorTemperature extends Page {
-        @Override NativePage section() { return NativePage.COLOR_TEMPERATURE; }
+    public static final class Picture extends PictureRows {
+        @Override NativePage section(){return NativePage.PICTURE;}
+        @Override NativePicturePanel.Page picturePage() { return NativePicturePanel.Page.PICTURE; }
         @Override void populate(PreferenceScreen screen) {
-            guarded("picture-color-read", () -> OemPicturePanel.installSection(
-                    requireContext(), screen, Preference.class, true));
+            super.populate(screen);
+            link(screen, NativePage.COLOR_TEMPERATURE, 228);
+            link(screen, NativePage.MEMC, 229);
+            OemStockUserSettings.installPictureFormat(requireContext(), screen, Preference.class);
         }
+    }
+
+    public static final class ColorTemperature extends PictureRows {
+        @Override NativePage section() { return NativePage.COLOR_TEMPERATURE; }
+        @Override NativePicturePanel.Page picturePage() { return NativePicturePanel.Page.COLOR; }
+    }
+
+    public static final class Memc extends PictureRows {
+        @Override NativePage section() { return NativePage.MEMC; }
+        @Override NativePicturePanel.Page picturePage() { return NativePicturePanel.Page.MEMC; }
     }
 
     public static final class Sound extends Page {
@@ -230,10 +255,35 @@ public final class NativeSections {
     }
 
     public static final class Equalizer extends Page {
+        private NativeEqualizerPanel panel;
+        private final ViewTreeObserver.OnWindowFocusChangeListener eqFocus = focused -> {
+            if (focused && panel != null) panel.refresh();
+        };
         @Override NativePage section(){return NativePage.EQUALIZER;}
         @Override void populate(PreferenceScreen screen){
-            PreferenceCategory controls = group(screen, "projectorsoft_sound_category", null);
-            guarded("equalizer", () -> OemSoundPanel.installEqualizer(requireContext(), controls, Preference.class));
+            panel = new NativeEqualizerPanel(requireContext(), screen);
+        }
+        @Override public void onViewCreated(View view, Bundle state) {
+            super.onViewCreated(view, state);
+            view.getViewTreeObserver().addOnWindowFocusChangeListener(eqFocus);
+        }
+        @Override public void onDestroyView() {
+            View view = getView();
+            if (view != null && view.getViewTreeObserver().isAlive())
+                view.getViewTreeObserver().removeOnWindowFocusChangeListener(eqFocus);
+            super.onDestroyView();
+        }
+        @Override public void onStart() {
+            super.onStart();
+            if (panel != null) panel.start();
+        }
+        @Override public void onResume() {
+            super.onResume();
+            if (panel != null) panel.refresh();
+        }
+        @Override public void onStop() {
+            if (panel != null) panel.stop();
+            super.onStop();
         }
     }
 
@@ -242,6 +292,9 @@ public final class NativeSections {
         @Override void populate(PreferenceScreen screen){
             PreferenceCategory controls = group(screen, "projectorsoft_sound_category", null);
             OemSoundDelayPanel.install(requireContext(), controls, Preference.class);
+            if ("8054".equals(OemHdmiPortInfo.machineId())
+                    && controls.findPreference("projectorsoft_sound_speaker_delay") == null)
+                info(controls, "speaker_delay_unavailable", "Задержка динамиков", OemSoundDelayPanel.speakerUnavailableReason());
             if (controls.getPreferenceCount() == 0) screen.removePreference(controls);
         }
     }
