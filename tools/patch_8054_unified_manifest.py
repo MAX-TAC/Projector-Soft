@@ -7,7 +7,7 @@ from patch_axml_version import change_version_code
 
 PREFIX = 'dev.projectorsoft.tvsettings.'
 ACTIVITIES = (
-    ('ModMainSettingsActivity', 'Настройки Android TV (MOD)'),
+    ('ModMainSettingsActivity', 'Настройки'),
     ('NetworkSettingsActivity', 'Wi-Fi и сеть'),
     ('BluetoothSettingsActivity', 'Bluetooth'),
     ('SourcesSettingsActivity', 'Источники'),
@@ -39,7 +39,7 @@ def patch_unified(data, version):
     if pool is None or resource_map is None:
         raise ValueError('Missing stock manifest resources')
     android = pool.lookup['http://schemas.android.com/apk/res/android']
-    for key in ('name', 'label', 'enabled', 'exported', 'icon', 'banner'):
+    for key in ('name', 'label', 'enabled', 'exported', 'icon', 'banner', 'theme'):
         index = pool.lookup[key]
         if index >= len(resource_map) or not resource_map[index]:
             raise ValueError('Missing Android resource-map attribute: ' + key)
@@ -49,6 +49,23 @@ def patch_unified(data, version):
         raise ValueError('Expected one stock application')
     if any(PREFIX + name in pool.lookup for name, _ in ACTIVITIES):
         raise ValueError('Already patched manifest or conflicting class name')
+
+    themes = []
+    for kind, chunk in chunks:
+        if kind != START or pool.values[u32(chunk, 20)] != 'activity':
+            continue
+        attrs = {}
+        for i in range(u16(chunk, 28)):
+            start = 16 + u16(chunk, 24) + i * u16(chunk, 26)
+            if u32(chunk, start) == android:
+                attrs[pool.values[u32(chunk, start + 4)]] = (chunk[start + 15], u32(chunk, start + 16))
+        name = attrs.get('name')
+        if name and pool.values[name[1]] == 'com.android.tv.settings.MainSettings':
+            theme = attrs.get('theme')
+            if theme and theme[0] == 1:
+                themes.append(theme[1])
+    if len(themes) != 1:
+        raise ValueError('Exact stock MainSettings theme unavailable')
 
     def attributes(name, exported, enabled):
         return [attr(android, pool.index('name'), pool.index(PREFIX + name)),
@@ -71,6 +88,7 @@ def patch_unified(data, version):
     for idx, (name, label) in enumerate(ACTIVITIES):
         attrs = attributes(name, True, True)
         attrs.append(attr(android, pool.index('label'), pool.index(label)))
+        attrs.append(refattr(android, pool.index('theme'), themes[0]))
         if idx == 0:
             # exact-8054 stock MainSettings already uses these verified TV gear and banner resources.
             attrs.append(refattr(android, pool.index('icon'), 0x7f08022e))

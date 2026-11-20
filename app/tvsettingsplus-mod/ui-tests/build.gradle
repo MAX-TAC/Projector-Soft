@@ -10,6 +10,10 @@ android {
     }
     sourceSets {
         main.java.srcDir '../src/main/java'
+        main.java.srcDir '../src/exact8054/java'
+        if (providers.gradleProperty('exactSources').isPresent()) {
+            main.java.srcDir providers.gradleProperty('exactSources').get()
+        }
     }
     testOptions {
         unitTests.includeAndroidResources = true
@@ -17,7 +21,8 @@ android {
 }
 
 dependencies {
+    implementation 'androidx.leanback:leanback-preference:1.2.0'
+    implementation 'androidx.preference:preference:1.2.1'
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.robolectric:robolectric:4.14.1'
-    testImplementation 'androidx.preference:preference:1.2.1'
 }

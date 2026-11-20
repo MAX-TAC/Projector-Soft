@@ -28,7 +28,7 @@ public final class OemPowerOnAppHook {
     private static final String PROPERTY="persist.trd.source_id";
     private OemPowerOnAppHook() {}
 
-    private static OemPowerOnAppPolicy.Property property() throws Exception {
+    static OemPowerOnAppPolicy.Property property() throws Exception {
         Class<?> cls=Class.forName("android.os.SystemProperties");
         Method getter=cls.getMethod("get",String.class,String.class);
         Method setter=cls.getMethod("set",String.class,String.class);
@@ -44,7 +44,7 @@ public final class OemPowerOnAppHook {
         };
     }
 
-    private static Map<String,String> candidates(Context context) {
+    static Map<String,String> candidates(Context context) {
         PackageManager pm=context.getPackageManager();
         Map<String,String> result=new HashMap<>();
         for(String category:new String[]{

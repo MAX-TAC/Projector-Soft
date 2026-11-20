@@ -1,22 +1,20 @@
 package dev.projectorsoft.tvsettings;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Looper;
 import android.provider.Settings;
 import android.view.KeyEvent;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-import java.util.ArrayList;
-import java.util.List;
+import androidx.leanback.preference.LeanbackPreferenceFragmentCompat;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceScreen;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowSystemProperties;
+
+import java.util.Map;
 
 import static org.junit.Assert.*;
 import static org.robolectric.Shadows.shadowOf;
@@ -24,86 +22,77 @@ import static org.robolectric.Shadows.shadowOf;
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk=33)
 public class UnifiedMenuUiTest {
-    @Test public void rootOrderAndAllEightExplicitActivityRoutes() {
-        Activity activity=Robolectric.buildActivity(ModMainSettingsActivity.class).setup().get();
+    @Test public void rootStartsAndBuildsOrderedNativePreviewRoutes(){
+        ModMainSettingsActivity root=Robolectric.buildActivity(ModMainSettingsActivity.class).setup().get();
+        NativeRootFragment fragment=(NativeRootFragment)root.getSupportFragmentManager().findFragmentById(android.R.id.content);
+        assertNotNull(fragment.getView());
+        assertNotNull(fragment.getListView().getAdapter());
+        PreferenceScreen screen=fragment.getPreferenceScreen();
         String[] titles={"Wi-Fi и сеть","Bluetooth","Источники","Проекция","Изображение","Звук","Приложения","Система"};
+        assertEquals(titles.length,screen.getPreferenceCount());
         for(int i=0;i<titles.length;i++){
-            TextView item=activity.findViewById(100+i);
-            assertEquals(titles[i],item.getText().toString());
-            assertTrue(item.isFocusable());
-            assertTrue(item.performClick());
-            Intent route=shadowOf(activity).getNextStartedActivity();
-            assertEquals(ModSettingsActivity.activityFor(ModMenuCatalog.Page.values()[i]).getName(),
-                    route.getComponent().getClassName());
-            assertNull(route.getExtras());
+            Preference row=screen.getPreference(i);
+            assertEquals(titles[i],row.getTitle().toString());
+            assertEquals(NativePage.values()[i].fragment,row.getFragment());
+            assertFalse(row.getFragment().contains("uicustom"));
+            assertNull(row.getIntent());
         }
-        assertNull(activity.findViewById(108));
     }
 
-    @Test public void actualLifecycleOpensEverySectionAndNeverObeysUntrustedExtras() {
-        ShadowSystemProperties.override("ro.rjpj.machine.id","8054");
-        Intent crafted=new Intent("android.intent.action.FACTORY_RESET").putExtra("sleep_timeout",99)
-                .putExtra("component","com.my.settings").putExtra("hdmi","HW7");
-        for(ModMenuCatalog.Page page:ModMenuCatalog.Page.values()) {
-            ActivityController<? extends Activity> controller=Robolectric
-                    .buildActivity(ModSettingsActivity.activityFor(page),crafted).setup().windowFocusChanged(true);
-            Activity activity=controller.get();
-            List<String> labels=new ArrayList<>();
-            gather(activity.findViewById(android.R.id.content),labels);
-            for(ModMenuCatalog.Row row:ModMenuCatalog.rows(page)) {
-                assertEquals(page+" item "+row.title,1,labels.stream().filter(label->label.equals(row.title)).count());
-            }
+    @Test public void standaloneSectionsUseLeanbackLifecycleAndIgnoreExternalExtras(){
+        Intent external=new Intent("android.intent.action.FACTORY_RESET")
+                .putExtra("volumeUuid","unexpected").putExtra("screen_off_timeout",3);
+        for(NativePage page:NativePage.values()){
+            ActivityController<? extends android.app.Activity> lifecycle=Robolectric.buildActivity(page.activity,external).setup();
+            ModSettingsActivity activity=(ModSettingsActivity)lifecycle.get();
+            LeanbackPreferenceFragmentCompat fragment=(LeanbackPreferenceFragmentCompat)
+                    activity.getSupportFragmentManager().findFragmentById(android.R.id.content);
+            assertEquals(page.fragment,fragment.getClass().getName());
+            assertEquals(page.title,fragment.getPreferenceScreen().getTitle().toString());
+            assertNotNull(fragment.getListView().getAdapter());
+            assertFalse(fragment.getArguments().containsKey("volumeUuid"));
             assertNull(shadowOf(activity).getNextStartedActivity());
             assertNull(Settings.System.getString(activity.getContentResolver(),"screen_off_timeout"));
             assertNull(Settings.Secure.getString(activity.getContentResolver(),"sleep_timeout"));
             assertNull(Settings.Secure.getString(activity.getContentResolver(),"screensaver_enabled"));
-            TextView content=activity.findViewById(1000);
-            assertEquals(100+page.ordinal(),content.getNextFocusLeftId());
-            assertEquals(1000,activity.findViewById(100+page.ordinal()).getNextFocusRightId());
+            int count=fragment.getPreferenceScreen().getPreferenceCount();
+            lifecycle.pause().resume();
             shadowOf(Looper.getMainLooper()).idle();
-            assertTrue(page+" row receives focus",content.requestFocus());
-            assertTrue(page+" row is focused",content.isFocused());
-            controller.pause().resume();
-            shadowOf(Looper.getMainLooper()).idle();
-            assertSame(page+" section preserves the row View",content,activity.findViewById(content.getId()));
-            assertTrue(page+" row retains its focus",content.isFocused());
+            assertEquals(count,fragment.getPreferenceScreen().getPreferenceCount());
             activity.onBackPressed();
             assertTrue(activity.isFinishing());
-            controller.pause().stop().destroy();
+            lifecycle.pause().stop().destroy();
         }
     }
 
-    @Test public void unsafeProjectorOperationsAreNonClickable() {
-        for(Class<? extends Activity> type:new Class[]{SourcesSettingsActivity.class,ProjectionSettingsActivity.class,
-                PictureSettingsActivity.class,SoundSettingsActivity.class,SystemSettingsActivity.class}) {
-            Activity activity=Robolectric.buildActivity(type).setup().get();
-            ModMenuCatalog.Page page=((ModSettingsActivity)activity).page();
-            int id=1000;
-            for(ModMenuCatalog.Row row:ModMenuCatalog.rows(page)){
-                if(row.kind==ModMenuCatalog.Kind.GROUP)continue;
-                View view=activity.findViewById(id++);
-                if(row.kind==ModMenuCatalog.Kind.BLOCKED || row.kind==ModMenuCatalog.Kind.READ)
-                    assertFalse(row.title,view.isClickable());
-            }
-        }
-    }
-
-    @Test public void foregroundKeysUseOnlyExplicitInPackageRoutes() {
-        ModMainSettingsActivity root=Robolectric.buildActivity(ModMainSettingsActivity.class).setup().get();
-        assertTrue(root.onKeyUp(KeyEvent.KEYCODE_TV_INPUT,new KeyEvent(KeyEvent.ACTION_UP,KeyEvent.KEYCODE_TV_INPUT)));
+    @Test public void foregroundMediaInputLaunchesOnlyNativeSources(){
+        ModMainSettingsActivity activity=Robolectric.buildActivity(ModMainSettingsActivity.class).setup().get();
+        assertTrue(activity.onKeyUp(KeyEvent.KEYCODE_TV_INPUT,new KeyEvent(KeyEvent.ACTION_UP,KeyEvent.KEYCODE_TV_INPUT)));
         assertEquals(SourcesSettingsActivity.class.getName(),
-                shadowOf(root).getNextStartedActivity().getComponent().getClassName());
-        SourcesSettingsActivity section=Robolectric.buildActivity(SourcesSettingsActivity.class).setup().get();
-        assertTrue(section.onKeyUp(KeyEvent.KEYCODE_SETTINGS,new KeyEvent(KeyEvent.ACTION_UP,KeyEvent.KEYCODE_SETTINGS)));
-        assertEquals(ModMainSettingsActivity.class.getName(),
-                shadowOf(section).getNextStartedActivity().getComponent().getClassName());
+                shadowOf(activity).getNextStartedActivity().getComponent().getClassName());
     }
 
-    private void gather(View view,List<String> labels){
-        if(view instanceof TextView)labels.add(((TextView)view).getText().toString().split("\n",2)[0]);
-        if(view instanceof ViewGroup) {
-            ViewGroup group=(ViewGroup)view;
-            for(int i=0;i<group.getChildCount();i++)gather(group.getChildAt(i),labels);
+    @Test public void oneBootPropertyHasOneCurrentDestinationAndVerifiedReadback() throws Exception {
+        Map<String,String> choices=Map.of("HOME","Android TV","id/HW6","HDMI 1","app.video","Приложение");
+        class Property implements OemPowerOnAppPolicy.Property {
+            String value="HOME";
+            int writes;
+            boolean changes=true;
+            @Override public String read(){return value;}
+            @Override public boolean write(String next){writes++;if(changes)value=next;return true;}
         }
+        Property store=new Property();
+        assertEquals(NativeBootDestination.Result.CONFIRMED,
+                NativeBootDestination.apply(store,choices,choices,"HOME","id/HW6"));
+        assertEquals("id/HW6",store.value);
+        assertEquals(NativeBootDestination.Result.STALE,
+                NativeBootDestination.apply(store,choices,choices,"HOME","app.video"));
+        assertEquals(NativeBootDestination.Result.UNSUPPORTED,
+                NativeBootDestination.apply(store,choices,Map.of("id/HW6","HDMI 1"),"id/HW6","app.video"));
+        assertEquals(1,store.writes);
+        store.changes=false;
+        assertEquals(NativeBootDestination.Result.UNCONFIRMED,
+                NativeBootDestination.apply(store,choices,choices,"id/HW6","app.video"));
+        assertEquals("id/HW6",store.value);
     }
 }

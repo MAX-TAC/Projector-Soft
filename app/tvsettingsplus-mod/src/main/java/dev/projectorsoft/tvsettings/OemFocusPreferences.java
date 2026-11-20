@@ -10,8 +10,8 @@ import java.lang.reflect.Method;
 final class OemFocusPreferences {
     private static final String TAG = "TvSettingsPlusMOD";
     private static final String PACKAGE = "com.hysd.screen";
-    private static final String CONTROLLER =
-            "com.android.tv.settings.uicustom.floatmenu.controller.projector.FocusSettingsSecondaryController";
+    private static final String STOCK_PROPERTIES =
+            "com.android.tv.settings.uicustom.util.SystemPropertiesUtil";
 
     private OemFocusPreferences() {}
 
@@ -31,28 +31,27 @@ final class OemFocusPreferences {
 
     static void install(Context context,Object group,Class<?> pref) {
         if (!available(context)) return;
-        add(context,group,pref,"persist.rjpj.autofocus.poweron","setPowerOnAutoFocus",
+        add(context,group,pref,"persist.rjpj.autofocus.poweron",
                 "projectorsoft_focus_power_on","Автофокус при включении",254);
-        add(context,group,pref,"persist.rjpj.autofocus.move","setMoveAutoFocus",
+        add(context,group,pref,"persist.rjpj.autofocus.move",
                 "projectorsoft_focus_move","Автофокус при перемещении",255);
     }
 
-    private static void add(Context context,Object group,Class<?> pref,String property,String callbackName,
+    private static void add(Context context,Object group,Class<?> pref,String property,
                             String key,String title,int order) {
         try {
             Method read = Class.forName("android.os.SystemProperties").getMethod("get",String.class,String.class);
-            Class<?> controllerClass = Class.forName(CONTROLLER);
-            Method original = controllerClass.getDeclaredMethod(callbackName,boolean.class);
-            original.setAccessible(true);
-            // The exact build checks the public no-arg constructor chain.
-            Object controller = controllerClass.getConstructor().newInstance();
+            // Exact stock callbacks do only this write with the named key and 0/1.
+            // The build checks that they have no other invokes or instance-field uses.
+            Method setter=Class.forName(STOCK_PROPERTIES).getMethod("set",String.class,String.class);
             OemProjectionSwitches.add(context, group, pref, key, title, order,
                     new ProjectionToggleState.Backend() {
                         @Override public String read() throws Exception {
                             return available(context) ? (String) read.invoke(null, property, "") : null;
                         }
                         @Override public void write(boolean value) throws Exception {
-                            original.invoke(controller, value);
+                            if(!available(context))throw new IllegalStateException("Focus backend unavailable");
+                            setter.invoke(null,property,value?"1":"0");
                         }
                     });
         } catch (Exception ex) {

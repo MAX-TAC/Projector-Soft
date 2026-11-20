@@ -52,7 +52,7 @@ public final class OemPowerOnSourceHook {
         return Build.class.getField("A_RJ_SUPPORT_SETTINGS_SHOW_AV").getInt(null)==1;
     }
 
-    private static Map<String,String> available(Context context) throws Exception {
+    static Map<String,String> available(Context context) throws Exception {
         int count = boardCount();
         String metadata = boardPorts();
         Map<String,String> choices = new LinkedHashMap<>();

@@ -17,7 +17,7 @@ def main():
  p.add_argument("compiled_dex",type=Path)
  p.add_argument("patch_report",type=Path)
  p.add_argument("output",type=Path)
- p.add_argument("--version-code",type=int,default=3,choices=(3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,27,28,29,30,31,32,33,34,35))
+ p.add_argument("--version-code",type=int,default=3,choices=(3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,27,28,29,30,31,32,33,34,35,36))
  p.add_argument("--projector-entry",action="store_true")
  p.add_argument("--unified-8054",action="store_true")
  a=p.parse_args()

@@ -21,6 +21,8 @@ def verify_manifest(stock, module):
         if len(indexes) != 1:
             raise ValueError('Missing or duplicated MOD component ' + name)
         begin = indexes[0] - 1
+        while begin>=0 and lines[begin].startswith('        '):
+            begin-=1
         if not re.match(r'^      E: (activity|receiver|service) ', lines[begin]):
             raise ValueError('Wrong manifest component node for ' + name)
         end = begin + 1
@@ -30,10 +32,18 @@ def verify_manifest(stock, module):
         del lines[begin:end]
     if without_version(lines) != without_version(stock_lines):
         raise ValueError('Original manifest entries or filters changed')
+    main = next(i for i, line in enumerate(stock_lines)
+                if 'android:name(0x01010003)="com.android.tv.settings.MainSettings"' in line)
+    theme = next((line.strip() for line in stock_lines[max(0,main-5):main+5]
+                  if 'android:theme(' in line),None)
+    if theme is None:
+        raise ValueError('Missing stock MainSettings theme')
     for name, _ in ACTIVITIES:
         node = additions[name]
         if 'E: activity ' not in node or not re.search(r'android:exported.*0xffffffff',node):
             raise ValueError('Menu Activity not directly launchable: ' + name)
+        if theme not in node:
+            raise ValueError('Menu Activity does not share the stock theme: ' + name)
         if name == ACTIVITIES[0][0]:
             for value in ('android.intent.action.MAIN','android.intent.category.LAUNCHER',
                           'android.intent.category.LEANBACK_LAUNCHER'):
