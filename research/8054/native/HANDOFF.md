@@ -40,13 +40,24 @@
 - В C-wrapper подтверждена виртуальная диспетчеризация `0x3f5cc blx r7` (vtable offset `+0x3c`), а в оригинальной HIDL `.so` — proxy/stub с типами `short, hidl_string, int, short`. **Виртуальный target/service implementation/transaction не установлены**. `inputGroup=-1`, `isUpdate=3` пока только передаваемые значения, не доказанная семантика.
 - No runtime, no APK install, no hardware modifications. PR #2 неизменён; MOD v41 `BUILT_UNTESTED`.
 
-## Следующая задача: NATIVE-005 — vtable/HIDL receiver + semantics
+## NATIVE-005: итоги статического анализа (2026-11-20)
 
-1. Читать TRACE_004, ELF machine evidence и текущий HEAD PR #3 — повторять полную инвентаризацию 1283 ELF не требуется.
-2. Статически пройти `a_mtktvapi_config_set_value` в exact-8054 C-wrapper начиная с `0x3f5cc blx r7` до реального `BpHwMtkTvApiConfig` proxy, транзакции, `BnHw` и **конкретной** реализации серверной стороны в `vendor_a`. Различать проверенный ABI и предположения по таблицам виртуальных методов.
-3. Проверить, как фактически обрабатываются `inputGroup=-1` и `isUpdate=3`, а также различие input/profile/signal SDR-HDR и хранилища. Пока не доказано, что sentinel означает active HDMI или все входы.
-4. Зафиксировать Java DEX native declaration/prototype, return/error handling. Отдельно отметить, что JNI `0` может означать отсутствие вызова при null string, а не подтверждение операции.
-5. По результатам создать `TRACE_005_...`, отдельный `logs/YYYY-MM-DD_NATIVE-005.md`, обновить INDEX/HANDOFF и коммитить только санированные данные. Затем независимые traces HDR и MEMC. Ветка MOD v41 остаётся нетронутой.
+- [TRACE_005_CONFIG_HIDL_SERVICE_RPC.md](TRACE_005_CONFIG_HIDL_SERVICE_RPC.md), [проверяемые инструкции, vtable/relocs](generated/NATIVE_005_HIDL_RECEIVER_EVIDENCE_8054.md), [журнал действий и реальных CI-сбоев](logs/2026-11-20_NATIVE-005.md).
+- **Final run:** [44804034895](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44804034895) **SUCCESS**: SHA-verified original archive → EROFS → exact-8054 ELF → sanitized text output pushed to research branch. В workflow добавлены сериализация и rebase для устранения `non-fast-forward` при параллельной публикации исследований.
+- Обнаружен настоящий `vendor_a/bin/hw/vendor.mediatek.api.mtktvapi@1.0-service`, SHA-256 `15360fa27a7039f57f6173cc28942d4458e9f4d0beeaa31620e71bc785f275f6`; статическая регистрация в `vendor_a/etc/init/vendor.mediatek.tv.mtktvapi@1.0-service.rc`, VINTF `vendor.mediatek.api.mtktvapi`, импорт `IMtkTvApiConfig::registerAsService`.
+- Сервис связан с `vendor.mediatek.api.mtktvapi@1.0.so` и `libmediatek_tv_rpcwrapper.so`; его ELF импортирует `a_mtktvapi_config_set_value` (`R_ARM_JUMP_SLOT` GOT `0x47fa0`). **Реальная машинная ветка найдена:** service `0x29e48 BLX 0x43490`, ARM PLT `0x43490` → GOT `0x47fa0` → `a_mtktvapi_config_set_value`. Этот переход подтверждён программно с учётом ARM rotated immediate `#4,20 = 0x4000`.
+- Оригинальный HIDL BpHw setter `0x24a230 movs r1,#3` → `0x24a232 blx r6` показывает transaction code `3` в Binder-запросе. **Не путать с payload `isUpdate=3`**. BnHw `onTransact` и code 1..15 switch есть, но конкретный маршрут к service `0x29e48` ещё **не** доказан.
+- C-wrapper `0x3f5cc blx r7` с vtable +0x3c существует; `getMtkTvApiConfigService()` экспортирована в оригинальном ELF; **точный тип объекта и соответствие BpHw/Bs/серверной реализации не доказаны**. Простой vtable test `_ZTV +8+60` не дал надежной связи из-за возможного вторичного address point/релокаций.
+- `inputGroup=-1` и `isUpdate=3`: знак и ширина `short` передаются корректно, но семантика активного входа, SDR/HDR, профиля PQ и сохранения **UNKNOWN**. `READBACK_CONFIRMED` и `HARDWARE_EFFECT_VERIFIED` остаются `NOT_TESTED`. MOD v41/PR #2 не менялись.
+
+## Следующая конкретная задача: NATIVE-005b — связать разорванные edges
+
+1. **Не начинать с нуля.** Читать TRACE_005 и ограниченный машинный отчёт; reuse exact SHA и тот же CI; не надо повторно искать архив.
+2. Из C-wrapper проверить вызов `0x3f5a6 BLX 0x60090` через PLT/GOT, дальнейший `getMtkTvApiConfigService` → динамический HIDL объект → верный C++ vtable address point. Раскрыть, что реально лежит в `[vptr+0x3c]`. Не приравнивать простой `_ZTV+8+60` к нужному слоту без ABI-доказательств.
+3. В service `vendor.mediatek.api.mtktvapi@1.0-service` восстановить **function owner** у `0x29e48` и входящую диспетчеризацию из HIDL setter (onTransact code 3); затем trace `libmediatek_tv_rpcwrapper.so` → `libmediatek_tv_rpccore.so`.
+4. Искать **реального потребителя** signed `inputGroup=-1` и `isUpdate=3`. Если обработчик живёт за границей Android ELF/в firmware, явно зафиксировать предел статической проверки; не придумывать режимы HDMI или persistence.
+5. Дополнительно получить точную DEX `TVNative.setConfigValue_native` declaration/Java status propagation. После выполнения NATIVE-005b отдельными трассами начать HDR и MEMC, не смешивая с Factory API.
+6. Отдельный `logs/YYYY-MM-DD_NATIVE-005b.md`, TRACE, обновление INDEX/HANDOFF, коммит в PR #3. Никаких тестовых записей/установок APK без отдельного разрешения.
 
 ## Строгие ограничения
 - Не менять main, MOD v41, заводскую прошивку и проектор в рамках статического исследования.
@@ -55,4 +66,4 @@
 - Уровни фактов разделять: STATIC_KEY_MAP → JAVA_SMALI_CALLSITE → EXACT_NATIVE_ELF_EXPORT → NATIVE_CALL_EDGE → HIDL_RPC_RECEIVER → READBACK_CONFIRMED → HARDWARE_EFFECT_VERIFIED. Сейчас последнее не достигнуто.
 - Результаты писать в файлы репозитория, не в чат, ответ заканчивать ссылками на конкретный коммит/PR. Нельзя обещать фоновую или будущую работу, только выполнять в текущем сеансе.
 
-Результат следующего чата: NATIVE-005 с конкретными HIDL/vtable callsites, отдельным журналом, обновлёнными индексом/HANDOFF и проверяемым commit SHA/URL; если receiver недоступен — чёткий blocker, без выдуманного hardware effect.
+Результат следующего чата: NATIVE-005b с точным C-wrapper→HIDL и BnHw→service call edge, либо честным blocker, отдельным журналом, CI-ссылкой и commit SHA; никакой выдуманной семантики `-1/3` или hardware effect.
