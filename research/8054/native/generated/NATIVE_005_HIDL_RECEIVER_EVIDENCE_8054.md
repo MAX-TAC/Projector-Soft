@@ -654,6 +654,146 @@ UND FUNC 00000000 vendor::mediatek::api::mtktvapi::V1_0::IMtkTvApiConfig::getSer
 - `vendor_a/etc/init/vendor.mediatek.tv.mtktvvoc@1.0-service.rc`:
   - `service tv-mtktvvoc-1-0 /vendor/bin/hw/vendor.mediatek.tv.mtktvvoc@1.0-service`
 
+## C2. Raw vtable slot +60 from exact ELF .data.rel.ro
+
+The Itanium C++ vtable address point is vtable symbol + 8 on ARM32.
+Static pointers carry Thumb state in bit0; compare against exact ELF symbol values.
+
+| Vtable | Vtable address | pointer at address-point + 60 | matching exported method |
+|---|---|---|---|
+| `vendor::mediatek::api::mtktvapi::V1_0::BnHwMtkTvApiConfig` | `0x309f7c` | `0x00000000` | `NO_EXACT_FUNCTION_MATCH` |
+| `vendor::mediatek::api::mtktvapi::V1_0::BsMtkTvApiConfig` | `0x30a01c` | `0x002516f9` | `NO_EXACT_FUNCTION_MATCH` |
+| `vendor::mediatek::api::mtktvapi::V1_0::BpHwMtkTvApiConfig` | `0x309e3c` | `0x00000000` | `NO_EXACT_FUNCTION_MATCH` |
+| `vendor::mediatek::api::mtktvapi::V1_0::IMtkTvApiConfig` | `0x30a0dc` | `0x00000000` | `NO_EXACT_FUNCTION_MATCH` |
+
+## C3. Original HIDL service binary import and registration evidence
+
+- Exact service ELF SHA-256: `15360fa27a7039f57f6173cc28942d4458e9f4d0beeaa31620e71bc785f275f6`.
+- Selected DT_NEEDED: `vendor.mediatek.api.mtktvapi@1.0.so`, `vendor.mediatek.custom.mtktvapicustom@1.0-impl.so`, `libhidlbase.so`, `libhidltransport.so`, `libmediatek_tv_basic.so`, `libmediatek_tv_rpcwrapper.so`
+- Symbol `a_mtktvapi_config_set_value`: UND FUNC 00000000
+- Symbol `a_mtktvapi_config_set_value_for_all_elems`: UND FUNC 00000000
+- Selected **defined** service methods: 0 (absence is not proof of no implementation; symbols may be stripped).
+
+```text
+NO_MATCHING_EXPORTED_DEFINITION
+```
+
+- Relevant service relocations:
+
+```text
+00047b04  00000616 R_ARM_JUMP_SLOT        00000000   _ZN6vendor8mediatek3api8mtktvapi4V1_09IMtkTvApi17registerAsServiceERKNSt3__112basic_stringIcNS5_11char_traitsIcEENS5_9allocatorIcEEEE
+00047b10  00000916 R_ARM_JUMP_SLOT        00000000   _ZN6vendor8mediatek3api8mtktvapi4V1_015IMtkTvApiConfig17registerAsServiceERKNSt3__112basic_stringIcNS5_11char_traitsIcEENS5_9allocatorIcEEEE
+00047b14  00000a16 R_ARM_JUMP_SLOT        00000000   _ZN6vendor8mediatek3api8mtktvapi4V1_012IMtkTvApiCec17registerAsServiceERKNSt3__112basic_stringIcNS5_11char_traitsIcEENS5_9allocatorIcEEEE
+00047b18  00000b16 R_ARM_JUMP_SLOT        00000000   _ZN6vendor8mediatek3api8mtktvapi4V1_013IMtkTvApiScan17registerAsServiceERKNSt3__112basic_stringIcNS5_11char_traitsIcEENS5_9allocatorIcEEEE
+00047b1c  00000c16 R_ARM_JUMP_SLOT        00000000   _ZN6vendor8mediatek3api8mtktvapi4V1_018IMtkTvApiBroadcast17registerAsServiceERKNSt3__112basic_stringIcNS5_11char_traitsIcEENS5_9allocatorIcEEEE
+00047b20  00000d16 R_ARM_JUMP_SLOT        00000000   _ZN6vendor8mediatek3api8mtktvapi4V1_015IMtkTvApiRating17registerAsServiceERKNSt3__112basic_stringIcNS5_11char_traitsIcEENS5_9allocatorIcEEEE
+00047b24  00000e16 R_ARM_JUMP_SLOT        00000000   _ZN6vendor8mediatek3api8mtktvapi4V1_018IMtkTvApiTimeshift17registerAsServiceERKNSt3__112basic_stringIcNS5_11char_traitsIcEENS5_9allocatorIcEEEE
+00047b28  00000f16 R_ARM_JUMP_SLOT        00000000   _ZN6vendor8mediatek3api8mtktvapi4V1_013IMtkTvApiTime17registerAsServiceERKNSt3__112basic_stringIcNS5_11char_traitsIcEENS5_9allocatorIcEEEE
+00047b2c  00001016 R_ARM_JUMP_SLOT        00000000   _ZN6vendor8mediatek3api8mtktvapi4V1_014IMtkTvApiEvent17registerAsServiceERKNSt3__112basic_stringIcNS5_11char_traitsIcEENS5_9allocatorIcEEEE
+00047b30  00001116 R_ARM_JUMP_SLOT        00000000   _ZN6vendor8mediatek3api8mtktvapi4V1_019IMtkTvApiPvrbrowser17registerAsServiceERKNSt3__112basic_stringIcNS5_11char_traitsIcEENS5_9allocatorIcEEEE
+00047b34  00001216 R_ARM_JUMP_SLOT        00000000   _ZN6vendor8mediatek3api8mtktvapi4V1_017IMtkTvApiInputSrc17registerAsServiceERKNSt3__112basic_stringIcNS5_11char_traitsIcEENS5_9allocatorIcEEEE
+00047b38  00001316 R_ARM_JUMP_SLOT        00000000   _ZN6vendor8mediatek3api8mtktvapi4V1_015IMtkTvApiRecord17registerAsServiceERKNSt3__112basic_stringIcNS5_11char_traitsIcEENS5_9allocatorIcEEEE
+00047b3c  00001416 R_ARM_JUMP_SLOT        00000000   _ZN6vendor8mediatek3api8mtktvapi4V1_018IMtkTvApiMultiview17registerAsServiceERKNSt3__112basic_stringIcNS5_11char_traitsIcEENS5_9allocatorIcEEEE
+00047b40  00001516 R_ARM_JUMP_SLOT        00000000   _ZN6vendor8mediatek3api8mtktvapi4V1_020IMtkTvApiChannelList17registerAsServiceERKNSt3__112basic_stringIcNS5_11char_traitsIcEENS5_9allocatorIcEEEE
+```
+
+## C4. C-wrapper getService() exported helper and PLT indirection
+
+- Service getter: getMtkTvApiConfigService()
+
+```asm
+   3d740:	b5f0      	push	{r4, r5, r6, r7, lr}
+   3d742:	b085      	sub	sp, #20
+   3d744:	4604      	mov	r4, r0
+   3d746:	482e      	ldr	r0, [pc, #184]	@ (3d800 <nearest-symbol-label-elided>)
+   3d748:	4478      	add	r0, pc
+   3d74a:	6800      	ldr	r0, [r0, #0]
+   3d74c:	6800      	ldr	r0, [r0, #0]
+   3d74e:	9004      	str	r0, [sp, #16]
+   3d750:	4f2c      	ldr	r7, [pc, #176]	@ (3d804 <nearest-symbol-label-elided>)
+   3d752:	447f      	add	r7, pc
+   3d754:	6838      	ldr	r0, [r7, #0]
+   3d756:	b108      	cbz	r0, 3d75c <nearest-symbol-label-elided>
+   3d758:	6020      	str	r0, [r4, #0]
+   3d75a:	e02d      	b.n	3d7b8 <nearest-symbol-label-elided>
+   3d75c:	4668      	mov	r0, sp
+   3d75e:	f7ff fe6f 	bl	3d440 <nearest-symbol-label-elided>
+   3d762:	9800      	ldr	r0, [sp, #0]
+   3d764:	f100 0520 	add.w	r5, r0, #32
+   3d768:	4628      	mov	r0, r5
+   3d76a:	f022 ec22 	blx	5ffb0 <nearest-symbol-label-elided>
+   3d76e:	4668      	mov	r0, sp
+   3d770:	f022 ec16 	blx	5ffa0 <nearest-symbol-label-elided>
+   3d774:	6838      	ldr	r0, [r7, #0]
+   3d776:	b9c8      	cbnz	r0, 3d7ac <nearest-symbol-label-elided>
+   3d778:	4923      	ldr	r1, [pc, #140]	@ (3d808 <nearest-symbol-label-elided>)
+   3d77a:	4668      	mov	r0, sp
+   3d77c:	4479      	add	r1, pc
+   3d77e:	f7ff ff87 	bl	3d690 <nearest-symbol-label-elided>
+   3d782:	a803      	add	r0, sp, #12
+   3d784:	4669      	mov	r1, sp
+   3d786:	2200      	movs	r2, #0
+   3d788:	f022 ec8a 	blx	600a0 <nearest-symbol-label-elided>
+   3d78c:	481f      	ldr	r0, [pc, #124]	@ (3d80c <nearest-symbol-label-elided>)
+   3d78e:	ae03      	add	r6, sp, #12
+   3d790:	4631      	mov	r1, r6
+   3d792:	4478      	add	r0, pc
+   3d794:	f022 ec8c 	blx	600b0 <nearest-symbol-label-elided>
+   3d798:	4630      	mov	r0, r6
+   3d79a:	f022 ebaa 	blx	5fef0 <nearest-symbol-label-elided>
+   3d79e:	f89d 0000 	ldrb.w	r0, [sp]
+   3d7a2:	07c0      	lsls	r0, r0, #31
+   3d7a4:	d002      	beq.n	3d7ac <nearest-symbol-label-elided>
+   3d7a6:	9802      	ldr	r0, [sp, #8]
+   3d7a8:	f022 e9e2 	blx	5fb70 <nearest-symbol-label-elided>
+   3d7ac:	4628      	mov	r0, r5
+   3d7ae:	f022 ec20 	blx	5fff0 <nearest-symbol-label-elided>
+   3d7b2:	6838      	ldr	r0, [r7, #0]
+   3d7b4:	6020      	str	r0, [r4, #0]
+   3d7b6:	b130      	cbz	r0, 3d7c6 <nearest-symbol-label-elided>
+   3d7b8:	6801      	ldr	r1, [r0, #0]
+   3d7ba:	f851 1c0c 	ldr.w	r1, [r1, #-12]
+   3d7be:	4408      	add	r0, r1
+   3d7c0:	4621      	mov	r1, r4
+   3d7c2:	f022 ec0e 	blx	5ffe0 <nearest-symbol-label-elided>
+   3d7c6:	9804      	ldr	r0, [sp, #16]
+   3d7c8:	4911      	ldr	r1, [pc, #68]	@ (3d810 <nearest-symbol-label-elided>)
+   3d7ca:	4479      	add	r1, pc
+   3d7cc:	6809      	ldr	r1, [r1, #0]
+   3d7ce:	6809      	ldr	r1, [r1, #0]
+   3d7d0:	4281      	cmp	r1, r0
+   3d7d2:	d101      	bne.n	3d7d8 <nearest-symbol-label-elided>
+   3d7d4:	b005      	add	sp, #20
+   3d7d6:	bdf0      	pop	{r4, r5, r6, r7, pc}
+   3d7d8:	f022 e9ea 	blx	5fbb0 <nearest-symbol-label-elided>
+   3d7dc:	f89d 0000 	ldrb.w	r0, [sp]
+   3d7e0:	07c0      	lsls	r0, r0, #31
+   3d7e2:	d003      	beq.n	3d7ec <nearest-symbol-label-elided>
+   3d7e4:	9802      	ldr	r0, [sp, #8]
+   3d7e6:	f022 e9c4 	blx	5fb70 <nearest-symbol-label-elided>
+   3d7ea:	e7ff      	b.n	3d7ec <nearest-symbol-label-elided>
+   3d7ec:	4628      	mov	r0, r5
+   3d7ee:	f022 ec00 	blx	5fff0 <nearest-symbol-label-elided>
+   3d7f2:	f022 e9e6 	blx	5fbc0 <nearest-symbol-label-elided>
+   3d7f6:	4668      	mov	r0, sp
+   3d7f8:	f022 ebd2 	blx	5ffa0 <nearest-symbol-label-elided>
+   3d7fc:	f022 e9e0 	blx	5fbc0 <nearest-symbol-label-elided>
+   3d800:	52a4      	strh	r4, [r4, r2]
+   3d802:	0002      	movs	r2, r0
+   3d804:	679e      	str	r6, [r3, #120]	@ 0x78
+   3d806:	0002      	movs	r2, r0
+   3d808:	5fa9      	ldrsh	r1, [r5, r6]
+```
+
+## C5. HIDL transaction number evidence
+
+Outbound BpHw setter `0x24a230 movs r1,#3` directly precedes `0x24a232 blx r6`, where r6 is obtained from the binder object's virtual slot. This strongly indicates **HIDL transaction code 3**.
+This numeric 3 belongs to the HIDL dispatch **and is not evidence** that the distinct Java/C argument `isUpdate=3` means persistence.
+Inbound BnHw onTransact dispatch should be separately cross-checked.
+
+- BnHw onTransact symbol unavailable for disassembly
+
+
 ## D. Evidence boundary (automatic, intentionally conservative)
 
 - The original JNI-to-C wrapper direct branch was already PROVEN_STATIC in TRACE_004.
