@@ -1,5 +1,8 @@
 # HANDOFF — exact-8054 MediaTek Native API
 
+> **ARCHITECTURE CLARIFICATION / 2026-11-20:** STOCK/китайская кнопка — лишь offline reference при трассировке. **Ни один перенесённый пункт MOD не должен запускать старую китайскую Activity или использовать её Controller как runtime-мост.** Правильный вызов: `MOD UI → собственный MOD handler → независимо функционирующий OEM/Android backend → MediaTek/оборудование`. Целевое удаление китайского GUI и отключение всего `com.my.settings` — разные контрольные точки: пока не перенесён критичный `MySetTimeService → KuSourceRJ.TimeService` recovery, весь пакет не отключать. [Точный архитектурный контракт](RUNTIME_ARCHITECTURE_NO_CHINESE_UI.md).
+
+
 > **PRODUCT PRIORITY UPDATE — 2026-11-20 (review from owner):** дальнейшая общая NATIVE-005b (C++ vtable/HIDL/RPC) **отложена как непривязанная к конкретному пользовательскому дефекту**. Сохранить её открытые вопросы и результаты NATIVE-004/005, но следующая практическая задача — **PRODUCT-001 / PIC04 Контрастность**, восстановление штатного OEM-контракта, контролируемый тест и минимальная интеграция в MOD. См. [обоснование смены вектора](PRODUCT_FOCUS_REVIEW_2026-11-20.md) и [промпт для агента](PROMPT_PRODUCT_PIVOT.md). Это изменение **приоритета**, а не утверждение, что семантика `inputGroup=-1` или аппаратный эффект доказаны.
 
 
