@@ -17,6 +17,8 @@
 | 2026-11-20 | [PRODUCT-ARCH-001: без китайского UI в runtime](2026-11-20_PRODUCT-ARCH-001.md) | Зафиксирована правильная архитектура MOD→собственный обработчик→backend; полный KuSettings пока нельзя отключать из-за TimeService | PRODUCT-001 должен доказать независимость от GUI; выключение пакета — отдельный этап |
 | 2026-11-20 | [PRODUCT-001 / PIC04: STOCK callback, bounds, MOD pilot](2026-11-20_PRODUCT-001.md) | Контракт, конкретный `$2.onValueChanged` → Global, динамический OEM min/max, отдельный [Draft PR #4](https://github.com/MAX-TAC/Projector-Soft/pull/4), [JVM CI success](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44808298783) | Единственный STOCK one-step+restore тест, verified input/profile, фактический OEM increment, effect |
 
+| 2026-11-20 | [Review PRODUCT-001: контракт PR3 vs policy-код PR4](2026-11-20_REVIEW_PRODUCT-001.md) | [Анализ PR #4](../PRODUCT_001_PR4_CODE_REVIEW.md): pure JVM CI SUCCESS, без Port и UI wiring | PIC04 остаётся read-only; требуется проверенный контекст и разрешённый STOCK-тест |
+
 ## Трассировки и статус
 
 | ID | Функция/уровень | Состояние | Документ |
