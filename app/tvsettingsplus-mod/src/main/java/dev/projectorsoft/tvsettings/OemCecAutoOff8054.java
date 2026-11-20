@@ -60,6 +60,8 @@ final class OemCecAutoOff8054 {
             pref.getMethod("setKey",String.class).invoke(autoOff,OFF_KEY);
             pref.getMethod("setTitle",CharSequence.class).invoke(autoOff,"Выключать HDMI-устройства вместе с проектором");
             pref.getMethod("setOrder",int.class).invoke(autoOff,275);
+            try { pref.getMethod("setSingleLineTitle",boolean.class).invoke(autoOff,false); }
+            catch (NoSuchMethodException stockWithoutMultilineTitle) { /* stock layout default */ }
             pref.getMethod("setPersistent",boolean.class).invoke(autoOff,false);
             render(pref,cec,autoOff,read(service));
 
@@ -133,10 +135,10 @@ final class OemCecAutoOff8054 {
     private static void render(Class<?> pref,Object cec,Object autoOff,CecAutoOff8054.State state)
             throws ReflectiveOperationException {
         Method summary=pref.getMethod("setSummary",CharSequence.class);
-        summary.invoke(cec,state==null?"Состояние недоступно":state.cecEnabled?"Включён":"Выключен");
+        summary.invoke(cec,state==null?"Состояние недоступно":state.cecEnabled?"Включён · изменение требует проверки eARC и автовыключения":"Выключен · изменение требует штатного подтверждения");
         pref.getMethod("setEnabled",boolean.class).invoke(autoOff,state!=null && state.cecEnabled);
         if (state!=null) autoOff.getClass().getMethod("setChecked",boolean.class).invoke(autoOff,state.autoOff);
         summary.invoke(autoOff,state==null?"Состояние недоступно"
-                :state.cecEnabled?"Параметр ожидания при выключении проектора":"Доступно при включённом HDMI-CEC");
+                :state.cecEnabled?"Отправлять команду выключения совместимым устройствам при выключении проектора":"Доступно при включённом HDMI-CEC");
     }
 }

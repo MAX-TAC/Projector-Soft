@@ -98,7 +98,37 @@ public final class ProjectionToggleStateTest {
         check(Boolean.FALSE.equals(state.refresh()), "recover actual value without writing");
     }
 
+    private static void movementEditsAreSymmetric() {
+        final class Movement implements ProjectionToggleState.Backend {
+            String movement = "0";
+            String alignment = "0", obstacle = "0", vertical = "0";
+            int writes;
+            @Override public String read() { return movement; }
+            @Override public String restriction() {
+                return Projection8054Policy.canDisableMovement(alignment, obstacle, vertical) ? null : "dependent state";
+            }
+            @Override public void write(boolean requested) {
+                writes++;
+                movement = requested ? "1" : "0";
+            }
+        }
+        Movement movement = new Movement();
+        ProjectionToggleState state = new ProjectionToggleState(movement);
+        state.refresh();
+        check(state.change(true) == CONFIRMED, "movement OFF to ON");
+        check(state.change(false) == CONFIRMED, "movement ON to OFF");
+        movement.obstacle = "1";
+        check(state.change(true) == OEM_REQUIRED, "active dependent blocks enable");
+        movement.movement = "1";
+        check(state.change(false) == STALE, "external edit invalidates the snapshot");
+        check(state.change(false) == OEM_REQUIRED, "active dependent blocks disable");
+        movement.obstacle = "";
+        check(state.change(false) == OEM_REQUIRED, "unknown dependent blocks disable");
+        check(movement.writes == 2, "no side effects from a rejected movement edit");
+    }
+
     public static void main(String[] args) {
+        movementEditsAreSymmetric();
         staleAndReopen();
         unavailableAndInvalid();
         setterAndReadbackFailures();

@@ -49,6 +49,20 @@ public final class OemHdmiPortInfo {
         }catch(Exception ex){Log.w("TvSettingsPlusMOD","HDMI port inventory unavailable",ex);return false;}
     }
 
+    static Map<String, String> bootPorts(Context context) throws Exception {
+        Map<String, String> result = new LinkedHashMap<>();
+        if (!"8054".equals(machineId())) return result;
+        int count = Build.class.getField("A_RJ_HDMI_PORT_COUNT").getInt(null);
+        Object metadata = Build.class.getField("A_RJ_HDMI_PORTS").get(null);
+        Object manager = context.getSystemService(Context.TV_INPUT_SERVICE);
+        if (!(manager instanceof TvInputManager)) throw new IllegalStateException("TV Input unavailable");
+        TvInputManager tv = (TvInputManager) manager;
+        for (Hdmi8054Policy.Port port : ports(tv, count, metadata instanceof String ? (String) metadata : null)) {
+            if (port.inputId != null) result.put(port.inputId, port.label);
+        }
+        return result;
+    }
+
     static String currentStatus(Context context, String hardware) {
         try {
             if (!"8054".equals(machineId())) return "Вход недоступен";
@@ -79,7 +93,7 @@ public final class OemHdmiPortInfo {
         try {
             switch(tv.getInputState(port.inputId)) {
                 case TvInputManager.INPUT_STATE_CONNECTED: return "Подключён";
-                case TvInputManager.INPUT_STATE_CONNECTED_STANDBY: return "В режиме ожидания";
+                case TvInputManager.INPUT_STATE_CONNECTED_STANDBY: return "Подключён · состояние входа: ожидание";
                 case TvInputManager.INPUT_STATE_DISCONNECTED: return "Отключён";
                 default: break;
             }

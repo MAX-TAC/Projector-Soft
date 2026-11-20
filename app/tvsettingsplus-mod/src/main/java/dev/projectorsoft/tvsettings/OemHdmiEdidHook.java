@@ -22,6 +22,8 @@ public final class OemHdmiEdidHook {
     private static final int[] MODES={0,1,2,3};
     private static final String[] NAMES={"HDMI 1.4","HDMI 2.0","Автоматически","HDMI 2.1"};
 
+    private static final String DESCRIPTION = "Настройка информации о поддерживаемых видеорежимах, которую проектор передаёт HDMI-источнику";
+
     private OemHdmiEdidHook() {}
 
     private static String machineId() {
@@ -57,17 +59,18 @@ public final class OemHdmiEdidHook {
     static String storedSummary(Context context) {
         try {
             Integer mode=EdidPortPolicy.storedMode(Settings.Global.getString(context.getContentResolver(),KEY));
-            if(mode!=null)return NAMES[mode] + " · сохранено; порт и применение не подтверждены";
+            if(mode!=null)return NAMES[mode] + " · сохранено. Изменение недоступно до проверки обоих HDMI."
+                    + "\n" + DESCRIPTION;
         }catch(RuntimeException error){
             Log.w(TAG,"Stored EDID value unavailable",error);
         }
-        return "Сохранённый режим недоступен";
+        return "Сохранённый режим недоступен.\n" + DESCRIPTION;
     }
 
     private static boolean installStatus(Context context,Object category,Class<?> pref) throws Exception {
         Object item=pref.getConstructor(Context.class).newInstance(context);
         pref.getMethod("setKey",String.class).invoke(item,STATUS_KEY);
-        pref.getMethod("setTitle",CharSequence.class).invoke(item,"EDID · сохранённый режим");
+        pref.getMethod("setTitle",CharSequence.class).invoke(item,"Совместимость HDMI (EDID)");
         pref.getMethod("setSummary",CharSequence.class).invoke(item,storedSummary(context));
         pref.getMethod("setOrder",int.class).invoke(item,273);
         pref.getMethod("setSelectable",boolean.class).invoke(item,false);

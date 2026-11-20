@@ -1,12 +1,8 @@
 package dev.projectorsoft.tvsettings;
 
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
@@ -100,32 +96,6 @@ public final class NativeSections {
         }
     }
 
-    public static final class Bluetooth extends Page {
-        @Override NativePage section(){return NativePage.BLUETOOTH;}
-        @Override void populate(PreferenceScreen screen){
-            Context context=requireContext();
-            guarded("bluetooth-adapter",()->{
-                BluetoothManager manager=context.getSystemService(BluetoothManager.class);
-                BluetoothAdapter adapter=manager==null?null:manager.getAdapter();
-                info(screen,"bt-status","Состояние Bluetooth",adapter==null?"Нет данных":
-                        adapter.isEnabled()?"Включён":"Выключен");
-                if(adapter!=null) {
-                    StringBuilder devices=new StringBuilder();
-                    for(android.bluetooth.BluetoothDevice device:adapter.getBondedDevices()) {
-                        if(devices.length()>0)devices.append(", ");
-                        String name=device.getName();
-                        devices.append(name==null?"Без названия":name);
-                    }
-                    info(screen,"bt-paired","Сопряжённые устройства",
-                            devices.length()==0?"Сохранённых устройств нет":devices.toString());
-                }
-            });
-            stock(screen,"bt-add","Добавить устройство","accessories.AddAccessoryActivity");
-            link(screen, NativePage.ACCESSORIES, 90);
-            link(screen, NativePage.REMOTE, 100);
-        }
-    }
-
     public static final class Remote extends Page {
         @Override NativePage section(){return NativePage.REMOTE;}
         @Override void populate(PreferenceScreen screen){
@@ -142,36 +112,28 @@ public final class NativeSections {
         @Override void populate(PreferenceScreen screen){
             Context context=requireContext();
             PreferenceCategory inputs=group(screen,"inputs","Выбор источника");
-            action(inputs,"home","Android TV",()->home(context));
-            guarded("hdmi-ports", () -> {
-                if (OemHdmiPortInfo.install(context, inputs, Preference.class)) {
-                    PreferenceCategory status = group(screen, "input_status", "Состояние входов");
-                    link(status, NativePage.HDMI1_INFO, 0);
-                    link(status, NativePage.HDMI2_INFO, 1);
-                }
-            });
+            action(inputs,"home","Android TV",()->HomeDestination.resolve(context));
+            guarded("hdmi-ports", () -> OemHdmiPortInfo.install(context, inputs, Preference.class));
             if(inputs.getPreferenceCount()==0)info(inputs,"inputs-unavailable","Источники","Нет подтверждённого маршрута");
-            link(screen, NativePage.HDMI_CEC, 200);
-            guarded("hdmi-edid",()->OemHdmiEdidHook.install(context,screen,Preference.class));
-            guarded("hdmi-autoplay",()->OemHdmiAutoPlayHook.install(context,screen,Preference.class));
             guarded("boot-destination",()->NativeBootDestination.install(context,screen));
+            link(screen, NativePage.HDMI_CEC, 200);
+            guarded("hdmi-autoplay",()->OemHdmiAutoPlayHook.install(context,screen,Preference.class));
+            guarded("hdmi-edid",()->OemHdmiEdidHook.install(context,screen,Preference.class));
+            Preference edid = screen.findPreference(OemHdmiEdidHook.STATUS_KEY);
+            if (edid != null) edid.setOrder(290);
         }
 
         @Override public void onResume(){
             super.onResume();
             PreferenceScreen screen=getPreferenceScreen();
-            if(screen!=null)NativeBootDestination.refresh(screen);
+            if (screen != null) {
+                NativeBootDestination.refresh(screen);
+                PreferenceCategory inputs = screen.findPreference("inputs");
+                if (inputs != null && inputs.findPreference("home") == null)
+                    action(inputs, "home", "Android TV", () -> HomeDestination.resolve(requireContext()));
+            }
         }
 
-        private Intent home(Context context){
-            Intent intent=new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME);
-            ResolveInfo info=context.getPackageManager().resolveActivity(intent,0);
-            if(info==null || info.activityInfo==null || info.activityInfo.applicationInfo==null
-                    || (info.activityInfo.applicationInfo.flags&ApplicationInfo.FLAG_SYSTEM)==0)return null;
-            String pkg=info.activityInfo.packageName;
-            if("android".equals(pkg) || "com.my.settings".equals(pkg) || OWN.equals(pkg))return null;
-            return intent.setComponent(new ComponentName(pkg,info.activityInfo.name));
-        }
     }
 
     public abstract static class PortStatus extends Page {

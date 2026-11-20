@@ -9,6 +9,8 @@ from pathlib import Path
 BASE = 'smali_classes13/com/android/tv/settings/'
 ROOT = BASE + 'MainFragment.smali'
 AUX = BASE + 'SuggestionQuickSettingPrefsContainer.smali'
+ACCESSORIES = BASE + 'accessories/AccessoriesFragment.smali'
+BLUETOOTH = 'Ldev/projectorsoft/tvsettings/NativeBluetoothPage;'
 BRIDGE = 'Ldev/projectorsoft/tvsettings/StockMainSettingsMenu;'
 FRAGMENT = 'Landroidx/preference/PreferenceFragmentCompat;'
 PREF = 'Landroidx/preference/Preference;'
@@ -58,13 +60,26 @@ def auxiliary(code, key, additions):
     return code.replace(ADD, f'    invoke-static {{v0, v1}}, {BRIDGE}->addAuxiliary({GROUP}{PREF})Z', 1)
 
 
+def bluetooth_rows(code):
+    get_screen = f'    invoke-virtual {{p0}}, {FRAGMENT}->getPreferenceScreen()Landroidx/preference/PreferenceScreen;'
+    assert_once(code, '    .locals 11')
+    assert_once(code, get_screen)
+    assert_once(code, '    move-result-object v0')
+    assert_once(code, f'{GROUP}->findPreference(')
+    if code.count(f'{GROUP}->removeAll()V') != 2 or '.catch' in code:
+        raise ValueError('Unexpected exact AccessoriesFragment.updateAccessories layout')
+    return code.replace(get_screen, f'    invoke-static {{p0}}, {BLUETOOTH}->deviceRows({FRAGMENT}){GROUP}')
+
+
 def modified_files(decoded):
     root = (decoded / ROOT).read_text(encoding='utf-8')
     aux = (decoded / AUX).read_text(encoding='utf-8')
-    if BRIDGE in root or BRIDGE in aux:
+    bt = (decoded / ACCESSORIES).read_text(encoding='utf-8')
+    if BRIDGE in root or BRIDGE in aux or BLUETOOTH in bt:
         raise ValueError('Original stock root already patched')
     return {
         ROOT: edit(root, VIEW, root_view),
+        ACCESSORIES: edit(bt, 'updateAccessories()V', bluetooth_rows),
         AUX: edit(edit(aux, 'showQuickSettings()V', lambda code: auxiliary(code, 'quick_settings', 3)),
                   'onSuggestionReady(Ljava/util/List;)V', lambda code: auxiliary(code, 'suggestions', 1)),
     }

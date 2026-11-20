@@ -7,7 +7,7 @@ import java.util.List;
 enum NativePage {
     NETWORK("Wi-Fi и сеть",NetworkSettingsActivity.class,
             "com.android.tv.settings.connectivity.NetworkFragment"),
-    BLUETOOTH("Bluetooth",BluetoothSettingsActivity.class,NativeSections.Bluetooth.class.getName()),
+    BLUETOOTH("Bluetooth",BluetoothSettingsActivity.class,NativeBluetoothPage.class.getName()),
     SOURCES("Источники",SourcesSettingsActivity.class,NativeSections.Sources.class.getName()),
     PROJECTION("Проекция",ProjectionSettingsActivity.class,NativeSections.Projection.class.getName()),
     PICTURE("Изображение",PictureSettingsActivity.class,NativeSections.Picture.class.getName()),

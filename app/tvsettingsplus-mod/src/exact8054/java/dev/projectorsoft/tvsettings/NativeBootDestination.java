@@ -20,14 +20,9 @@ final class NativeBootDestination {
 
     private static Map<String, String> choices(Context context) throws Exception {
         if (!"8054".equals(OemHdmiPortInfo.machineId())) return Collections.emptyMap();
-        Map<String, String> known = OemPowerOnSourceHook.available(context);
         Map<String, String> result = new LinkedHashMap<>();
-        for (Map.Entry<String, String> entry : known.entrySet()) {
-            String key = entry.getKey();
-            if ("HOME".equals(key) || key.endsWith("/HW6") || key.endsWith("/HW7"))
-                result.put(key, entry.getValue());
-        }
-        if (!result.containsKey("HOME")) return Collections.emptyMap();
+        result.put("HOME", "Android TV");
+        result.putAll(OemHdmiPortInfo.bootPorts(context));
         for (Map.Entry<String, String> entry : new TreeMap<>(OemPowerOnAppHook.candidates(context)).entrySet())
             result.putIfAbsent(entry.getKey(), "Приложение · " + entry.getValue());
         return result;
@@ -69,7 +64,8 @@ final class NativeBootDestination {
             this.backend = backend;
             this.loadChoices = loadChoices;
             setKey(KEY);
-            setTitle("При включении");
+            setTitle("Источник при включении");
+            setOrder(190);
             setPersistent(false);
             setOnPreferenceChangeListener((item, value) -> change(value));
         }
@@ -84,7 +80,7 @@ final class NativeBootDestination {
             try {
                 render(loadChoices.call());
             } catch (Exception e) {
-                unavailable();
+                unavailable("Не удалось прочитать источник включения");
                 Log.w(TAG, "Cannot read boot destination", e);
             }
         }
@@ -97,12 +93,16 @@ final class NativeBootDestination {
             try {
                 Map<String, String> fresh = loadChoices.call();
                 if (value instanceof String && before != null && fresh.size() >= 2) {
-                    Result result = apply(backend, displayed, fresh, before, (String) value);
-                    if (result != Result.CONFIRMED) Log.w(TAG, "Boot destination not applied: " + result);
+                    try {
+                        Result result = apply(backend, displayed, fresh, before, (String) value);
+                        if (result != Result.CONFIRMED) Log.w(TAG, "Boot destination not applied: " + result);
+                    } catch (Exception failedWrite) {
+                        Log.w(TAG, "Boot destination change failed; reading actual state", failedWrite);
+                    }
                 }
                 render(fresh);
             } catch (Exception e) {
-                unavailable();
+                unavailable("Не удалось подтвердить сохранённое значение");
                 Log.w(TAG, "Cannot confirm boot destination", e);
             }
             // The displayed value comes from the property readback.
@@ -110,25 +110,24 @@ final class NativeBootDestination {
         }
 
         private void render(Map<String, String> fresh) throws Exception {
-            String current = fresh.size() < 2 ? null : backend.read();
-            if (current == null || !fresh.containsKey(current)) {
-                unavailable();
-                return;
-            }
             offered = new LinkedHashMap<>(fresh);
             setEntries(offered.values().toArray(new CharSequence[0]));
             setEntryValues(offered.keySet().toArray(new CharSequence[0]));
-            setValue(current);
-            setSummary(offered.get(current));
-            setEnabled(true);
+            String current = backend.read();
+            if (current == null || current.isEmpty()) {
+                unavailable("Источник включения не задан. Изменение недоступно");
+            } else if (!fresh.containsKey(current)) {
+                unavailable("Сохранённый источник не совпадает с доступными вариантами");
+            } else {
+                setValue(current);
+                setSummary(offered.get(current));
+                setEnabled(fresh.size() >= 2);
+            }
         }
 
-        private void unavailable() {
-            offered = Collections.emptyMap();
-            setEntries(new CharSequence[0]);
-            setEntryValues(new CharSequence[0]);
+        private void unavailable(String reason) {
             setValue(null);
-            setSummary("Текущий выбор недоступен");
+            setSummary(reason);
             setEnabled(false);
         }
     }

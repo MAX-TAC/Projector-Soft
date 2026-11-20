@@ -53,21 +53,25 @@ final class OemMoveKeystonePreference {
                         @Override public String read() throws Exception {
                             return available(context) ? (String) read.invoke(null, PROPERTY, "") : null;
                         }
-                        @Override public boolean canWrite(boolean value) throws Exception {
-                            // The attached OEM widgets can invoke their listeners when disabled.
-                            // A detached controller is equivalent only with all dependents off.
-                            return value || Projection8054Policy.canDisableMovement(
+                        @Override public String restriction() throws Exception {
+                            return blockedReason(
                                     (String) read.invoke(null, "persist.rjpj.screen.alignment", ""),
                                     (String) read.invoke(null, "persist.rjpj.obstacle.avoidance", ""),
                                     (String) read.invoke(null, "persist.rjpj.keystone.auto.vertical", ""));
                         }
                         @Override public void write(boolean value) throws Exception {
+                            if (restriction() != null) throw new IllegalStateException("Dependent keystone state changed");
                             original.invoke(controller, value);
                         }
                     });
         } catch (Exception | LinkageError ex) {
             Log.w(TAG,"Stock movement keystone switch unavailable",ex);
         }
+    }
+
+    static String blockedReason(String alignment, String obstacle, String vertical) {
+        return Projection8054Policy.canDisableMovement(alignment, obstacle, vertical) ? null
+                : "Изменение недоступно: выравнивание, обход препятствий или вертикальная коррекция активны либо неизвестны";
     }
 
     private static boolean available(Context context) {

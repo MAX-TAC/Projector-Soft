@@ -6,6 +6,7 @@ final class ProjectionToggleState {
         String read() throws Exception;
         void write(boolean value) throws Exception;
         default boolean canWrite(boolean value) throws Exception { return true; }
+        default String restriction() throws Exception { return null; }
     }
 
     enum Result { CONFIRMED, STALE, UNAVAILABLE, OEM_REQUIRED, FAILED }
@@ -33,6 +34,14 @@ final class ProjectionToggleState {
         return value;
     }
 
+    String restriction() {
+        try {
+            return backend.restriction();
+        } catch (Exception unavailable) {
+            return "Не удалось проверить связанные настройки коррекции";
+        }
+    }
+
     Result change(boolean requested) {
         Boolean displayed = value;
         Boolean before = refresh();
@@ -41,7 +50,7 @@ final class ProjectionToggleState {
         if (before == requested) return Result.CONFIRMED;
 
         try {
-            if (!backend.canWrite(requested)) return Result.OEM_REQUIRED;
+            if (restriction() != null || !backend.canWrite(requested)) return Result.OEM_REQUIRED;
         } catch (Exception error) {
             return Result.OEM_REQUIRED;
         }

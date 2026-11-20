@@ -1,6 +1,7 @@
 package dev.projectorsoft.tvsettings;
 
 import android.content.Intent;
+import android.content.ComponentName;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -189,7 +190,7 @@ public class UnifiedMenuUiTest {
         row.refresh();
         assertFalse(row.isEnabled());
         assertNull(row.getValue());
-        assertEquals(0, row.getEntryValues().length);
+        assertEquals(2, row.getEntryValues().length);
         choices.remove("id/HW6");
         choices.put("id/HW7", "HDMI 2");
         property.failRead = false;
@@ -348,6 +349,105 @@ public class UnifiedMenuUiTest {
         }
         assertNull(fragment.findPreference("projectorsoft_picture_read_picture_brightness"));
         assertNull(Settings.Global.getString(colors.getContentResolver(), "picture_red_gain"));
+    }
+
+    @Test public void bluetoothUsesOneStockPairingRowAndKeepsDeviceUpdatesInsideCategory() {
+        BluetoothSettingsActivity activity = Robolectric.buildActivity(BluetoothSettingsActivity.class).setup().get();
+        NativeBluetoothPage page = (NativeBluetoothPage)
+                activity.getSupportFragmentManager().findFragmentById(android.R.id.content);
+        PreferenceScreen screen = page.getPreferenceScreen();
+        SwitchPreference toggle = screen.findPreference(NativeBluetoothPage.SWITCH);
+        assertNotNull(toggle);
+        assertFalse(toggle.isPersistent());
+        assertEquals("Bluetooth", toggle.getTitle());
+        PreferenceCategory devices = screen.findPreference(NativeBluetoothPage.BONDED);
+        assertEquals("Сопряжённые устройства", devices.getTitle());
+        assertSame(devices, NativeBluetoothPage.deviceRows(page));
+        assertEquals(3, screen.getPreferenceCount());
+        assertEquals(NativeBluetoothPage.ADD, screen.getPreference(2).getKey());
+        assertNull(screen.findPreference("bt-paired"));
+        assertNull(screen.findPreference("projectorsoft_page_ACCESSORIES"));
+        assertNull(screen.findPreference("projectorsoft_page_REMOTE"));
+        Preference stockRow = new Preference(activity);
+        stockRow.setKey("BluetoothDevice:test");
+        stockRow.setSummary("Подключено");
+        devices.addPreference(stockRow);
+        assertSame(stockRow, screen.findPreference("BluetoothDevice:test"));
+        devices.removeAll();
+        assertEquals(3, screen.getPreferenceCount());
+    }
+
+    @Test public void sourcesUsesRealHomeResolverAndHasNoDuplicatePortStatus() throws Exception {
+        android.content.Context context = org.robolectric.RuntimeEnvironment.getApplication();
+        android.content.pm.PackageManager pm = context.getPackageManager();
+        org.robolectric.shadows.ShadowPackageManager shadow = shadowOf(pm);
+        ComponentName launcher = new ComponentName("org.example.launcher", "org.example.launcher.Home");
+        android.content.pm.ActivityInfo info = shadow.addActivityIfNotPresent(launcher);
+        info.enabled = true;
+        info.exported = true;
+        info.applicationInfo.flags = 0;
+        shadow.addOrUpdateActivity(info);
+        android.content.pm.ResolveInfo resolve = new android.content.pm.ResolveInfo();
+        resolve.activityInfo = info;
+        resolve.isDefault = true;
+        shadow.addResolveInfoForIntent(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME), resolve);
+        assertEquals(launcher, HomeDestination.resolve(context).getComponent());
+        assertNull(HomeDestination.select(null, java.util.Set.of(launcher,
+                new ComponentName("other.home","other.home.Activity"))));
+
+        SourcesSettingsActivity activity = Robolectric.buildActivity(SourcesSettingsActivity.class).setup().get();
+        NativeSections.Sources page = (NativeSections.Sources)
+                activity.getSupportFragmentManager().findFragmentById(android.R.id.content);
+        assertNotNull(page.findPreference("home"));
+        assertNotNull(page.findPreference("projectorsoft_page_HDMI_CEC"));
+        assertNull(page.findPreference("input_status"));
+        assertNull(page.findPreference("projectorsoft_page_HDMI1_INFO"));
+        assertNull(page.findPreference("projectorsoft_page_HDMI2_INFO"));
+    }
+
+    @Test public void bootListPreservesChoicesForUnknownAndReadsBackEvenWhenSetterThrows() {
+        android.content.Context context = org.robolectric.RuntimeEnvironment.getApplication();
+        PreferenceScreen screen = new PreferenceManager(context).createPreferenceScreen(context);
+        class Partial implements OemPowerOnAppPolicy.Property {
+            String value = "";
+            int writes;
+            @Override public String read() { return value; }
+            @Override public boolean write(String next) {
+                writes++;
+                value = next;
+                throw new IllegalStateException("after persistence");
+            }
+        }
+        Partial property = new Partial();
+        Map<String, String> options = Map.of("HOME", "Android TV", "id/HW6", "HDMI 1");
+        boolean[] failInventory = {false};
+        NativeBootDestination.Row row = new NativeBootDestination.Row(context, property, () -> {
+            if (failInventory[0]) throw new IllegalStateException("inventory unavailable");
+            return options;
+        });
+        screen.addPreference(row);
+        row.refresh();
+        assertEquals("Источник при включении", row.getTitle());
+        assertEquals(2, row.getEntryValues().length);
+        assertFalse(row.isEnabled());
+        assertNull(row.getValue());
+        assertFalse(row.callChangeListener("HOME"));
+        assertEquals(0, property.writes);
+        failInventory[0] = true;
+        row.refresh();
+        assertEquals(2, row.getEntryValues().length);
+        failInventory[0] = false;
+        property.value = "HOME";
+        row.refresh();
+        assertTrue(row.isEnabled());
+        row.onClick();
+        assertFalse(row.callChangeListener("id/HW6"));
+        assertEquals("id/HW6", row.getValue());
+        assertEquals(1, property.writes);
+        row.onClick();
+        assertFalse(row.callChangeListener("HOME"));
+        assertEquals("HOME", row.getValue());
+        assertEquals(2, property.writes);
     }
 
     @Test @GraphicsMode(GraphicsMode.Mode.NATIVE)

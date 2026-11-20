@@ -81,7 +81,8 @@ final class OemProjectionSwitches implements View.OnAttachStateChangeListener,
                                 if (result == ProjectionToggleState.Result.STALE) {
                                     message = "Настройка уже изменилась. Проверьте новое значение";
                                 } else if (result == ProjectionToggleState.Result.OEM_REQUIRED) {
-                                    message = "Для выключения откройте штатные настройки проектора";
+                                    String reason = state.restriction();
+                                    message = reason == null ? "Изменение недоступно" : reason;
                                 }
                                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                             }
@@ -164,8 +165,9 @@ final class OemProjectionSwitches implements View.OnAttachStateChangeListener,
 
         void render() throws ReflectiveOperationException {
             Boolean value = state.value();
-            enabled.invoke(item, value != null);
-            summary.invoke(item, value == null ? "Текущее значение недоступно" : null);
+            String reason = state.restriction();
+            enabled.invoke(item, value != null && reason == null);
+            summary.invoke(item, value == null ? "Текущее значение недоступно" : reason);
             if (value != null) checked.invoke(item, value);
         }
     }
