@@ -244,6 +244,7 @@ def main():
             sections.append((m.group(1), int(m.group(2), 16),
                              int(m.group(3), 16), int(m.group(4), 16)))
     blob = hidl.read_bytes()
+    hidl_reloc_lines = call(["readelf", "-rW", str(hidl)]).splitlines()
     for sym in vtables:
         vaddr = int(sym["addr"], 16)
         addr = vaddr + 8 + 60
@@ -259,6 +260,10 @@ def main():
         target_str = f"0x{target:08x}" if target is not None else "NOT_READ"
         method = demangle(match[0]["name"]) if match else "NO_EXACT_FUNCTION_MATCH"
         rows.append(f"| `{table_name}` | `0x{vaddr:x}` | `{target_str}` | `{method}` |")
+        slots = [line.strip() for line in hidl_reloc_lines if
+                 re.match(r"^\\s*" + f"{addr:08x}" + r"\\b", line, re.I)]
+        rows.append(f"  - vtable slot `0x{addr:x}` ELF relocation: " +
+                    ("; ".join(slots) if slots else "NO_NAMED_RELOCATION_FOUND"))
     rows += ["", "## C3. Original HIDL service binary import and registration evidence", ""]
     service = args.root / "vendor_a_tree/bin/hw/vendor.mediatek.api.mtktvapi@1.0-service"
     if not service.is_file():
@@ -289,6 +294,45 @@ def main():
         rows += [line.strip() for line in call(["readelf", "-rW", str(service)]).splitlines()
                  if any(k in line for k in (SET_NAME, "registerAsService"))][:14] or ["NO_MATCH"]
         rows += ["```", ""]
+        # Resolve the service's own imported backend setter and search its text
+        # for calls to the exact PLT slot, independent of the misleading
+        # nearest-symbol labels from GNU objdump.
+        setter_relocs = [line.strip() for line in call(["readelf", "-rW", str(service)]).splitlines()
+                         if re.search(r"\\ba_mtktvapi_config_set_value\\s*$", line)]
+        rows += ["", "- Exact backend setter relocation(s):", "", "```text"]
+        rows += setter_relocs or ["NOT_FOUND"]
+        rows += ["```", ""]
+        plt_dump = call(["arm-linux-gnueabihf-objdump", "-drw", "-j", ".plt", str(service)],
+                        timeout=120, allow_error=True).splitlines()
+        decoded_plts = []
+        for k in range(len(plt_dump)-2):
+            m0 = re.search(r"^\\s*([0-9a-f]+):.*\\badd\\s+ip,\\s*pc,\\s*#(\\d+)", plt_dump[k], re.I)
+            if not m0:
+                continue
+            m1 = re.search(r"\\badd\\s+ip,\\s*ip,\\s*#(\\d+)", plt_dump[k+1], re.I)
+            m2 = re.search(r"\\bldr\\s+pc,\\s*\\[ip,\\s*#(\\d+)\\]!", plt_dump[k+2], re.I)
+            if m1 and m2:
+                jump = int(m0.group(1),16)
+                got = jump+8+int(m0.group(2))+int(m1.group(1))+int(m2.group(1))
+                if any(line.lower().startswith(f"{got:08x} ") for line in setter_relocs):
+                    decoded_plts.append((jump,got))
+        rows.append("- Backend setter PLT decoded: " +
+                    (", ".join(f"0x{plt:x} → GOT 0x{got:x}" for plt,got in decoded_plts)
+                     or "NOT_FOUND"))
+        if decoded_plts:
+            text_dis = call(["arm-linux-gnueabihf-objdump", "-drw", "-j", ".text", str(service)],
+                            timeout=180, allow_error=True).splitlines()
+            targets = {a for a,b in decoded_plts}
+            callsites = []
+            for i, line in enumerate(text_dis):
+                mm = re.search(r"\\bblx?\\s+([0-9a-f]+)\\s+<", line, re.I)
+                if mm and int(mm.group(1),16) in targets:
+                    callsites += [" | ".join(z.strip().split("<",1)[0] for z in
+                                  text_dis[max(0,i-3):i+2])]
+            rows += ["- Service .text BL/BLX callsite to backend setter PLT "
+                     "(unstripped function owner may not be available):", "", "```text"]
+            rows += callsites[:20] or ["NO_STATIC_DIRECT_CALLSITE (possible indirect dispatch)"]
+            rows += ["```"]
     rows += ["## C4. C-wrapper getService() exported helper and PLT indirection", ""]
     service_getter = next((z for z in elf_symbols(cwrap)
                            if z["name"].startswith("_Z") and "getMtkTvApiConfigService" in demangle(z["name"])
@@ -309,7 +353,7 @@ def main():
              "that the distinct Java/C argument `isUpdate=3` means persistence.",
              "Inbound BnHw onTransact dispatch should be separately cross-checked.", ""]
     inbound = next((z for z in syms if z["ndx"] != "UND" and
-                    "BnHwMtkTvApiConfig9onTransact" in z["name"]), None)
+                    "BnHwMtkTvApiConfig" in z["name"] and "onTransact" in z["name"]), None)
     if inbound:
         rows += ["- Inbound onTransact: `" + demangle(inbound["name"]) + "`", "", "```asm"]
         rows += selected_disassembly(hidl, inbound["name"], cap=175)
