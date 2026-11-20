@@ -9,7 +9,9 @@
 | Дата | Журнал | Подтверждённые результаты | Открытый вопрос |
 |---|---|---|---|
 | 2026-11-20 | [Начальная ревизия полного дампа, CI, JNI и Factory](2026-11-20_INITIAL_NATIVE_AUDIT.md) | ZIP и SHA подтверждены, 1 283 ELF, конкретные JNI/config exports, 3 трассы | Машинный call edge / HIDL target / реальный PQ input context |
-| 2026-11-20 | [Передача исследования и настройка журналов](2026-11-20_LOGGING_AND_HANDOFF.md) | AGENTS, HANDOFF, промпт нового чата, исправлен README, коммиты записаны | История до NATIVE-004 |\n| 2026-11-20 | [NATIVE-004: дизассемблирование и PLT/GOT](2026-11-20_NATIVE-004.md) | JNI BLX 0x7ae90 → GOT 0x7dff8 → `a_mtktvapi_config_set_value`; ABI signed16/string/int/signed16; CI SUCCESS | HIDL service receiver, значения -1 и 3; аппаратный эффект |
+| 2026-11-20 | [Передача исследования и настройка журналов](2026-11-20_LOGGING_AND_HANDOFF.md) | AGENTS, HANDOFF, промпт нового чата, исправлен README, коммиты записаны | История до NATIVE-004 |
+| 2026-11-20 | [NATIVE-004: дизассемблирование и PLT/GOT](2026-11-20_NATIVE-004.md) | JNI BLX 0x7ae90 → GOT 0x7dff8 → `a_mtktvapi_config_set_value`; ABI signed16/string/int/signed16; CI SUCCESS | HIDL service receiver, значения -1 и 3; аппаратный эффект |
+| 2026-11-20 | [NATIVE-005: HIDL service → RPC](2026-11-20_NATIVE-005.md) | exact service ELF SHA, init/VINTF, config API HIDL proxy/stub, service BLX 0x29e48 → PLT 0x43490 → GOT 0x47fa0, [final CI](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44804034895) SUCCESS | C-wrapper vtable→BpHw→server implementation, -1 / 3 semantics |
 
 ## Трассировки и статус
 
@@ -19,7 +21,8 @@
 | 002 | Инвентаризация vendor JNI, HIDL, RPC, Factory, CEC, ToF/I²C | `EXACT_NATIVE_ELF_INVENTORIED` | [TRACE_002](../TRACE_002_NATIVE_ELF_BOUNDARIES.md) |
 | 003 | Реальные JNI/config symbols в exact-8054 ELF | `EXACT_NATIVE_ELF_EXPORT_CONFIRMED` | [TRACE_003](../TRACE_003_MEDIATEK_CONFIG_JNI.md) |
 | 004 | JNI `setConfigValue_native` → конкретный C wrapper callsite | **`NATIVE_CALL_EDGE_PROVEN_STATIC`** | [TRACE_004](../TRACE_004_CONFIG_JNI_TO_HIDL.md) · [ELF evidence](../generated/NATIVE_004_ELF_MACHINE_EVIDENCE_8054.md) |
-| 005 | HIDL vtable/receiver; `inputGroup=-1`, `isUpdate=3`, HDMI/PQ | **`NEXT`** | Восстановить target C-wrapper `0x3f5cc blx r7` → BpHw/BnHw → service; выяснить значения sentinel/update |
+| 005 | HIDL proxy/stub, exact service, config setter service→RPC call | **`STATIC_SERVICE_TO_RPC_CALL_PROVEN / HIDL_HANDLER_EDGE_PARTIAL`** | [TRACE_005](../TRACE_005_CONFIG_HIDL_SERVICE_RPC.md) · [ELF evidence](../generated/NATIVE_005_HIDL_RECEIVER_EVIDENCE_8054.md) |
+| 005b | C-wrapper concrete vtable→HIDL implementation, sender→RPC receiver, -1/3 semantics | **`NEXT`** | [Граница NATIVE-005 и следующий этап](../TRACE_005_CONFIG_HIDL_SERVICE_RPC.md#8-next-concrete-follow-up-native-005b--before-hdr--memc) |
 | 006 | HDR + MEMC: OEM handler, config, native | `NOT_STARTED` | Исследовать раздельно с собственными trace ID |
 | 007 | Звук: профили, EQ5, Factory PEQ13 (без записи) | `NOT_STARTED` | Разделять пользовательский и заводской путь |
 
@@ -29,7 +32,14 @@
 |---|---|---|
 | [44792807063](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44792807063) | SUCCESS | Первый native ELF audit, EROFS, санированный отчёт |
 | [44793339068](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44793339068) | FAILURE | Ошибка regex в Python: `unbalanced parenthesis`, не проблема native |
-| [44793791027](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44793791027) | SUCCESS | Исправление regex, приоритетные экспорты JNI/config подтверждены |\n| [44798376982](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44798376982) | SUCCESS | Первый JNI disassembly; BLX 0x7ae90, отсутствует имя PLT в objdump |\n| [44798924086](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44798924086) | SUCCESS (collector false-negative) | Регулярные выражения нового PLT-сборщика ошибочно экранированы; ошибка фиксации вызова, не ELF |\n| [44799202257](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44799202257) | SUCCESS | После исправления regex: секции PLT и JMP_SLOT, слот 0x7dff8 |\n| [44799645224](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44799645224) | **SUCCESS / PROVEN_STATIC** | Машинно декодированный ARM PLT→GOT→`a_mtktvapi_config_set_value`; текстовый отчёт закоммичен |
+| [44793791027](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44793791027) | SUCCESS | Исправление regex, приоритетные экспорты JNI/config подтверждены |
+| [44798376982](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44798376982) | SUCCESS | Первый JNI disassembly; BLX 0x7ae90, отсутствует имя PLT в objdump |
+| [44798924086](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44798924086) | SUCCESS (collector false-negative) | Регулярные выражения нового PLT-сборщика ошибочно экранированы; ошибка фиксации вызова, не ELF |
+| [44799202257](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44799202257) | SUCCESS | После исправления regex: секции PLT и JMP_SLOT, слот 0x7dff8 |
+| [44799645224](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44799645224) | **SUCCESS / PROVEN_STATIC** | Машинно декодированный ARM PLT→GOT→`a_mtktvapi_config_set_value`; текстовый отчёт закоммичен |
+| [44801986683](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44801986683) | SUCCESS | Начальный HIDL/service ELF audit: 21 filename, 6 HIDL methods, 4 vtables |
+| [44802499818](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44802499818) и [44802917321](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44802917321), [44803303478](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44803303478), [44803774847](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44803774847) | FAILURE (publication only) | Non-fast-forward при параллельных пушах результатов; устранено сериализацией workflow и rebase, не ошибка ELF |
+| [44804034895](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44804034895) | **SUCCESS / SERVICE_CALL_PROVEN_STATIC** | HIDL transaction 3, exact service/import; ARM service BLX→PLT→GOT setter `0x29e48→0x43490→0x47fa0`; санированный отчёт в PR #3 |
 
 ## В каждом новом сеансе
 
