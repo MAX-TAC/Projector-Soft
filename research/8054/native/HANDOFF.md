@@ -8,6 +8,20 @@
 
 Срез: 2026-11-20. Перед работой перечитать актуальный HEAD PR #3 и GitHub Actions; сведения могут измениться.
 
+## PRODUCT-001 / PIC04 — новый текущий приоритет и состояние 2026-11-20
+
+- **Исследование закончено для подготовки пилота, но аппаратное применение НЕ доказано.** [Полный интеграционный контракт](PRODUCT_001_PIC04_INTEGRATION_CONTRACT.md) и [журнал PRODUCT-001](logs/2026-11-20_PRODUCT-001.md). Сохранить все результаты TRACE_001–005; **NATIVE-005b отложена**.
+- Точно подтверждён независимый путь: `STOCK PictureModeValueSecondaryController$2.onValueChanged(I)V → SettingsUtil.putGlobalValueInt("picture_contrast") → Settings.Global.putInt → TVMenuSettingsService.SettingObserver → g_video__contrast → TVSettingConfig.setConifg`. Подтверждение штатного backend code не равно факту визуального изменения.
+- Оригинальный контроллер `TitleSeekBarView` contrast `0x7f0a04a5`, Java listener `$2`; fallback Global `0x32=50` не является доказательством min/max или шага. OEM `TVSettingConfig.getMin/getMax("g_video__contrast")` — источник диапазона; чисел для всех профилей не установлено.
+- MOD v41 `NativePicturePanel.showSlider`: OEM нижний layout `0x7f0d0142`, ProgressBar и DPAD перехватываются, `Settings.Global.picture_contrast` сверяется с `TVSettingConfig.getConfigValueInt`. Доступность действительно активного HDMI/SDR/HDR/PQ профиля не подтверждается Global snapshot — это ключевой **продуктовый blocker**. Не включать прямую запись в общей v41 ради проверки.
+- **Отдельная реализация:** [Draft PR #4](https://github.com/MAX-TAC/Projector-Soft/pull/4) (ветка `feature/8054-product-001-pic04-20261120`, база **PR #2 HEAD `fbb41e92a47a94a2a4b0f4122100e5a1cb43cfe5`**). Чистый `Pic04ContrastStep` и JVM регрессии проверяют bounded step, независимо удостоверенный контекст, durable baseline до single Global write, async Global/MediaTek readback, запрет очередного write при pending и no blind rollback. [CI 44808298783](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44808298783) SUCCESS (Android main source compiled to dex, `PASS PIC04 contract`). **Нет production Port, нет изменений нижнего UI, нет живого `Settings.Global.putInt` — это тестируемый фундамент, а не работающий на устройстве PIC04.**
+- PR #2 HEAD не модифицировать в процессе исследований; PR #4 — только отдельная draft-кандидатура, PR #3 — только исследования. Не использовать китайскую Activity/Controller как runtime связующее звено.
+- Матрица 96 функций: PIC04 остаётся `READ_ONLY/RUNTIME_TEST_REQUIRED`, пока в разрешённом аппаратном тесте не доказаны step, min/max, контекст, реальное применение и возврат. Другие 95 пунктов не разблокировать автоматически.
+
+**Единственное следующее аппаратное действие, только после отдельного разрешения владельца:** на стабильном известном источнике (HDMI1 + SDR + фиксированный picture mode) сделать STOCK до/после/восстановление: видимый C0 → **один** RIGHT → фактический C1 и delta → LEFT либо STOCK возвращение C0; снимки Global через уже имеющийся read-only `install-kit/preflight.py --picture-stock`, OEM min/max и MediaTek getter только если доступен штатный read API, визуальное сравнение, фиксация возможного первого confirmation/ALS. После восстановления можно без новых правок сравнить чтение в HDMI2 или другом профиле и вернуться на HDMI1. На остановке/расхождении никаких дополнительных записей; никаких shell `settings put` или Factory вызовов. [Полная процедура](PRODUCT_001_PIC04_INTEGRATION_CONTRACT.md#f-single-minimal-owner-controlled-stock-test-not-executed).
+
+**После подтверждения теста:** найти/проверить независимую достоверную active main input + signal/profile/generation в Java/OEM источнике (без общего HIDL RE), затем в PR #4 подключить `Port` к существующему нижнему окну, проверить D-pad, settled ACFG readback, ошибки, Back и manual restore. Не возвращаться к NATIVE-005b без конкретного продуктового блокера.
+
 ## Цель владельца
 Сохранить согласованный восьмираздельный интерфейс MainSettings / TvSettingsPlus MOD v41 и сделать реально работающими пользовательские PQ/HDR/MEMC, профили звука/EQ, источники/HDMI/CEC, проекцию и связанные переключатели. Сейчас UI почти готов, но аппаратное применение большинства настроек не проверено. Исследовать по одному пункту, а не писать новый UI вслепую.
 
@@ -56,7 +70,7 @@
 - C-wrapper `0x3f5cc blx r7` с vtable +0x3c существует; `getMtkTvApiConfigService()` экспортирована в оригинальном ELF; **точный тип объекта и соответствие BpHw/Bs/серверной реализации не доказаны**. Простой vtable test `_ZTV +8+60` не дал надежной связи из-за возможного вторичного address point/релокаций.
 - `inputGroup=-1` и `isUpdate=3`: знак и ширина `short` передаются корректно, но семантика активного входа, SDR/HDR, профиля PQ и сохранения **UNKNOWN**. `READBACK_CONFIRMED` и `HARDWARE_EFFECT_VERIFIED` остаются `NOT_TESTED`. MOD v41/PR #2 не менялись.
 
-## Следующая конкретная задача: NATIVE-005b — связать разорванные edges
+## Отложенная исследовательская задача: NATIVE-005b — только при доказанном продуктовом блокере
 
 1. **Не начинать с нуля.** Читать TRACE_005 и ограниченный машинный отчёт; reuse exact SHA и тот же CI; не надо повторно искать архив.
 2. Из C-wrapper проверить вызов `0x3f5a6 BLX 0x60090` через PLT/GOT, дальнейший `getMtkTvApiConfigService` → динамический HIDL объект → верный C++ vtable address point. Раскрыть, что реально лежит в `[vptr+0x3c]`. Не приравнивать простой `_ZTV+8+60` к нужному слоту без ABI-доказательств.
@@ -72,4 +86,4 @@
 - Уровни фактов разделять: STATIC_KEY_MAP → JAVA_SMALI_CALLSITE → EXACT_NATIVE_ELF_EXPORT → NATIVE_CALL_EDGE → HIDL_RPC_RECEIVER → READBACK_CONFIRMED → HARDWARE_EFFECT_VERIFIED. Сейчас последнее не достигнуто.
 - Результаты писать в файлы репозитория, не в чат, ответ заканчивать ссылками на конкретный коммит/PR. Нельзя обещать фоновую или будущую работу, только выполнять в текущем сеансе.
 
-Результат следующего чата: NATIVE-005b с точным C-wrapper→HIDL и BnHw→service call edge, либо честным blocker, отдельным журналом, CI-ссылкой и commit SHA; никакой выдуманной семантики `-1/3` или hardware effect.
+Результат следующего продуктового этапа: один разрешённый STOCK PIC04 step/restore тест с достоверным источником, затем собственный рабочий PIC04 handler в PR #4 с OEM bounds и D-pad, аппаратным readback и ручным откатом. Не объявлять физический эффект без проектора и не восстанавливать контекст из одного Global.
