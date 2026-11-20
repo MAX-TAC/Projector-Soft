@@ -282,6 +282,7 @@ final class NativePicturePanel {
             if (slider != null) slider.dismiss();
             android.widget.Toast.makeText(context, "Просмотр недоступен", android.widget.Toast.LENGTH_SHORT).show();
         }
+    }
 
     /**
      * Same system-provider route as the original OEM slider. This is an opt-in
@@ -371,6 +372,5 @@ final class NativePicturePanel {
         waitingForBackend = false;
         android.widget.Toast.makeText(context, message, android.widget.Toast.LENGTH_LONG).show();
         if (slider != null) slider.dismiss();
-    }
     }
 }
