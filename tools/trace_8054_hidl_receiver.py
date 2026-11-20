@@ -344,7 +344,7 @@ def main():
                 # ARM rotated immediates print as "#4, 20 @ 0x4000".
                 # The comment is the actual encoded constant, not 4.
                 def immediate(line, captured):
-                    effective = re.search(r"@\\s*(0x[0-9a-f]+)", line, re.I)
+                    effective = re.search(r"@\s*(0x[0-9a-f]+)", line, re.I)
                     return int(effective.group(1), 16) if effective else int(captured)
                 got = jump + 8 + immediate(plt_dump[k], m0.group(2)) + \
                       immediate(plt_dump[k+1], m1.group(1)) + \
