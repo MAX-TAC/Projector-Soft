@@ -9,6 +9,7 @@ on:
       - 'app/tvsettingsplus-mod/src/exact8054/java/**'
       - 'app/tvsettingsplus-mod/ui-tests/**'
       - 'tools/verify_8054_native_host.py'
+      - 'tools/collect_8054_ui_reference.py'
       - 'app/tvsettingsplus-mod/src/test/java/**'
       - 'tools/patch_*.py'
       - 'tools/find_8054_panel_cache.py'
@@ -420,6 +421,8 @@ jobs:
           aapt dump xmltree /tmp/tv33/unsigned.apk AndroidManifest.xml > /tmp/tv33/manifest-tree.txt
           python3 tools/verify_8054_unified.py "$STOCK" /tmp/tv33/unsigned.apk \
             /tmp/tv33/stock-manifest-tree.txt /tmp/tv33/manifest-tree.txt
+          python3 tools/collect_8054_ui_reference.py "$STOCK" /tmp/tv33/report/stock-ui-reference
+          cp /tmp/tv33/stock-manifest-tree.txt /tmp/tv33/report/stock-ui-reference/
       - name: Cert-verified platform signing and archive integrity
         run: |
           set -euo pipefail

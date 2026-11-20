@@ -48,7 +48,7 @@ public final class OemSoundPanel {
     private void install(boolean unified) throws Exception {
         if(!unified)OemHardwareDelegatedSettings.installSoundLink(context,group,preference);
         OemStockUserSettings.installAudioOutput(context,group,preference);
-        if(!unified)OemAdvancedSoundRoutes.install(context,group,preference);
+        OemAdvancedSoundRoutes.install(context,group,preference);
         try {OemSoundDelayPanel.install(context,group,preference);}
         catch (Exception | LinkageError ex) {Log.w("TvSettingsPlusMOD","OEM audio delay unavailable",ex);}
         refreshItem = action("projectorsoft_sound_refresh","Обновить настройки звука",249,this::refresh);

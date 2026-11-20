@@ -2,7 +2,7 @@ package dev.projectorsoft.tvsettings;
 
 /** Compare and verify the single stock standby-on-sleep setting. */
 final class CecAutoOff8054 {
-    enum Result { APPLIED, STALE, REFUSED, UNCERTAIN }
+    enum Result { APPLIED, UNCHANGED, STALE, CEC_OFF, REFUSED, UNCERTAIN }
 
     static final class State {
         final boolean cecEnabled;
@@ -31,10 +31,12 @@ final class CecAutoOff8054 {
         try {
             before=backend.read();
         } catch (Exception e) {
-            return Result.STALE;
+            return Result.UNCERTAIN;
         }
-        if (before==null || !before.cecEnabled || before.autoOff!=expected) return Result.STALE;
-        if (requested==expected) return Result.APPLIED;
+        if (before==null) return Result.UNCERTAIN;
+        if (!before.cecEnabled) return Result.CEC_OFF;
+        if (before.autoOff!=expected) return Result.STALE;
+        if (requested==expected) return Result.UNCHANGED;
         try {
             backend.setAutoOff(requested);
             State after=backend.read();

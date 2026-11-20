@@ -1,10 +1,30 @@
 """Verify that exact APK packaging leaves every stock component and payload intact."""
 import re
+import struct
 import sys
 import zipfile
 from pathlib import Path
 
 from patch_8054_unified_manifest import ACTIVITIES, DISABLED, PREFIX
+
+
+def dex_classes(dex):
+    def word(offset):
+        return struct.unpack_from('<I',dex,offset)[0]
+
+    strings, types = word(0x3c), word(0x44)
+    count, definitions = word(0x60), word(0x64)
+    result = set()
+    for index in range(count):
+        cls = word(definitions + 32*index)
+        symbol = word(types + 4*cls)
+        position = word(strings + 4*symbol)
+        while dex[position] & 0x80:
+            position += 1
+        position += 1
+        end = dex.index(0,position)
+        result.add(dex[position:end].decode('ascii'))
+    return result
 
 
 def without_version(lines):
@@ -71,10 +91,12 @@ def verify_payload(stock, module):
         extra = {name for name in candidate.namelist() if name not in original.namelist()}
         if extra != {'classes17.dex'} or candidate.testzip():
             raise ValueError('Unexpected module archive entry or invalid ZIP')
-        bytecode = candidate.read('classes17.dex')
+        classes = dex_classes(candidate.read('classes17.dex'))
+        if not classes or any(not name.startswith('Ldev/projectorsoft/tvsettings/') for name in classes):
+            raise ValueError('Non-MOD class in module DEX; stock fixtures or libraries must not ship')
         for name, _ in ACTIVITIES:
             descriptor = 'L' + (PREFIX + name).replace('.', '/') + ';'
-            if descriptor.encode() not in bytecode:
+            if descriptor not in classes:
                 raise ValueError('DESCRIPTOR missing for ' + name)
     print('PASS all 16 original DEX and stock resources byte-identical')
 

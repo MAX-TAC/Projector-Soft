@@ -27,6 +27,8 @@ public final class CecAutoOff8054Test {
         Backend good=new Backend();
         check(CecAutoOff8054.apply(good,false,true)==CecAutoOff8054.Result.APPLIED
                 && good.read().autoOff && good.earc==1 && good.cec==1,"verified stock setting only");
+        check(CecAutoOff8054.apply(good,true,true)==CecAutoOff8054.Result.UNCHANGED
+                && good.writes==1,"same value avoids hardware calls");
         check(CecAutoOff8054.apply(good,false,false)==CecAutoOff8054.Result.STALE
                 && good.writes==1,"old open page cannot write");
         check(CecAutoOff8054.apply(good,true,false)==CecAutoOff8054.Result.APPLIED
@@ -34,14 +36,14 @@ public final class CecAutoOff8054Test {
 
         Backend missing=new Backend();
         missing.cec=0;
-        check(CecAutoOff8054.apply(missing,false,true)==CecAutoOff8054.Result.STALE
+        check(CecAutoOff8054.apply(missing,false,true)==CecAutoOff8054.Result.CEC_OFF
                 && missing.writes==0,"CEC off blocks the standby setting");
         missing.cec=1;
         missing.standby=-1;
-        check(CecAutoOff8054.apply(missing,false,true)==CecAutoOff8054.Result.STALE
+        check(CecAutoOff8054.apply(missing,false,true)==CecAutoOff8054.Result.UNCERTAIN
                 && missing.writes==0,"unknown getter must not imply a valid snapshot");
         missing.readFails=true;
-        check(CecAutoOff8054.apply(missing,false,true)==CecAutoOff8054.Result.STALE
+        check(CecAutoOff8054.apply(missing,false,true)==CecAutoOff8054.Result.UNCERTAIN
                 && missing.writes==0,"denied getter blocks setting");
 
         Backend refused=new Backend();
@@ -57,7 +59,7 @@ public final class CecAutoOff8054Test {
         partial.loseCec=true;
         check(CecAutoOff8054.apply(partial,true,false)==CecAutoOff8054.Result.UNCERTAIN
                 && partial.writes==2,"CEC changed during operation");
-        check(CecAutoOff8054.apply(partial,false,true)==CecAutoOff8054.Result.STALE
+        check(CecAutoOff8054.apply(partial,false,true)==CecAutoOff8054.Result.CEC_OFF
                 && partial.writes==2,"reopened panel observes CEC off");
         System.out.println("PASS 8054 CEC auto-off: baseline, stale state, refusal, partial outcome, explicit restore");
     }

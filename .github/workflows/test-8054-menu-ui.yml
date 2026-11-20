@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - 'app/tvsettingsplus-mod/src/main/java/**'
+      - 'app/tvsettingsplus-mod/src/exact8054/java/**'
       - 'app/tvsettingsplus-mod/ui-tests/**'
       - '.github/workflows/test-8054-menu-ui.yml'
   workflow_dispatch:
@@ -28,5 +29,7 @@ jobs:
         if: always()
         with:
           name: android-8054-menu-test-results
-          path: app/tvsettingsplus-mod/ui-tests/build/test-results/testDebugUnitTest/
+          path: |
+            app/tvsettingsplus-mod/ui-tests/build/test-results/testDebugUnitTest/
+            app/tvsettingsplus-mod/ui-tests/build/ui-evidence/
           if-no-files-found: ignore

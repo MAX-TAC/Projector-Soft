@@ -204,6 +204,7 @@ public final class NativeSections {
             PreferenceCategory about=group(screen,"about","Об устройстве");
             OemSystemInfoHook.install(context,about,Preference.class);
             OemPanelInfoHook.install(context,about,Preference.class);
+            OemThermalTelemetryHook.install(context,about,Preference.class);
             info(about,"kernel","Ядро",java.lang.System.getProperty("os.version","Нет данных"));
             String machine=OemHdmiPortInfo.machineId();
             info(about,"hardware","Аппаратная ревизия",machine.isEmpty()?"Нет данных":machine);
