@@ -712,7 +712,7 @@ NO_MATCHING_EXPORTED_DEFINITION
 00047fa0  00014316 R_ARM_JUMP_SLOT        00000000   a_mtktvapi_config_set_value
 ```
 
-- Backend setter PLT decoded: NOT_FOUND
+- Backend setter PLT decoded: 0x43490 → GOT 0x47fa0
 - Setter R_ARM_JUMP_SLOT index in service: 300
 - Index-based candidate PLT = 0x421b0+32+16*300 = 0x43490; check actual jump-to-GOT below.
 
@@ -727,7 +727,13 @@ Disassembly of section .plt:
    43498:	e5bcfb08 	ldr	pc, [ip, #2824]!	@ 0xb08
    4349c:	d4d4d4d4 	ldrble	sp, [r4], #1236	@ 0x4d4
 ```
+- **PLT/GOT arithmetic CONFIRMED**
 - Candidate service direct BL/BLX callsites into indexed PLT:
+
+```text
+29e42:	4628      	mov	r0, r5 | 29e44:	4632      	mov	r2, r6 | 29e46:	4643      	mov	r3, r8 | 29e48:	f019 eb22 	blx	43490  | 29e4c:	2100      	movs	r1, #0
+```
+- Service .text BL/BLX callsite to backend setter PLT (unstripped function owner may not be available):
 
 ```text
 29e42:	4628      	mov	r0, r5 | 29e44:	4632      	mov	r2, r6 | 29e46:	4643      	mov	r3, r8 | 29e48:	f019 eb22 	blx	43490  | 29e4c:	2100      	movs	r1, #0
