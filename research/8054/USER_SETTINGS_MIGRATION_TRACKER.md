@@ -125,6 +125,12 @@
 | BOOT02 | Android bootanimation | Отдельно · не пользовательские регулировки | IMPLEMENTATION_PENDING | Изучить только при наличии реальной пользовательской функции или зависимости |
 | BOOT03 | Стартовый звук | Отдельно · не пользовательские регулировки | IMPLEMENTATION_PENDING | Изучить только при наличии реальной пользовательской функции или зависимости |
 
+## Обнаруженные маршруты, которые нужно удалить к завершению переноса
+
+- `OemProjectionPanel.projectionIntent()` в унаследованном маршруте 8054 может намеренно запускать **`com.my.settings.activity.ProjectionActivity`** по `android.settings.PROJECTABOUT_SETTINGS`. Этого в финальной версии не должно оставаться. Текущий v41 раздел `NativeSections.Projection` уже имеет собственные пункты, но ссылки на оригинальные редакторы/незавершённые функции ещё есть. **Не удалять единственный рабочий путь к коррекции до переноса его операций.**
+- `OemHardwareDelegatedSettings` и `OemAdvancedSoundRoutes` используют `com.android.tv.settings` (OEM-экраны внутри Android TV Settings), **не** тот же пакет, что KuSettings. Они не блокируют удаление `com.my.settings` как зависимость пакета, но финальные пользовательские настройки следует по возможности встроить непосредственно в v41.
+- Для финального пункта `KUS_INDEPENDENT` отдельно проверить не только явные Intent, но и неявные Actions, `PackageManager.resolveActivity`, BroadcastReceiver, ContentProvider и Service зависимости на exact-8054. Удаление только ярлыка KuSettings не является выполнением задачи.
+
 ## Контрольные точки готовности
 
 - **UI_DELIVERED:** функция реализована собственным MOD обработчиком, нет старого `com.my.settings` UI.
