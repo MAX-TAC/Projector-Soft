@@ -1,0 +1,79 @@
+name: "8054 | MediaTek native ELF inventory (read-only)"
+
+on:
+  push:
+    branches:
+      - research/8054-mediatek-native-api-20261120
+    paths:
+      - tools/audit_mediatek_native_8054.py
+      - .github/workflows/audit-8054-mediatek-native.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  inspect-exact-8054:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install native and EROFS analysis dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq erofs-utils binutils
+      - name: Get audited partition extraction tools
+        run: |
+          set -euo pipefail
+          git clone --depth 1 --branch research/complete-8054-manifest-map-20261117 \
+            https://github.com/MAX-TAC/FlixTone_8054_Backup.git /tmp/flix8054_extract_tools
+          test -f /tmp/flix8054_extract_tools/tools/inspect_8054_draft_safely.py
+          test -f /tmp/flix8054_extract_tools/tools/deep_audit_8054_stock.py
+      - name: Download and SHA256-verify exact owner's firmware archive
+        run: |
+          set -euo pipefail
+          gh release download FlixTone_8054_Backup \
+            --repo MAX-TAC/FlixTone_8054_Backup \
+            --pattern FlixTone_8054_Backup.zip --dir /tmp
+          echo '4f53f2224c98b4c832a19a591b9dd7f925bde28528b5674a09732c0f0e41d362  /tmp/FlixTone_8054_Backup.zip' | sha256sum -c -
+      - name: Read-only parse super.img and unpack EROFS (all original partitions)
+        run: |
+          set -euo pipefail
+          python3 /tmp/flix8054_extract_tools/tools/inspect_8054_draft_safely.py \
+            /tmp/FlixTone_8054_Backup.zip > /tmp/flix8054_extract_super.log
+          python3 /tmp/flix8054_extract_tools/tools/deep_audit_8054_stock.py \
+            > /tmp/flix8054_extract_erofs.log
+          test -f /tmp/flix8054_erofs/system_ext_a_tree/app/Factory/Factory.apk
+          test -d /tmp/flix8054_erofs/vendor_a_tree
+      - name: Inventory native libraries, JNI exports, DT_NEEDED and allowlisted keys
+        run: |
+          set -euo pipefail
+          python3 tools/audit_mediatek_native_8054.py \
+            --root /tmp/flix8054_erofs --out /tmp/flix8054_native_report
+          test -s /tmp/flix8054_native_report/NATIVE_API_INVENTORY_8054.md
+          test -s /tmp/flix8054_native_report/NATIVE_API_CANDIDATES_8054.json
+      - name: Upload text-only research output to GitHub Actions
+        uses: actions/upload-artifact@v4
+        with:
+          name: exact-8054-native-api-static-inventory
+          path: /tmp/flix8054_native_report/
+          retention-days: 30
+      - name: Commit sanitized reports to the isolated research branch
+        if: github.ref == 'refs/heads/research/8054-mediatek-native-api-20261120'
+        run: |
+          set -euo pipefail
+          mkdir -p research/8054/native/generated
+          cp /tmp/flix8054_native_report/*.md /tmp/flix8054_native_report/*.csv \
+             /tmp/flix8054_native_report/*.json research/8054/native/generated/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research/8054/native/generated
+          if ! git diff --cached --quiet; then
+            git commit -m "research(8054): record sanitized ELF API inventory from verified owner dump"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          else
+            echo 'Native inventory unchanged'
+          fi
