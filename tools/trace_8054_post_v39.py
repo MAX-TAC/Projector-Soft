@@ -8,7 +8,7 @@ classes = {
     'AccessoriesFragment': r'.',
     'AccessoriesFragment$1': r'onReceive',
     'BluetoothAccessoryFragment': r'onCreatePreferences|onPreferenceTreeClick|prepare|prepareArgs',
-    'PowerOnSourceSecondaryController': r'initData|initView|initListener|onAttach|lambda',
+    'PowerOnSourceSecondaryController': r'initData|initView|initListener|onAttach|getHdmiInputId|systemToLocal|initBoardConfig|lambda',
     'PowerOnAppSecondaryController': r'initData|onAttach|lambda',
     'SourceFragment': r'switchToHome|switchToHDMI|initView|lambda',
     'SourceSubMenuController': r'initView|lambda',

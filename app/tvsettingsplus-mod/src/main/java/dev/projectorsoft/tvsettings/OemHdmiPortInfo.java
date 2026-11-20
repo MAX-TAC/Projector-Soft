@@ -57,7 +57,9 @@ public final class OemHdmiPortInfo {
         Object manager = context.getSystemService(Context.TV_INPUT_SERVICE);
         if (!(manager instanceof TvInputManager)) throw new IllegalStateException("TV Input unavailable");
         TvInputManager tv = (TvInputManager) manager;
-        for (Hdmi8054Policy.Port port : ports(tv, count, metadata instanceof String ? (String) metadata : null)) {
+        List<TvInputInfo> installed = tv.getTvInputList();
+        if (installed == null) throw new IllegalStateException("TV Input inventory unavailable");
+        for (Hdmi8054Policy.Port port : ports(installed, count, metadata instanceof String ? (String) metadata : null)) {
             if (port.inputId != null) result.put(port.inputId, port.label);
         }
         return result;
@@ -79,8 +81,11 @@ public final class OemHdmiPortInfo {
     }
 
     private static List<Hdmi8054Policy.Port> ports(TvInputManager tv,int count,String metadata) {
+        return ports(tv == null ? null : tv.getTvInputList(), count, metadata);
+    }
+
+    private static List<Hdmi8054Policy.Port> ports(List<TvInputInfo> inputs,int count,String metadata) {
         List<String> ids=new ArrayList<>();
-        List<TvInputInfo> inputs=tv==null?null:tv.getTvInputList();
         if(inputs!=null)for(TvInputInfo input:inputs) {
             if(input!=null && input.getType()==TvInputInfo.TYPE_HDMI)ids.add(input.getId());
         }

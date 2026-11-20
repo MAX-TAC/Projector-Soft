@@ -118,6 +118,8 @@ public final class NativeSections {
             guarded("boot-destination",()->NativeBootDestination.install(context,screen));
             link(screen, NativePage.HDMI_CEC, 200);
             guarded("hdmi-autoplay",()->OemHdmiAutoPlayHook.install(context,screen,Preference.class));
+            Preference autoplay = screen.findPreference(OemHdmiAutoPlayHook.KEY);
+            if (autoplay != null) autoplay.setTitle("Автопереключение HDMI");
             guarded("hdmi-edid",()->OemHdmiEdidHook.install(context,screen,Preference.class));
             Preference edid = screen.findPreference(OemHdmiEdidHook.STATUS_KEY);
             if (edid != null) edid.setOrder(290);

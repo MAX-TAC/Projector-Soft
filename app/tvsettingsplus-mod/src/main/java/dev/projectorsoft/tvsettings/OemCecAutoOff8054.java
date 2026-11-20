@@ -135,7 +135,7 @@ final class OemCecAutoOff8054 {
     private static void render(Class<?> pref,Object cec,Object autoOff,CecAutoOff8054.State state)
             throws ReflectiveOperationException {
         Method summary=pref.getMethod("setSummary",CharSequence.class);
-        summary.invoke(cec,state==null?"Состояние недоступно":state.cecEnabled?"Включён · изменение требует проверки eARC и автовыключения":"Выключен · изменение требует штатного подтверждения");
+        summary.invoke(cec,state==null?"Состояние недоступно":(state.cecEnabled?"Включён":"Выключен") + " · изменение недоступно до проверки eARC и автовыключения");
         pref.getMethod("setEnabled",boolean.class).invoke(autoOff,state!=null && state.cecEnabled);
         if (state!=null) autoOff.getClass().getMethod("setChecked",boolean.class).invoke(autoOff,state.autoOff);
         summary.invoke(autoOff,state==null?"Состояние недоступно"

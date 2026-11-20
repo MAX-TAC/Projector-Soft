@@ -27,12 +27,12 @@ Add-Section -Title 'Installed APK path' -AdbArguments @('shell','pm','path','com
 Add-Section -Title 'Installed package and version' -AdbArguments @('shell','dumpsys','package','com.android.tv.settings') |
     Out-Null
 
-$home = @(Add-Section -Title 'HOME default' -AdbArguments @(
+$resolvedHomeLines = @(Add-Section -Title 'HOME default' -AdbArguments @(
     'shell','cmd','package','resolve-activity','--brief','-a','android.intent.action.MAIN','-c','android.intent.category.HOME'))
 Add-Section -Title 'HOME registered candidates' -AdbArguments @(
     'shell','cmd','package','query-activities','--brief','-a','android.intent.action.MAIN','-c','android.intent.category.HOME') |
     Out-Null
-foreach ($line in $home) {
+foreach ($line in $resolvedHomeLines) {
     if ($line -match '^([A-Za-z0-9_.]+)/(?:[A-Za-z0-9_.$]+)$') {
         Add-Section -Title 'Resolved HOME package flags' -AdbArguments @('shell','dumpsys','package',$Matches[1]) |
             Out-Null

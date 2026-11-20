@@ -103,6 +103,7 @@ public final class ProjectionToggleStateTest {
             String movement = "0";
             String alignment = "0", obstacle = "0", vertical = "0";
             int writes;
+            boolean changeDependencies;
             @Override public String read() { return movement; }
             @Override public String restriction() {
                 return Projection8054Policy.canDisableMovement(alignment, obstacle, vertical) ? null : "dependent state";
@@ -110,6 +111,7 @@ public final class ProjectionToggleStateTest {
             @Override public void write(boolean requested) {
                 writes++;
                 movement = requested ? "1" : "0";
+                if (changeDependencies) vertical = "1";
             }
         }
         Movement movement = new Movement();
@@ -125,6 +127,10 @@ public final class ProjectionToggleStateTest {
         movement.obstacle = "";
         check(state.change(false) == OEM_REQUIRED, "unknown dependent blocks disable");
         check(movement.writes == 2, "no side effects from a rejected movement edit");
+        movement.obstacle = "0";
+        movement.changeDependencies = true;
+        check(state.change(false) == FAILED && Boolean.FALSE.equals(state.value()),
+                "middle-state change is reported with the actual movement readback");
     }
 
     public static void main(String[] args) {
