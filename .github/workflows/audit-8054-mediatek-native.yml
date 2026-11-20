@@ -11,6 +11,10 @@ on:
       - .github/workflows/audit-8054-mediatek-native.yml
   workflow_dispatch:
 
+concurrency:
+  group: exact-8054-native-audit-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: write
 
@@ -93,6 +97,10 @@ jobs:
           git add research/8054/native/generated
           if ! git diff --cached --quiet; then
             git commit -m "research(8054): record sanitized ELF API inventory from verified owner dump"
+            # Preserve newly committed research/journal files if the branch
+            # advanced while this read-only audit was extracting the large image.
+            git fetch origin "${GITHUB_REF_NAME}"
+            git rebase "origin/${GITHUB_REF_NAME}"
             git push origin "HEAD:${GITHUB_REF_NAME}"
           else
             echo 'Native inventory unchanged'
