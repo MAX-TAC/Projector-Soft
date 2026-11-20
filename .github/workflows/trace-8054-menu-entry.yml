@@ -2,7 +2,7 @@ name: Trace exact 8054 settings entry
 on:
   push:
     branches: [audit/8054-tvsettingsplus-20261117]
-    paths: ['tools/trace_8054_menu_entry.py', '.github/workflows/trace-8054-menu-entry.yml']
+    paths: ['tools/trace_8054_menu_entry.py', 'tools/trace_8054_remaining_controls.py', '.github/workflows/trace-8054-menu-entry.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -33,3 +33,5 @@ jobs:
           grep -n -E -C 6 'android.settings.SETTINGS|com.android.tv.settings.MainSettings|uicustom.MainActivity' /tmp/stock-manifest-tree.txt
           sed -n '502,575p' /tmp/stock-manifest-tree.txt
           PATH="$(dirname "$AAPT"):$PATH" python3 tools/verify_8054_general_layout.py /tmp/stock.apk
+      - name: Trace stock audio format and power editors
+        run: python3 tools/trace_8054_remaining_controls.py /tmp/stock-ui
