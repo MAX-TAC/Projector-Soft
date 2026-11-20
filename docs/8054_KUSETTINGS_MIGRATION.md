@@ -5,3 +5,7 @@
 Для отдельного испытания нужна сборка с согласованным возвратом к исходному владельцу, точное подтверждение visible и enabled состояния TimeService и возможность отличать остановку от неполной видимости. Сначала снять данные cold boot, затем согласовать переход на одного восстановителя и безопасный предел повторных запусков. Android UID и подпись сами по себе не подтверждают полноту running-services. Открытие MOD не включает watchdog и не меняет параметры сна.
 
 [Точная цепочка Bootup → MySetTimeService → TimeService](../research/8054/KUSETTINGS_SERVICE_MIGRATION_8054.md)
+
+## Граница v39
+
+Корень встроен в штатный MainSettings. KuSettings, BootupReceiver → MySetTimeService → KuSourceRJ.TimeService, HID AutoPair и OEM watchdog остаются штатными. MOD recovery в Manifest dormant. Для отказа от KuSettings требуется отдельная проверка причин запуска и восстановления, сохранения единственного watchdog и наличия рабочего пульта после холодного запуска. Физический проектор этой сессии не затронут.

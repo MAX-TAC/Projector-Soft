@@ -12,6 +12,7 @@ on:
       - 'app/tvsettingsplus-mod/src/testFixtures/java/**'
       - 'research/8054/**'
       - 'tools/validate_8054_graph.js'
+      - 'tools/generate_8054_release_parity.py'
   workflow_dispatch:
 permissions:
   contents: read
@@ -27,6 +28,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
+      - name: Confirm the canonical 96-function release matrix
+        run: |
+          python3 tools/generate_8054_release_parity.py
+          git diff --exit-code -- research/8054/FINAL_FUNCTION_PARITY_8054.csv
       - name: Validate evidence classifications
         run: node tools/validate_8054_graph.js research/8054/dependency_graph_8054.json
       - name: Validate current 96-function delivery inventory

@@ -1,3 +1,12 @@
+# v39 — интеграция MainSettings
+
+- Группа «Общие настройки» встроена в оригинальный MainFragment. Навигация использует существующий MainSettings, штатную тему и Preview. Из Manifest убран альтернативный MOD-лаунчер.
+- HDMI-CEC, статусы HDMI 1/2, EQ, задержки, RGB, управление Bluetooth, состояние пульта, сведения об устройстве, аппаратная диагностика и питание имеют отдельные Activity. Аудиовыход и три редактора геометрии используют штатные точки входа.
+- Температура/RGB по-прежнему read-only. Оптическая яркость первая в разделе проекции. Системные звуки последними в разделе звука, общая громкость убрана. Для размера текста исправлен символ процента в AndroidX summary.
+- Сборка проверила классы, подпись, Manifest, 15 побайтно исходных DEX и строго ограниченный diff оригинального `classes13.dex`. Тест AndroidX проверяет производственный адаптер в OEM-совместимой фикстуре, отдельные Activity и read-only RGB. Статус на устройстве — `BUILT_UNTESTED`.
+
+VersionCode 39, исходники `f894da1`, SHA-256 APK `db916a6b258b6842de91a748cd97e12a3663f43fc34db8b1a2237e6d33a7886f`. [Артефакт Exact-8054](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44721991806/artifacts/14622147367) · [Отчёт AndroidX](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44721991646/artifacts/14621669276) · [Интеграция](8054_MAINSETTINGS_INTEGRATION.md)
+
 # v37 относительно v36
 
 Экспериментальный APK `TvSettingsPlus-8054-v37-NATIVE-SETTINGS-EXPERIMENTAL.apk`, versionCode 37, исходники `e2eec7e`. SHA-256 APK `a22686347d5b309da1c5442efb836f0b99f0cb9993c2097d5c5d75b29ca65040`. [Сборка Exact-8054](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44717799934/artifacts/14620371959)

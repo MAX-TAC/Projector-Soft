@@ -1,26 +1,26 @@
-# Аппаратный тест TvSettingsPlus 8054 v36
+# Аппаратный тест TvSettingsPlus 8054 v39
 
-Артефакт v36 доступен в [Exact-8054](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44692995125/artifacts/14609353165). SHA-256 APK — `0f79bf8d4914a483ada782895ab75cf3effac831a47463bc4fa0ebaaf5883082`. [Отчёт и снимки тестовой среды Leanback](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44692995238/artifacts/14609895658).
+Артефакт v39 доступен в [Exact-8054](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44721991806/artifacts/14622147367). SHA-256 APK — `db916a6b258b6842de91a748cd97e12a3663f43fc34db8b1a2237e6d33a7886f`. [Отчёт и снимки тестовой среды Leanback](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44721991646/artifacts/14621669276).
 
 Только после отдельного разрешения владельца. Используйте Windows PowerShell, ADB с явно выбранным serial и, для проверки сертификата, apksigner из Android SDK. Python не требуется. Сохраните исходное состояние, условия возврата к STOCK и устойчивый способ доступа к настройкам. Установка и ручной возврат требуют отдельного согласия.
 
 ## Проверка файла на ПК
 
-Укажите локальный APK из Exact-8054 и сравните его SHA-256 с SHA256SUMS внутри артефакта и отчётом выпуска. Проверяемый SHA-256 сертификата STOCK и MOD — c8a2e9bccf597c2fb6dc66bee293fc13f2fc47ec77bc6b2b0d52c11f51192ab8. APK должен иметь пакет com.android.tv.settings, versionCode 36 и android.uid.system.
+Укажите локальный APK из Exact-8054 и сравните его SHA-256 с SHA256SUMS внутри артефакта и отчётом выпуска. Проверяемый SHA-256 сертификата STOCK и MOD — c8a2e9bccf597c2fb6dc66bee293fc13f2fc47ec77bc6b2b0d52c11f51192ab8. APK должен иметь пакет com.android.tv.settings, versionCode 39 и android.uid.system.
 
 ```powershell
-$apk = 'C:\Downloads\TvSettingsPlus-8054-v36-NATIVE-SETTINGS-EXPERIMENTAL.apk'
+$apk = 'C:\Downloads\TvSettingsPlus-8054-v39-MAINSETTINGS-EXPERIMENTAL.apk'
 Get-FileHash -LiteralPath $apk -Algorithm SHA256
 & "$env:LOCALAPPDATA\Android\Sdk\build-tools\35.0.0\apksigner.bat" verify --print-certs $apk
 ```
 
 ## Этап A. Версия, запуск и диагностика
 
-После отдельно разрешённой установки команда pm path должна показать активный APK. Сверьте versionCode=36 в выводе dumpsys. Команды ниже запускают UI, читают данные и сохраняют отчёт на ПК. Смена состояния аппаратных настроек в этот этап не входит.
+После отдельно разрешённой установки команда pm path должна показать активный APK. Сверьте versionCode=39 в выводе dumpsys. Команды ниже запускают UI, читают данные и сохраняют отчёт на ПК. Смена состояния аппаратных настроек в этот этап не входит.
 
 ```powershell
 $serial = '<точный согласованный serial>'
-$report = Join-Path $env:TEMP ('8054-v36-' + (Get-Date -Format yyyyMMdd-HHmmss))
+$report = Join-Path $env:TEMP ('8054-v39-' + (Get-Date -Format yyyyMMdd-HHmmss))
 New-Item -ItemType Directory -Path $report | Out-Null
 $active = @(adb -s $serial shell pm path com.android.tv.settings | Where-Object { $_ -match '^package:/[^\r\n]+\.apk$' })
 if ($LASTEXITCODE -ne 0 -or $active.Count -ne 1) { throw 'STOP: PackageManager не вернул один активный APK' }
@@ -33,7 +33,6 @@ if ((Get-FileHash -LiteralPath $live -Algorithm SHA256).Hash -ne (Get-FileHash -
 }
 adb -s $serial shell dumpsys package com.android.tv.settings > (Join-Path $report 'package.txt')
 adb -s $serial shell am start -W -n 'com.android.tv.settings/com.android.tv.settings.MainSettings'
-adb -s $serial shell am start -W -n 'com.android.tv.settings/dev.projectorsoft.tvsettings.ModMainSettingsActivity'
 $pages = 'Network','Bluetooth','Sources','Projection','Picture','Sound','Apps','System'
 foreach ($page in $pages) {
     Write-Host "Компонент для отдельной проверки: com.android.tv.settings/dev.projectorsoft.tvsettings.${page}SettingsActivity"
@@ -44,7 +43,7 @@ adb -s $serial shell dumpsys activity activities > (Join-Path $report 'activitie
 adb -s $serial logcat -d -v threadtime -s AndroidRuntime TvSettingsPlusMOD ActivityTaskManager > (Join-Path $report 'settings-logcat.txt')
 ```
 
-Для каждого компонента из списка запустите тот же шаблон am start -W -n и нажмите Back после проверки. Смотрите реальный экран и ActivityTaskManager. Статус команды старта один не исключает падение на следующем кадре. Сверьте порядок восьми разделов, шрифты и фокус со штатным экраном, D-pad/OK/Back, preview, предупреждения и возврат из редакторов. Не выполняйте reset, очистку данных, аппаратную калибровку и операции выключения. При затемнении снимите logcat без его очистки. Держите список приложений, идентификаторы и отчёты локально.
+Сначала в открытом оригинальном MainSettings проверьте «Общие настройки» и восемь пунктов, входящие стрелки Sources, Preview, D-pad/OK, Back и возврат фокуса. Подтвердите отсутствие отчёта об ошибке в корне, TV, Retail, OLED и второго ярлыка настроек. Проверьте вложенные Activity по [карте](8054_ACTIVITY_NAVIGATION_MAP.md). Для каждого компонента из списка запустите тот же шаблон am start -W -n и нажмите Back после проверки. Смотрите реальный экран и ActivityTaskManager. Статус команды старта один не исключает падение на следующем кадре. Сверьте порядок восьми разделов, шрифты и фокус со штатным экраном, D-pad/OK/Back, preview, предупреждения и возврат из редакторов. Не выполняйте reset, очистку данных, аппаратную калибровку и операции выключения. При затемнении снимите logcat без его очистки. Держите список приложений, идентификаторы и отчёты локально.
 
 ## Этап B. По одному согласованному изменению
 

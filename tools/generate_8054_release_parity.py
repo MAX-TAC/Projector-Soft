@@ -1,4 +1,4 @@
-"""Generate the v36 function inventory from the pinned 96-item dependency graph."""
+"""Generate the v39 function inventory from the pinned 96-item dependency graph."""
 import csv
 import json
 from pathlib import Path
@@ -13,7 +13,7 @@ contracts = {}
 def declare(ids, area, activity, status, widget, adapter, getter='', setter='', bounds='', readback='', tests=''):
     for key in ids.split():
         if key in contracts:
-            raise ValueError('Duplicate v36 scope '+key)
+            raise ValueError('Duplicate v39 scope '+key)
         contracts[key] = (area, activity, status, widget, adapter, getter, setter, bounds, readback, tests)
 
 
@@ -94,6 +94,36 @@ declare('SYS07','Система','SystemSettingsActivity','OEM_SPECIALIZED_EDITO
 declare('HDMI10','Источники','SourcesSettingsActivity','UNSUPPORTED_HARDWARE','hidden',
         'No analog/tuner controls in MOD')
 
+new_activities = {
+    'NAV01': 'com.android.tv.settings.MainSettings',
+    'NAV02': 'com.android.tv.settings.connectivity.NetworkActivity',
+    'NAV06': 'com.android.tv.settings.device.apps.AppsActivity',
+    'SYS09': 'com.android.tv.settings.device.apps.AppsActivity',
+    'NAV07': 'DeviceAboutSettingsActivity',
+    'NAV14': 'DeviceAboutSettingsActivity',
+    'FAC01': 'DeviceAboutSettingsActivity',
+    'NAV09': 'ProjectorPowerSettingsActivity',
+    'PIC18': 'DeviceAboutSettingsActivity',
+    'PIC02': 'ColorTemperatureSettingsActivity',
+    'PIC08': 'ColorTemperatureSettingsActivity',
+    'PIC09': 'ColorTemperatureSettingsActivity',
+    'PIC10': 'ColorTemperatureSettingsActivity',
+    'SND01': 'EqualizerSettingsActivity',
+    'SND07': 'EqualizerSettingsActivity',
+    'SND12': 'SoundDelaySettingsActivity',
+    'HDMI04': 'HdmiCecSettingsActivity',
+    'SYS01': 'ProjectorPowerSettingsActivity',
+    'SYS02': 'RemoteSettingsActivity',
+    'SYS06': 'RemoteSettingsActivity',
+    'SYS04': 'HardwareStatusSettingsActivity',
+    'SYS07': 'ProjectorPowerSettingsActivity',
+}
+held_tone = ('SND02', 'SND03')
+tone_check = 'Distinct config ID confirmed; identify DSP separation from the five-band EQ for each output and preset'
+root_adapter = 'StockMainSettingsMenu in original MainFragment before super.onCreateView'
+root_route = 'stock flavor, original MainSettings host and explicit section Activities'
+root_test = 'UnifiedMenuUiTest production adapter + exact DEX round-trip'
+
 safety = set('NAV10 HDMI05 SND08 SND11 PRJ04 PRJ08 PRJ09 SYS03 SYS05 FAC02 FAC03 FAC05 FAC06 FAC07 FAC08 FAC09 FAC10'.split())
 excluded = set('NAV13 PIC13 PIC15 PIC17 SND13 DBL05 DBL06 DBL08'.split())
 features=graph['features']
@@ -113,13 +143,20 @@ with path.open('w',encoding='utf-8',newline='') as out:
         area, activity, status, widget, adapter, getter, setter, bounds, verify, tests=contracts.get(key,
             ('','', 'BLOCKED_SAFETY' if key in safety else 'IMPLEMENTATION_PENDING',
              'excluded' if key in excluded else 'not exposed','','','','','',''))
+        activity = new_activities.get(key, activity)
+        if key == 'NAV01':
+            widget, adapter, getter, tests = 'Preference → Activity / Preview', root_adapter, root_route, root_test
+        if key in held_tone:
+            activity, status, widget, setter, verify = '', 'IMPLEMENTATION_PENDING', 'hidden', 'closed in v39', ''
         if not activity:
-            outstanding='Excluded from v36 menu' if key in excluded else previous[key]['next_check']
+            outstanding='Excluded from v39 menu' if key in excluded else previous[key]['next_check']
         else:
             outstanding=previous[key]['next_check']
+        if key in held_tone:
+            outstanding = tone_check
         writer.writerow((key,row['function'],row['section'],row['owner_hint'],row['entry_point_hint'],
                          row['backend_hint'],area,activity,status,widget,adapter,getter,setter,bounds,verify,
                          row['precondition'] or ('Check platform or OEM capability' if activity else ''),
                          row['side_effects_hint'],row['target'] or row['owner_hint'],row['rollback'],
                          tests,'RUNTIME_TEST_REQUIRED' if activity else 'NOT_TESTED',outstanding))
-print('PASS v36 parity: 96 unique rows')
+print('PASS v39 parity: 96 unique rows')

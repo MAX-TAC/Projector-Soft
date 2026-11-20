@@ -1,15 +1,15 @@
-# Очистка пользовательского меню 8054
+# Очистка видимой навигации 8054
 
-В v36 перечень входов задаёт NativeRootFragment. Это отделяет отображаемые пользовательские пункты от сохранённых OEM компонентов. Проверка наличия исходного XML и точных stock key ведётся по exact артефакту, универсальный ресурс сам по себе не подтверждает поддержку устройства.
+Оригинальный MainFragment сохраняет объекты штатных Preference и привязку контроллеров. После OEM-фильтров корень показывает согласованную группу «Общие настройки» с восемью пунктами. Источники сохраняют штатную маршрутизацию HW6 и HW7.
 
-| Что отсутствует в MOD | Известный исходный ресурс или узел | Зависимость и проверка |
-|---|---|---|
-| DVB, RF, LCN, кабель, спутник, DiSEqC | channels.xml, channels_scan.xml, channels_and_inputs_vendor.xml, channel_install_mode.xml; ChannelsActivity, ChannelsTwoPanalActivity, DiseqcTypeActivity | Строки отсутствуют в корне и в Sources. TvInputManager, TV Input services и LiveTV сохранены для HDMI. |
-| OLED compensation, pixel shift, OFF-RS | partner_oled.xml; OEM PictureFragment / OLED gate | Исходные ресурсы и функции остаются в stock; собственного пункта LCD-проектора нет. |
-| Retail, PQ/MEMC Demo | partner_retail_mode.xml, partner_mjc.xml; RetailModeActivity, RetailModeConfirmActivity | Демонстрационный режим исключён из дерева. Пользовательский MEMC сохранён как read-only там, где читается состояние. |
-| HDMI 3/4, аналоговые входы | OEM SourceFragment/SourceSubMenuController и generic port metadata | В MOD только проверенные HW6/HW7. Дополнительные TV Input сервисы доступны stock. |
-| Bluetooth speaker sink | tciv_source_bluetooth_speaker, OEM source menu | Нет пользовательской строки. Сопряжение и HID/AutoPair сохранены. |
-| Заводские PQ/WB/UART | Отдельный Factory и vendor редакторы | Нет MOD вызовов заводских экранов, установок или калибровок. |
-| Рекомендации и старые дубликаты | MainFragment suggestion container, OEM Settings/FloatMenu | Отдельный NativeRootFragment не создаёт эти строки. Старые классы и исходный MainSettings сохранены. |
+| Убранный видимый маршрут | Причина и способ |
+|---|---|
+| «Отчёт об ошибке» | `SuggestionQuickSettingPrefsContainer.showQuickSettings` добавляет `take_bug_report` в `quick_settings`. Скрывается категория, включая её позднее создание. Bugreport и `TakeBugReportController` сохраняются. |
+| Рекомендации / Basic Mode suggestions | При установке новой группы и на проверенном позднем пути скрываются вспомогательные категории. Сервисы не затрагиваются. |
+| TV, DVB, RF, LCN и тюнеры | Исчезают штатные ссылки channel/channels_and_inputs и соответствующие slices из доступного корня. Входы 8054 выбираются только по проверенному board metadata и TvInputManager. |
+| Старые экран/звук, пульты и OEM дубли | Однократные категории верхнего уровня. Рабочие стандартные дочерние API и OEM редакторы остаются доступны по проверенным путям. |
+| Retail, OLED, PQ/MEMC demo и factory WB | В перенесённых разделах отсутствуют ссылки на эти функции. Исходные компоненты прошивки и их отдельные диагностические маршруты сохранены. |
+| Многоадресный режим | `MultiCastFragment` читает `miracast_layout` и `multicast_enable_4K_setting`, открывает `NormalCastActivity`. Это OEM-режим Miracast. Убран его ярлык из основного дерева. Поведение трансляции и компоненты сохраняются. |
+| Общая громкость | В рабочем дереве звука и EQ нет глобального ползунка или mute. Штатный громкостной контроллер пульта сохраняется. |
 
-Проверка — пройти восемь разделов новым ярлыком и сопоставить список с матрицей. Существующие компоненты физически не удалялись. Для возврата штатного дерева использовать отдельный MainSettings или подтверждённый штатный возврат к STOCK. [Тестовый протокол](8054_HARDWARE_TEST_PLAN.md)
+[Оригинальные XML и динамические контроллеры](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44719952065) · [Устройство стокового корня](8054_MAINSETTINGS_INTEGRATION.md)
