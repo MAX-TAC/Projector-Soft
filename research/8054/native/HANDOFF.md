@@ -26,18 +26,27 @@
 - Дамп прошёл SHA-256 в Actions; извлечены четыре раздела. Просканировано 1 283 ELF .so: 919 system, 323 vendor, 6 product, 35 system_ext; 300 библиотек-кандидатов.
 - Контраст: picture_contrast → g_video__contrast → TVMenuSettingsService / TVSettingConfig → MtkTvConfigBase → TVNativeWrapper.setConfigValue_native(-1, configId, value, 3). Это статический Java/smali маршрут.
 - Оригинальный vendor_a/lib/libcom_mediatek_twoworlds_tv_jni.so, SHA-256 312fef3f17f656ac957a32dfee8187798dacac8f4df83e8219b1553b7248ab24, экспортирует Java_com_mediatek_twoworlds_tv_TVNative_setConfigValue_1native и getConfigValue_1native.
-- vendor.mediatek.api.mtktvapi@1.0-cwrapper.so и libmediatek_tv_rpcwrapper.so экспортируют a_mtktvapi_config_set_value / get_value; JNI DT_NEEDED включает C-wrapper. Непосредственная машинная связь ещё НЕ ДОКАЗАНА.
+- **NATIVE-004 завершён на уровне машинного JNI→C вызова:** original JNI `0x56726 blx 0x7ae90` → ARM PLT `0x7ae90` → GOT `0x7dff8` (`R_ARM_JUMP_SLOT a_mtktvapi_config_set_value`), **`NATIVE_CALL_EDGE=PROVEN_STATIC`**. Отличный `...set_value_for_all_elems` слот — `0x7dffc`. Результат вычислен в [TRACE_004](TRACE_004_CONFIG_JNI_TO_HIDL.md) и [автоматическом ELF отчёте](generated/NATIVE_004_ELF_MACHINE_EVIDENCE_8054.md), [CI 44799645224](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44799645224).
 - Factory HIDL, CEC HAL, ToF/TRD, I2C — разные интерфейсы. Нельзя приравнивать заводскую API к пользовательской и предполагать единый API для всего оборудования.
 - Успешные runs: https://github.com/MAX-TAC/Projector-Soft/actions/runs/44792807063 и https://github.com/MAX-TAC/Projector-Soft/actions/runs/44793791027 . Ошибка run 44793339068 связана с Python regex и уже исправлена.
 
-## Следующая задача: NATIVE-004 — JNI → C-wrapper → HIDL
-1. Прочитать текущую ветку и материалы, создать logs/YYYY-MM-DD_NATIVE-004.md с целью, референсами и SHA.
-2. Разобрать exact vendor JNI ELF через readelf -h -Ws -r -d, objdump/llvm-objdump -dr, PLT/GOT, при необходимости Ghidra/Rizin.
-3. Найти реальный callsite функции Java_com_mediatek_twoworlds_tv_TVNative_setConfigValue_1native и точный C-wrapper target: a_mtktvapi_config_set_value или альтернативный.
-4. Сопоставить Java JNI сигнатуры, jstring и ARM ABI, возвращаемые статусы, inputGroup=-1 и isUpdate=3; не гадать об активном HDMI.
-5. Если найден реальный C target — проследить HIDL method/transaction/receiver и различить per-element vs all-elements.
-6. Записать TRACE_004_CONFIG_JNI_TO_HIDL.md с проверяемыми адресами, командами, доказанными/неустановленными переходами; обновить журнал и logs/INDEX.md; сделать коммит в PR #3.
-7. Далее отдельными задачами HDR picture_list_hdr → g_video__vid_hdr, MEMC tv_picture_advance_video_mjc_effect → g_video__vid_mjc_effect, RGB, sound_style/EQ5, HDMI/CEC, проекция и охлаждение.
+## NATIVE-004: достигнутый результат (2026-11-20)
+
+- Отчёт: [TRACE_004_CONFIG_JNI_TO_HIDL.md](TRACE_004_CONFIG_JNI_TO_HIDL.md).
+- Журнал реальных действий, команд и исправлений сборщика: [logs/2026-11-20_NATIVE-004.md](logs/2026-11-20_NATIVE-004.md); [индекс](logs/INDEX.md).
+- Машинные данные: [NATIVE_004_ELF_MACHINE_EVIDENCE_8054.md](generated/NATIVE_004_ELF_MACHINE_EVIDENCE_8054.md). Финальный [run 44799645224](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44799645224) SUCCESS.
+- Переход JNI→C setter **доказан** по ARM `BLX 0x7ae90`, PLT арифметике и `R_ARM_JUMP_SLOT` at `0x7dff8`. Это per-element API symbol `a_mtktvapi_config_set_value`, **не** `set_value_for_all_elems`.
+- У аргументов в JNI: signed 16-bit `inputGroup`, UTF-строка ID, 32-bit value, signed 16-bit `isUpdate`. JNI преобразует `jstring` через `GetStringUTFChars` и возвращает статус, но null-ветки могут вернуть ноль без вызова C.
+- В C-wrapper подтверждена виртуальная диспетчеризация `0x3f5cc blx r7` (vtable offset `+0x3c`), а в оригинальной HIDL `.so` — proxy/stub с типами `short, hidl_string, int, short`. **Виртуальный target/service implementation/transaction не установлены**. `inputGroup=-1`, `isUpdate=3` пока только передаваемые значения, не доказанная семантика.
+- No runtime, no APK install, no hardware modifications. PR #2 неизменён; MOD v41 `BUILT_UNTESTED`.
+
+## Следующая задача: NATIVE-005 — vtable/HIDL receiver + semantics
+
+1. Читать TRACE_004, ELF machine evidence и текущий HEAD PR #3 — повторять полную инвентаризацию 1283 ELF не требуется.
+2. Статически пройти `a_mtktvapi_config_set_value` в exact-8054 C-wrapper начиная с `0x3f5cc blx r7` до реального `BpHwMtkTvApiConfig` proxy, транзакции, `BnHw` и **конкретной** реализации серверной стороны в `vendor_a`. Различать проверенный ABI и предположения по таблицам виртуальных методов.
+3. Проверить, как фактически обрабатываются `inputGroup=-1` и `isUpdate=3`, а также различие input/profile/signal SDR-HDR и хранилища. Пока не доказано, что sentinel означает active HDMI или все входы.
+4. Зафиксировать Java DEX native declaration/prototype, return/error handling. Отдельно отметить, что JNI `0` может означать отсутствие вызова при null string, а не подтверждение операции.
+5. По результатам создать `TRACE_005_...`, отдельный `logs/YYYY-MM-DD_NATIVE-005.md`, обновить INDEX/HANDOFF и коммитить только санированные данные. Затем независимые traces HDR и MEMC. Ветка MOD v41 остаётся нетронутой.
 
 ## Строгие ограничения
 - Не менять main, MOD v41, заводскую прошивку и проектор в рамках статического исследования.
@@ -46,4 +55,4 @@
 - Уровни фактов разделять: STATIC_KEY_MAP → JAVA_SMALI_CALLSITE → EXACT_NATIVE_ELF_EXPORT → NATIVE_CALL_EDGE → HIDL_RPC_RECEIVER → READBACK_CONFIRMED → HARDWARE_EFFECT_VERIFIED. Сейчас последнее не достигнуто.
 - Результаты писать в файлы репозитория, не в чат, ответ заканчивать ссылками на конкретный коммит/PR. Нельзя обещать фоновую или будущую работу, только выполнять в текущем сеансе.
 
-Результат следующего чата: TRACE_004, журнал выполненных действий, обновлённый индекс и реальные GitHub commit SHA/URL.
+Результат следующего чата: NATIVE-005 с конкретными HIDL/vtable callsites, отдельным журналом, обновлёнными индексом/HANDOFF и проверяемым commit SHA/URL; если receiver недоступен — чёткий blocker, без выдуманного hardware effect.
