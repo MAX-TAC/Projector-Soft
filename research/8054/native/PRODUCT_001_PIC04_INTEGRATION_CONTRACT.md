@@ -31,6 +31,12 @@ Primary repo evidence: [PICTURE_BLOCK_STATUS](../PICTURE_BLOCK_STATUS_8054.md), 
 - When `picture_mode` or `picture_color_temperature` changes, `TVMenuSettingsService.updateSettingDB` / `TVAsyncExecutor.execute` may reread MediaTek config and write it back to Global later. An instant Global echo is not a completed operation.
 - **Potential first-change prompt** (power behavior), auto-backlight, Dolby/HDR and source switching remain relevant observations in the single STOCK test. Do not infer other side effects as definitively caused by PIC04.
 
+### Focused re-check of exact STOCK smali (existing successful CI logs)
+
+Existing [run 44352714404](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44352714404), job `134972414645`, contains the complete selected `PictureModeValueSecondaryController$2.onValueChanged(I)V` at `smali_classes14/.../PictureModeValueSecondaryController$2.smali:38`. It stores the new integer in `contrastValue` via `access$202` and at lines **59–61** invokes `SettingsUtil.putGlobalValueInt(resolver, "picture_contrast", contrastValue)`. That util calls `Settings.Global.putInt` (smali 103), *discarding its boolean result*.
+
+The original controller `initView` locates `TitleSeekBarView` for contrast at resource `0x7f0a04a5`, initialises it with `setValue(contrastValue)` (smali ~288–292), then installs `PictureModeValueSecondaryController$2` as its `OnValueChangeListener` (~334–340). In `initData`, `SettingsUtil.getGlobalValueInt(resolver,"picture_contrast",0x32)` uses **50 only as the missing-provider fallback value**, not as a documented minimum, maximum or D-pad step. These focused static observations confirm that a lightweight MOD-owned provider writer is architecturally possible without any Chinese UI runtime dependency. The internal `TitleSeekBarView` key increment was not derived from the reviewed log, so remains unknown until exact key behavior is measured.
+
 ## C. Original value range and step: verified vs missing
 
 **Source of truth for actual value range on 8054**: `TVSettingConfig.getMin("g_video__contrast")`, `getMax("g_video__contrast")`. Current MOD already reflects both and reads `getConfigValueInt("g_video__contrast")`. It also compares the MediaTek returned integer to Global `picture_contrast` before opening. **No numeric min/max is verified for all active sources/profiles; do not hardcode `0..100`**. Validate `min <= current <= max` and `min < max`.
@@ -89,7 +95,8 @@ Existing commands, no new execution: [STOCK_PICTURE_DIAGNOSTICS_8054.md](../STOC
 - `OEM_STEP`: **UNKNOWN**.
 - `GLOBAL_TO_NATIVE_SETTER`: **STATIC_CONFIRMED** (prior NATIVE-004).
 - `MOD_LOWER_UI`: **BUILT_READ_ONLY**.
-- `MOD_PIC04_WRITE`: **NOT_ENABLED**, not a working feature.
+- `PIC04_STEP_POLICY`: **SOFTWARE_IMPLEMENTED / TESTED** in separate [Draft PR #4](https://github.com/MAX-TAC/Projector-Soft/pull/4), pure-Java `Pic04ContrastStep` with no production writer binding. [CI 44808298783](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44808298783) **SUCCESS** (Android source compilation and JVM policy test). It explicitly requires a trusted independent source/signal/profile/generation, OEM increment and durable baseline.
+- `MOD_PIC04_WRITE`: **NOT WIRED / NOT ENABLED**. v41 lower dialog remains read-only in both PR #2 and the experimental PR #4; no compiled hardware candidate claiming working PIC04 has been produced.
 - `INPUT_PROFILE_CONTEXT`: **UNVERIFIED**.
 - `MEDIATEK_READBACK_RUNTIME`: **NOT_TESTED**.
 - `HARDWARE_EFFECT_VERIFIED`: **NOT_TESTED**.
@@ -97,3 +104,11 @@ Existing commands, no new execution: [STOCK_PICTURE_DIAGNOSTICS_8054.md](../STOC
 This is a **bounded product blocker**, not a reason to resume generic NATIVE-005b. Next interaction requested from owner: **one explicitly approved manual stock one-step contrast test**, with before/after/restore values and context as above. No privileged writes in this session.
 
 All substantive actions and code provenance: [PRODUCT-001 session log](logs/2026-11-20_PRODUCT-001.md).
+
+## H. Separate implementation branch — actual code and limits
+
+- New branch based **exactly** on PR #2 HEAD `fbb41e92a47a94a2a4b0f4122100e5a1cb43cfe5`: [feature/8054-product-001-pic04-20261120](https://github.com/MAX-TAC/Projector-Soft/tree/feature/8054-product-001-pic04-20261120); isolated [Draft PR #4](https://github.com/MAX-TAC/Projector-Soft/pull/4) targeting `audit/8054-tvsettingsplus-20261117`.
+- Production source [Pic04ContrastStep.java](https://github.com/MAX-TAC/Projector-Soft/blob/feature/8054-product-001-pic04-20261120/app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/Pic04ContrastStep.java) and [Pic04ContrastStepTest.java](https://github.com/MAX-TAC/Projector-Soft/blob/feature/8054-product-001-pic04-20261120/app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/Pic04ContrastStepTest.java); CI workflow updated to compile pure Java policy and execute test.
+- `Pic04ContrastStep.Port` is an injection-only boundary with `read(), preserveOriginal(), submitGlobalContrast()`. It does not call any Chinese UI, settings provider or native code itself. `Port` for actual device **not supplied or installed** because no verified independent main-input/profile contract exists. The policy refuses unknown context, mismatched Global/MediaTek, missing OEM increment, invalid limits, journal failure and concurrent pending changes. A provider echo yields `PENDING`, only stable double Global+MediaTek readback yields `CONFIRMED_BACKEND_ONLY`, never `HARDWARE_EFFECT_VERIFIED`. On change/failure it quarantines the transaction rather than blindly replaying a snapshot.
+- [Successful GitHub Actions run #44808298783](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44808298783) contains `Android bridge compiled to classes.dex` and `PASS PIC04 contract: one step, stable context, durable baseline, async readback, no blind restore`. This confirms source compilation and policy tests, **not APK install, source detection or image effect**.
+- The actual existing editor `NativePicturePanel` **was not changed**. PR #4 should not be merged as a completed feature; next step is the single owner-authorized STOCK test plus independent verified input context, then wire its working Port into existing lower slider and run Android/device tests. No edits to PR #2 or Chinese GUI.
