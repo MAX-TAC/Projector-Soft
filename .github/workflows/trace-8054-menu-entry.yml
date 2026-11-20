@@ -46,4 +46,11 @@ jobs:
       - name: Trace exact Bluetooth, Sources, CEC and projection
         run: python3 tools/trace_8054_post_v39.py /tmp/stock-ui
       - name: Trace the stock picture and sound editor contracts
-        run: python3 tools/trace_8054_picture_sound_editors.py /tmp/stock-ui
+        run: |
+          python3 tools/trace_8054_picture_sound_editors.py /tmp/stock-ui
+          AAPT="$(find "$ANDROID_HOME/build-tools" -type f -name aapt | sort -Vr | head -n 1)"
+          for resource in res/xml/partner_mjc.xml res/layout/partner_progressbar_dialog.xml; do
+            "$AAPT" dump xmltree /tmp/stock.apk "$resource"
+          done
+          "$AAPT" dump --values resources /tmp/stock.apk > /tmp/pq-resources
+          grep -A 16 -E 'spec resource 0x7f0300a[de] |:array/.*(sound_mode|mjc_effect)' /tmp/pq-resources | head -n 240

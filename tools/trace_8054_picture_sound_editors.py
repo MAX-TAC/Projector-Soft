@@ -5,13 +5,16 @@ from pathlib import Path
 
 root = Path(sys.argv[1])
 wanted = {
-    "PictureModeFragment": r"onCreatePreferences|onPreferenceTreeClick|initPreferences",
+    "PictureModeFragment": r"onCreatePreferences|onPreferenceTreeClick|initPreferences|getEntries",
     "ColorTemperatureFragment": r"onCreatePreferences|onPreferenceChange|updateColorTempItemValue|initPreferences",
     "GammaFragment": r"onCreatePreferences|onPfTreeClick|initPreferences",
     "MJCFragment": r"onCreatePreferences|doItemInit|findAllPreferences|onPreferenceChange",
     "ProgressBarVerticalFragment": r"onCreatePreferences|onPreferenceChange|onStart|onResume|onCreateView|onDestroy",
     "ProgressDialogPreference": r"<init>|onClick|onBindViewHolder",
     "NewProgressPreference": r"onKey|onBindViewHolder|setValue|onProgress|lambda|onChange",
+    "ProgressBarDialog": r".",
+    "PictureResetActivity": r".",
+    "AudioResetActivity": r".",
     "PictureResetFragment": r"onCreate|onPreference|reset",
     "AudioResetFragment": r"onCreate|onPreference|reset",
     "EqualizerDetailFragment": r"initPreferences|onPreferenceTreeClick|onResume|onCreate",
