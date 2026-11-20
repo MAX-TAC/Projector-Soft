@@ -779,9 +779,22 @@ Disassembly of section .plt:
    7aeb0:	e28fc600 	add	ip, pc, #0, 12
 ```
 
+## C3. Independently verified ARM PLT -> GOT resolution
+
+For ARM state, PC at an instruction is its address + 8.
+The exact PLT instruction immediates give the GOT address.
+
+
+- BLX 0x7ae90: (PC=0x7ae98) + 0 + 12288 + 352 = GOT **0x7dff8**
+  - Relocation: 0007dff8  00011c16 R_ARM_JUMP_SLOT        00000000   a_mtktvapi_config_set_value
+
+- JNI -> exact C setter edge (ARM BLX + decoded PLT/GOT + JUMP_SLOT): **PROVEN_STATIC**
+- This proves a call to the imported symbol. The normal matching DT_NEEDED provider is the HIDL C-wrapper; no live ELF interposition check was performed.
+
+
 ## D. Automated interpretation (limited)
 
-- Direct labelled JNI branch to C-wrapper setter via PLT in scoped disassembly: **NOT_OBSERVED**.
+- JNI direct call edge to config C setter (labelled or decoded PLT/GOT): **PROVEN_STATIC**.
 - **NOT_OBSERVED is not proof of absence.** Inspect indirect BLX, interposition,
   veneers and JNI wrappers manually before ruling out the edge.
 - The C-wrapper and RPC-wrapper both export similarly named functions, so
