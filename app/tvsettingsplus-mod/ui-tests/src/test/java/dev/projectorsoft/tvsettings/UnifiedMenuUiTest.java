@@ -377,6 +377,35 @@ public class UnifiedMenuUiTest {
         assertEquals(3, screen.getPreferenceCount());
     }
 
+    @Test public void bluetoothRendersAdapterTransitionAndBlocksUnconfirmedOffWithWarning() {
+        android.app.Application app = org.robolectric.RuntimeEnvironment.getApplication();
+        app.getApplicationInfo().flags |= android.content.pm.ApplicationInfo.FLAG_SYSTEM;
+        shadowOf(app).grantPermissions(android.Manifest.permission.BLUETOOTH_CONNECT);
+        org.robolectric.shadows.ShadowSystemProperties.override("ro.rjpj.machine.id", "8054");
+        android.bluetooth.BluetoothAdapter adapter = app.getSystemService(android.bluetooth.BluetoothManager.class).getAdapter();
+        shadowOf(adapter).setState(android.bluetooth.BluetoothAdapter.STATE_TURNING_ON);
+
+        ActivityController<BluetoothSettingsActivity> lifecycle =
+                Robolectric.buildActivity(BluetoothSettingsActivity.class).setup();
+        NativeBluetoothPage page = (NativeBluetoothPage) lifecycle.get()
+                .getSupportFragmentManager().findFragmentById(android.R.id.content);
+        SwitchPreference toggle = page.findPreference(NativeBluetoothPage.SWITCH);
+        assertFalse(toggle.isChecked());
+        assertFalse(toggle.isEnabled());
+        assertEquals("Включается…", toggle.getSummary());
+
+        shadowOf(adapter).setState(android.bluetooth.BluetoothAdapter.STATE_ON);
+        lifecycle.pause().resume();
+        assertTrue(toggle.isChecked());
+        assertTrue(toggle.isEnabled());
+        assertFalse(toggle.callChangeListener(false));
+        android.app.AlertDialog dialog = org.robolectric.shadows.ShadowAlertDialog.getLatestAlertDialog();
+        assertNotNull(dialog);
+        assertTrue(shadowOf(dialog).getMessage().toString().contains(NativeBluetoothPage.WARNING));
+        assertTrue(toggle.isChecked());
+        assertEquals(android.bluetooth.BluetoothAdapter.STATE_ON, adapter.getState());
+    }
+
     @Test public void sourcesUsesRealHomeResolverAndHasNoDuplicatePortStatus() throws Exception {
         android.content.Context context = org.robolectric.RuntimeEnvironment.getApplication();
         android.content.pm.PackageManager pm = context.getPackageManager();

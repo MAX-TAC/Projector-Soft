@@ -138,6 +138,7 @@ jobs:
             app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/PanelCacheReadoutTest.java
           java -cp /tmp/picture-state-tests dev.projectorsoft.tvsettings.PanelCacheReadoutTest
           javac -d /tmp/picture-state-tests \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/Projection8054Policy.java \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/ProjectionToggleState.java \
             app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/ProjectionToggleStateTest.java
           java -cp /tmp/picture-state-tests dev.projectorsoft.tvsettings.ProjectionToggleStateTest

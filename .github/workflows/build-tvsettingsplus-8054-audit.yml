@@ -18,6 +18,7 @@ on:
       - 'tools/verify_8054_unified.py'
       - 'tools/verify_8054_smali_roundtrip.py'
       - 'tools/trace_8054_unified_inputs.py'
+      - 'tools/diagnose_8054_v40.ps1'
   workflow_dispatch:
 concurrency:
   group: tvsettings-exact-8054-v33-build
@@ -469,6 +470,7 @@ jobs:
           This candidate does not replace the pinned 9f8fc64 recovery/installation kit.
           Installation and rollback readiness require the owner's separately authorized read-only preflight.
           EOF
+          cp tools/diagnose_8054_v40.ps1 /tmp/tv33/report/
           printf '%s\n' "$GITHUB_SHA" > /tmp/tv33/report/source-commit.txt
           if [ -f /tmp/tv33/TvSettingsPlus-8054-v40-MAINSETTINGS-EXPERIMENTAL.apk ]; then
             (cd /tmp/tv33 && sha256sum TvSettingsPlus-8054-v40-MAINSETTINGS-EXPERIMENTAL.apk) > /tmp/tv33/report/SHA256SUMS

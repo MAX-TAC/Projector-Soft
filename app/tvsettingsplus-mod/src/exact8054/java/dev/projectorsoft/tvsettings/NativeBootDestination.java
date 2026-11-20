@@ -120,7 +120,7 @@ final class NativeBootDestination {
                 unavailable("Сохранённый источник не совпадает с доступными вариантами");
             } else {
                 setValue(current);
-                setSummary(offered.get(current));
+                setSummary(offered.get(current).replace("%", "%%"));
                 setEnabled(fresh.size() >= 2);
             }
         }

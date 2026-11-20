@@ -63,6 +63,6 @@ final class ProjectionToggleState {
             // The OEM may have partially applied a write before throwing.
         }
         Boolean after = refresh();
-        return completed && after != null && after == requested ? Result.CONFIRMED : Result.FAILED;
+        return completed && after != null && after == requested && restriction() == null ? Result.CONFIRMED : Result.FAILED;
     }
 }
