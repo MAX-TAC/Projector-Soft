@@ -15,12 +15,14 @@ wanted = {
     "ProgressBarDialog": r".",
     "PictureResetActivity": r".",
     "AudioResetActivity": r".",
+    "AudioResetActivity$ConfirmFragment": r".",
+    "PictureResetActivity$ConfirmFragment": r".",
     "PictureResetFragment": r"onCreate|onPreference|reset",
     "AudioResetFragment": r"onCreate|onPreference|reset",
     "EqualizerDetailFragment": r"initPreferences|onPreferenceTreeClick|onResume|onCreate",
     "PreferenceConfigUtils": r"getArrayIdsByCustomer|createNewProgressPreferencesss|createProgressDialogPreference",
     "PartnerSettingsConfig": r"getSettingsList|getArray",
-    "SoundModeFragment": r"onCreatePreferences|onPreferenceTreeClick",
+    "SoundModeFragment": r"onCreatePreferences|onPreferenceTreeClick|initPreferences|onPfTreeClick",
 }
 method = re.compile(r'(?ms)^\.method .*?^\.end method')
 for path in sorted(root.glob('smali*/**/*.smali')):

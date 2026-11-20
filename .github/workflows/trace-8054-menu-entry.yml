@@ -53,4 +53,4 @@ jobs:
             "$AAPT" dump xmltree /tmp/stock.apk "$resource"
           done
           "$AAPT" dump --values resources /tmp/stock.apk > /tmp/pq-resources
-          grep -A 16 -E 'spec resource 0x7f0300a[de] |:array/.*(sound_mode|mjc_effect)' /tmp/pq-resources | head -n 240
+          grep -m 25 -A 10 -E '^ +resource 0x7f030(0a[de]|10f|11[012]) ' /tmp/pq-resources
