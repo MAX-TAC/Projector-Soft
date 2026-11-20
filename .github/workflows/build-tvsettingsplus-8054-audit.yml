@@ -1,0 +1,489 @@
+name: Build exact 8054 TvSettingsPlus audit candidate
+on:
+  push:
+    branches:
+      - audit/8054-tvsettingsplus-20261117
+    paths:
+      - '.github/workflows/build-tvsettingsplus-8054-audit.yml'
+      - 'app/tvsettingsplus-mod/src/main/java/**'
+      - 'app/tvsettingsplus-mod/src/exact8054/java/**'
+      - 'app/tvsettingsplus-mod/ui-tests/**'
+      - 'tools/verify_8054_native_host.py'
+      - 'tools/collect_8054_ui_reference.py'
+      - 'app/tvsettingsplus-mod/src/test/java/**'
+      - 'tools/patch_*.py'
+      - 'tools/find_8054_panel_cache.py'
+      - 'tools/find_8054_user_routes.py'
+      - 'tools/compose_brightness_v3_apk.py'
+      - 'tools/verify_8054_unified.py'
+      - 'tools/verify_8054_smali_roundtrip.py'
+      - 'tools/trace_8054_unified_inputs.py'
+      - 'tools/diagnose_8054_v40.ps1'
+  workflow_dispatch:
+concurrency:
+  group: tvsettings-exact-8054-v33-build
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    defaults:
+      run:
+        working-directory: ./Projector-Soft
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: MAX-TAC/FlixTone_8054_Backup
+          ref: dbc097a3bf7c7c73f2c5d5400a253dfe8f3fe11f
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: MAX-TAC/Projector-Soft
+          ref: ${{ github.sha }}
+          path: Projector-Soft
+      - name: Extract EXACT live 8054 OEM firmware and APK base (read-only)
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq erofs-utils apksigner openssl aapt
+          gh api repos/MAX-TAC/FlixTone_8054_Backup/releases/447166291 --jq '.draft'
+          gh release download FlixTone_8054_Backup \
+            --repo MAX-TAC/FlixTone_8054_Backup \
+            --pattern FlixTone_8054_Backup.zip --dir /tmp
+          test "$(stat -c %s /tmp/FlixTone_8054_Backup.zip)" -eq 2011878129
+          sha256sum /tmp/FlixTone_8054_Backup.zip | grep -i '^4f53f2224c98b4c832a19a591b9dd7f925bde28528b5674a09732c0f0e41d362 '
+          python3 ../tools/inspect_8054_draft_safely.py /tmp/FlixTone_8054_Backup.zip >/tmp/safe8054-parse.log
+          python3 ../tools/deep_audit_8054_stock.py >/tmp/deep8054-parse.log
+          test -s '/tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk'
+          test -s '/tmp/flix8054_erofs/system_a_tree/system/framework/framework-res.apk'
+          echo 'Ready: exact original 8054 APK and framework-res, only in temporary runner.'
+          sha256sum '/tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk'
+          aapt dump badging '/tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk' | grep '^package:'
+          python3 - <<'PY'
+          import re, subprocess
+          manifest = subprocess.check_output(['aapt','dump','xmltree',
+              '/tmp/flix8054_erofs/system_a_tree/system/app/KuSettings/KuSettings.apk','AndroidManifest.xml'],
+              text=True)
+          activities = re.split(r'(?m)^    E: ',manifest)
+          routed = any(block.startswith('activity ') and re.search(
+              r'android:name\([^)]*\)="(?:com\.my\.settings)?\.activity\.ProjectionActivity"',block)
+              and '"android.settings.PROJECTABOUT_SETTINGS"' in block
+              and '"android.intent.category.DEFAULT"' in block for block in activities)
+          print('8054 stock ProjectionActivity default route:', 'confirmed' if routed else 'not established; runtime check and OEM fallback')
+          PY
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Prepare OEM decode and Android SDK tools
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/tv33 /tmp/tv33/classes /tmp/tv33/dex /tmp/tv33/keys
+          curl -fsSL --retry 3 https://github.com/iBotPeaches/Apktool/releases/download/v2.11.1/apktool_2.11.1.jar -o /tmp/tv33/apktool.jar
+          printf '#!/bin/sh\nexec java -jar /tmp/tv33/apktool.jar "$@"\n' > /tmp/tv33/apktool
+          chmod +x /tmp/tv33/apktool
+          echo "/tmp/tv33" >> "$GITHUB_PATH"
+          if [ ! -f "$ANDROID_HOME/platforms/android-33/android.jar" ] || [ ! -x "$ANDROID_HOME/build-tools/33.0.3/d8" ]; then
+            SDK_MANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | head -n 1)"
+            yes | "$SDK_MANAGER" "platforms;android-33" "build-tools;33.0.3" || true
+          fi
+          test -f "$ANDROID_HOME/platforms/android-33/android.jar"
+          test -x "$ANDROID_HOME/build-tools/33.0.3/d8"
+          echo "$ANDROID_HOME/build-tools/33.0.3" >> "$GITHUB_PATH"
+          echo 'f8e0c6fe0f46e7eb8db651c31d85ef8b32a769b37e4dd0f96ed19a64725d74ee  /tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk' | sha256sum -c -
+      - name: Compile Android 13 OEM-aware right-pane bridge
+        run: |
+          set -euo pipefail
+          ANDROID_JAR="$ANDROID_HOME/platforms/android-33/android.jar"
+          mkdir -p /tmp/tv33/framework /tmp/tv33/generated
+          apktool if /tmp/flix8054_erofs/system_a_tree/system/framework/framework-res.apk -p /tmp/tv33/framework
+          apktool d -f -r -p /tmp/tv33/framework /tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk -o /tmp/tv33/decoded
+          python3 tools/find_8054_keystone_layout.py \
+            /tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk \
+            /tmp/tv33/generated/Exact8054ProjectionResources.java
+          python3 tools/test_find_8054_user_routes.py
+          python3 tools/find_8054_user_routes.py \
+            /tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk \
+            /tmp/tv33/decoded /tmp/tv33/generated/Exact8054UserRoutes.java
+          grep -F 'PICTURE_FORMAT = "com.android.tv.settings.partnercustomizer.picture.DisplayModeActivity"' /tmp/tv33/generated/Exact8054UserRoutes.java
+          python3 tools/find_8054_panel_cache.py /tmp/tv33/decoded /tmp/tv33/generated/Exact8054PanelCache.java
+          python3 tools/verify_8054_native_host.py /tmp/tv33/decoded
+          gradle -p app/tvsettingsplus-mod/ui-tests compileDebugJavaWithJavac --no-daemon --console=plain \
+            -PexactSources=/tmp/tv33/generated
+          CLASSES=app/tvsettingsplus-mod/ui-tests/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes
+          find "$CLASSES/dev/projectorsoft" -type f -name '*.class' -print0 | xargs -0 "$ANDROID_HOME/build-tools/33.0.3/d8" \
+            --lib "$ANDROID_JAR" --classpath "$CLASSES" --min-api 33 --output /tmp/tv33/dex
+          test -s /tmp/tv33/dex/classes.dex
+          strings /tmp/tv33/dex/classes.dex | grep -q 'LegacyBrightnessUiHook'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'OemRootMenuHook'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'OemLaunchRouteHook'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'OemInlinePreferencesHook'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'OemInlineSlidersHook'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'OemProjectorOrientationHook'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'OemFiveBandEqualizerHook'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'OemHdmiEdidHook'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'OemHdmiAutoPlayHook'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'OemPowerOnSourceHook'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'OemPowerOnAppHook'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'OemFontScaleHook'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'OemScreenTimeoutSafetyHook'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'OemBluetoothRemoteHook'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'OemBluetoothRemotePolicy'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'OemKuSourceServiceAudit'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'OemLegacyIntentAudit'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'OemLegacyIntentPolicy'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'OemKuSourceServicePolicy'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'OemScreenTimeoutPolicy'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'hideSleepControls'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'OemFontScalePolicy'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'OemPowerOnAppPolicy'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'OemHdmiCecHook'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'OemSystemInfoHook'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'OemThermalTelemetryHook'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'ThermalTelemetryPolicy'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'OemCompatibilityDiagnosticsHook'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'ProjectorCompatibilityPolicy'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'OemEarcDelegatedPreference'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'OemHardwareDelegatedSettings'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'OemAcPowerBootHook'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'OemKeyToneHook'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'OemKeyTonePolicy'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'OemAcPowerBootPolicy'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'OemDelegatedMenuPolicy'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'projectorsoft_firmware_update_oem'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'projectorsoft_boot_application_oem'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'projectorsoft_hdmi_game_oem'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'projectorsoft_calibration_oem'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'sound_sound_surround'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'KEY_SOUND_AUTO_VOLUME_CONTROL'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'KuSourceRecoveryService'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'KuSourceRecoveryBootReceiver'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'KuSourceRecoveryPolicy'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'KuSourceRecoveryActivationPolicy'
+          grep -q 'explicitlyDisabled(state)' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/KuSourceRecoveryBootReceiver.java
+          grep -Fq 'automaticRecoveryAllowed(' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/KuSourceRecoveryBootReceiver.java
+          grep -Fq 'mayUseLegacySelector(machineId())' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemHdmiEdidHook.java
+          ! grep -q 'NameNotFoundException' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/KuSourceRecoveryBootReceiver.java
+          grep -q 'targetPackageVisible' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/KuSourceRecoveryService.java
+          ! grep -q 'sawOtherPackages' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/KuSourceRecoveryService.java
+          strings /tmp/tv33/dex/classes.dex | grep -q 'A_RJ_MACHINE_ID'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'isSupportPowerConfirmed'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'setHdmiCecAutoDeviceOffEnabled'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'setEarcEnable'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'persist.trd.source_id'
+          # Never list nonexistent HDMI ports on an unconfirmed device.
+          grep -q 'return Collections.emptyList()' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/BootSourceMapping.java
+          strings /tmp/tv33/dex/classes.dex | grep -q 'persist.rjpj.hdmiplug.autoplay'
+          strings /tmp/tv33/dex/classes.dex | grep -q 'tv_input_hdmi_edid_version'
+          for key in sound_equalizer_detail_120hz sound_equalizer_detail_500hz \
+                     sound_equalizer_detail_1500hz sound_equalizer_detail_5000hz \
+                     sound_equalizer_detail_10000hz; do
+            strings /tmp/tv33/dex/classes.dex | grep -Fq "$key"
+          done
+          grep -Fq '"Изображение · Проектор"' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemInlinePreferencesHook.java
+          grep -Fq '"Звук · Проектор"' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemInlinePreferencesHook.java
+          ! grep -Fq '"projectorsoft_hdmi_gamemode"' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemInlinePreferencesHook.java
+      - name: Verify thermal-watchdog fail-closed policies on pure JVM
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/tv33/policy-tests
+          javac -d /tmp/tv33/policy-tests \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/KuSourceRecoveryActivationPolicy.java \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/KuSourceRecoveryPolicy.java \
+            app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/KuSourceRecoveryActivationPolicyTest.java \
+            app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/KuSourceRecoveryPolicyTest.java
+          javac -d /tmp/tv33/policy-tests \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemEarcPolicy.java \
+            app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/OemEarcPolicyTest.java
+          for test in KuSourceRecoveryActivationPolicyTest KuSourceRecoveryPolicyTest OemEarcPolicyTest; do
+            java -cp /tmp/tv33/policy-tests "dev.projectorsoft.tvsettings.$test"
+          done
+      - name: Test 8054 EDID port gate on JVM
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/tv33/edid-tests
+          javac -d /tmp/tv33/edid-tests \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/EdidPortPolicy.java \
+            app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/EdidPortPolicyTest.java
+          java -cp /tmp/tv33/edid-tests dev.projectorsoft.tvsettings.EdidPortPolicyTest
+      - name: Unit-test fail-closed 8052/8054 diagnostic messages
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/tv33/diagnostics-tests
+          javac -d /tmp/tv33/diagnostics-tests \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/ProjectorCompatibilityPolicy.java \
+            app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/ProjectorCompatibilityPolicyTest.java
+          java -cp /tmp/tv33/diagnostics-tests dev.projectorsoft.tvsettings.ProjectorCompatibilityPolicyTest
+      - name: Verify read-only thermal telemetry formatting on pure JVM
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/tv33/telemetry-tests
+          javac -d /tmp/tv33/telemetry-tests \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/ThermalTelemetryPolicy.java \
+            app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/ThermalTelemetryPolicyTest.java
+          java -cp /tmp/tv33/telemetry-tests dev.projectorsoft.tvsettings.ThermalTelemetryPolicyTest
+      - name: Verify OEM update and power-on app routing on pure JVM
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/tv33/menu-tests
+          javac -d /tmp/tv33/menu-tests \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemDelegatedMenuPolicy.java \
+            app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/OemDelegatedMenuPolicyTest.java
+          java -cp /tmp/tv33/menu-tests dev.projectorsoft.tvsettings.OemDelegatedMenuPolicyTest
+          grep -q 'tciv_system_online_update' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemHardwareDelegatedSettings.java
+          grep -q 'tciv_source_power_on_app' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemHardwareDelegatedSettings.java
+          grep -q 'Об устройстве · Проектор' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemInlinePreferencesHook.java
+      - name: Software-test native factory AC-power boot switch
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/tv33/ac-power-tests
+          javac -d /tmp/tv33/ac-power-tests \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemAcPowerBootPolicy.java \
+            app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/OemAcPowerBootPolicyTest.java
+          java -cp /tmp/tv33/ac-power-tests dev.projectorsoft.tvsettings.OemAcPowerBootPolicyTest
+          grep -q 'isElectricityBoot' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemAcPowerBootHook.java
+          grep -q 'putElectricityBoot' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemAcPowerBootHook.java
+          grep -q 'projectorsoft_power_category' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemInlinePreferencesHook.java
+      - name: Software-test verified OEM keypress sound control
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/tv33/keytone-tests
+          javac -d /tmp/tv33/keytone-tests \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemKeyTonePolicy.java \
+            app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/OemKeyTonePolicyTest.java
+          java -cp /tmp/tv33/keytone-tests dev.projectorsoft.tvsettings.OemKeyTonePolicyTest
+          grep -Fq 'SETTINGS_KEY_SOUND_EFFECTS_ENABLED' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemKeyToneHook.java
+          grep -Fq 'Settings.System.putInt' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemKeyToneHook.java
+      - name: Test native power-on app selector and OEM-source fallback
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/tv33/bootapp-tests
+          javac -d /tmp/tv33/bootapp-tests \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemPowerOnAppPolicy.java \
+            app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/OemPowerOnAppPolicyTest.java
+          java -cp /tmp/tv33/bootapp-tests dev.projectorsoft.tvsettings.OemPowerOnAppPolicyTest
+          grep -Fq 'persist.trd.source_id' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemPowerOnAppHook.java
+          grep -Fq 'hasBootApp' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemInlinePreferencesHook.java
+          grep -Fq '!nativeBootApp' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemHardwareDelegatedSettings.java
+      - name: Verify exact OEM four-state text scale and persistence
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/tv33/fonts-tests
+          javac -d /tmp/tv33/fonts-tests \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemFontScalePolicy.java \
+            app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/OemFontScalePolicyTest.java
+          java -cp /tmp/tv33/fonts-tests dev.projectorsoft.tvsettings.OemFontScalePolicyTest
+          grep -Fq 'Settings.System.putFloat' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemFontScaleHook.java
+          grep -Fq '0.85f,1.0f,1.15f,1.3f' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemFontScalePolicy.java
+      - name: Verify Never/Never/no-dream screen policy on JVM
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/tv33/safety-tests
+          javac -d /tmp/tv33/safety-tests \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemScreenTimeoutPolicy.java \
+            app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/OemScreenTimeoutPolicyTest.java
+          java -cp /tmp/tv33/safety-tests dev.projectorsoft.tvsettings.OemScreenTimeoutPolicyTest
+          grep -Fq 'OemScreenTimeoutSafetyHook.ensureNever(context)' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/KuSourceRecoveryBootReceiver.java
+          grep -Fq 'Settings.Secure.putInt' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemScreenTimeoutSafetyHook.java
+          grep -Fq 'Settings.System.putInt' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemScreenTimeoutSafetyHook.java
+          grep -Fq 'screensaver_enabled' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemScreenTimeoutPolicy.java
+      - name: Validate native Bluetooth remote and KuSourceRJ diagnostic policies
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/tv33/remote-tests
+          javac -d /tmp/tv33/remote-tests \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemBluetoothRemotePolicy.java \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemKuSourceServicePolicy.java \
+            app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/OemBluetoothRemotePolicyTest.java \
+            app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/OemKuSourceServicePolicyTest.java
+          java -cp /tmp/tv33/remote-tests dev.projectorsoft.tvsettings.OemBluetoothRemotePolicyTest
+          java -cp /tmp/tv33/remote-tests dev.projectorsoft.tvsettings.OemKuSourceServicePolicyTest
+          grep -Fq 'getBondedDevices' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemBluetoothRemoteHook.java
+          grep -Fq 'AddAccessoryActivity' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemBluetoothRemoteHook.java
+          grep -Fq 'getRunningServices' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemKuSourceServiceAudit.java
+          ! grep -Fq 'startService(' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemKuSourceServiceAudit.java
+      - name: Test nine legacy implicit KuSettings navigation routes
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/tv33/legacy-tests
+          javac -d /tmp/tv33/legacy-tests \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemLegacyIntentPolicy.java \
+            app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/OemLegacyIntentPolicyTest.java
+          java -cp /tmp/tv33/legacy-tests dev.projectorsoft.tvsettings.OemLegacyIntentPolicyTest
+          python3 - <<'PY'
+          import ast
+          from pathlib import Path
+          tree=ast.parse(Path('tools/patch_axml_compat_aliases.py').read_text())
+          vals=next(ast.literal_eval(n.value) for n in tree.body
+                    if isinstance(n,ast.Assign) and
+                    any(isinstance(t,ast.Name) and t.id=='ALIASES' for t in n.targets))
+          actual={row[2] for row in vals}
+          expected={
+            'android.settings.SETTINGS',
+            'android.settings.WIFI_SETTINGS',
+            'android.settings.BLUETOOTH_SETTINGS',
+            'android.settings.AUTO_BLUETOOTH',
+            'android.settings.LAUGUAGE_SETTINGS',
+            'android.settings.LAUGUAGE_LOCAL_SETTINGS',
+            'android.settings.DATETIME_SETTINGS',
+            'android.settings.ALLAPPS',
+            'android.settings.PROJECTABOUT_SETTINGS'
+          }
+          assert actual==expected, (actual,expected)
+          audit=Path('app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemLegacyIntentAudit.java').read_text()
+          assert all('"'+action+'"' in audit for action in expected)
+          print('PASS: 9 checked implicit actions match exact patched AndroidManifest aliases')
+          PY
+      - name: Confirm exact STOCK projection and panel contracts
+        run: |
+          set -euo pipefail
+          # Verify the original callbacks and fallback entry on the exact unmodified APK.
+          python3 - <<'PY'
+          import pathlib, re
+          root = pathlib.Path('/tmp/tv33/decoded')
+
+          def stock_method(owner, signature):
+              paths = list(root.glob('smali*/**/floatmenu/controller/**/'+owner+'.smali'))
+              assert len(paths) == 1, paths
+              method = re.search(r'(?ms)^\.method '+re.escape(signature)+r'\n.*?^\.end method',
+                                 paths[0].read_text())
+              assert method, signature
+              return method.group()
+
+          base = 'Lcom/android/tv/settings/uicustom/floatmenu/controller/BaseSubMenuController;'
+          constructor = stock_method('FocusSettingsSecondaryController','public constructor <init>()V')
+          assert re.findall(r'(?m)^\s+invoke-\S+ \{[^}]*\}, (\S+)$',constructor) == [base+'-><init>()V']
+          assert not re.search(r'\b(?:sput|new-instance|monitor-|throw)',constructor), constructor
+          parent = stock_method('BaseSubMenuController','public constructor <init>()V')
+          parent_calls = re.findall(r'(?m)^\s+invoke-\S+ \{[^}]*\}, (\S+)$',parent)
+          assert parent_calls == ['Ljava/lang/Object;-><init>()V'], parent
+          assert not re.search(r'\b(?:sput|new-instance|monitor-|throw)',parent), parent
+          print('PASS public stock focus constructor chain without attach')
+
+          keystone_constructor = stock_method('KeystoneSettingsSecondaryController','public constructor <init>()V')
+          constructor_calls = re.findall(r'(?m)^\s+invoke-\S+ \{[^}]*\}, (\S+)$', keystone_constructor)
+          assert constructor_calls and constructor_calls[0] == base+'-><init>()V', keystone_constructor
+          assert all(call in {
+              base+'-><init>()V',
+              'Landroid/os/Looper;->getMainLooper()Landroid/os/Looper;',
+              'Landroid/os/Handler;-><init>()V',
+              'Landroid/os/Handler;-><init>(Landroid/os/Looper;)V'
+          } for call in constructor_calls), keystone_constructor
+          assert not re.search(r'\b(?:sput|monitor-|throw)',keystone_constructor), keystone_constructor
+          print('PASS public stock keystone constructor chain; calls:', constructor_calls)
+
+          keystone = stock_method('KeystoneSettingsSecondaryController','private setMoveAutoKeystone(Z)V')
+          assert re.findall(r'const-string(?:/jumbo)? \S+, "([^"]+)"',keystone) == ['persist.rjpj.autokeystone.move']
+          fields = set(re.findall(r'->(tsv_keystone_\w+):',keystone))
+          assert fields == {'tsv_keystone_auto_screen','tsv_keystone_auto_obstacle_avoidance','tsv_keystone_vertical'}, fields
+          calls = set(re.findall(r'(?m)^\s+invoke-\S+ \{[^}]*\}, (\S+)$',keystone))
+          assert calls == {
+              'Ljava/lang/String;->valueOf(I)Ljava/lang/String;',
+              'Lcom/android/tv/settings/uicustom/util/SystemPropertiesUtil;->set(Ljava/lang/String;Ljava/lang/String;)V',
+              'Lcom/android/tv/settings/uicustom/view/TitleSwitchView;->setDisableFocus(Z)V',
+              'Lcom/android/tv/settings/uicustom/view/TitleSwitchView;->setSwitchEnable(Z)V'
+          }, calls
+          print('PASS stock movement keystone callback and its widget dependencies')
+
+          for setter, key in {'setPowerOnAutoFocus': 'persist.rjpj.autofocus.poweron',
+                              'setMoveAutoFocus': 'persist.rjpj.autofocus.move'}.items():
+              body = stock_method('FocusSettingsSecondaryController','private '+setter+'(Z)V')
+              calls = re.findall(r'(?m)^\s+invoke-\S+ \{[^}]*\}, (\S+)$', body)
+              assert calls == [
+                  'Ljava/lang/String;->valueOf(I)Ljava/lang/String;',
+                  'Lcom/android/tv/settings/uicustom/util/SystemPropertiesUtil;->set(Ljava/lang/String;Ljava/lang/String;)V'
+              ], calls
+              assert re.findall(r'const-string(?:/jumbo)? \S+, "([^"]+)"',body) == [key], body
+              assert ':try_' not in body and 'iget-' not in body, body
+              print('PASS standalone stock focus callback',setter,key)
+
+          launch = stock_method('KeystoneSettingsSecondaryController','private gotoKeystoneCorrection()V')
+          assert 'const-class v2, Lcom/android/tv/settings/uicustom/fragment/projector/KeystoneCalibrationActivity;' in launch
+          assert 'Landroid/content/Intent;-><init>(Landroid/content/Context;Ljava/lang/Class;)V' in launch
+          assert 'Landroid/content/Context;->startActivity(Landroid/content/Intent;)V' in launch
+          print('PASS stock keystone fallback Intent')
+          PY
+      - name: Integrate original MainSettings and verify the single changed OEM DEX
+        run: |
+          set -euo pipefail
+          STOCK=/tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk
+          mkdir -p /tmp/tv33/report
+          cp -a /tmp/tv33/decoded/smali_classes13 /tmp/tv33/stock-classes13
+          python3 tools/patch_8054_mainsettings.py /tmp/tv33/decoded \
+            /tmp/tv33/patch_report.json /tmp/tv33/report/mainsettings-smali.diff
+          apktool b -p /tmp/tv33/framework /tmp/tv33/decoded -o /tmp/tv33/rebuilt.apk
+          python3 tools/compose_brightness_v3_apk.py "$STOCK" /tmp/tv33/rebuilt.apk \
+            /tmp/tv33/dex/classes.dex /tmp/tv33/patch_report.json /tmp/tv33/unsigned.apk \
+            --version-code 41 --unified-8054
+          aapt dump badging /tmp/tv33/unsigned.apk | grep "name='com.android.tv.settings' versionCode='41'"
+          aapt dump xmltree "$STOCK" AndroidManifest.xml > /tmp/tv33/stock-manifest-tree.txt
+          aapt dump xmltree /tmp/tv33/unsigned.apk AndroidManifest.xml > /tmp/tv33/manifest-tree.txt
+          python3 tools/verify_8054_unified.py "$STOCK" /tmp/tv33/unsigned.apk \
+            /tmp/tv33/stock-manifest-tree.txt /tmp/tv33/manifest-tree.txt
+          apktool d -r -p /tmp/tv33/framework /tmp/tv33/unsigned.apk -o /tmp/tv33/candidate
+          python3 tools/verify_8054_smali_roundtrip.py \
+            /tmp/tv33/decoded/smali_classes13 /tmp/tv33/candidate/smali_classes13
+          sha256sum /tmp/tv33/stock-classes13/com/android/tv/settings/MainSettings.smali \
+            /tmp/tv33/candidate/smali_classes13/com/android/tv/settings/MainSettings.smali
+          python3 tools/collect_8054_ui_reference.py "$STOCK" /tmp/tv33/report/stock-ui-reference
+          cp /tmp/tv33/stock-manifest-tree.txt /tmp/tv33/report/stock-ui-reference/
+      - name: Cert-verified platform signing and archive integrity
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 3 https://raw.githubusercontent.com/aosp-mirror/platform_build/master/target/product/security/platform.x509.pem -o /tmp/tv33/keys/platform.x509.pem
+          curl -fsSL --retry 3 https://raw.githubusercontent.com/aosp-mirror/platform_build/master/target/product/security/platform.pk8 -o /tmp/tv33/keys/platform.pk8
+          ORIGINAL="$(apksigner verify --print-certs /tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk | grep 'Signer #1 certificate SHA-256 digest:' | head -1 | awk '{print $NF}')"
+          PLATFORM="$(openssl x509 -in /tmp/tv33/keys/platform.x509.pem -noout -fingerprint -sha256 | cut -d= -f2 | tr -d : | tr '[:upper:]' '[:lower:]')"
+          test "$ORIGINAL" = c8a2e9bccf597c2fb6dc66bee293fc13f2fc47ec77bc6b2b0d52c11f51192ab8
+          test "$ORIGINAL" = "$PLATFORM"
+          zipalign -f -p 4 /tmp/tv33/unsigned.apk /tmp/tv33/aligned.apk
+          apksigner sign --key /tmp/tv33/keys/platform.pk8 --cert /tmp/tv33/keys/platform.x509.pem \
+            --v1-signing-enabled true --v2-signing-enabled true --v3-signing-enabled true --out /tmp/tv33/TvSettingsPlus-8054-v41-MAINSETTINGS-EXPERIMENTAL.apk /tmp/tv33/aligned.apk
+          CANDIDATE=/tmp/tv33/TvSettingsPlus-8054-v41-MAINSETTINGS-EXPERIMENTAL.apk
+          apksigner verify --verbose --print-certs "$CANDIDATE"
+          MOD="$(apksigner verify --print-certs "$CANDIDATE" | awk -F ': ' '/Signer #1 certificate SHA-256 digest:/ {print $2}')"
+          test -n "$MOD" && test "$MOD" = "$ORIGINAL"
+          grep -F 'android:sharedUserId(0x0101000b)="android.uid.system"' /tmp/tv33/manifest-tree.txt
+          aapt dump badging /tmp/tv33/TvSettingsPlus-8054-v41-MAINSETTINGS-EXPERIMENTAL.apk | grep "name='com.android.tv.settings' versionCode='41'"
+          sha256sum /tmp/tv33/TvSettingsPlus-8054-v41-MAINSETTINGS-EXPERIMENTAL.apk
+      - name: Experimental-only metadata
+        if: always()
+        run: |
+          mkdir -p /tmp/tv33/report
+          python3 tools/trace_8054_unified_inputs.py /tmp/tv33/decoded /tmp/flix8054_erofs > /tmp/tv33/report/stock-input-routes.txt
+          cat /tmp/tv33/report/stock-input-routes.txt
+          cat > /tmp/tv33/report/README.txt <<'EOF'
+          WARNING: EXPERIMENTAL. Not tested on actual projector; DO NOT install as production.
+          TvSettingsPlus 8054 EXACT-BUILD platform-signature-matched v41.
+          Static verification only. Code and CI links are in the integration audit for this commit.
+          Package com.android.tv.settings, versionCode 41, original 8054 signing certificate.
+          PIC18 reads only an existing stock panel cache. No new hardware settings on startup.
+          MOD navigation does not apply the inactivity policy. Dormant recovery components are disabled.
+          Stock MainSettings hosts the redesigned root. Only classes13.dex changes, with reported MainSettings and stock Bluetooth row routing.
+          This candidate does not replace the pinned 9f8fc64 recovery/installation kit.
+          Installation and rollback readiness require the owner's separately authorized read-only preflight.
+          EOF
+          cp tools/diagnose_8054_v40.ps1 /tmp/tv33/report/
+          printf '%s\n' "$GITHUB_SHA" > /tmp/tv33/report/source-commit.txt
+          if [ -f /tmp/tv33/TvSettingsPlus-8054-v41-MAINSETTINGS-EXPERIMENTAL.apk ]; then
+            (cd /tmp/tv33 && sha256sum TvSettingsPlus-8054-v41-MAINSETTINGS-EXPERIMENTAL.apk) > /tmp/tv33/report/SHA256SUMS
+          fi
+          cp /tmp/tv33/patch_report.json /tmp/tv33/report/patch_report.json 2>/dev/null || true
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: tvsettingsplus-8054-v41-mainsettings-experimental
+          path: |
+            /tmp/tv33/TvSettingsPlus-8054-v41-MAINSETTINGS-EXPERIMENTAL.apk
+            /tmp/tv33/report/
+          retention-days: 14
+          if-no-files-found: warn
+
+

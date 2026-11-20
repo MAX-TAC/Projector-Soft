@@ -13,6 +13,11 @@ public final class OemFontScaleHook {
     private static final String SYSTEM_KEY="font_scale";
     private OemFontScaleHook() {}
 
+    // AndroidX ListPreference interprets this summary as a format string.
+    private static String summary(String label) {
+        return label.replace("%", "%%");
+    }
+
     public static boolean install(Context context,Object category,Class<?> preference) {
         if(context==null || category==null || preference==null)return false;
         try {
@@ -27,6 +32,7 @@ public final class OemFontScaleHook {
             };
             float current=store.read();
             int initial=OemFontScalePolicy.index(current);
+            int[] displayed={initial};
             if(initial<0)return false;
             String[] titles=OemFontScalePolicy.labels();
             float[] values=OemFontScalePolicy.values();
@@ -41,7 +47,7 @@ public final class OemFontScaleHook {
             preference.getMethod("setKey",String.class).invoke(
                     item,"projectorsoft_font_scale");
             preference.getMethod("setTitle",CharSequence.class).invoke(item,"Размер текста");
-            preference.getMethod("setSummary",CharSequence.class).invoke(item,titles[initial]);
+            preference.getMethod("setSummary",CharSequence.class).invoke(item,summary(titles[initial]));
             preference.getMethod("setOrder",int.class).invoke(item,256);
             preference.getMethod("setPersistent",boolean.class).invoke(item,false);
             listType.getMethod("setEntries",CharSequence[].class).invoke(item,(Object)display);
@@ -54,13 +60,14 @@ public final class OemFontScaleHook {
                 String name=method.getName();
                 if("onPreferenceChange".equals(name)){
                     if(args==null || args.length<2)return false;
-                    boolean success=OemFontScalePolicy.apply(store,args[1]);
+                    boolean success=OemFontScalePolicy.apply(store,displayed[0],args[1]);
                     if(success){
                         try {
                             float wanted=Float.parseFloat(String.valueOf(args[1]));
                             int index=OemFontScalePolicy.index(wanted);
+                            displayed[0]=index;
                             if(index>=0)preference.getMethod("setSummary",CharSequence.class)
-                                    .invoke(item,titles[index]);
+                                    .invoke(item,summary(titles[index]));
                         }catch(Exception e){Log.w(TAG,"Could not update font summary",e);}
                     }
                     return success;
@@ -82,3 +89,4 @@ public final class OemFontScaleHook {
         }
     }
 }
+

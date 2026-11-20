@@ -26,19 +26,19 @@ import java.util.List;
 public final class OemFiveBandEqualizerHook {
     private static final String TAG="TvSettingsPlusMOD";
     private static final String GROUP="sound_equalizer_detail";
-    private static final String[] KEYS={
+    static final String[] KEYS={
         "sound_equalizer_detail_120hz",
         "sound_equalizer_detail_500hz",
         "sound_equalizer_detail_1500hz",
         "sound_equalizer_detail_5000hz",
         "sound_equalizer_detail_10000hz"
     };
-    private static final String[] LABELS={"120 Гц","500 Гц","1,5 кГц","5 кГц","10 кГц"};
+    static final String[] LABELS={"120 Гц","500 Гц","1,5 кГц","5 кГц","10 кГц"};
 
     private OemFiveBandEqualizerHook() {}
 
     @SuppressWarnings("unchecked")
-    private static List<String> nativeAvailableBands() throws Exception {
+    static List<String> nativeAvailableBands() throws Exception {
         Class<?> config=Class.forName("com.mediatek.wwtv.tvcenter.util.PartnerSettingsConfig");
         Object list=config.getMethod("getSettingsList",String.class).invoke(null,GROUP);
         if (!(list instanceof List)) return null;
@@ -69,13 +69,20 @@ public final class OemFiveBandEqualizerHook {
             int[] bounds=originalBounds(ctx);
             if (supported==null || supported.isEmpty() || bounds==null) return;
             ContentResolver resolver=ctx.getContentResolver();
+            final String openedMode=Settings.Global.getString(resolver,"sound_style");
             Class<?> seek=Class.forName("androidx.preference.SeekBarPreference");
             Class<?> listener=Class.forName("androidx.preference.Preference$OnPreferenceChangeListener");
             for (int i=0;i<KEYS.length;i++) {
                 String key=KEYS[i];
                 if (!supported.contains(key)) continue;
-                int current=Settings.Global.getInt(resolver,key,0);
+                // An absent OEM value is not evidence that this band is active.
+                String raw=Settings.Global.getString(resolver,key);
+                if (raw==null) continue;
+                final int current;
+                try { current=Integer.parseInt(raw); }
+                catch(NumberFormatException malformed) { continue; }
                 if(current<bounds[0]||current>bounds[1])continue;
+                if(!OemSoundValuePolicy.validProfile(openedMode))continue;
                 Object item=seek.getConstructor(Context.class).newInstance(ctx);
                 preferenceClass.getMethod("setKey",String.class).invoke(item,
                         "projectorsoft_eq_"+key);
@@ -88,7 +95,9 @@ public final class OemFiveBandEqualizerHook {
                 seek.getMethod("setShowSeekBarValue",boolean.class).invoke(item,true);
                 seek.getMethod("setUpdatesContinuously",boolean.class).invoke(item,false);
                 seek.getMethod("setValue",int.class).invoke(item,current);
+                preferenceClass.getMethod("setEnabled",boolean.class).invoke(item,"0".equals(openedMode));
                 final int lo=bounds[0],hi=bounds[1];
+                String[] displayed={raw};
                 InvocationHandler callback=(proxy,method,args)->{
                     String methodName=method.getName();
                     if ("onPreferenceChange".equals(methodName)&&args!=null&&args.length>=2) {
@@ -96,8 +105,15 @@ public final class OemFiveBandEqualizerHook {
                         int value=(Integer)args[1];
                         if (value<lo||value>hi)return false;
                         try {
+                            String before=Settings.Global.getString(resolver,key);
+                            if (!displayed[0].equals(before)) return false;
+                            if(!OemSoundValuePolicy.acceptsBandChange(before,
+                                    value,lo,hi,openedMode,Settings.Global.getString(resolver,"sound_style")))return false;
+                            if (Integer.toString(value).equals(before)) return true;
                             if (!Settings.Global.putInt(resolver,key,value))return false;
-                            return Settings.Global.getInt(resolver,key,Integer.MIN_VALUE)==value;
+                            if (Settings.Global.getInt(resolver,key,Integer.MIN_VALUE)!=value) return false;
+                            displayed[0]=Integer.toString(value);
+                            return true;
                         } catch(Exception ex) {
                             Log.w(TAG,"EQ band update failed "+key,ex);
                             return false;
@@ -119,3 +135,4 @@ public final class OemFiveBandEqualizerHook {
         }
     }
 }
+

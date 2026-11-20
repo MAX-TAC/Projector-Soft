@@ -1,0 +1,288 @@
+name: Audit exact 8054 APK method diff
+on:
+  push:
+    branches:
+      - audit/8054-tvsettingsplus-20261117
+    paths:
+      - '.github/workflows/audit-8054-exact-method-diff.yml'
+      - 'tools/compare_8052_8054_smali.js'
+      - 'tools/trace_8054_selected_smali.js'
+      - 'tools/compare_8052_8054_apk_entries.py'
+      - 'research/8054/apk_diff_config.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: MAX-TAC/FlixTone_8054_Backup
+          ref: dbc097a3bf7c7c73f2c5d5400a253dfe8f3fe11f
+          path: backup-tools
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Verify comparator on synthetic methods
+        run: node tools/compare_8052_8054_smali.js --self-test
+      - name: Verify APK entry comparator on synthetic ZIPs
+        run: python3 tools/compare_8052_8054_apk_entries.py --self-test
+      - name: Extract original 8054 APKs read only
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq erofs-utils
+          gh release download FlixTone_8054_Backup \
+            --repo MAX-TAC/FlixTone_8054_Backup \
+            --pattern FlixTone_8054_Backup.zip --dir /tmp
+          echo '4f53f2224c98b4c832a19a591b9dd7f925bde28528b5674a09732c0f0e41d362  /tmp/FlixTone_8054_Backup.zip' | sha256sum -c -
+          python3 backup-tools/tools/inspect_8054_draft_safely.py /tmp/FlixTone_8054_Backup.zip >/tmp/inspect-super.log
+          python3 backup-tools/tools/deep_audit_8054_stock.py >/tmp/inspect-filesystems.log
+          test -s /tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk
+      - name: Decode six critical APK pairs
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 3 https://github.com/iBotPeaches/Apktool/releases/download/v2.11.1/apktool_2.11.1.jar -o /tmp/apktool.jar
+          mkdir -p /tmp/apkdiff/framework8052 /tmp/apkdiff/framework8054
+          java -jar /tmp/apktool.jar if vendor/reference/8052/APK/framework-res.apk -p /tmp/apkdiff/framework8052
+          java -jar /tmp/apktool.jar if /tmp/flix8054_erofs/system_a_tree/system/framework/framework-res.apk -p /tmp/apkdiff/framework8054
+          node -p 'require("./research/8054/apk_diff_config.json").pairs.map(p=>[p.apk,p.original_apk,p.target_apk,p.original,p.target].join("\t")).join("\n")' |
+            while IFS=$'\t' read -r name old_apk new_apk old_dir new_dir; do
+              echo "Decoding $name"
+              java -jar /tmp/apktool.jar d -f -r -p /tmp/apkdiff/framework8052 "$old_apk" -o "$old_dir" >/tmp/apkdiff/"$name"-8052.log
+              java -jar /tmp/apktool.jar d -f -r -p /tmp/apkdiff/framework8054 "$new_apk" -o "$new_dir" >/tmp/apkdiff/"$name"-8054.log
+            done
+      - name: Compare method hashes and actual invoke instructions
+        run: |
+          set -euo pipefail
+          node tools/compare_8052_8054_smali.js research/8054/apk_diff_config.json /tmp/apkdiff/report
+          test -s /tmp/apkdiff/report/exact_apk_method_diff.json
+      - name: Compare original APK Manifest and resource entry bytes
+        run: |
+          set -euo pipefail
+          python3 tools/compare_8052_8054_apk_entries.py research/8054/apk_diff_config.json /tmp/apkdiff/report
+          test -s /tmp/apkdiff/report/apk_entry_diff.json
+      - name: Inventory exact 8054 EDID and source controller methods
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path('/tmp/apkdiff/TvSettingsPlus/8054')
+          for file in sorted(root.rglob('*.smali')):
+              name = file.name.lower()
+              if 'edid' not in name and name != 'sourcesubmenucontroller.smali':
+                  continue
+              print('SOURCE_CLASS', file.relative_to(root))
+              for line in file.read_text().splitlines():
+                  if line.startswith('.method '):
+                      print('SOURCE_METHOD', line.split()[-1])
+          PY
+      - name: Locate EDID Global key consumers in original 8054 TV services
+        run: |
+          set -euo pipefail
+          for name in MtkTvInput TvServices; do
+            apk="/tmp/flix8054_erofs/system_ext_a_tree/priv-app/$name/$name.apk"
+            sha256sum "$apk"
+            java -jar /tmp/apktool.jar d -f -r -p /tmp/apkdiff/framework8054 \
+              "$apk" -o "/tmp/apkdiff/$name/8054" >"/tmp/apkdiff/$name-8054.log"
+          done
+          python3 - <<'PY'
+          from pathlib import Path
+          for name in ('TvSettingsPlus', 'KuSettings', 'Factory', 'MtkTvInput', 'TvServices'):
+              root = Path('/tmp/apkdiff') / name / '8054'
+              hits = 0
+              for file in root.rglob('*.smali'):
+                  if not file.parts[-1].endswith('.smali'):
+                      continue
+                  lines = file.read_text().splitlines()
+                  method = '<class>'
+                  for number, line in enumerate(lines, 1):
+                      if line.startswith('.method '):
+                          method = line.split()[-1]
+                      if 'tv_input_hdmi_edid_version' in line:
+                          hits += 1
+                          print('EDID_KEY_HIT', name, file.relative_to(root), method, number)
+                  if hits > 200:
+                      raise RuntimeError('EDID key scan unexpectedly broad')
+              print('EDID_KEY_COUNT', name, hits)
+          PY
+      - name: Inventory TvServices itemIds consumers and MediaTek calls
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path('/tmp/apkdiff/TvServices/8054')
+          for file in sorted(root.rglob('TVMenuSettingsService*.smali')):
+              method = None
+              body = []
+              start = 0
+              for number, line in enumerate(file.read_text().splitlines(), 1):
+                  if line.startswith('.method '):
+                      method = line.split()[-1]
+                      body = [line]
+                      start = number
+                  elif method:
+                      body.append(line)
+                      if line.startswith('.end method'):
+                          if any('itemIds:' in value for value in body):
+                              print('ITEMIDS_METHOD', file.relative_to(root), method, start, number)
+                              for offset, value in enumerate(body):
+                                  if ('itemIds:' in value or 'MtkTvConfig;->' in value or
+                                      'MtkTvFApi' in value or 'Settings$Global;->' in value):
+                                      print('ITEMIDS_LINE', start + offset, value.strip())
+                          method = None
+                          body = []
+          PY
+      - name: Verify EDID key membership in observed Settings array
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path('/tmp/apkdiff/TvServices/8054')
+          files = list(root.rglob('TVMenuSettingsService.smali'))
+          if len(files) != 1:
+              raise RuntimeError(f'Expected one TVMenuSettingsService, got {len(files)}')
+          lines = files[0].read_text().splitlines()
+          start = next(i for i, line in enumerate(lines) if line.startswith('.method ') and line.split()[-1] == '<init>()V')
+          end = next(i for i in range(start + 1, len(lines)) if lines[i].startswith('.end method'))
+          for i in range(start, end + 1):
+              line = lines[i]
+              if ('tv_input_hdmi_edid_version' in line or 'v124' in line or
+                  'filled-new-array' in line or 'iput-object' in line and 'setting' in line.lower()):
+                  print('EDID_OBSERVER_ARRAY', i + 1, line.strip())
+          PY
+      - name: Inventory OEM picture sound and EQ key callsites
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          keys = ('picture_mode', 'picture_color_temperature', 'picture_brightness',
+                  'sound_style', 'sound_bass', 'sound_treble', 'sound_sound_surround',
+                  'sound_equalizer_detail_120hz', 'sound_equalizer_detail_500hz',
+                  'sound_equalizer_detail_1500hz', 'sound_equalizer_detail_5000hz',
+                  'sound_equalizer_detail_10000hz')
+          for name in ('TvSettingsPlus', 'TvServices'):
+              root = Path('/tmp/apkdiff') / name / '8054'
+              for file in sorted(root.rglob('*.smali')):
+                  contents = file.read_text()
+                  if not any('"' + key + '"' in contents for key in keys):
+                      continue
+                  lines = contents.splitlines()
+                  method = None
+                  for i, line in enumerate(lines):
+                      if line.startswith('.method '):
+                          method = line.split()[-1]
+                      elif line.startswith('.end method'):
+                          method = None
+                      elif method and any('"' + key + '"' in line for key in keys):
+                          print('AV_KEY', name, file.relative_to(root), method, i + 1, line.strip())
+                          for j in range(i + 1, min(i + 10, len(lines))):
+                              if lines[j].lstrip().startswith('invoke-'):
+                                  print('AV_NEAR_INVOKE', name, file.relative_to(root), method, j + 1, lines[j].strip())
+          PY
+      - name: Inventory TvServices config and Settings observer callsites
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path('/tmp/apkdiff/TvServices/8054')
+          needles = ('->formatSettingToConfigId(', '->registerContentObserver(',
+                     '->setConifg(', '->setConfigValue', '->getConfigValueInt(',
+                     '->updateConfigData(', '->access$1100(')
+          for file in sorted(root.rglob('TVMenuSettingsService*.smali')):
+              method = None
+              for number, line in enumerate(file.read_text().splitlines(), 1):
+                  if line.startswith('.method '):
+                      method = line.split()[-1]
+                  elif line.startswith('.end method'):
+                      method = None
+                  elif method and line.lstrip().startswith('invoke-') and any(n in line for n in needles):
+                      print('CONFIG_CALL', file.relative_to(root), method, number, line.strip())
+          PY
+      - name: Locate TVSettingConfig setter owner
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          for name in ('TvSettingsPlus', 'Factory', 'TvServices'):
+              root = Path('/tmp/apkdiff') / name / '8054'
+              for file in sorted(root.rglob('TVSettingConfig.smali')):
+                  for number, line in enumerate(file.read_text().splitlines(), 1):
+                      if line.startswith('.method ') and ('setConifg(' in line or 'getConfigValueInt(' in line):
+                          print('CONFIG_IMPL', name, file.relative_to(root), number, line.strip())
+          PY
+      - name: Inventory original BluetoothReconnectService methods and invokes
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path('/tmp/apkdiff/TvSettingsPlus/8054')
+          matches = list(root.rglob('BluetoothReconnectService.smali'))
+          if len(matches) != 1:
+              raise RuntimeError(f'Expected one BluetoothReconnectService, got {len(matches)}')
+          file = matches[0]
+          method = None
+          for number, line in enumerate(file.read_text().splitlines(), 1):
+              if line.startswith('.method '):
+                  method = line.split()[-1]
+                  print('BT_RECONNECT_METHOD', file.relative_to(root), number, method)
+              elif line.startswith('.end method'):
+                  method = None
+              elif method and line.lstrip().startswith('invoke-'):
+                  if any(key in line for key in ('bluetooth', 'Bluetooth', 'ContentResolver',
+                                                  'Settings$', 'startService', 'stopService',
+                                                  'startActivity', 'registerReceiver')):
+                      print('BT_RECONNECT_INVOKE', method, number, line.strip())
+          for inner in sorted(root.rglob('BluetoothReconnectService$*.smali')):
+              method = None
+              for number, line in enumerate(inner.read_text().splitlines(), 1):
+                  if line.startswith('.method '):
+                      method = line.split()[-1]
+                      print('BT_RECONNECT_INNER_METHOD', inner.relative_to(root), number, method)
+                  elif line.startswith('.end method'):
+                      method = None
+                  elif method and line.lstrip().startswith('invoke-'):
+                      if any(key in line for key in ('connect(', 'startPairing(', 'reconnectPhone(',
+                                                       'getLastConnected', 'onServiceConnected(')):
+                          print('BT_RECONNECT_INNER_INVOKE', inner.relative_to(root), method, number, line.strip())
+          PY
+      - name: Inventory original 8054 AutoPair classes read only
+        run: |
+          set -euo pipefail
+          java -jar /tmp/apktool.jar d -f -r -p /tmp/apkdiff/framework8054 \
+            /tmp/flix8054_erofs/system_ext_a_tree/app/AutoPair/AutoPair.apk \
+            -o /tmp/apkdiff/AutoPair/8054 >/tmp/apkdiff/AutoPair-8054.log
+          sha256sum /tmp/flix8054_erofs/system_ext_a_tree/app/AutoPair/AutoPair.apk
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path('/tmp/apkdiff/AutoPair/8054')
+          for file in sorted(root.rglob('*.smali')):
+              name = str(file.relative_to(root))
+              if any(key in name.lower() for key in ('pair', 'bluetooth', 'boot', 'connect')):
+                  print('AUTOPAIR_CLASS', name)
+                  for line in file.read_text().splitlines():
+                      if line.startswith('.method '):
+                          print('AUTOPAIR_METHOD', line.split()[-1])
+          PY
+      - name: Trace selected original methods and arguments read only
+        run: |
+          set -euo pipefail
+          node tools/trace_8054_selected_smali.js research/8054/apk_diff_config.json /tmp/apkdiff/report
+          test -s /tmp/apkdiff/report/selected_smali_trace.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: flix8054-exact-method-diff-text-only
+          path: /tmp/apkdiff/report/
+          if-no-files-found: warn
+          retention-days: 14

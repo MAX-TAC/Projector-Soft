@@ -1,0 +1,13 @@
+# Dolby и DTS · подтверждённые OEM-редакторы 8054
+
+`SoundFragment.createPreferences` читает `PartnerSettingsConfig.getSettingsList("sound_effects")`. Для `sound_dap` вызывает `TVSettingConfig.getDolbyAtmosType()` и, только если результат 2, 5, 7, 8 или 9, создаёт переход в `partnercustomizer.sound.advanced.AdvancedFragment` (1196–1244). Для `sound_dts` проверяет `PreferenceConfigUtils.isAdvanceFunctionSupport("sound_dts")` и открывает `partnercustomizer.sound.dts.DTSFragment` (1068–1097). Этот фрагмент формирует список по `sound_dts_vx`; `sound_dts_truvolumehd` соответствует `g_audio__dts_true_volume` (426–449). Оба фрагмента инициализируют штатные Preferences самостоятельно. [Точные методы STOCK](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44397417775/job/135130932230)
+
+MOD добавляет собственные русскоязычные пункты в разделе «Звук». Перед показом и перед открытием используются штатные признаки поддержки. Пункт DTS дополнительно требует наличия выравнивания громкости в конкретной конфигурации. Подтверждённые фрагменты загружаются штатным Android TV Preference-маршрутом. Запись остаётся в OEM. SND09 и SND10 имеют доставку DELEGATED_OEM. PEQ13 остаётся вне этих переходов: поддержка и контракт записи не подтверждены.
+
+На 8054 ещё нужно подтвердить появление пунктов, штатные D-pad/Back и работу конкретной функции на выбранном аудиовыходе. Перед изменением эффекта сохранить исходное значение, после проверки вернуть его штатным редактором, сравнить звук на исходном выходе. Программный результат BUILT_UNTESTED.
+
+## SND08 — PEQ13
+
+Exact Factory `PEQAdjustViewHolder.onCreate → updateUi` вызывает `MtkTvFApiAudio.getPEQEnable` и `getPeqFreq/Gain/Q/Type`. Каждый параметр адресуется парой `EnumSoundMode` и индекс полосы 0–12. В `onKey` заводские setter и `saveAudioIni()` вызываются из обработки клавиш. Ранее извлечённые ограничения виджетов frequency 50–20000, gain −180…180, Q 5–160 и type 0–4 относятся к заводскому интерфейсу. Они не подтверждают единицы, аппаратные возможности, активный выход/профиль или обратимость сохранения. Потребительский редактор в исследованной трассе не найден. SND08 остаётся `NOT_IMPLEMENTED`. FAC03 не выводится в пользовательское меню. [Трасса Factory](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44471250117/job/135380991321)
+
+При повторном поиске потребительского маршрута в точных TvSettingsPlus, TvServices, MtkTvInput и LiveTV прямых вызовов get/set PEQ из потребительских контроллеров не обнаружено. Factory wrappers, их объявления и native entry points не считаются потребительским интерфейсом. SND08 остаётся NOT_IMPLEMENTED. [Выводы по exact APK](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44478282439/job/135404015716)

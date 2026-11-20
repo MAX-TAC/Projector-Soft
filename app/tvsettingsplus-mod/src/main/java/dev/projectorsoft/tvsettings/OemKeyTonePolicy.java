@@ -17,11 +17,16 @@ public final class OemKeyTonePolicy {
     }
 
     public static boolean apply(Store store,Object requested) {
+        return apply(store,null,requested);
+    }
+
+    static boolean apply(Store store,Boolean displayed,Object requested) {
         if(store==null || !(requested instanceof Boolean))return false;
         try {
             String before=store.read();
             if(!valid(before))return false;
             boolean current=checked(before);
+            if (displayed!=null && displayed!=current) return false;
             boolean next=((Boolean)requested).booleanValue();
             if(current==next)return true; // avoid writing unnecessary setting
             if(!store.write(next?1:0))return false;
@@ -31,3 +36,4 @@ public final class OemKeyTonePolicy {
         }
     }
 }
+

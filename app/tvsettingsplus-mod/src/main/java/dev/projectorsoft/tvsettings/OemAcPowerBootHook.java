@@ -39,6 +39,7 @@ public final class OemAcPowerBootHook {
             if(!OemAcPowerBootPolicy.available(gateway))return false;
             Boolean initial=gateway.read();
             if(initial==null)return false;
+            Boolean[] displayed={initial};
             Class<?> toggle=Class.forName("androidx.preference.SwitchPreference");
             Object item=toggle.getConstructor(Context.class).newInstance(context);
             preference.getMethod("setKey",String.class).invoke(
@@ -56,7 +57,24 @@ public final class OemAcPowerBootHook {
                 String name=method.getName();
                 if("onPreferenceChange".equals(name)) {
                     if(args==null || args.length<2)return false;
-                    boolean accepted=OemAcPowerBootPolicy.apply(gateway,args[1]);
+                    boolean accepted=OemAcPowerBootPolicy.apply(gateway,displayed[0],args[1]);
+                    if(accepted)displayed[0]=(Boolean)args[1];
+                    else {
+                        try {
+                            Boolean actual=gateway.read();
+                            preference.getMethod("setEnabled",boolean.class).invoke(item,actual!=null);
+                            if(actual!=null)toggle.getMethod("setChecked",boolean.class).invoke(item,actual);
+                            else preference.getMethod("setSummary",CharSequence.class)
+                                    .invoke(item,"Текущее значение недоступно");
+                            displayed[0]=actual;
+                        } catch(Exception unavailable) {
+                            try {
+                                preference.getMethod("setEnabled",boolean.class).invoke(item,false);
+                                preference.getMethod("setSummary",CharSequence.class)
+                                        .invoke(item,"Текущее значение недоступно");
+                            } catch(Exception uiError) {Log.w(TAG,"Power status could not be refreshed",uiError);}
+                        }
+                    }
                     if(!accepted)Log.w(TAG,"Factory electricity-boot value not confirmed");
                     return accepted;
                 }
@@ -78,3 +96,4 @@ public final class OemAcPowerBootHook {
         }
     }
 }
+

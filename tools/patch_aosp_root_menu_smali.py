@@ -6,6 +6,47 @@ import argparse,json,re
 from pathlib import Path
 from patch_customer0_lightmode_smali import mode_dex
 
+INLINE = "Ldev/projectorsoft/tvsettings/OemInlinePreferencesHook;"
+PREFS = "onCreatePreferences(Landroid/os/Bundle;Ljava/lang/String;)V"
+
+
+def require_receiver(text, signature):
+    """Reject a stock method that reuses the receiver as a scratch register."""
+    matches = re.findall(r"(?ms)^\.method[^\n]*" + re.escape(signature) + r"[^\n]*\n.*?^\.end method", text)
+    if len(matches) != 1:
+        raise ValueError("Expected one method: " + signature)
+    if re.search(r"(?m)^\s*(?!return|throw|monitor-|if-|[ais]put|check-cast)[\w/-]+\s+p0(?:\s*,|\s*$)", matches[0]):
+        raise ValueError("Reassigned receiver in " + signature)
+
+
+def fix_exact_fragment(text):
+    require_receiver(text, PREFS)
+    text = hook_return_method(text, PREFS, "return-void",
+        f"invoke-static {{p0}}, {INLINE}->populate(Ljava/lang/Object;)V\n"
+        "    invoke-static {p0}, Ldev/projectorsoft/tvsettings/OemRootMenuHook;->install(Ljava/lang/Object;)V")
+    parent = re.search(r"(?m)^\.super (L[^;]+;)$", text)[1]
+    attach = "onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V"
+    detach = "onDestroyView()V"
+    if re.search(r"(?m)^\.method[^\n]*(?:" + re.escape(attach) + "|" + re.escape(detach) + ")", text):
+        raise ValueError("Expected inherited MainFragment view lifecycle")
+    return text + f"""
+
+.method public {attach}
+    .locals 0
+    invoke-super {{p0, p1, p2}}, {parent}->{attach}
+    invoke-static {{p0, p1}}, {INLINE}->bind(Ljava/lang/Object;Landroid/view/View;)V
+    return-void
+.end method
+
+.method public {detach}
+    .locals 1
+    const/4 v0, 0x0
+    invoke-static {{p0, v0}}, {INLINE}->bind(Ljava/lang/Object;Landroid/view/View;)V
+    invoke-super {{p0}}, {parent}->{detach}
+    return-void
+.end method
+"""
+
 def find_class(root,name):
  matches=[x for x in root.glob("smali*/**/"+name) if x.is_file()]
  if len(matches)!=1:raise ValueError("Ambiguous smali class "+name+": "+repr(matches))
@@ -22,6 +63,11 @@ def hook_return_method(text,method_signature,return_verb,hook_call):
  branches=list(re.finditer(r"(?m)^[ \t]*"+re.escape(return_verb)+r"\b[^\n]*$",body))
  if len(branches)!=1:
   raise ValueError("Expected exactly 1 "+return_verb+" in "+method_signature+", got "+str(len(branches)))
+ if "%retval%" in hook_call:
+  register=re.fullmatch(r"[ \t]*return-object ([vp]\d+)\s*",branches[0].group())
+  if register is None:
+   raise ValueError("Expected object return register in "+method_signature)
+  hook_call=hook_call.replace("%retval%",register[1])
  insert="    "+hook_call+"\n"
  at=branches[0].start()
  patched=body[:at]+insert+body[at:]
@@ -32,6 +78,7 @@ def main():
  p=argparse.ArgumentParser()
  p.add_argument("decoded",type=Path)
  p.add_argument("out",type=Path)
+ p.add_argument("--exact-8054",action="store_true")
  a=p.parse_args()
  main_fragment=find_class(a.decoded,"MainFragment.smali")
  activity=find_class(a.decoded,"MainActivity.smali")
@@ -41,10 +88,10 @@ def main():
   raise ValueError("Not original OEM MainActivity")
 
  j=main_fragment.read_text()
- j=hook_return_method(j,
+ j=fix_exact_fragment(j) if a.exact_8054 else hook_return_method(j,
    "onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;",
    "return-object",
-   "invoke-static {p0}, Ldev/projectorsoft/tvsettings/OemRootMenuHook;->install(Ljava/lang/Object;)V\n    invoke-static {p0}, Ldev/projectorsoft/tvsettings/OemInlinePreferencesHook;->install(Ljava/lang/Object;)V")
+   "invoke-static {p0, %retval%}, Ldev/projectorsoft/tvsettings/OemInlinePreferencesHook;->install(Ljava/lang/Object;Landroid/view/View;)V\n    invoke-static {p0}, Ldev/projectorsoft/tvsettings/OemRootMenuHook;->install(Ljava/lang/Object;)V")
  main_fragment.write_text(j)
 
  z=activity.read_text()
@@ -60,3 +107,4 @@ def main():
  a.out.write_text(json.dumps(info,indent=2)+"\n")
  print(json.dumps(info,indent=2))
 if __name__=="__main__":main()
+

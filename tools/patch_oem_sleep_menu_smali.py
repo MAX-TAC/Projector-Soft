@@ -6,8 +6,10 @@ classes. Fail closed when method or class layout differs from 8052 baseline.
 import argparse,json,re
 from pathlib import Path
 from patch_customer0_lightmode_smali import mode_dex
+from patch_aosp_root_menu_smali import require_receiver
 
 HOOK="Ldev/projectorsoft/tvsettings/OemMenuVisibilityHook;->hideSleepControls(Ljava/lang/Object;)V"
+BRIDGE="Ldev/projectorsoft/tvsettings/OemGeneralMenuBridge;->install(Ljava/lang/Object;)V"
 
 def locate(root, suffix):
     matches=[p for p in root.glob("smali*/**/*.smali")
@@ -16,7 +18,7 @@ def locate(root, suffix):
         raise ValueError("Expected one stock OEM class "+suffix+", found "+str(matches))
     return matches[0]
 
-def patch_one(path, source_register):
+def patch_one(path, source_register, exact=False):
     original=path.read_text()
     blocks=list(re.finditer(r"(?ms)^\.method[^\n]*\n.*?^\.end method",original))
     target=[m for m in blocks if re.search(r"\binitView\(",m.group().splitlines()[0])]
@@ -27,7 +29,9 @@ def patch_one(path, source_register):
     if HOOK in body:raise ValueError("Hook already present")
     returns=list(re.finditer(r"(?m)^    return-void\s*$",body))
     if len(returns)!=1:raise ValueError("Cannot safely hook initView: "+str(path))
-    insertion="    invoke-static {"+source_register+"}, "+HOOK+"\n"
+    if exact:
+        require_receiver(original,body.splitlines()[0].split()[-1])
+    insertion="    invoke-static {"+("p0" if exact else source_register)+"}, "+(BRIDGE if exact else HOOK)+"\n"
     body=body[:returns[0].start()]+insertion+body[returns[0].start():]
     path.write_text(original[:match.start()]+body+original[match.end():])
     return {"class":str(path),"register":source_register}
@@ -36,6 +40,7 @@ def main():
     parser=argparse.ArgumentParser()
     parser.add_argument("decoded",type=Path)
     parser.add_argument("report",type=Path)
+    parser.add_argument("--exact-8054",action="store_true")
     args=parser.parse_args()
     targets=[
        ("com/android/tv/settings/uicustom/fragment/general/GeneralFragment.smali","p1"),
@@ -44,12 +49,13 @@ def main():
     patched=[]
     for suffix,reg in targets:
         p=locate(args.decoded,suffix)
-        patch_one(p,reg)
+        patch_one(p,reg,args.exact_8054)
         patched.append(p)
     result={
       "edited_smali":[str(p.relative_to(args.decoded)) for p in patched],
       "edited_dex":sorted({mode_dex(p) for p in patched}),
-      "hides":["tciv_general_screensaver_settings"],
+      "hides":[] if args.exact_8054 else ["tciv_general_screensaver_settings"],
+      "links":["projector-settings"] if args.exact_8054 else [],
       "protection":"original OEM sleep controllers and fan HAL unchanged"
     }
     args.report.parent.mkdir(parents=True,exist_ok=True)
@@ -57,3 +63,4 @@ def main():
     print(json.dumps(result,indent=2))
 if __name__=="__main__":
     main()
+

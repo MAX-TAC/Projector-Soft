@@ -1,0 +1,87 @@
+name: Package exact 8054 diagnostics kit
+on:
+  push:
+    branches: [audit/8054-tvsettingsplus-20261117]
+    paths: ['install-kit/**', '.github/workflows/package-8054-current-kit.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+  KIT: /tmp/exact8054-kit
+  INPUT: /tmp/exact8054-input
+  REVISION: c3c7654
+jobs:
+  host-fixtures:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m unittest discover -s install-kit -p "test_*.py" -v
+  package:
+    needs: host-fixtures
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Download and hash both pinned CI ZIP inputs and both APKs
+        id: inputs
+        run: python install-kit/stage_revision.py "$REVISION" "$INPUT" "$KIT"
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.inputs.outputs.commit }}
+          path: pinned-source
+          persist-credentials: false
+      - name: Install host audit tooling
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq aapt apksigner zipalign
+          curl -fsSL --retry 3 https://github.com/iBotPeaches/Apktool/releases/download/v2.11.1/apktool_2.11.1.jar -o "$INPUT/apktool.jar"
+      - name: Independently verify APK signatures and platform metadata
+        run: python "$KIT/verify_offline.py" --kit "$KIT" --revision "$REVISION" --out "$KIT/reports/offline"
+      - name: Reproduce and verify original DEX patches and compare manifests and resources
+        run: |
+          python install-kit/audit_apks.py --revision "$REVISION" \
+            --stock "$KIT/assets/STOCK-TvSettingsPlus-8054.apk" \
+            --mod "$KIT/assets/MOD-TvSettingsPlus-8054-$REVISION.apk" \
+            --reports "$KIT/reports/offline" --source pinned-source --apktool "$INPUT/apktool.jar"
+      - name: Seal complete kit and rerun offline host gate with zero ADB
+        run: |
+          python install-kit/build_manifest.py "$KIT" --revision "$REVISION" --commit "$GITHUB_SHA"
+          python "$KIT/preflight.py" --offline --kit "$KIT" --revision "$REVISION" --out /tmp/exact8054-verified
+      - uses: actions/upload-artifact@v4
+        id: delivery
+        with:
+          name: tvsettingsplus-8054-diagnostics-c3c7654
+          path: /tmp/exact8054-kit/
+          if-no-files-found: error
+          retention-days: 90
+      - name: Verify delivered ZIP bytes and record digest
+        env:
+          ARTIFACT_ID: ${{ steps.delivery.outputs.artifact-id }}
+          ZIP_SHA256: ${{ steps.delivery.outputs.artifact-digest }}
+          ARTIFACT_URL: ${{ steps.delivery.outputs.artifact-url }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$ARTIFACT_ID/zip" > "$INPUT/delivery.zip"
+          printf '%s  %s\n' "$ZIP_SHA256" "$INPUT/delivery.zip" | sha256sum --check
+          printf 'Archive SHA-256: `%s`\n\n[Verified kit](%s)\n' "$ZIP_SHA256" "$ARTIFACT_URL" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '\nOFFLINE_KIT_VERIFIED · STOCK_DIAGNOSTICS_PREPARED · ROLLBACK_NOT_VERIFIED · BUILT_UNTESTED · NOT_READY_FOR_DEVICE_INSTALL\n' >> "$GITHUB_STEP_SUMMARY"

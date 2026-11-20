@@ -19,11 +19,15 @@ public final class OemAcPowerBootPolicy {
 
     /** Reject unconfirmed writes without changing the UI state. */
     public static boolean apply(Gateway gateway,Object value) {
+        return apply(gateway,null,value);
+    }
+
+    static boolean apply(Gateway gateway,Boolean displayed,Object value) {
         if(gateway==null || !(value instanceof Boolean))return false;
         boolean requested=((Boolean)value).booleanValue();
         try {
             Boolean original=gateway.read();
-            if(original==null)return false;
+            if(original==null || displayed!=null && !displayed.equals(original))return false;
             if(original.booleanValue()==requested)return true;
             gateway.write(requested);
             return Boolean.valueOf(requested).equals(gateway.read());
@@ -32,3 +36,4 @@ public final class OemAcPowerBootPolicy {
         }
     }
 }
+

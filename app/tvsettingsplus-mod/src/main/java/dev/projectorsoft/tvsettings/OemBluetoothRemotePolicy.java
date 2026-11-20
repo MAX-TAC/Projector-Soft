@@ -27,4 +27,13 @@ public final class OemBluetoothRemotePolicy {
         return "Сопряжено HID-устройств: "+bondedRemoteCount
               +" (подключение не подтверждено)";
     }
+
+    /** BootBroadcastReceiver reads this Global setting with default 1. */
+    public static String autoPairSettingSummary(String raw) {
+        if(raw==null)return "OEM AutoPair: значение не задано (при чтении загрузчик использует 1).";
+        if("0".equals(raw))return "OEM AutoPair: настройка выключена; состояние службы не проверено.";
+        if("1".equals(raw))return "OEM AutoPair: настройка включена; работа службы не проверена.";
+        return "OEM AutoPair: неизвестное значение; работа службы не проверена.";
+    }
 }
+

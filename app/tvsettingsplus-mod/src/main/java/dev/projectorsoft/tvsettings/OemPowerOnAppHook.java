@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.util.Log;
+import android.widget.Toast;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -27,13 +28,13 @@ public final class OemPowerOnAppHook {
     private static final String PROPERTY="persist.trd.source_id";
     private OemPowerOnAppHook() {}
 
-    private static OemPowerOnAppPolicy.Property property() throws Exception {
+    static OemPowerOnAppPolicy.Property property() throws Exception {
         Class<?> cls=Class.forName("android.os.SystemProperties");
         Method getter=cls.getMethod("get",String.class,String.class);
         Method setter=cls.getMethod("set",String.class,String.class);
         return new OemPowerOnAppPolicy.Property() {
             @Override public String read() throws Exception {
-                Object value=getter.invoke(null,PROPERTY,"HOME");
+                Object value=getter.invoke(null,PROPERTY,"8054".equals(OemHdmiPortInfo.machineId()) ? "" : "HOME");
                 return value instanceof String?(String)value:null;
             }
             @Override public boolean write(String value) throws Exception {
@@ -43,7 +44,7 @@ public final class OemPowerOnAppHook {
         };
     }
 
-    private static Map<String,String> candidates(Context context) {
+    static Map<String,String> candidates(Context context) {
         PackageManager pm=context.getPackageManager();
         Map<String,String> result=new HashMap<>();
         for(String category:new String[]{
@@ -83,6 +84,7 @@ public final class OemPowerOnAppHook {
             OemPowerOnAppPolicy.Property prop=property();
             String current=prop.read();
             if(!OemPowerOnAppPolicy.expose(current,apps))return false;
+            String[] displayedValue={current};
             List<String> names=new ArrayList<>(apps);
             Collections.sort(names,(a,b)-> {
                 int c=nameByPackage.get(a).compareToIgnoreCase(nameByPackage.get(b));
@@ -117,19 +119,32 @@ public final class OemPowerOnAppHook {
                 String methodName=method.getName();
                 if("onPreferenceChange".equals(methodName)) {
                     if(args==null || args.length<2)return false;
-                    boolean success=OemPowerOnAppPolicy.apply(prop,apps,args[1]);
-                    if(success) {
-                        String chosen=String.valueOf(args[1]);
-                        String label="HOME".equals(chosen)
-                                ? "Не запускать приложение":nameByPackage.get(chosen);
-                        try {
-                            preference.getMethod("setSummary",CharSequence.class)
-                                    .invoke(item,label);
-                        }catch(Exception e){Log.w(TAG,"Could not refresh boot-app label",e);}
-                    }else {
-                        Log.w(TAG,"Factory boot-app property write not confirmed");
+                    if (!(args[1] instanceof String)) return false;
+                    String chosen=(String)args[1];
+                    try {
+                        Set<String> installed=candidates(context).keySet();
+                        if (!OemPowerOnAppPolicy.allowed(chosen,apps)
+                                || !OemPowerOnAppPolicy.allowed(chosen,installed)) {
+                            Toast.makeText(context,"Параметр запуска изменился. Переоткройте настройки.",Toast.LENGTH_SHORT).show();
+                            return false;
+                        }
+                        boolean success=OemPowerOnAppPolicy.apply(prop,installed,displayedValue[0],chosen);
+                        if(success) {
+                            displayedValue[0]=chosen;
+                            String label="HOME".equals(chosen)
+                                    ? "Не запускать приложение":nameByPackage.get(chosen);
+                            try {
+                                preference.getMethod("setSummary",CharSequence.class)
+                                        .invoke(item,label);
+                            }catch(Exception e){Log.w(TAG,"Could not refresh boot-app label",e);}
+                        }else {
+                            Log.w(TAG,"Factory boot-app property write not confirmed");
+                        }
+                        return success;
+                    } catch (Exception | LinkageError unavailable) {
+                        Log.w(TAG,"Startup application unavailable",unavailable);
+                        return false;
                     }
-                    return success;
                 }
                 if("toString".equals(methodName))return "OemPowerOnAppNative";
                 if("hashCode".equals(methodName))return System.identityHashCode(proxy);
@@ -149,3 +164,4 @@ public final class OemPowerOnAppHook {
         }
     }
 }
+

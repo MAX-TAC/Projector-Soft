@@ -1,0 +1,2007 @@
+{
+  "source_run": 44125184745,
+  "routes": [
+    {
+      "key": "sound_surround",
+      "config_id": "g_audio__aud_surround_ex",
+      "line": 1867,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_balance",
+      "config_id": "g_audio__aud_balance",
+      "line": 1876,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_bass",
+      "config_id": "g_audio__aud_bass",
+      "line": 1885,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_treble",
+      "config_id": "g_audio__aud_treble",
+      "line": 1894,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_sound_surround",
+      "config_id": "g_audio__aud_surround",
+      "line": 1903,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_equalizer",
+      "config_id": "g_audio__aud_equalizer",
+      "line": 1912,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_speaker_delay",
+      "config_id": "g_audio__speaker_delay",
+      "line": 1921,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_spdif_type",
+      "config_id": "g_audio__spdif",
+      "line": 1930,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_digital_output",
+      "config_id": "g_audio__spdif",
+      "line": 1937,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_spdif_delay",
+      "config_id": "g_audio__spdif_delay",
+      "line": 1946,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_auto_volume_control",
+      "config_id": "g_audio__agc",
+      "line": 1955,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_downmixmode",
+      "config_id": "g_audio__dolby_dmix",
+      "line": 1964,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dts_drc",
+      "config_id": "g_audio__dts_drc",
+      "line": 1973,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_sonic_emotion_premium",
+      "config_id": "g_fusion_sound__sonic_emosion",
+      "line": 1982,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_auto_volume_leveling",
+      "config_id": "g_fusion_sound__auto_volume_leveling",
+      "line": 1991,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_digital_output_to_device",
+      "config_id": "g_fusion_sound__digital_autio_output",
+      "line": 2000,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_delta_volume",
+      "config_id": "g_fusion_sound__delta_volume",
+      "line": 2009,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_style",
+      "config_id": "g_audio__sound_mode",
+      "line": 2018,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dolby_notification",
+      "config_id": "g_audio__aud_dolby_atmos_pop_msg_switch",
+      "line": 2027,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_speaker_lr_swap",
+      "config_id": "g_audio__aud_speaker_lr_swap",
+      "line": 2036,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_equalizer_detail_120hz",
+      "config_id": "g_fusion_sound__equalizer_120hz",
+      "line": 2045,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_equalizer_detail_500hz",
+      "config_id": "g_fusion_sound__equalizer_500hz",
+      "line": 2054,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_equalizer_detail_1500hz",
+      "config_id": "g_fusion_sound__equalizer_1.5khz",
+      "line": 2063,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_equalizer_detail_5000hz",
+      "config_id": "g_fusion_sound__equalizer_5khz",
+      "line": 2072,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_equalizer_detail_10000hz",
+      "config_id": "g_fusion_sound__equalizer_10khz",
+      "line": 2081,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_sonic_emotion",
+      "config_id": "g_fusion_sound__sonic_emosion",
+      "line": 2088,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dialog_enhancement",
+      "config_id": "g_fusion_sound__dialog_enhancement",
+      "line": 2097,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_bass_enhancement",
+      "config_id": "g_fusion_sound__bass_enhancement",
+      "line": 2106,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_absolute_3d_sound",
+      "config_id": "g_fusion_sound__absl_3d_sound",
+      "line": 2115,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dbx_enable",
+      "config_id": "g_fusion_sound__dbx_enable",
+      "line": 2124,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dbx_total_sonic",
+      "config_id": "g_fusion_sound__total_sonic",
+      "line": 2133,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dbx_total_vol",
+      "config_id": "g_fusion_sound__total_volume",
+      "line": 2142,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dbx_total_surround",
+      "config_id": "g_fusion_sound__total_surround",
+      "line": 2151,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dts_virtual_x",
+      "config_id": "g_audio__dts_virtual_x",
+      "line": 2160,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dts_tbhdx",
+      "config_id": "g_audio__dts_tbhdx",
+      "line": 2169,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dts_limiter",
+      "config_id": "g_audio__dts_limiter",
+      "line": 2178,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dts_trusurroundx",
+      "config_id": "g_audio__dts_surround",
+      "line": 2187,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dts_truvolumehd",
+      "config_id": "g_audio__dts_true_volume",
+      "line": 2196,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dts_dialogClarity",
+      "config_id": "g_audio__dts_dialog_clarity",
+      "line": 2205,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dts_definition",
+      "config_id": "g_audio__dts_definition",
+      "line": 2214,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dts_height",
+      "config_id": "g_audio__dts_height",
+      "line": 2223,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_advanced_dolby_ap",
+      "config_id": "g_audio__dolby_audio_processing",
+      "line": 2232,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_advanced_sound_mode",
+      "config_id": "g_audio__dolby_sound_mode",
+      "line": 2241,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_advanced_volume_leveler",
+      "config_id": "g_audio__volume_leveler",
+      "line": 2250,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_advanced_dialogue_enhancer",
+      "config_id": "g_audio__dialogue_enhancer",
+      "line": 2259,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_advanced_surround_virtualizer",
+      "config_id": "g_audio__dolby_surround_virtualizer",
+      "line": 2268,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_advanced_dolby_atmos",
+      "config_id": "g_audio__dolby_atmos",
+      "line": 2277,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dts_studio_enable",
+      "config_id": "g_fusion_sound__dtsss2_enable",
+      "line": 2286,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dts_studio_surround",
+      "config_id": "g_fusion_sound__dtsss2_surround",
+      "line": 2295,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dts_studio_truevolume",
+      "config_id": "g_fusion_sound__dtsss2_true_volume",
+      "line": 2304,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "picture_mode",
+      "config_id": "g_video__picture_mode",
+      "line": 2313,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "picture",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_video_automatic_playback_optimization",
+      "config_id": "g_video__vid_apo_switch",
+      "line": 2322,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "picture_mode_dolby",
+      "config_id": "g_video__picture_mode",
+      "line": 2329,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "picture",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "picture_notification",
+      "config_id": "g_video__dovi_user_switch",
+      "line": 2338,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "picture",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "picture_backlight",
+      "config_id": "g_disp__disp_back_light",
+      "line": 2347,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "picture",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "picture_brightness",
+      "config_id": "g_video__brightness",
+      "line": 2356,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "picture",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "picture_contrast",
+      "config_id": "g_video__contrast",
+      "line": 2365,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "picture",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "picture_saturation",
+      "config_id": "g_video__vid_sat",
+      "line": 2374,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "picture",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "picture_hue",
+      "config_id": "g_video__vid_hue",
+      "line": 2383,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "picture",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "picture_sharpness",
+      "config_id": "g_video__vid_shp",
+      "line": 2392,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "picture",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "picture_gamma",
+      "config_id": "g_disp__disp_gamma",
+      "line": 2401,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "picture",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "picture_blue_light",
+      "config_id": "g_video__vid_blue_light",
+      "line": 2410,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "picture",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "picture_list_hdr",
+      "config_id": "g_video__vid_hdr",
+      "line": 2419,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "picture",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "picture_color_temperature",
+      "config_id": "g_video__clr_temp",
+      "line": 2428,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "picture",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "picture_red_gain",
+      "config_id": "g_video__clr_gain_r",
+      "line": 2437,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "picture",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "picture_green_gain",
+      "config_id": "g_video__clr_gain_g",
+      "line": 2446,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "picture",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "picture_blue_gain",
+      "config_id": "g_video__clr_gain_b",
+      "line": 2455,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "picture",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_advance_video_dnr",
+      "config_id": "g_video__vid_nr",
+      "line": 2464,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_advance_video_mpeg_nr",
+      "config_id": "g_video__vid_mpeg_nr",
+      "line": 2473,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_video_maxvivid",
+      "config_id": "g_video__vid_maxvivid",
+      "line": 2482,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_video_adaptive_luma_control",
+      "config_id": "g_video__vid_luma",
+      "line": 2491,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_video_local_contrast_control",
+      "config_id": "g_video__vid_local_contrast",
+      "line": 2500,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_video_flesh_tone",
+      "config_id": "g_video__vid_flash_tone",
+      "line": 2509,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_video_di_film_mode",
+      "config_id": "g_video__vid_di_film_mode",
+      "line": 2518,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_video_blue_stretch",
+      "config_id": "g_video__vid_blue_stretch",
+      "line": 2527,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_video_game_mode",
+      "config_id": "g_video__vid_game_mode",
+      "line": 2536,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_video_allm",
+      "config_id": "g_video__vid_allm_switch",
+      "line": 2545,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_advance_video_mjc_effect",
+      "config_id": "g_video__vid_mjc_effect",
+      "line": 2554,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_video_mjc_demo_partition",
+      "config_id": "g_video__vid_mjc_demo",
+      "line": 2563,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_video_aisr",
+      "config_id": "g_video__vid_aisr",
+      "line": 2572,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_video_de_counter",
+      "config_id": "g_video__vid_de_contour",
+      "line": 2581,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_video_low_bluelight",
+      "config_id": "g_video__vid_low_bluelight",
+      "line": 2590,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_video_light_sense",
+      "config_id": "g_video__vid_light_sense_switch",
+      "line": 2599,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "picture_film_maker_mode",
+      "config_id": "g_video__vid_filmmaker_mode",
+      "line": 2608,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "picture",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "picture_auto_switch",
+      "config_id": "g_video__vid_auto_switch",
+      "line": 2617,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "picture",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_video_color_space",
+      "config_id": "g_video__vid_gamut_mapping_mode",
+      "line": 2626,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_video_auto_color",
+      "config_id": "g_video__vid_auto_color",
+      "line": 2635,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "picture_pixel_shift",
+      "config_id": "g_misc__oled_pixel_orbiting",
+      "line": 2644,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "picture",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_video_dark_detail",
+      "config_id": "g_video__vid_dark_detail",
+      "line": 2653,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "picture_hdr_game",
+      "config_id": "g_video__vid_hdr_game_mode_switch",
+      "line": 2662,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "picture",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "picture_global_dimming",
+      "config_id": "g_video__vid_dolby_vision_global_dimming_switch",
+      "line": 2671,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "picture",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_advanced_settings_game_mode_with_memc",
+      "config_id": "g_video__vid_game_mode_with_memc_switch",
+      "line": 2680,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_video_precision_detail",
+      "config_id": "g_video__vid_precision_detail_switch",
+      "line": 2689,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_video_live_tone",
+      "config_id": "g_video__vid_live_tone",
+      "line": 2698,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_video_local_dimming",
+      "config_id": "g_video__vid_local_dimming",
+      "line": 2707,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_video_imax_auto_detect",
+      "config_id": "g_video__vid_imax_auto_detect_switch",
+      "line": 2716,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_color_tune_enable",
+      "config_id": "g_fusion_picture__color_tuner_enable",
+      "line": 2725,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_color_tune_hue_red",
+      "config_id": "g_fusion_picture__color_tuner_hue_red",
+      "line": 2734,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_color_tune_hue_green",
+      "config_id": "g_fusion_picture__color_tuner_hue_green",
+      "line": 2743,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_color_tune_hue_blue",
+      "config_id": "g_fusion_picture__color_tuner_hue_blue",
+      "line": 2752,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_color_tune_hue_cvan",
+      "config_id": "g_fusion_picture__color_tuner_hue_cyan",
+      "line": 2761,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_color_tune_hue_megenta",
+      "config_id": "g_fusion_picture__color_tuner_hue_magenta",
+      "line": 2770,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_color_tune_hue_yellow",
+      "config_id": "g_fusion_picture__color_tuner_hue_yellow",
+      "line": 2779,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_color_tune_hue_flesh_tone",
+      "config_id": "g_fusion_picture__color_tuner_hue_flesh",
+      "line": 2788,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_color_tune_saturation_red",
+      "config_id": "g_fusion_picture__color_tuner_sat_red",
+      "line": 2797,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_color_tune_saturation_green",
+      "config_id": "g_fusion_picture__color_tuner_sat_green",
+      "line": 2806,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_color_tune_saturation_blue",
+      "config_id": "g_fusion_picture__color_tuner_sat_blue",
+      "line": 2815,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_color_tune_saturation_cvan",
+      "config_id": "g_fusion_picture__color_tuner_sat_cyan",
+      "line": 2824,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_color_tune_saturation_megenta",
+      "config_id": "g_fusion_picture__color_tuner_sat_magenta",
+      "line": 2833,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_color_tune_saturation_yellow",
+      "config_id": "g_fusion_picture__color_tuner_sat_yellow",
+      "line": 2842,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_color_tune_saturation_flesh_tone",
+      "config_id": "g_fusion_picture__color_tuner_sat_flesh",
+      "line": 2851,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_color_tune_brightness_red",
+      "config_id": "g_fusion_picture__color_tuner_bri_red",
+      "line": 2860,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_color_tune_brightness_green",
+      "config_id": "g_fusion_picture__color_tuner_bri_green",
+      "line": 2869,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_color_tune_brightness_blue",
+      "config_id": "g_fusion_picture__color_tuner_bri_blue",
+      "line": 2878,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_color_tune_brightness_cvan",
+      "config_id": "g_fusion_picture__color_tuner_bri_cyan",
+      "line": 2887,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_color_tune_brightness_megenta",
+      "config_id": "g_fusion_picture__color_tuner_bri_magenta",
+      "line": 2896,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_color_tune_brightness_yellow",
+      "config_id": "g_fusion_picture__color_tuner_bri_yellow",
+      "line": 2905,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_color_tune_brightness_flesh_tone",
+      "config_id": "g_fusion_picture__color_tuner_bri_flesh",
+      "line": 2914,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_color_tune_offset_red",
+      "config_id": "g_fusion_picture__color_tuner_offset_r",
+      "line": 2923,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_color_tune_offset_green",
+      "config_id": "g_fusion_picture__color_tuner_offset_g",
+      "line": 2932,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_color_tune_offset_blue",
+      "config_id": "g_fusion_picture__color_tuner_offset_b",
+      "line": 2941,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_color_tune_gain_red",
+      "config_id": "g_fusion_picture__color_tuner_gain_r",
+      "line": 2950,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_color_tune_gain_green",
+      "config_id": "g_fusion_picture__color_tuner_gain_g",
+      "line": 2959,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_color_tune_gain_blue",
+      "config_id": "g_fusion_picture__color_tuner_gain_b",
+      "line": 2968,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "picture_white_balance11_enable",
+      "config_id": "g_fusion_picture__pq_wb_cor_enable",
+      "line": 2977,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "picture",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "picture_white_balance11_gain",
+      "config_id": "g_fusion_picture__pq_wb_cor_gain",
+      "line": 2986,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "picture",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "picture_white_balance11_red",
+      "config_id": "g_fusion_picture__pq_wb_cor_red",
+      "line": 2995,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "picture",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "picture_white_balance11_green",
+      "config_id": "g_fusion_picture__pq_wb_cor_green",
+      "line": 3004,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "picture",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "picture_white_balance11_blue",
+      "config_id": "g_fusion_picture__pq_wb_cor_blue",
+      "line": 3013,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "picture",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "picture_vga_hp",
+      "config_id": "g_vga__vga_pos_h",
+      "line": 3022,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "picture",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "picture_vga_vp",
+      "config_id": "g_vga__vga_pos_v",
+      "line": 3031,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "picture",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "picture_vga_phase",
+      "config_id": "g_vga__vga_phase",
+      "line": 3040,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "picture",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "picture_vga_clock",
+      "config_id": "g_vga__vga_clock",
+      "line": 3049,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "picture",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_input_hdmi_edid_version",
+      "config_id": "g_fusion_picture__hdmi_edid_version",
+      "line": 3058,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "visually_speaker",
+      "config_id": "g_audio__aud_ad_speaker",
+      "line": 3067,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "visually",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "visually_headphone",
+      "config_id": "g_audio__aud_ad_hdphone",
+      "line": 3076,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "visually",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "visually_volume",
+      "config_id": "g_audio__aud_ad_volume",
+      "line": 3085,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "visually",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "visually_pane_fade",
+      "config_id": "g_audio__aud_ad_fade_pan",
+      "line": 3094,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "visually",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "visually_fader_control",
+      "config_id": "g_audio__aud_ad_fader_ctrl",
+      "line": 3103,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "visually",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "ac4_de",
+      "config_id": "g_audio__aud_ac4_de_gain",
+      "line": 3112,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "ac4",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "power_picture_off",
+      "config_id": "g_audio__audio only",
+      "line": 3121,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "power",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_video_pc_mode",
+      "config_id": "g_fusion_picture__pc_mode",
+      "line": 3130,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "picture_format",
+      "config_id": "g_fusion_picture__pictrue_format",
+      "line": 3139,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "picture",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "picture_film_mode",
+      "config_id": "g_fusion_picture__film_mode",
+      "line": 3148,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "picture",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_video_noise_reduction",
+      "config_id": "g_fusion_picture__noise_reduction",
+      "line": 3157,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_video_4k_uhd_upscaling",
+      "config_id": "g_fusion_picture__4k_uhd_upscaling",
+      "line": 3166,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "tv_picture_video_hdmi_rgb_range",
+      "config_id": "g_fusion_picture__hdmi_rgb_range",
+      "line": 3175,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "tv",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "RetailDemo",
+      "config_id": "g_video__vid_pq_demo",
+      "line": 3184,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initMapdata()V",
+      "group": "RetailDemo",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_equalizer_detail_120hz",
+      "config_id": "g_fusion_sound__equalizer_120hz",
+      "line": 1425,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initAdvancedAudioSubMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_equalizer_detail_500hz",
+      "config_id": "g_fusion_sound__equalizer_500hz",
+      "line": 1434,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initAdvancedAudioSubMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_equalizer_detail_1500hz",
+      "config_id": "g_fusion_sound__equalizer_1.5khz",
+      "line": 1443,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initAdvancedAudioSubMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_equalizer_detail_5000hz",
+      "config_id": "g_fusion_sound__equalizer_5khz",
+      "line": 1452,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initAdvancedAudioSubMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_equalizer_detail_10000hz",
+      "config_id": "g_fusion_sound__equalizer_10khz",
+      "line": 1461,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initAdvancedAudioSubMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_sonic_emotion",
+      "config_id": "g_fusion_sound__sonic_emosion",
+      "line": 1470,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initAdvancedAudioSubMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dialog_enhancement",
+      "config_id": "g_fusion_sound__dialog_enhancement",
+      "line": 1479,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initAdvancedAudioSubMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_bass_enhancement",
+      "config_id": "g_fusion_sound__bass_enhancement",
+      "line": 1488,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initAdvancedAudioSubMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_absolute_3d_sound",
+      "config_id": "g_fusion_sound__absl_3d_sound",
+      "line": 1497,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initAdvancedAudioSubMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dbx_enable",
+      "config_id": "g_fusion_sound__dbx_enable",
+      "line": 1506,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initAdvancedAudioSubMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dbx_total_sonic",
+      "config_id": "g_fusion_sound__total_sonic",
+      "line": 1515,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initAdvancedAudioSubMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dbx_total_vol",
+      "config_id": "g_fusion_sound__total_volume",
+      "line": 1524,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initAdvancedAudioSubMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dbx_total_surround",
+      "config_id": "g_fusion_sound__total_surround",
+      "line": 1533,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initAdvancedAudioSubMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dts_virtual_x",
+      "config_id": "g_audio__dts_virtual_x",
+      "line": 1542,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initAdvancedAudioSubMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dts_tbhdx",
+      "config_id": "g_audio__dts_tbhdx",
+      "line": 1551,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initAdvancedAudioSubMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dts_limiter",
+      "config_id": "g_audio__dts_limiter",
+      "line": 1560,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initAdvancedAudioSubMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dts_trusurroundx",
+      "config_id": "g_audio__dts_surround",
+      "line": 1569,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initAdvancedAudioSubMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dts_truvolumehd",
+      "config_id": "g_audio__dts_true_volume",
+      "line": 1578,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initAdvancedAudioSubMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dts_dialogClarity",
+      "config_id": "g_audio__dts_dialog_clarity",
+      "line": 1587,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initAdvancedAudioSubMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dts_definition",
+      "config_id": "g_audio__dts_definition",
+      "line": 1596,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initAdvancedAudioSubMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dts_height",
+      "config_id": "g_audio__dts_height",
+      "line": 1605,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initAdvancedAudioSubMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_advanced_dolby_ap",
+      "config_id": "g_audio__dolby_audio_processing",
+      "line": 1614,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initAdvancedAudioSubMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_advanced_sound_mode",
+      "config_id": "g_audio__dolby_sound_mode",
+      "line": 1623,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initAdvancedAudioSubMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_advanced_volume_leveler",
+      "config_id": "g_audio__volume_leveler",
+      "line": 1632,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initAdvancedAudioSubMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_advanced_dialogue_enhancer",
+      "config_id": "g_audio__dialogue_enhancer",
+      "line": 1641,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initAdvancedAudioSubMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_advanced_surround_virtualizer",
+      "config_id": "g_audio__dolby_surround_virtualizer",
+      "line": 1650,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initAdvancedAudioSubMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_advanced_dolby_atmos",
+      "config_id": "g_audio__dolby_atmos",
+      "line": 1659,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initAdvancedAudioSubMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dts_studio_enable",
+      "config_id": "g_fusion_sound__dtsss2_enable",
+      "line": 1668,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initAdvancedAudioSubMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dts_studio_surround",
+      "config_id": "g_fusion_sound__dtsss2_surround",
+      "line": 1677,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initAdvancedAudioSubMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dts_studio_truevolume",
+      "config_id": "g_fusion_sound__dtsss2_true_volume",
+      "line": 1686,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initAdvancedAudioSubMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_style",
+      "config_id": "g_audio__sound_mode",
+      "line": 3972,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initSoundStyleMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_balance",
+      "config_id": "g_audio__aud_balance",
+      "line": 3981,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initSoundStyleMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_bass",
+      "config_id": "g_audio__aud_bass",
+      "line": 3990,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initSoundStyleMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_treble",
+      "config_id": "g_audio__aud_treble",
+      "line": 3999,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initSoundStyleMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_sound_surround",
+      "config_id": "g_audio__aud_surround",
+      "line": 4008,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initSoundStyleMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_equalizer_detail_120hz",
+      "config_id": "g_fusion_sound__equalizer_120hz",
+      "line": 4017,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initSoundStyleMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_equalizer_detail_500hz",
+      "config_id": "g_fusion_sound__equalizer_500hz",
+      "line": 4026,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initSoundStyleMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_equalizer_detail_1500hz",
+      "config_id": "g_fusion_sound__equalizer_1.5khz",
+      "line": 4035,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initSoundStyleMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_equalizer_detail_5000hz",
+      "config_id": "g_fusion_sound__equalizer_5khz",
+      "line": 4044,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initSoundStyleMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_equalizer_detail_10000hz",
+      "config_id": "g_fusion_sound__equalizer_10khz",
+      "line": 4053,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initSoundStyleMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dbx_enable",
+      "config_id": "g_fusion_sound__dbx_enable",
+      "line": 4062,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initSoundStyleMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dbx_total_sonic",
+      "config_id": "g_fusion_sound__total_sonic",
+      "line": 4071,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initSoundStyleMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dbx_total_vol",
+      "config_id": "g_fusion_sound__total_volume",
+      "line": 4080,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initSoundStyleMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dbx_total_surround",
+      "config_id": "g_fusion_sound__total_surround",
+      "line": 4089,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initSoundStyleMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dts_virtual_x",
+      "config_id": "g_audio__dts_virtual_x",
+      "line": 4098,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initSoundStyleMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dts_tbhdx",
+      "config_id": "g_audio__dts_tbhdx",
+      "line": 4107,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initSoundStyleMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dts_limiter",
+      "config_id": "g_audio__dts_limiter",
+      "line": 4116,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initSoundStyleMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dts_trusurroundx",
+      "config_id": "g_audio__dts_surround",
+      "line": 4125,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initSoundStyleMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dts_truvolumehd",
+      "config_id": "g_audio__dts_true_volume",
+      "line": 4134,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initSoundStyleMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dts_dialogClarity",
+      "config_id": "g_audio__dts_dialog_clarity",
+      "line": 4143,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initSoundStyleMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dts_definition",
+      "config_id": "g_audio__dts_definition",
+      "line": 4152,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initSoundStyleMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    },
+    {
+      "key": "sound_dts_height",
+      "config_id": "g_audio__dts_height",
+      "line": 4161,
+      "source_file": "smali/com/mediatek/tv/agent/TVMenuSettingsService.smali",
+      "method": "Lcom/mediatek/tv/agent/TVMenuSettingsService;->initSoundStyleMap()V",
+      "group": "sound",
+      "status": "STATIC_MAPPING",
+      "runtime_status": "RUNTIME_TEST_REQUIRED"
+    }
+  ],
+  "limits": "Literal map pairs only; shared observer proven separately. UI bounds and special branches require group review.",
+  "extraction_run": 44133849387
+}

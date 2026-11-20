@@ -7,13 +7,18 @@ package dev.projectorsoft.tvsettings;
 public final class ProjectorCompatibilityPolicy {
     private ProjectorCompatibilityPolicy() {}
 
+    /** The legacy orientation setter's 8054 side-effect chain is not validated. */
+    public static boolean mayOfferLegacyOrientation(String firmwareId) {
+        return "8052".equals(firmwareId);
+    }
+
     public static String boardWarning(String firmwareId,Integer hdmiPorts) {
         if("8054".equals(firmwareId)) {
             if(hdmiPorts==null || hdmiPorts.intValue()!=2)
                 return "8054 определён, но количество HDMI не подтверждено. Функции MOD нельзя считать совместимыми.";
-            return "По архивному сравнению: заводской TvSettingsPlus из 8054.1.0.1 " +
-                    "совпадал с 8052.1.0.4 по SHA-256. Текущая прошивка и аппаратные " +
-                    "функции MOD на 8054 не проверены; KuSettings не отключать.";
+            return "Идентификаторы соответствуют 8054 с двумя HDMI. " +
+                    "Совместимость APK, аппаратные функции MOD и восстановление " +
+                    "термослужбы на 8054 не проверены; KuSettings не отключать.";
         }
         if(!"8052".equals(firmwareId))
             return "Ревизия не подтверждена. Не устанавливайте эту сборку как рабочую.";
@@ -33,3 +38,4 @@ public final class ProjectorCompatibilityPolicy {
         }
     }
 }
+

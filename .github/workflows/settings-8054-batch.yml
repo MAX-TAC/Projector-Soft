@@ -1,0 +1,29 @@
+name: Batch 8054 settings routes
+on:
+  push:
+    branches: [audit/8054-tvsettingsplus-20261117]
+    paths: ['tools/extract_8054_settings_routes.py', 'tools/test_extract_8054_settings_routes.py', '.github/workflows/settings-8054-batch.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  routes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test extraction boundaries
+        run: python3 tools/test_extract_8054_settings_routes.py
+      - uses: actions/download-artifact@v4
+        with:
+          name: flix8054-exact-method-diff-text-only
+          run-id: 44125184745
+          github-token: ${{ github.token }}
+          path: cached-traces
+      - name: Extract all cached TvServices mappings together
+        run: python3 tools/extract_8054_settings_routes.py cached-traces/selected_smali_trace.json settings_routes_8054.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: settings-routes-8054
+          path: settings_routes_8054.json
+          retention-days: 30

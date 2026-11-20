@@ -25,12 +25,16 @@ public final class OemFontScalePolicy {
     }
 
     public static boolean apply(Store store,Object proposal) {
+        return apply(store,-1,proposal);
+    }
+
+    static boolean apply(Store store,int displayed,Object proposal) {
         if(store==null || !(proposal instanceof String))return false;
         try {
             float target=Float.parseFloat((String)proposal);
             if(index(target)<0)return false;
             float before=store.read();
-            if(index(before)<0)return false;
+            if(index(before)<0 || displayed>=0 && index(before)!=displayed)return false;
             if(Math.abs(before-target)<0.0001f)return true;
             if(!store.write(target))return false;
             return index(store.read())==index(target);
@@ -39,3 +43,4 @@ public final class OemFontScalePolicy {
         }
     }
 }
+

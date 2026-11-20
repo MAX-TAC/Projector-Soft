@@ -1,5 +1,6 @@
 package dev.projectorsoft.tvsettings;
 
+import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.provider.Settings;
@@ -61,6 +62,7 @@ public final class OemInlineSlidersHook {
                 || soundCategory == null || prefClass == null) return;
         for (Spec spec:CONTROLS) {
             try {
+                if(spec.key.startsWith("picture_")&&!OemPictureState.mayEdit())continue;
                 Object dest=spec.key.startsWith("sound_")?soundCategory:pictureCategory;
                 attach(context,dest,prefClass,spec);
             } catch (Exception exception) {
@@ -69,16 +71,91 @@ public final class OemInlineSlidersHook {
         }
     }
 
+    public static void installSound(Context context,Object category,Class<?> pref) {
+        for(Spec spec:CONTROLS)if(spec.key.startsWith("sound_")) {
+            try {attach(context,category,pref,spec);}catch(Exception ex){Log.w(TAG,"Sound slider unavailable "+spec.key,ex);}
+        }
+    }
+    public static void installPicture(Context context,Object category,Class<?> pref) {
+        if(!OemPictureState.mayEdit())return;
+        for(Spec spec:CONTROLS)if(spec.key.startsWith("picture_")) {
+            try {attach(context,category,pref,spec);}catch(Exception ex){Log.w(TAG,"Picture slider unavailable "+spec.key,ex);}
+        }
+    }
+
+    public static void installPictureReadout(Context context,Object category,Class<?> pref) throws Exception {
+        if (!"8054".equals(OemHdmiPortInfo.machineId())) return;
+        Object item = pref.getConstructor(Context.class).newInstance(context);
+        pref.getMethod("setKey",String.class).invoke(item,"projectorsoft_picture_values");
+        pref.getMethod("setTitle",CharSequence.class).invoke(item,"Значения изображения");
+        pref.getMethod("setSummary",CharSequence.class).invoke(item,"Прочитать сохранённые значения и диапазоны");
+        pref.getMethod("setOrder",int.class).invoke(item,214);
+        Class<?> listener = Class.forName("androidx.preference.Preference$OnPreferenceClickListener");
+        Object callback = Proxy.newProxyInstance(listener.getClassLoader(),new Class<?>[]{listener},
+                (proxy,method,args) -> {
+                    switch (method.getName()) {
+                        case "onPreferenceClick":
+                            showPictureReadout(context);
+                            return true;
+                        case "hashCode": return System.identityHashCode(proxy);
+                        case "equals": return proxy == args[0];
+                        case "toString": return "PictureReadout";
+                        default: return null;
+                    }
+                });
+        pref.getMethod("setOnPreferenceClickListener",listener).invoke(item,callback);
+        category.getClass().getMethod("addPreference",pref).invoke(category,item);
+    }
+
+    private static void showPictureReadout(Context context) {
+        ContentResolver resolver = context.getContentResolver();
+        StringBuilder message = new StringBuilder();
+        try {
+            String mode = Settings.Global.getString(resolver,"picture_mode");
+            String temperature = Settings.Global.getString(resolver,"picture_color_temperature");
+            for (Spec spec : CONTROLS) {
+                if (!spec.key.startsWith("picture_")) continue;
+                String raw = Settings.Global.getString(resolver,spec.key);
+                String value = "недоступно";
+                if (raw != null) {
+                    try {
+                        int parsed = Integer.parseInt(raw);
+                        if (parsed >= spec.min && parsed <= spec.max) value = Integer.toString(parsed);
+                    } catch (NumberFormatException ignored) {
+                        // Do not present a malformed provider entry as a control value.
+                    }
+                }
+                message.append(spec.title).append(": ").append(value)
+                        .append(" (").append(spec.min).append("…").append(spec.max).append(")\n");
+            }
+            if (!java.util.Objects.equals(mode,Settings.Global.getString(resolver,"picture_mode"))
+                    || !java.util.Objects.equals(temperature,Settings.Global.getString(resolver,"picture_color_temperature"))) {
+                message = new StringBuilder("Профиль изменился при чтении. Откройте значения ещё раз.");
+            } else {
+                message.append("\nЗначения хранятся в Android. Активный HDMI/PQ-профиль не подтверждён. ")
+                        .append("Для изменения откройте штатные настройки изображения.");
+            }
+        } catch (RuntimeException ex) {
+            Log.w(TAG,"Cannot read OEM picture values",ex);
+            message = new StringBuilder("Параметры изображения недоступны.");
+        }
+        new AlertDialog.Builder(context).setTitle("Значения изображения")
+                .setMessage(message).setPositiveButton("Закрыть",null).show();
+    }
+
     private static void attach(Context context,Object category,
                                Class<?> preferenceClass,Spec spec) throws Exception {
         ContentResolver resolver=context.getContentResolver();
         // Conservative capability gate: absent / malformed values remain hidden.
+        final String openedMode=Settings.Global.getString(resolver,"sound_style");
         String raw=Settings.Global.getString(resolver,spec.key);
         if (raw == null) return;
         final int initial;
         try { initial=Integer.parseInt(raw); }
         catch(NumberFormatException e) { return; }
         if (initial<spec.min || initial>spec.max) return;
+        String[] displayed={raw};
+        if(spec.key.startsWith("sound_")&&!OemSoundValuePolicy.acceptsControlChange(spec.key,raw,initial,openedMode,openedMode))return;
 
         Class<?> bar=Class.forName("androidx.preference.SeekBarPreference");
         Object item=bar.getConstructor(Context.class).newInstance(context);
@@ -105,8 +182,18 @@ public final class OemInlineSlidersHook {
                     // with the exact same global key, which delegates to the
                     // platform Settings provider. We re-read instead of silently
                     // accepting a failed provider write.
-                    if (!Settings.Global.putInt(resolver,spec.key,newValue)) return false;
-                    return Settings.Global.getInt(resolver,spec.key,-99999)==newValue;
+                    String before=Settings.Global.getString(resolver,spec.key);
+                    if (!displayed[0].equals(before)) return false;
+                    if (Integer.toString(newValue).equals(before)) return true;
+                    if(spec.key.startsWith("picture_")) {
+                        if(!OemPictureState.write(context,spec.key,newValue))return false;
+                    } else {
+                        if(!OemSoundValuePolicy.acceptsControlChange(spec.key,Settings.Global.getString(resolver,spec.key),newValue,openedMode,Settings.Global.getString(resolver,"sound_style")))return false;
+                        if(!Settings.Global.putInt(resolver,spec.key,newValue))return false;
+                    }
+                    if (Settings.Global.getInt(resolver,spec.key,-99999)!=newValue) return false;
+                    displayed[0]=Integer.toString(newValue);
+                    return true;
                 } catch (Exception e) {
                     Log.w(TAG,"OEM seekbar write failed: "+spec.key,e);
                     return false;
@@ -124,3 +211,5 @@ public final class OemInlineSlidersHook {
         category.getClass().getMethod("addPreference",preferenceClass).invoke(category,item);
     }
 }
+
+

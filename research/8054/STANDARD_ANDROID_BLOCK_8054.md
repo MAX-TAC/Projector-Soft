@@ -1,0 +1,14 @@
+# Система / NAV: стандартная Android навигация
+
+После проекционного grouped CI начат STANDARD_ANDROID этап. OemStandardAndroidNavigation добавляет четыре checked Intent в системную категорию: WIFI_SETTINGS (NAV02), LOCALE_SETTINGS (NAV05), DATE_SETTINGS (NAV03/04), APPLICATION_SETTINGS (NAV06). Часовой пояс выбирается на штатной Date/Time странице, отдельный выдуманный action не используется. При отсутствии доступного handler пункт не создаётся, исходные Android TV меню остаются.
+
+Resolver сначала ограничен com.android.tv.settings, затем com.android.settings; нужен system/updated-system app, включённые Activity/application с учётом user overrides, exported для внешнего package и выданное permission. Resolved Activity закрепляется explicit ComponentName. Чужой default handler не принимается за штатный системный экран. Код не пишет Global/System, не вызывает locale/time API setters и не включает/отключает приложения/службы; изменения выполняются пользователем в исходном UI.
+
+Доставка — DELEGATED_OEM / standard platform screen navigation, не новый inline control и не FEATURE_COMPLETE. Public Android Settings API/Intent достаточно; новый reverse служб не запускался. User factory reset, OTA, reboot и управление пакетами не являются автоматическими действиями нового кода и в allowlist не входят. Существующие OEM/update links не изменялись.
+
+StandardAndroidNavigationPolicyTest: четыре допустимых action, правильные platform owners, чужой handler, несистемный package, disabled activity/app, exported/permission отказ и reset/unknown action. API33 compilation и exact-8054 build проверяют интеграцию, но открытие правильного экрана/Back/D-pad остаётся RUNTIME_TEST_REQUIRED. Ручной smoke-test после отдельного разрешения: открыть/закрыть каждый экран без смены настроек; для согласованного изменения сохранить исходный язык/дату/таймзону/сетевую конфигурацию и вернуть через тот же экран. Не проводить reset, uninstall/disable OEM или вмешательство TimeService/thermal.
+
+Перед первым device test нужен отдельный установочный/recovery пакет с original8054 APK, matching hashes, signature/sharedUID/SELinux preflight и путём возврата при нестарте UI. Этот source milestone не является таким пакетом и не разрешает установку.
+
+## Подтверждённый кодовый checkpoint
+Статус BUILT_UNTESTED для проверяемой platform/OEM навигации, не полный перенос NAV/SYS и не hardware verified. Implementation 476a39a: source-safety44252085239, Android/D8/JVM44252085210, OEM44252085247, v3344252085194, exact-8054 44252085197 — success. APK SHA-256 cf5bba9d90935952ea5a8a832ea0bd9662374e5cc10c052d5cdb6698e0ba1246, artifact14403668693, не установлен. DELIVERY_STATUS_8054.md/json остаются актуальной сводкой96 функций; RUNTIME_VERIFIED0/FEATURE_COMPLETE0. Следующий отдельный milestone — pre-device install/recovery package, без операций на проекторе.

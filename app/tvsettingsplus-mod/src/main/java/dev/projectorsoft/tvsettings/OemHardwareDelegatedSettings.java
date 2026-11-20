@@ -3,6 +3,8 @@ package dev.projectorsoft.tvsettings;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
 import java.lang.reflect.Field;
@@ -29,20 +31,30 @@ public final class OemHardwareDelegatedSettings {
         }
     }
 
+    static Intent mainActivityIntent(Context context,String action) throws PackageManager.NameNotFoundException {
+        ComponentName component=new ComponentName(context,ACTIVITY);
+        PackageManager pm=context.getPackageManager();
+        ActivityInfo info=pm.getActivityInfo(component,0);
+        if (info.applicationInfo==null || !info.enabled || !info.applicationInfo.enabled
+                || pm.getComponentEnabledSetting(component)>PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                || pm.getApplicationEnabledSetting(component.getPackageName())>PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                || (info.permission!=null && !info.permission.isEmpty()
+                    && context.checkSelfPermission(info.permission)!=PackageManager.PERMISSION_GRANTED)) return null;
+        return new Intent(action).setComponent(component);
+    }
+
     private static boolean add(Context context,Object category,Class<?> preferenceClass,
                                String key,String title,String summary,
                                String action,int order) {
         try {
-            ComponentName component=new ComponentName(context,ACTIVITY);
-            context.getPackageManager().getActivityInfo(component,0);
+            Intent intent=mainActivityIntent(context,action);
+            if(intent==null)return false;
             Object item=preferenceClass.getConstructor(Context.class).newInstance(context);
             preferenceClass.getMethod("setKey",String.class).invoke(item,key);
             preferenceClass.getMethod("setTitle",CharSequence.class).invoke(item,title);
             preferenceClass.getMethod("setSummary",CharSequence.class).invoke(item,summary);
             preferenceClass.getMethod("setOrder",int.class).invoke(item,order);
-            Intent intent=new Intent(action);
-            intent.setComponent(component);
-            preferenceClass.getMethod("setIntent",Intent.class).invoke(item,intent);
+            CheckedPreferenceLaunch.attach(context,preferenceClass,item,intent,()->mainActivityIntent(context,action));
             Object inserted=category.getClass().getMethod("addPreference",preferenceClass)
                                     .invoke(category,item);
             return Boolean.TRUE.equals(inserted);
@@ -80,6 +92,14 @@ public final class OemHardwareDelegatedSettings {
     public static boolean installSourceLinks(Context context,Object sourceCategory,
                                           Class<?> preferenceClass,boolean nativeCec,boolean nativeBootApp) {
         if(context==null||sourceCategory==null||preferenceClass==null)return false;
+        if ("8054".equals(OemHdmiPortInfo.machineId())) {
+            if (!hdmiExists() && (nativeBootApp || !hasOriginalControl(context,"tciv_source_power_on_app"))) {
+                return false;
+            }
+            return add(context,sourceCategory,preferenceClass,"projectorsoft_sources_oem",
+                    "Выбор источника и настройки HDMI",
+                    "HDMI 1/2, EDID, CEC и игровой режим в штатном меню",SOURCE_ACTION,275);
+        }
         // App-on-boot is a factory source-page feature even on a board with
         // zero confirmed HDMI ports. Do not hide it behind HDMI gating.
         boolean added=false;
@@ -94,7 +114,7 @@ public final class OemHardwareDelegatedSettings {
         added=add(context,sourceCategory,preferenceClass,
             "projectorsoft_hdmi_game_oem","Игровой режим HDMI",
             "Заводская настройка с сохранением коррекции трапеции",
-            SOURCE_ACTION,276);
+            SOURCE_ACTION,276)||added;
         if(!nativeCec) {
             added=add(context,sourceCategory,preferenceClass,
                 "projectorsoft_hdmi_cec_oem","HDMI-CEC · расширенные настройки",
@@ -107,9 +127,23 @@ public final class OemHardwareDelegatedSettings {
     public static void installProjectionLinks(Context context,Object projectionCategory,
                                               Class<?> preferenceClass) {
         if(context==null||projectionCategory==null||preferenceClass==null)return;
-        add(context,projectionCategory,preferenceClass,
-            "projectorsoft_calibration_oem","Фокус и коррекция трапеции",
-            "Оригинальные экраны автофокуса и калибровки четырёх углов",
-            "android.settings.SETTINGS",251);
+        OemProjectionPanel.install(context,projectionCategory,preferenceClass);
+    }
+
+    public static boolean installPictureLink(Context context,Object category,Class<?> preferenceClass) {
+        return add(context,category,preferenceClass,"projectorsoft_picture_oem",
+            "Редактировать изображение","Штатные ползунки, режим изображения, цвет, HDR и MEMC",
+            "android.settings.PICTURE_SETTINGS",211);
+    }
+    public static boolean installSoundLink(Context context,Object category,Class<?> preferenceClass) {
+        if ("8054".equals(OemHdmiPortInfo.machineId())) {
+            return add(context,category,preferenceClass,"projectorsoft_sound_oem",
+                    "Дополнительные настройки звука","Штатные настройки звука и HDMI eARC",
+                    "android.settings.SOUND_SETTINGS",247);
+        }
+        return add(context,category,preferenceClass,"projectorsoft_sound_oem",
+            "Звук · штатные настройки","Режим и восстановление параметров через оригинальный обработчик",
+            "android.settings.SOUND_SETTINGS",247);
     }
 }
+

@@ -104,6 +104,8 @@ public final class OemHdmiCecHook {
     }
 
     public static boolean install(Context context,Object category,Class<?> preferenceClass) {
+        // Legacy CEC also changes auto-off/eARC. Preserve OEM handling on 8054/unknown boards.
+        if(!Hdmi8054Policy.mayUseLegacyCec(OemHdmiPortInfo.machineId()))return false;
         try {
             final Bridge bridge=new Bridge(context);
             final Object cec=makeSwitch(context,preferenceClass,
@@ -188,3 +190,4 @@ public final class OemHdmiCecHook {
         return false;
     }
 }
+

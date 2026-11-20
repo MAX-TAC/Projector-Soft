@@ -27,6 +27,8 @@ public final class OemAcPowerBootPolicyTest {
         ok(Boolean.TRUE.equals(factory.state) && factory.writes==1,"written to OEM");
         ok(OemAcPowerBootPolicy.apply(factory,true) && factory.writes==1,"idempotent");
         ok(!OemAcPowerBootPolicy.apply(factory,"true"),"reject nonboolean");
+        Fake stale=new Fake(true);
+        ok(!OemAcPowerBootPolicy.apply(stale,false,false) && stale.writes==0,"stale power UI");
         Fake blocked=new Fake(false);
         blocked.ignoreWrite=true;
         ok(!OemAcPowerBootPolicy.apply(blocked,true),"reject mismatched readback");
@@ -38,3 +40,4 @@ public final class OemAcPowerBootPolicyTest {
         System.out.println("PASS: vendor electricity-boot state verification, no phantom success");
     }
 }
+

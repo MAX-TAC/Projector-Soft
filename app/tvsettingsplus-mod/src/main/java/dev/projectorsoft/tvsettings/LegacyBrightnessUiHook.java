@@ -49,7 +49,7 @@ public final class LegacyBrightnessUiHook {
     private static boolean sourceAvailable(Context ctx) {
         try {
             String id=firmwareId();
-            if (!"8052".equals(id) && !"8054".equals(id)) return false;
+            if (!Projection8054Policy.mayUseLegacyBrightness(id)) return false;
             // Fail back to original fullscreen UI if any OEM radio widget is missing.
             for (String viewName:new String[] {ID_ECO,ID_STANDARD,ID_HIGHLIGHT,ID_AUTO,ID_GROUP}) {
                 if (ctx.getResources().getIdentifier(viewName,"id",PACKAGE)==0) return false;
@@ -172,3 +172,4 @@ public final class LegacyBrightnessUiHook {
         return null;
     }
 }
+
