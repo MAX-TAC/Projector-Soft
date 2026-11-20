@@ -167,7 +167,7 @@ final class NativePicturePanel {
                 hdr.setSummary(!known ? "Состояние недоступно"
                         : (value == 1 ? "Включён" : "Выключен") + " · только просмотр");
             } else {
-                row.setSummary(value == null ? "Значение недоступно" : value + " · только просмотр");
+                row.setSummary(value == null ? "Значение недоступно" : value + " · тестовая регулировка");
                 row.setEnabled(value != null && "8054".equals(OemHdmiPortInfo.machineId()));
             }
         }
