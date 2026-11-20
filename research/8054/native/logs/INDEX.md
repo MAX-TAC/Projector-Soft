@@ -15,6 +15,7 @@
 | 2026-11-20 | [Product direction: нужен working PIC04, не абстрактный HIDL](2026-11-20_PRODUCT_DIRECTION_REVIEW.md) | Проанализированы TRACE_004/005, 96-функционная матрица, код v41; 0 app-файлов в PR #3 | **PRODUCT-001 / PIC04 — NEXT**; NATIVE-005b deferred |
 
 | 2026-11-20 | [PRODUCT-ARCH-001: без китайского UI в runtime](2026-11-20_PRODUCT-ARCH-001.md) | Зафиксирована правильная архитектура MOD→собственный обработчик→backend; полный KuSettings пока нельзя отключать из-за TimeService | PRODUCT-001 должен доказать независимость от GUI; выключение пакета — отдельный этап |
+| 2026-11-20 | [PRODUCT-001 / PIC04: STOCK callback, bounds, MOD pilot](2026-11-20_PRODUCT-001.md) | Контракт, конкретный `$2.onValueChanged` → Global, динамический OEM min/max, отдельный [Draft PR #4](https://github.com/MAX-TAC/Projector-Soft/pull/4), [JVM CI success](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44808298783) | Единственный STOCK one-step+restore тест, verified input/profile, фактический OEM increment, effect |
 
 ## Трассировки и статус
 
@@ -26,7 +27,7 @@
 | 004 | JNI `setConfigValue_native` → конкретный C wrapper callsite | **`NATIVE_CALL_EDGE_PROVEN_STATIC`** | [TRACE_004](../TRACE_004_CONFIG_JNI_TO_HIDL.md) · [ELF evidence](../generated/NATIVE_004_ELF_MACHINE_EVIDENCE_8054.md) |
 | 005 | HIDL proxy/stub, exact service, config setter service→RPC call | **`STATIC_SERVICE_TO_RPC_CALL_PROVEN / HIDL_HANDLER_EDGE_PARTIAL`** | [TRACE_005](../TRACE_005_CONFIG_HIDL_SERVICE_RPC.md) · [ELF evidence](../generated/NATIVE_005_HIDL_RECEIVER_EVIDENCE_8054.md) |
 | 005b | C-wrapper concrete vtable→HIDL implementation, sender→RPC receiver, -1/3 semantics | **`DEFERRED`** | [Граница NATIVE-005 и следующий этап](../TRACE_005_CONFIG_HIDL_SERVICE_RPC.md#8-next-concrete-follow-up-native-005b--before-hdr--memc) |
-| PRODUCT-001 | Пользовательская контрастность PIC04: контракт STOCK→MOD, контроль и откат | **`NEXT`** | [Решение](../PRODUCT_FOCUS_REVIEW_2026-11-20.md) · [Промпт](../PROMPT_PRODUCT_PIVOT.md) |
+| PRODUCT-001 | PIC04 STOCK→Settings.Global→TvServices, lower dialog audit; fail-closed policy in isolated PR #4 | **`STATIC_CONTRACT_CONFIRMED / POLICY_TESTED / MOD_WRITE_NOT_WIRED / HARDWARE_NOT_TESTED`** | [Контракт](../PRODUCT_001_PIC04_INTEGRATION_CONTRACT.md) · [журнал](2026-11-20_PRODUCT-001.md) · [Draft PR #4](https://github.com/MAX-TAC/Projector-Soft/pull/4) |
 | 006 | HDR + MEMC: OEM handler, config, native | `NOT_STARTED` | Исследовать раздельно с собственными trace ID |
 | 007 | Звук: профили, EQ5, Factory PEQ13 (без записи) | `NOT_STARTED` | Разделять пользовательский и заводской путь |
 
@@ -50,7 +51,7 @@
 1. Проверить текущий HEAD PR #3, реальные последние workflow runs и ссылку на свежую версию артефактов.
 2. Прочитать [HANDOFF.md](../HANDOFF.md) и [AGENTS.md](../AGENTS.md).
 3. Создать `logs/YYYY-MM-DD_TASK-ID.md`, записать гипотезы и стартовые SHA.
-4. **Сменён приоритет по запросу владельца:** выполнить PRODUCT-001 / PIC04 (STOCK callback → MOD action → test/rollback); NATIVE-005b отложена до конкретного продуктового блокера. Подробности в PRODUCT_FOCUS_REVIEW и PROMPT_PRODUCT_PIVOT.
+4. **Приоритет владельца:** PRODUCT-001 / PIC04 подготовлен по статике и программным тестам, но пока не включён. Следующая точка — одно отдельно разрешённое ручное изменение и восстановление в STOCK, затем доказательство активного HDMI/SDR/профиля и привязка проверяемого обработчика в [PR #4](https://github.com/MAX-TAC/Projector-Soft/pull/4). NATIVE-005b отложена. Подробности в PRODUCT_FOCUS_REVIEW и PROMPT_PRODUCT_PIVOT.
 5. Записать найденные и ненайденные вызовы, доказательства и границы проверки в TRACE.
 6. Закоммитить TRACE, журнал и изменение этого индекса; проверить коммиты в PR.
 7. Не объявлять `HARDWARE_EFFECT_VERIFIED` до измерений и разрешённого теста на самом проекторе.
