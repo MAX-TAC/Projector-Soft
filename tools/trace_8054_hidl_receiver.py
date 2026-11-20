@@ -261,7 +261,7 @@ def main():
         method = demangle(match[0]["name"]) if match else "NO_EXACT_FUNCTION_MATCH"
         rows.append(f"| `{table_name}` | `0x{vaddr:x}` | `{target_str}` | `{method}` |")
         slots = [line.strip() for line in hidl_reloc_lines if
-                 re.match(r"^\\s*" + f"{addr:08x}" + r"\\b", line, re.I)]
+                 re.match(r"^\s*" + f"{addr:08x}" + r"\b", line, re.I)]
         rows.append(f"  - vtable slot `0x{addr:x}` ELF relocation: " +
                     ("; ".join(slots) if slots else "NO_NAMED_RELOCATION_FOUND"))
     rows += ["", "## C3. Original HIDL service binary import and registration evidence", ""]
@@ -298,7 +298,7 @@ def main():
         # for calls to the exact PLT slot, independent of the misleading
         # nearest-symbol labels from GNU objdump.
         setter_relocs = [line.strip() for line in call(["readelf", "-rW", str(service)]).splitlines()
-                         if re.search(r"\\ba_mtktvapi_config_set_value\\s*$", line)]
+                         if re.search(r"\ba_mtktvapi_config_set_value\s*$", line)]
         rows += ["", "- Exact backend setter relocation(s):", "", "```text"]
         rows += setter_relocs or ["NOT_FOUND"]
         rows += ["```", ""]
@@ -306,11 +306,11 @@ def main():
                         timeout=120, allow_error=True).splitlines()
         decoded_plts = []
         for k in range(len(plt_dump)-2):
-            m0 = re.search(r"^\\s*([0-9a-f]+):.*\\badd\\s+ip,\\s*pc,\\s*#(\\d+)", plt_dump[k], re.I)
+            m0 = re.search(r"^\s*([0-9a-f]+):.*\badd\s+ip,\s*pc,\s*#(\d+)", plt_dump[k], re.I)
             if not m0:
                 continue
-            m1 = re.search(r"\\badd\\s+ip,\\s*ip,\\s*#(\\d+)", plt_dump[k+1], re.I)
-            m2 = re.search(r"\\bldr\\s+pc,\\s*\\[ip,\\s*#(\\d+)\\]!", plt_dump[k+2], re.I)
+            m1 = re.search(r"\badd\s+ip,\s*ip,\s*#(\d+)", plt_dump[k+1], re.I)
+            m2 = re.search(r"\bldr\s+pc,\s*\[ip,\s*#(\d+)\]!", plt_dump[k+2], re.I)
             if m1 and m2:
                 jump = int(m0.group(1),16)
                 got = jump+8+int(m0.group(2))+int(m1.group(1))+int(m2.group(1))
@@ -325,7 +325,7 @@ def main():
             targets = {a for a,b in decoded_plts}
             callsites = []
             for i, line in enumerate(text_dis):
-                mm = re.search(r"\\bblx?\\s+([0-9a-f]+)\\s+<", line, re.I)
+                mm = re.search(r"\bblx?\s+([0-9a-f]+)\s+<", line, re.I)
                 if mm and int(mm.group(1),16) in targets:
                     callsites += [" | ".join(z.strip().split("<",1)[0] for z in
                                   text_dis[max(0,i-3):i+2])]
