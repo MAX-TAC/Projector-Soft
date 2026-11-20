@@ -261,8 +261,46 @@ def main() -> None:
         except RuntimeError as exc:
             result.append("PLT_DECODE_ERROR: " + str(exc))
         result += ["```"]
+
+    # Verify the exact PLT arithmetic instead of relying on incorrect nearest-
+    # symbol labels emitted by objdump for the ARM .plt section.
+    result += ["", "## C3. Independently verified ARM PLT -> GOT resolution",
+               "", "For ARM state, PC at an instruction is its address + 8.",
+               "The exact PLT instruction immediates give the GOT address.",
+               "", ""] 
+    got_setter_confirmed = False
+    for dest in jni_branch_addresses:
+        dis = run(["arm-linux-gnueabihf-objdump", "-drw", "-j", ".plt",
+                   f"--start-address=0x{dest:x}",
+                   f"--stop-address=0x{dest+12:x}", str(jni_path)])
+        inst = [l for l in dis.splitlines() if ADDR.match(l)]
+        if len(inst) < 3:
+            result.append(f"- 0x{dest:x}: incomplete PLT instruction sequence")
+            continue
+        m0 = re.search(r"\badd\s+ip,\s*pc,\s*#(\d+)", inst[0])
+        m1 = re.search(r"\badd\s+ip,\s*ip,\s*#(\d+)", inst[1])
+        m2 = re.search(r"\bldr\s+pc,\s*\[ip,\s*#(\d+)\]!", inst[2])
+        if not all((m0, m1, m2)):
+            result.append(f"- 0x{dest:x}: cannot prove a standard ARM three-instruction PLT slot")
+            continue
+        got = dest + 8 + int(m0.group(1)) + int(m1.group(1)) + int(m2.group(1))
+        targets = [l for l in jmp_relocations if l.lower().startswith(f"{got:08x} ")]
+        result.append(f"- BLX 0x{dest:x}: (PC=0x{dest+8:x}) + {m0.group(1)} "
+                      f"+ {m1.group(1)} + {m2.group(1)} = GOT **0x{got:x}**")
+        result += ["  - Relocation: " + (targets[0] if targets else "NOT_FOUND")]
+        if any(re.search(r"\s" + SET + r"(?:\s|$)", t) for t in targets):
+            got_setter_confirmed = True
+    if got_setter_confirmed:
+        edge_confirmed = True
+    result += ["",
+               "- JNI -> exact C setter edge (ARM BLX + decoded PLT/GOT + JUMP_SLOT): "
+               + ("**PROVEN_STATIC**" if got_setter_confirmed else "**NOT_PROVEN**"),
+               "- This proves a call to the imported symbol. The normal matching DT_NEEDED "
+               "provider is the HIDL C-wrapper; no live ELF interposition check was performed.",
+               ""]
+
     result += ["", "## D. Automated interpretation (limited)", "",
-               f"- Direct labelled JNI branch to C-wrapper setter via PLT in scoped disassembly: **{'OBSERVED' if edge_confirmed else 'NOT_OBSERVED'}**.",
+               f"- JNI direct call edge to config C setter (labelled or decoded PLT/GOT): **{'PROVEN_STATIC' if edge_confirmed else 'NOT_PROVEN'}**.",
                "- **NOT_OBSERVED is not proof of absence.** Inspect indirect BLX, interposition,",
                "  veneers and JNI wrappers manually before ruling out the edge.",
                "- The C-wrapper and RPC-wrapper both export similarly named functions, so",
