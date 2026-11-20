@@ -264,6 +264,34 @@ def main():
                  re.match(r"^\s*" + f"{addr:08x}" + r"\b", line, re.I)]
         rows.append(f"  - vtable slot `0x{addr:x}` ELF relocation: " +
                     ("; ".join(slots) if slots else "NO_NAMED_RELOCATION_FOUND"))
+    # Search the actual vtable object for the concrete BpHw set method;
+    # offset +60 need not be the BpHw address point because C++ classes may
+    # have multiple vtables / secondary subobjects and abstract slots.
+    setter_vfunc = next((sym for sym in syms if
+                         "BpHwMtkTvApiConfig34a_hidl_a_mtktvapi_config_set_valueE" in sym["name"]), None)
+    rows += ["", "### Search full BpHw vtable object for the setter pointer", ""]
+    if setter_vfunc:
+        val = int(setter_vfunc["addr"], 16)
+        hits = []
+        for v in vtables:
+            if "BpHwMtkTvApiConfigE" not in v["name"]:
+                continue
+            base = int(v["addr"], 16)
+            size = int(v["size"])
+            for a in range(base,base+size,4):
+                sec = next((sec for sec in sections if sec[1] <= a < sec[1]+sec[3]), None)
+                if sec:
+                    off=sec[2]+a-sec[1]
+                    if off+4 <= len(blob):
+                        got = struct.unpack_from("<I",blob,off)[0]
+                        if got == val:
+                            hits.append(a)
+        rows += ["- exact BpHw set function pointer \`0x" + f"{val:x}" +
+                 "\` in this vtable object: " +
+                 (", ".join(f"0x{a:x} (raw offset +0x{a-base:x})" for a in hits) or "NOT_FOUND")]
+    else:
+        rows.append("- exported BpHw setter not found")
+
     rows += ["", "## C3. Original HIDL service binary import and registration evidence", ""]
     service = args.root / "vendor_a_tree/bin/hw/vendor.mediatek.api.mtktvapi@1.0-service"
     if not service.is_file():
@@ -319,6 +347,47 @@ def main():
         rows.append("- Backend setter PLT decoded: " +
                     (", ".join(f"0x{plt:x} → GOT 0x{got:x}" for plt,got in decoded_plts)
                      or "NOT_FOUND"))
+        # ARM PLT layout cross-check: 32-byte initial resolver header followed
+        # by 16-byte stubs in the same order as R_ARM_JUMP_SLOT entries.
+        # Treat this as a candidate only; validate its actual instructions.
+        jump = [z.strip() for z in call(["readelf", "-rW", str(service)]).splitlines()
+                if "R_ARM_JUMP_SLOT" in z]
+        setter_indexes = [i for i,z in enumerate(jump)
+                          if re.search(r"\ba_mtktvapi_config_set_value\s*$", z)]
+        elf_sections = []
+        for ln in call(["readelf", "-SW", str(service)]).splitlines():
+            mm = re.match(r"^\s*\[\s*\d+\]\s+(\S+)\s+\S+\s+([0-9a-f]+)\s+([0-9a-f]+)\s+([0-9a-f]+)",ln)
+            if mm:
+                elf_sections.append((mm.group(1),int(mm.group(2),16),int(mm.group(4),16)))
+        plt_info = next((x for x in elf_sections if x[0] == ".plt"),None)
+        for ix in setter_indexes:
+            rows.append(f"- Setter R_ARM_JUMP_SLOT index in service: {ix}")
+            if plt_info:
+                expected_plt=plt_info[1]+32+16*ix
+                rows.append(f"- Index-based candidate PLT = 0x{plt_info[1]:x}+32+16*{ix} "
+                            f"= 0x{expected_plt:x}; check actual jump-to-GOT below.")
+                proof = call(["arm-linux-gnueabihf-objdump","-drw","-j",".plt",
+                             f"--start-address=0x{expected_plt:x}",
+                             f"--stop-address=0x{expected_plt+16:x}",str(service)],
+                             allow_error=True)
+                rows += ["", "```asm"] + proof.splitlines()[-9:] + ["```"]
+                if (expected_plt, int(setter_relocs[0].split()[0],16)) in decoded_plts:
+                    rows.append("- **PLT/GOT arithmetic CONFIRMED**")
+                # Regardless of automatic decode, find candidate callers and
+                # label as candidate, never assert if GOT check was not proven.
+                if plt_info[1] <= expected_plt < plt_info[1]+plt_info[2]:
+                    text_dis = call(["arm-linux-gnueabihf-objdump","-drw","-j",".text",
+                                     str(service)],timeout=180,allow_error=True).splitlines()
+                    direct = []
+                    for k,line in enumerate(text_dis):
+                        mm=re.search(r"\bblx?\s+([0-9a-f]+)\s+<",line,re.I)
+                        if mm and int(mm.group(1),16)==expected_plt:
+                            direct.append(" | ".join(z.strip().split("<",1)[0] for z in text_dis[max(0,k-3):k+2]))
+                    rows += ["- Candidate service direct BL/BLX callsites into indexed PLT:",
+                             "", "```text"]
+                    rows += direct[:24] or ["NO_MATCH (indirect call possible)"]
+                    rows += ["```"]
+
         if decoded_plts:
             text_dis = call(["arm-linux-gnueabihf-objdump", "-drw", "-j", ".text", str(service)],
                             timeout=180, allow_error=True).splitlines()
