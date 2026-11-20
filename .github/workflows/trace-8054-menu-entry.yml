@@ -2,7 +2,7 @@ name: Trace exact 8054 settings entry
 on:
   push:
     branches: [audit/8054-tvsettingsplus-20261117]
-    paths: ['tools/trace_8054_menu_entry.py', 'tools/trace_8054_remaining_controls.py', 'tools/trace_8054_stock_root.py', '.github/workflows/trace-8054-menu-entry.yml']
+    paths: ['tools/trace_8054_menu_entry.py', 'tools/trace_8054_remaining_controls.py', 'tools/trace_8054_stock_root.py', 'tools/trace_8054_stock_pq.py', '.github/workflows/trace-8054-menu-entry.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -39,11 +39,7 @@ jobs:
         run: |
           AAPT="$(find "$ANDROID_HOME/build-tools" -type f -name aapt | sort -Vr | head -n 1)"
           python3 tools/trace_8054_stock_root.py /tmp/stock-ui /tmp/stock.apk "$AAPT"
-      - name: Audit the smali assembler round-trip
+      - name: Verify candidate PQ handlers and stock system destinations
         run: |
-          cp -a /tmp/stock-ui/smali_classes13 /tmp/stock-original-classes13
-          python3 tools/patch_8054_mainsettings.py /tmp/stock-ui /tmp/root-patch.json /tmp/root-patch.diff
-          java -jar /tmp/apktool.jar b /tmp/stock-ui -o /tmp/test-roundtrip.apk
-          java -jar /tmp/apktool.jar d -r /tmp/test-roundtrip.apk -o /tmp/stock-roundtrip
-          diff -ru /tmp/stock-ui/smali_classes13 /tmp/stock-roundtrip/smali_classes13 > /tmp/roundtrip.diff || test "$?" = 1
-          cat /tmp/roundtrip.diff
+          AAPT="$(find "$ANDROID_HOME/build-tools" -type f -name aapt | sort -Vr | head -n 1)"
+          python3 tools/trace_8054_stock_pq.py /tmp/stock-ui /tmp/stock.apk "$AAPT"
