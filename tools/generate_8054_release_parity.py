@@ -74,7 +74,7 @@ declare('PRJ02 PRJ03','Проекция','ProjectionSettingsActivity','WORKING_S
         'OemFocusPreferences','persist.rjpj.autofocus.poweron or .move','OEM SystemPropertiesUtil.set','0/1',
         'property reread, motor effect pending','ProjectionToggleStateTest / exact callback trace')
 declare('PRJ05','Проекция','ProjectionSettingsActivity','WORKING_STATIC','SwitchPreference',
-        'OemMoveKeystonePreference','persist.rjpj.autokeystone.move','stock callback','0/1, dependents off before disabling',
+        'OemMoveKeystonePreference','persist.rjpj.autokeystone.move','stock callback','0/1, all three dependencies must read zero before either direction',
         'property reread','Projection8054PolicyTest / ProjectionToggleStateTest')
 declare('PRJ06 PRJ07 PRJ10','Проекция','ProjectionSettingsActivity','OEM_SPECIALIZED_EDITOR','explicit editor',
         'OemProjectionPanel / KeystoneCorrection','stock getter','stock editor',

@@ -1,26 +1,28 @@
-# Аппаратный тест TvSettingsPlus 8054 v39
+# Аппаратный тест TvSettingsPlus 8054 v40
 
-Артефакт v39 доступен в [Exact-8054](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44721991806/artifacts/14622147367). SHA-256 APK — `db916a6b258b6842de91a748cd97e12a3663f43fc34db8b1a2237e6d33a7886f`. [Отчёт и снимки тестовой среды Leanback](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44721991646/artifacts/14621669276).
+Артефакт v40 доступен в [Exact-8054](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44757119865/artifacts/14640720285). SHA-256 APK — `b3c363b0500465fcf5954bb8bbefdd4622054d2e253f9688346d11fc65056d7e`. [Отчёт и снимки тестовой среды Leanback](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44721991646/artifacts/14621669276).
 
 Только после отдельного разрешения владельца. Используйте Windows PowerShell, ADB с явно выбранным serial и, для проверки сертификата, apksigner из Android SDK. Python не требуется. Сохраните исходное состояние, условия возврата к STOCK и устойчивый способ доступа к настройкам. Установка и ручной возврат требуют отдельного согласия.
 
 ## Проверка файла на ПК
 
-Укажите локальный APK из Exact-8054 и сравните его SHA-256 с SHA256SUMS внутри артефакта и отчётом выпуска. Проверяемый SHA-256 сертификата STOCK и MOD — c8a2e9bccf597c2fb6dc66bee293fc13f2fc47ec77bc6b2b0d52c11f51192ab8. APK должен иметь пакет com.android.tv.settings, versionCode 39 и android.uid.system.
+Укажите локальный APK из Exact-8054 и сравните его SHA-256 с SHA256SUMS внутри артефакта и отчётом выпуска. Проверяемый SHA-256 сертификата STOCK и MOD — c8a2e9bccf597c2fb6dc66bee293fc13f2fc47ec77bc6b2b0d52c11f51192ab8. APK должен иметь пакет com.android.tv.settings, versionCode 40 и android.uid.system.
 
 ```powershell
-$apk = 'C:\Downloads\TvSettingsPlus-8054-v39-MAINSETTINGS-EXPERIMENTAL.apk'
+$apk = 'C:\Downloads\TvSettingsPlus-8054-v40-MAINSETTINGS-EXPERIMENTAL.apk'
 Get-FileHash -LiteralPath $apk -Algorithm SHA256
 & "$env:LOCALAPPDATA\Android\Sdk\build-tools\35.0.0\apksigner.bat" verify --print-certs $apk
 ```
 
 ## Этап A. Версия, запуск и диагностика
 
-После отдельно разрешённой установки команда pm path должна показать активный APK. Сверьте versionCode=39 в выводе dumpsys. Команды ниже запускают UI, читают данные и сохраняют отчёт на ПК. Смена состояния аппаратных настроек в этот этап не входит.
+Для регрессий Bluetooth, HOME, источника при включении, CEC и коррекции начните с [инструкции v40](8054_POST_V39_REGRESSION.md#первый-безопасный-проход-после-разрешения). Скрипт входит в артефакт.
+
+После отдельно разрешённой установки команда pm path должна показать активный APK. Сверьте versionCode=40 в выводе dumpsys. Команды ниже запускают UI, читают данные и сохраняют отчёт на ПК. Смена состояния аппаратных настроек в этот этап не входит.
 
 ```powershell
 $serial = '<точный согласованный serial>'
-$report = Join-Path $env:TEMP ('8054-v39-' + (Get-Date -Format yyyyMMdd-HHmmss))
+$report = Join-Path $env:TEMP ('8054-v40-' + (Get-Date -Format yyyyMMdd-HHmmss))
 New-Item -ItemType Directory -Path $report | Out-Null
 $active = @(adb -s $serial shell pm path com.android.tv.settings | Where-Object { $_ -match '^package:/[^\r\n]+\.apk$' })
 if ($LASTEXITCODE -ne 0 -or $active.Count -ne 1) { throw 'STOP: PackageManager не вернул один активный APK' }

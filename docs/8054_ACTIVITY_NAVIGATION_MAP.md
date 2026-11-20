@@ -1,4 +1,4 @@
-# Карта Activity для 8054 v39
+# Карта Activity для 8054 v40
 
 Компоненты выполняются в пакете `com.android.tv.settings`, если для OEM-редактора не указан другой владелец. Сокращение MOD в таблице — префикс class name `dev.projectorsoft.tvsettings.`. Для новых Activity в Manifest есть явный запуск, экспорт, штатная тема MainSettings и отсутствуют новые неявные фильтры. CheckedPreferenceLaunch проверяет разрешение, доступность и владельца. Back возвращает на вызывавший экран через штатный стек Android. Preview использует Fragment и исходный SettingsFragmentProvider, когда конвейер устройства поддерживает два столбца.
 
@@ -6,12 +6,9 @@
 |---|---|---|
 | Главный экран | com.android.tv.settings.MainSettings | MainFragment, flavor-resolved main_prefs*.xml |
 | Wi-Fi и сеть | com.android.tv.settings.connectivity.NetworkActivity | connectivity.NetworkFragment, stock XML |
-| Bluetooth | MOD BluetoothSettingsActivity | NativeSections.Bluetooth |
+| Bluetooth | MOD BluetoothSettingsActivity | NativeBluetoothPage → штатный AccessoriesFragment. Категория сопряжённых устройств и одно штатное добавление. |
 | Добавить устройство | com.android.tv.settings.accessories.AddAccessoryActivity | Штатное сопряжение |
-| Управление устройствами | MOD BluetoothDevicesSettingsActivity | accessories.AccessoriesFragment |
-| Пульт | MOD RemoteSettingsActivity | NativeSections.Remote |
 | Источники | MOD SourcesSettingsActivity | NativeSections.Sources |
-| Статусы HDMI 1/2 | MOD HdmiOneStatusActivity / HdmiTwoStatusActivity | NativeSections.HdmiOne / HdmiTwo, HW6/HW7 |
 | HDMI-CEC | MOD HdmiCecSettingsActivity | NativeSections.Cec |
 | Проекция | MOD ProjectionSettingsActivity | NativeSections.Projection |
 | 4 угла, H/V, зум | com.rjpj.tcorrection FourCornerActivity / HVKeystoneActivity / DigitalZoomActivity | Исходный OEM-редактор, проверенный explicit intent |
@@ -28,4 +25,6 @@
 | Таймер расписания | com.android.tv.settings.partnercustomizer.timer.TimerSetActivity | TimerFragment |
 | Прочие штатные экраны | system.DateTimeActivity, system.LanguageActivity, accounts.AccountsActivity, device.StorageResetActivity, enterprise.EnterprisePrivacySettingsActivity, system.SecurityActivity, oemlink.AccessibilitySettingsActivity, system.development.DevelopmentActivity | Штатные Activity. Ссылка только при наличии и доступности компонента. |
 
-Совместимые прямые MOD NetworkSettingsActivity и AppsSettingsActivity сохранены. Главный экран обращается к штатным Activity. Отдельный MOD-лаунчер исключён из Manifest. Редакторы мотора, сброса, режимов сна и домашнего экрана требуют отдельного контракта входа. Аппаратный статус всех маршрутов v39 — `RUNTIME_TEST_REQUIRED`. Полный Preview конкретной OEM-темы и фокус после переходов проверяются на устройстве.
+Совместимые прямые MOD NetworkSettingsActivity и AppsSettingsActivity сохранены. Главный экран обращается к штатным Activity. Отдельный MOD-лаунчер исключён из Manifest. Редакторы мотора, сброса, режимов сна и домашнего экрана требуют отдельного контракта входа. Аппаратный статус всех маршрутов v40 — `RUNTIME_TEST_REQUIRED`. Полный Preview конкретной OEM-темы и фокус после переходов проверяются на устройстве.
+
+BluetoothDevicesSettingsActivity, RemoteSettingsActivity и HdmiOneStatusActivity/HdmiTwoStatusActivity остаются совместимыми прямыми компонентами. Обычная навигация к ним не ведёт. Состояние входа находится в каждой строке HDMI. [Исправления v40](8054_POST_V39_REGRESSION.md)
