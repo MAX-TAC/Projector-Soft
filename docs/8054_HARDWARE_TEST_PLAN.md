@@ -1,5 +1,7 @@
 # Аппаратный тест TvSettingsPlus 8054 v36
 
+Артефакт v36 доступен в [Exact-8054](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44692995125/artifacts/14609353165). SHA-256 APK — `0f79bf8d4914a483ada782895ab75cf3effac831a47463bc4fa0ebaaf5883082`. [Отчёт и снимки тестовой среды Leanback](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44692995238/artifacts/14609895658).
+
 Только после отдельного разрешения владельца. Используйте Windows PowerShell, ADB с явно выбранным serial и, для проверки сертификата, apksigner из Android SDK. Python не требуется. Сохраните исходное состояние, условия возврата к STOCK и устойчивый способ доступа к настройкам. Установка и ручной возврат требуют отдельного согласия.
 
 ## Проверка файла на ПК
@@ -20,7 +22,15 @@ Get-FileHash -LiteralPath $apk -Algorithm SHA256
 $serial = '<точный согласованный serial>'
 $report = Join-Path $env:TEMP ('8054-v36-' + (Get-Date -Format yyyyMMdd-HHmmss))
 New-Item -ItemType Directory -Path $report | Out-Null
-adb -s $serial shell pm path com.android.tv.settings
+$active = @(adb -s $serial shell pm path com.android.tv.settings | Where-Object { $_ -match '^package:/[^\r\n]+\.apk$' })
+if ($LASTEXITCODE -ne 0 -or $active.Count -ne 1) { throw 'STOP: PackageManager не вернул один активный APK' }
+$live = Join-Path $report 'installed-base.apk'
+$livePath = $active[0].Trim().Substring(8)
+adb -s $serial pull $livePath $live
+if ($LASTEXITCODE -ne 0) { throw 'STOP: активный APK не прочитан' }
+if ((Get-FileHash -LiteralPath $live -Algorithm SHA256).Hash -ne (Get-FileHash -LiteralPath $apk -Algorithm SHA256).Hash) {
+    throw 'STOP: установленный APK отличается от файла выпуска'
+}
 adb -s $serial shell dumpsys package com.android.tv.settings > (Join-Path $report 'package.txt')
 adb -s $serial shell am start -W -n 'com.android.tv.settings/com.android.tv.settings.MainSettings'
 adb -s $serial shell am start -W -n 'com.android.tv.settings/dev.projectorsoft.tvsettings.ModMainSettingsActivity'
