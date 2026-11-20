@@ -1,6 +1,6 @@
 # Exact-8054 MediaTek native/API audit
 
-**Status on 2026-11-20: exact owner firmware SHA-256 verified; system/vendor/product/system_ext extracted; native ELF inventory and JNI exports CONFIRMED. Direct JNI→C-wrapper machine call edge and runtime hardware effects NOT YET VERIFIED.**
+**Status on 2026-11-20: exact owner firmware SHA-256 verified; native inventory and JNI exports CONFIRMED; NATIVE-004 JNI `setConfigValue_native` → `a_mtktvapi_config_set_value` **PROVEN_STATIC by ARM PLT/GOT (BLX 0x7ae90 → GOT 0x7dff8)**. HIDL service receiver, -1/3 semantics, runtime readback and hardware effect NOT VERIFIED.**
 
 ## Provenance — corrected
 
@@ -40,7 +40,7 @@ Earlier wording that the owner's **full original dump is unavailable** was incor
 - Completed workflow: verified owner release → partition extraction → ELF scan → sanitized reports committed to GitHub. [Run 44792807063](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44792807063) (success); [run 44793791027](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44793791027) (success). [Run 44793339068](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44793339068) failed because of a Python regex typo, corrected in the next run.
 - 1,283 exact-8054 ELF libraries inventoried, 300 candidates, 62 candidates with relevant exported symbols. [Generated inventory](generated/NATIVE_API_INVENTORY_8054.md) · [Candidate metadata](generated/NATIVE_API_CANDIDATES_8054.json).
 - Exact JNI exports `Java_com_mediatek_twoworlds_tv_TVNative_{get,set}ConfigValue_1native` confirmed in original vendor library. See [TRACE_003](TRACE_003_MEDIATEK_CONFIG_JNI.md).
-- **No automatic APK changes, device writes, firmware flashing or live ADB execution.** Runtime effects and direct cross-library call graph have not been demonstrated.
+- **NATIVE-004 newly proves the precise imported JNI→C setter machine edge** via relocations, not merely DT_NEEDED. The C-wrapper virtual HIDL target, physical screen effect and full cross-library/service call graph remain unverified. **No automatic APK changes, device writes, flashing or live ADB execution.**
 
 ## Source references
 
@@ -57,4 +57,5 @@ Earlier wording that the owner's **full original dump is unavailable** was incor
 - [logs/INDEX.md](logs/INDEX.md) — authoritative index and status.
 - [Initial action journal](logs/2026-11-20_INITIAL_NATIVE_AUDIT.md) — verified actions, commit/run links and failures.
 - [Prompt for a new chat](PROMPT_FOR_NEW_AGENT.md) — reusable onboarding instructions.
+- [TRACE_004](TRACE_004_CONFIG_JNI_TO_HIDL.md) · [machine evidence](generated/NATIVE_004_ELF_MACHINE_EVIDENCE_8054.md) · [NATIVE-004 action log](logs/2026-11-20_NATIVE-004.md) · [successful final workflow 44799645224](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44799645224). Next stage: NATIVE-005 concrete HIDL receiver and `inputGroup=-1` / `isUpdate=3` semantics.
 - Every new trace must include a dated `logs/YYYY-MM-DD_TASK-ID.md` with source hashes, tools, commands, positive/negative evidence, CI outcomes, commit and next blocker. Always update the INDEX and commit to the isolated research branch rather than only answering in chat.
