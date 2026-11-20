@@ -16,28 +16,23 @@ selected = {
     'PowerFragment': r'onCreatePreferences|onPreference|setupPreferences|setSleepTimerType|onResume|onPause',
     'TwoPanelListPreferenceDialogFragment': r'onNavigateToPreview|onCreate|onResume|Selection',
 }
+power_activity = 'Lcom/android/tv/settings/partnercustomizer/power/PowerActivity;'
 for file in sorted(root.glob('smali*/**/*.smali')):
     context = file.read_text(encoding='utf-8')
-    if file.stem not in selected and not re.search(
-            r'(Digital|Spdif|SPDIF|SoundOutput).*Fragment|TwoPanelListPreferenceDialogFragment\
-    for match in method_pattern.finditer(context):
-        body = match[0]
-        declaration = body.splitlines()[0]
-        if not re.search(selected.get(file.stem,r'onCreatePreferences|onPreference|onResume|onClick|onBindViewHolder'),declaration):
-            continue
-        print('ROUTE',file.relative_to(root),context.count('\n',0,match.start())+1)
-        print(body)
-, file.stem):
-        if 'Lcom/android/tv/settings/partnercustomizer/power/PowerActivity;' in context:
-            for match in method_pattern.finditer(context):
-                if 'PowerActivity;' in match[0] and '->startActivity(' in match[0]:
-                    print('POWER ENTRY', file.relative_to(root), context.count('\n', 0, match.start()) + 1)
-                    print(match[0])
+    names = selected.get(file.stem)
+    if names is None and (
+            re.search(r'(Digital|Spdif|SPDIF|SoundOutput).*Fragment', file.stem)
+            or file.stem.startswith('TwoPanelListPreferenceDialogFragment$')):
+        names = r'onCreatePreferences|onPreference|onResume|onClick|onBindViewHolder'
+    if names is None and power_activity not in context:
         continue
     for match in method_pattern.finditer(context):
         body = match[0]
-        declaration = body.splitlines()[0]
-        if not re.search(selected.get(file.stem,r'onCreatePreferences|onPreference|onResume'),declaration):
+        if names is not None and re.search(names, body.splitlines()[0]):
+            label = 'ROUTE'
+        elif power_activity in body and '->startActivity(' in body:
+            label = 'POWER ENTRY'
+        else:
             continue
-        print('ROUTE',file.relative_to(root),context.count('\n',0,match.start())+1)
+        print(label, file.relative_to(root), context.count('\n', 0, match.start()) + 1)
         print(body)
