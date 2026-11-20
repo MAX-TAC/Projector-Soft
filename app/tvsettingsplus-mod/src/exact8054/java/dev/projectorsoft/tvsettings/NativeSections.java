@@ -48,12 +48,6 @@ public final class NativeSections {
             super.onDestroyView();
         }
 
-        @Override public void onResume(){
-            super.onResume();
-            if(section()==NativePage.SOURCES)guarded("cec-resume",()->OemCecAutoOff8054.refresh(requireContext(),
-                    findPreference(OemCecAutoOff8054.CEC_KEY),findPreference(OemCecAutoOff8054.OFF_KEY)));
-        }
-
         protected PreferenceCategory group(PreferenceScreen screen,String key,String label){
             PreferenceCategory category=new PreferenceCategory(requireContext());
             category.setKey(key);
@@ -133,6 +127,14 @@ public final class NativeSections {
             guarded("hdmi-edid",()->OemHdmiEdidHook.install(context,screen,Preference.class));
             guarded("hdmi-autoplay",()->OemHdmiAutoPlayHook.install(context,screen,Preference.class));
             guarded("boot-destination",()->NativeBootDestination.install(context,screen));
+        }
+
+        @Override public void onResume(){
+            super.onResume();
+            guarded("cec-resume",()->OemCecAutoOff8054.refresh(requireContext(),
+                    findPreference(OemCecAutoOff8054.CEC_KEY),findPreference(OemCecAutoOff8054.OFF_KEY)));
+            PreferenceScreen screen=getPreferenceScreen();
+            if(screen!=null)NativeBootDestination.refresh(screen);
         }
 
         private Intent home(Context context){

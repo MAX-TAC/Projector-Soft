@@ -10,6 +10,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import androidx.leanback.preference.LeanbackPreferenceFragmentCompat;
 import androidx.preference.Preference;
+import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SwitchPreference;
 import org.junit.Test;
@@ -97,11 +98,117 @@ public class UnifiedMenuUiTest {
                 NativeBootDestination.apply(store,choices,choices,"HOME","app.video"));
         assertEquals(NativeBootDestination.Result.UNSUPPORTED,
                 NativeBootDestination.apply(store,choices,Map.of("id/HW6","HDMI 1"),"id/HW6","app.video"));
+        assertEquals(NativeBootDestination.Result.UNSUPPORTED,
+                NativeBootDestination.apply(store,choices,Map.of("HOME","Android TV","app.video","Приложение"),
+                        "id/HW6","app.video"));
         assertEquals(1,store.writes);
         store.changes=false;
         assertEquals(NativeBootDestination.Result.UNCONFIRMED,
                 NativeBootDestination.apply(store,choices,choices,"id/HW6","app.video"));
         assertEquals("id/HW6",store.value);
+    }
+
+    @Test public void sourcesRefreshesBootDestinationOnReturnWithoutRecreatingRow() {
+        ActivityController<SourcesSettingsActivity> lifecycle =
+                Robolectric.buildActivity(SourcesSettingsActivity.class).setup();
+        SourcesSettingsActivity activity = lifecycle.get();
+        NativeSections.Sources fragment = (NativeSections.Sources)
+                activity.getSupportFragmentManager().findFragmentById(android.R.id.content);
+        PreferenceScreen screen = fragment.getPreferenceScreen();
+        NativeBootDestination.Row previous = screen.findPreference(NativeBootDestination.KEY);
+        if (previous != null) screen.removePreference(previous);
+        BootProperty property = new BootProperty();
+        NativeBootDestination.Row row = new NativeBootDestination.Row(activity, property,
+                () -> Map.of("HOME", "Android TV", "id/HW7", "HDMI 2"));
+        screen.addPreference(row);
+        row.refresh();
+        assertEquals("Android TV", row.getSummary());
+        lifecycle.pause();
+        property.value = "id/HW7";
+        lifecycle.resume();
+        assertSame(row, screen.findPreference(NativeBootDestination.KEY));
+        assertEquals("id/HW7", row.getValue());
+        assertEquals("HDMI 2", row.getSummary());
+        assertEquals(0, property.writes);
+    }
+
+    @Test public void bootDestinationRecoversItsOptionsAfterReadFailure() {
+        android.content.Context context = org.robolectric.RuntimeEnvironment.getApplication();
+        PreferenceScreen screen = new PreferenceManager(context).createPreferenceScreen(context);
+        BootProperty property = new BootProperty();
+        java.util.Map<String, String> choices = new java.util.LinkedHashMap<>();
+        choices.put("HOME", "Android TV");
+        choices.put("id/HW6", "HDMI 1");
+        NativeBootDestination.Row row = new NativeBootDestination.Row(context, property, () -> choices);
+        screen.addPreference(row);
+        property.failRead = true;
+        row.refresh();
+        assertFalse(row.isEnabled());
+        assertNull(row.getValue());
+        assertEquals(0, row.getEntryValues().length);
+        choices.remove("id/HW6");
+        choices.put("id/HW7", "HDMI 2");
+        property.failRead = false;
+        row.refresh();
+        assertTrue(row.isEnabled());
+        assertFalse(row.isPersistent());
+        assertArrayEquals(new CharSequence[]{"HOME", "id/HW7"}, row.getEntryValues());
+        assertEquals("HOME", row.getValue());
+        assertEquals(0, property.writes);
+    }
+
+    @Test public void openBootDestinationDialogChecksOriginalStateAndStillAvailableOptions() {
+        android.content.Context context = org.robolectric.RuntimeEnvironment.getApplication();
+        PreferenceScreen screen = new PreferenceManager(context).createPreferenceScreen(context);
+        BootProperty property = new BootProperty();
+        java.util.Map<String, String> choices = new java.util.LinkedHashMap<>();
+        choices.put("HOME", "Android TV");
+        choices.put("id/HW6", "HDMI 1");
+        NativeBootDestination.Row row = new NativeBootDestination.Row(context, property, () -> choices);
+        screen.addPreference(row);
+        row.refresh();
+
+        assertFalse(row.callChangeListener("id/HW6"));
+        row.onClick();
+        property.value = "id/HW6";
+        row.refresh();
+        assertFalse(row.callChangeListener("HOME"));
+        assertEquals(0, property.writes);
+        assertEquals("id/HW6", row.getValue());
+
+        row.onClick();
+        choices.put("id/HW7", "HDMI 2");
+        row.refresh();
+        assertFalse(row.callChangeListener("id/HW7"));
+        assertEquals(0, property.writes);
+
+        row.onClick();
+        choices.remove("id/HW7");
+        assertFalse(row.callChangeListener("id/HW7"));
+        assertEquals(0, property.writes);
+
+        row.onClick();
+        assertFalse(row.callChangeListener("HOME"));
+        assertEquals(1, property.writes);
+        assertEquals("HOME", row.getValue());
+        assertEquals("Android TV", row.getSummary());
+    }
+
+    private static final class BootProperty implements OemPowerOnAppPolicy.Property {
+        String value = "HOME";
+        boolean failRead;
+        int writes;
+
+        @Override public String read() throws Exception {
+            if (failRead) throw new IllegalStateException("Property unavailable");
+            return value;
+        }
+
+        @Override public boolean write(String next) {
+            writes++;
+            value = next;
+            return true;
+        }
     }
 
     @Test public void nativeCecWidgetUsesFreshStateWithFalseListenerReturn(){
