@@ -2,7 +2,7 @@
 
 **Date:** 2026-11-20 · **Task:** NATIVE-005 · **Branch:** `research/8054-mediatek-native-api-20261120` · **Draft PR:** [#3](https://github.com/MAX-TAC/Projector-Soft/pull/3).  
 **Result:** original config service executable found and SHA-256 verified; exact HIDL proxy/stub, service-side RPC setter import and **one service machine callsite into the setter's PLT** identified. **Still NOT PROVEN:** particular C-wrapper vtable instance → BpHw receiver → corresponding implementation body/callsite and semantics of `inputGroup=-1`, `isUpdate=3`.  
-**Read-only evidence:** [NATIVE_005_HIDL_RECEIVER_EVIDENCE_8054.md](generated/NATIVE_005_HIDL_RECEIVER_EVIDENCE_8054.md); NATIVE-004 previous [TRACE](TRACE_004_CONFIG_JNI_TO_HIDL.md). Original owner image only; no device writes or APK changes.
+**Read-only evidence:** [NATIVE_005_HIDL_RECEIVER_EVIDENCE_8054.md](generated/NATIVE_005_HIDL_RECEIVER_EVIDENCE_8054.md), [final successful CI run #44804034895](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44804034895); NATIVE-004 previous [TRACE](TRACE_004_CONFIG_JNI_TO_HIDL.md). Original owner image only; no device writes or APK changes.
 
 ## 1. Exact sources, scope, tools
 
@@ -89,7 +89,7 @@ Original files:
 43498: ldr pc, [ip, #2824]! ; 0xB08
 ```
 
-ARM PLT arithmetic: `(0x43490 + 8) + 0x0 + 0x4000 + 0xB08 = 0x47fa0`, which exactly matches `R_ARM_JUMP_SLOT a_mtktvapi_config_set_value` in this **service ELF**. Thus the service has **one statically located direct branch** into the imported RPC-named setter through PLT, and `libmediatek_tv_rpcwrapper.so` is present in its dependencies. This proves **the service→imported setter machine edge**, but **does not yet prove that the HIDL transaction for config_set_value reaches service instruction `0x29e48`**; its concrete method body is not exported with a recognizable config name and needs call-graph reconstruction.
+ARM PLT arithmetic: `(0x43490 + 8) + 0x0 + 0x4000 + 0xB08 = 0x47fa0`, which exactly matches `R_ARM_JUMP_SLOT a_mtktvapi_config_set_value` in this **service ELF**. Thus the service has **one statically located direct branch** into the imported RPC-named setter through PLT, and `libmediatek_tv_rpcwrapper.so` is present in its dependencies. **CI automatically verified ARM rotated-immediate PLT→GOT arithmetic**, confirming **the service→imported setter machine edge**, but **does not yet prove that the HIDL transaction for config_set_value reaches service instruction `0x29e48`**; its concrete method body is not exported with a recognizable config name and needs call-graph reconstruction.
 
 The original `libmediatek_tv_rpcwrapper.so` has its own exported `a_mtktvapi_config_set_value` (disassembled in TRACE_004 at `0x76a14`); it links against `libmediatek_tv_rpccore.so`. A complete RPC message/receiver or hardware implementation has not been established from the direct PLT path alone. Runtime ELF interposition was not tested.
 
