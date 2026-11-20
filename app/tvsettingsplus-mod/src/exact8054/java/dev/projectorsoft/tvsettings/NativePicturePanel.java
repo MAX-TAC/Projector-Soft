@@ -2,7 +2,6 @@ package dev.projectorsoft.tvsettings;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.res.Resources;
 import android.database.ContentObserver;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -22,8 +21,6 @@ import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SwitchPreference;
-import java.lang.reflect.Method;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -34,7 +31,6 @@ final class NativePicturePanel {
     private static final String TAG = "TvSettingsPlusMOD";
     private static final String ROOT = "com.android.tv.settings";
     private static final String CONFIG = ROOT + ".partnercustomizer.tvsettingservice.TVSettingConfig";
-    private static final String UTILS = ROOT + ".partnercustomizer.tvsettingservice.util.PreferenceConfigUtils";
     private static final String GAMMA = "picture_gamma";
     private static final String MEMC = "tv_picture_advance_video_mjc_effect";
     private static final Map<String, String> SLIDER_CONFIG = Map.of(
@@ -57,6 +53,7 @@ final class NativePicturePanel {
     };
     private boolean listening;
     private Dialog slider;
+    private Map<String, Integer> sliderSnapshot;
 
     NativePicturePanel(NativeSections.Page host, PreferenceScreen screen, Page page) {
         this(host, screen, page, key -> stockOptions(host.requireContext(), key));
@@ -131,6 +128,7 @@ final class NativePicturePanel {
 
     void refresh() {
         Map<String, Integer> snapshot = snapshot();
+        if (slider != null && !sliderSnapshot.equals(snapshot)) slider.dismiss();
         for (Map.Entry<String, Preference> item : rows.entrySet()) {
             String key = item.getKey();
             Preference row = item.getValue();
@@ -166,7 +164,7 @@ final class NativePicturePanel {
         String[][] table = null;
         try { table = options.options(key); }
         catch (Exception | LinkageError unavailable) { Log.d(TAG, "OEM picture labels unavailable for " + key, unavailable); }
-        if (!validOptions(table)) {
+        if (!OemCustomerOptions.valid(table)) {
             list.setEntries(new CharSequence[0]);
             list.setEntryValues(new CharSequence[0]);
             list.setValue(null);
@@ -182,29 +180,11 @@ final class NativePicturePanel {
                 : label.toString().replace("%", "%%") + " · только просмотр");
     }
 
-    static boolean validOptions(String[][] table) {
-        if (table == null || table.length != 2 || table[0] == null || table[1] == null || table[0].length == 0 || table[0].length != table[1].length) return false;
-        Set<String> values = new HashSet<>();
-        for (int i = 0; i < table[0].length; i++) {
-            if (table[0][i] == null || table[0][i].trim().isEmpty() || table[1][i] == null
-                    || !table[1][i].matches("-?[0-9]+") || !values.add(table[1][i])) return false;
-        }
-        return true;
-    }
-
     private static String[][] stockOptions(Context context, String key) throws Exception {
         if (!"8054".equals(OemHdmiPortInfo.machineId())) return null;
-        int[] ids;
-        if (PicturePanelState.TEMPERATURE.equals(key)) ids = new int[]{0x7f0300ad, 0x7f0300ae};
-        else if (MEMC.equals(key)) ids = new int[]{0x7f030084, 0x7f030085};
-        else {
-            Class<?> type = Class.forName(UTILS);
-            Object config = type.getMethod("getInstance", Context.class).invoke(null, context);
-            ids = (int[]) type.getMethod("getArrayIdsByCustomer", String.class).invoke(config, key);
-        }
-        if (ids == null || ids.length != 2 || ids[0] == 0 || ids[1] == 0) return null;
-        Resources res = context.getResources();
-        return new String[][]{res.getStringArray(ids[0]), res.getStringArray(ids[1])};
+        if (PicturePanelState.TEMPERATURE.equals(key)) return OemCustomerOptions.read(context, 0x7f0300ad, 0x7f0300ae);
+        if (MEMC.equals(key)) return OemCustomerOptions.read(context, 0x7f030084, 0x7f030085);
+        return OemCustomerOptions.forKey(context, key);
     }
 
     private void showSlider(NativeSections.Page host, String key, String title) {
@@ -244,6 +224,7 @@ final class NativePicturePanel {
             dialog.setOnDismissListener(item -> {
                 menu.setVisibility(visible);
                 slider = null;
+                sliderSnapshot = null;
                 refresh();
             });
             Window window = dialog.getWindow();
@@ -253,6 +234,7 @@ final class NativePicturePanel {
             window.setGravity(Gravity.BOTTOM);
             dialog.show();
             window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+            sliderSnapshot = before;
             slider = dialog;
             menu.setVisibility(View.INVISIBLE);
         } catch (Exception | LinkageError unavailable) {

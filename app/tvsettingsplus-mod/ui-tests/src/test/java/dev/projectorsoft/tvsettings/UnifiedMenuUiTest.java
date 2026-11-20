@@ -557,9 +557,10 @@ public class UnifiedMenuUiTest {
         assertNull(picture.findPreference("projectorsoft_picture_status"));
         assertNotNull(picture.findPreference("projectorsoft_page_MEMC"));
         android.content.ContentResolver resolver = activity.getContentResolver();
-        Settings.Global.putInt(resolver, "picture_mode", 7);
-        Settings.Global.putInt(resolver, "picture_list_hdr", 1);
-        Settings.Global.putInt(resolver, "picture_gamma", 2);
+        Settings.Global.putString(resolver, "picture_mode", "7");
+        Settings.Global.putString(resolver, "picture_list_hdr", "1");
+        Settings.Global.putString(resolver, "picture_gamma", "2");
+        assertEquals(Integer.valueOf(7), PicturePanelState.read(key -> Settings.Global.getString(resolver, key)).get("picture_mode"));
         PreferenceScreen screen = picture.getPreferenceManager().createPreferenceScreen(activity);
         new NativePicturePanel(picture, screen, NativePicturePanel.Page.PICTURE, key ->
                 "picture_mode".equals(key) ? new String[][]{{"Профиль OEM"}, {"7"}}

@@ -35,6 +35,10 @@ final class NativeEqualizerPanel {
     interface Backend {
         Snapshot read() throws Exception;
         boolean write(String key, int value) throws Exception;
+        default String[][] profiles() throws Exception {
+            return new String[][]{OemInlinePreferencesHook.soundTitles(),
+                    Arrays.stream(OemInlinePreferencesHook.soundValues()).mapToObj(String::valueOf).toArray(String[]::new)};
+        }
     }
 
     static final class Band {
@@ -86,6 +90,7 @@ final class NativeEqualizerPanel {
     private final AudioManager audio;
     private final Handler main = new Handler(Looper.getMainLooper());
     private final ListPreference mode;
+    private final boolean profileOptionsKnown;
     private final BandRow[] rows = new BandRow[KEYS.length];
     private boolean active, polling, ready, audioRegistered;
     private Snapshot shown, previous;
@@ -116,13 +121,20 @@ final class NativeEqualizerPanel {
         mode.setKey("projectorsoft_sound_mode");
         mode.setPersistent(false);
         mode.setOrder(213);
-        mode.setEntries(OemInlinePreferencesHook.soundTitles());
-        int[] values = OemInlinePreferencesHook.soundValues();
-        CharSequence[] ids = new CharSequence[values.length];
-        for (int i = 0; i < ids.length; i++) ids[i] = String.valueOf(values[i]);
-        mode.setEntryValues(ids);
+        String[][] profiles = null;
+        try { profiles = backend.profiles(); }
+        catch (Exception | LinkageError unavailable) { Log.w(TAG, "OEM profiles unavailable", unavailable); }
+        profileOptionsKnown = OemCustomerOptions.valid(profiles);
+        if (profileOptionsKnown) {
+            mode.setEntries(profiles[0]);
+            mode.setEntryValues(profiles[1]);
+        } else {
+            mode.setEntries(new CharSequence[0]);
+            mode.setEntryValues(new CharSequence[0]);
+        }
         mode.setOnPreferenceChangeListener((pref, value) -> {
-            if (value instanceof String && OemSoundValuePolicy.validProfile((String) value))
+            if (value instanceof String && mode.findIndexOfValue((String) value) >= 0
+                    && OemSoundValuePolicy.validProfile((String) value))
                 change(MODE, Integer.parseInt((String) value));
             return false;
         });
@@ -222,7 +234,7 @@ final class NativeEqualizerPanel {
     }
 
     private void change(String key, int requested) {
-        if (!active || !ready || shown == null) return;
+        if (!active || !ready || shown == null || !profileOptionsKnown) return;
         Snapshot fresh = read();
         if (!shown.same(fresh) || !fresh.profileReady()) {
             feedback = "Звуковой профиль или выход изменился";
@@ -257,7 +269,7 @@ final class NativeEqualizerPanel {
         mode.setValue(OemSoundValuePolicy.validProfile(profile) ? profile : null);
         CharSequence name = mode.getEntry();
         mode.setSummary(name == null ? "Профиль недоступен" : name);
-        boolean profileReady = stable && snapshot != null && snapshot.profileReady();
+        boolean profileReady = stable && profileOptionsKnown && name != null && snapshot != null && snapshot.profileReady();
         mode.setEnabled(profileReady);
         for (int i = 0; i < rows.length; i++) {
             Band band = snapshot == null ? null : snapshot.bands.get(i);
@@ -342,6 +354,10 @@ final class NativeEqualizerPanel {
             List<String> result = new ArrayList<>();
             for (String key : OUTPUT) result.add(Settings.Global.getString(resolver, key));
             return result;
+        }
+
+        @Override public String[][] profiles() throws Exception {
+            return OemCustomerOptions.forKey(context, MODE);
         }
 
         @Override public boolean write(String key, int value) {

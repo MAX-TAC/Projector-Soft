@@ -18,7 +18,7 @@ public final class OemSoundValuePolicy {
     }
 
     static boolean validProfile(String profile) {
-        return profile != null && profile.matches("[0-6]");
+        return profile != null && profile.matches("[0-7]");
     }
 
     private static boolean acceptsValueChange(String existing,int requested,int min,int max,
