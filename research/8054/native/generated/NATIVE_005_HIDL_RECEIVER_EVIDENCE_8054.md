@@ -662,9 +662,13 @@ Static pointers carry Thumb state in bit0; compare against exact ELF symbol valu
 | Vtable | Vtable address | pointer at address-point + 60 | matching exported method |
 |---|---|---|---|
 | `vendor::mediatek::api::mtktvapi::V1_0::BnHwMtkTvApiConfig` | `0x309f7c` | `0x00000000` | `NO_EXACT_FUNCTION_MATCH` |
+  - vtable slot `0x309fc0` ELF relocation: NO_NAMED_RELOCATION_FOUND
 | `vendor::mediatek::api::mtktvapi::V1_0::BsMtkTvApiConfig` | `0x30a01c` | `0x002516f9` | `NO_EXACT_FUNCTION_MATCH` |
+  - vtable slot `0x30a060` ELF relocation: 0030a060  .data.rel.ro + 0xbcd0
 | `vendor::mediatek::api::mtktvapi::V1_0::BpHwMtkTvApiConfig` | `0x309e3c` | `0x00000000` | `NO_EXACT_FUNCTION_MATCH` |
+  - vtable slot `0x309e80` ELF relocation: NO_NAMED_RELOCATION_FOUND
 | `vendor::mediatek::api::mtktvapi::V1_0::IMtkTvApiConfig` | `0x30a0dc` | `0x00000000` | `NO_EXACT_FUNCTION_MATCH` |
+  - vtable slot `0x30a120` ELF relocation: NO_NAMED_RELOCATION_FOUND
 
 ## C3. Original HIDL service binary import and registration evidence
 
@@ -697,6 +701,14 @@ NO_MATCHING_EXPORTED_DEFINITION
 00047b40  00001516 R_ARM_JUMP_SLOT        00000000   _ZN6vendor8mediatek3api8mtktvapi4V1_020IMtkTvApiChannelList17registerAsServiceERKNSt3__112basic_stringIcNS5_11char_traitsIcEENS5_9allocatorIcEEEE
 ```
 
+
+- Exact backend setter relocation(s):
+
+```text
+00047fa0  00014316 R_ARM_JUMP_SLOT        00000000   a_mtktvapi_config_set_value
+```
+
+- Backend setter PLT decoded: NOT_FOUND
 ## C4. C-wrapper getService() exported helper and PLT indirection
 
 - Service getter: getMtkTvApiConfigService()
@@ -791,8 +803,186 @@ Outbound BpHw setter `0x24a230 movs r1,#3` directly precedes `0x24a232 blx r6`, 
 This numeric 3 belongs to the HIDL dispatch **and is not evidence** that the distinct Java/C argument `isUpdate=3` means persistence.
 Inbound BnHw onTransact dispatch should be separately cross-checked.
 
-- BnHw onTransact symbol unavailable for disassembly
+- Inbound onTransact: `vendor::mediatek::api::mtktvapi::V1_0::BnHwMtkTvApiConfig::onTransact(unsigned int, android::hardware::Parcel const&, android::hardware::Parcel*, unsigned int, std::__1::function<void (android::hardware::Parcel&)>)`
 
+```asm
+  24fa28:	e92d 43f0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, lr}
+  24fa2c:	b0e9      	sub	sp, #420	@ 0x1a4
+  24fa2e:	4606      	mov	r6, r0
+  24fa30:	f8df 0470 	ldr.w	r0, [pc, #1136]	@ 24fea4 <nearest-symbol-label-elided>
+  24fa34:	460f      	mov	r7, r1
+  24fa36:	4699      	mov	r9, r3
+  24fa38:	4615      	mov	r5, r2
+  24fa3a:	4478      	add	r0, pc
+  24fa3c:	6800      	ldr	r0, [r0, #0]
+  24fa3e:	6800      	ldr	r0, [r0, #0]
+  24fa40:	9068      	str	r0, [sp, #416]	@ 0x1a0
+  24fa42:	1e48      	subs	r0, r1, #1
+  24fa44:	9971      	ldr	r1, [sp, #452]	@ 0x1c4
+  24fa46:	280e      	cmp	r0, #14
+  24fa48:	d814      	bhi.n	24fa74 <nearest-symbol-label-elided>
+  24fa4a:	e8df f000 	tbb	[pc, r0]
+  24fa4e:	5e08      	ldrsh	r0, [r1, r0]
+  24fa50:	6820      	ldr	r0, [r4, #0]
+  24fa52:	722b      	strb	r3, [r5, #8]
+  24fa54:	867c      	strh	r4, [r7, #50]	@ 0x32
+  24fa56:	3690      	adds	r6, #144	@ 0x90
+  24fa58:	409a      	lsls	r2, r3
+  24fa5a:	a34a      	add	r3, pc, #296	@ (adr r3, 24fb84 <nearest-symbol-label-elided>)
+  24fa5c:	0054      	lsls	r4, r2, #1
+  24fa5e:	6908      	ldr	r0, [r1, #16]
+  24fa60:	2800      	cmp	r0, #0
+  24fa62:	f000 80b5 	beq.w	24fbd0 <nearest-symbol-label-elided>
+  24fa66:	4281      	cmp	r1, r0
+  24fa68:	f000 8178 	beq.w	24fd5c <nearest-symbol-label-elided>
+  24fa6c:	6801      	ldr	r1, [r0, #0]
+  24fa6e:	6889      	ldr	r1, [r1, #8]
+  24fa70:	4788      	blx	r1
+  24fa72:	e0ae      	b.n	24fbd2 <nearest-symbol-label-elided>
+  24fa74:	6908      	ldr	r0, [r1, #16]
+  24fa76:	f8dd 81c0 	ldr.w	r8, [sp, #448]	@ 0x1c0
+  24fa7a:	2800      	cmp	r0, #0
+  24fa7c:	f000 8093 	beq.w	24fba6 <nearest-symbol-label-elided>
+  24fa80:	4281      	cmp	r1, r0
+  24fa82:	f000 80c0 	beq.w	24fc06 <nearest-symbol-label-elided>
+  24fa86:	6801      	ldr	r1, [r0, #0]
+  24fa88:	6889      	ldr	r1, [r1, #8]
+  24fa8a:	4788      	blx	r1
+  24fa8c:	e08c      	b.n	24fba8 <nearest-symbol-label-elided>
+  24fa8e:	6908      	ldr	r0, [r1, #16]
+  24fa90:	2800      	cmp	r0, #0
+  24fa92:	f000 808b 	beq.w	24fbac <nearest-symbol-label-elided>
+  24fa96:	4281      	cmp	r1, r0
+  24fa98:	f000 80d1 	beq.w	24fc3e <nearest-symbol-label-elided>
+  24fa9c:	6801      	ldr	r1, [r0, #0]
+  24fa9e:	6889      	ldr	r1, [r1, #8]
+  24faa0:	4788      	blx	r1
+  24faa2:	e084      	b.n	24fbae <nearest-symbol-label-elided>
+  24faa4:	6908      	ldr	r0, [r1, #16]
+  24faa6:	2800      	cmp	r0, #0
+  24faa8:	f000 8083 	beq.w	24fbb2 <nearest-symbol-label-elided>
+  24faac:	4281      	cmp	r1, r0
+  24faae:	f000 80d8 	beq.w	24fc62 <nearest-symbol-label-elided>
+  24fab2:	6801      	ldr	r1, [r0, #0]
+  24fab4:	6889      	ldr	r1, [r1, #8]
+  24fab6:	4788      	blx	r1
+  24fab8:	e07c      	b.n	24fbb4 <nearest-symbol-label-elided>
+  24faba:	6908      	ldr	r0, [r1, #16]
+  24fabc:	2800      	cmp	r0, #0
+  24fabe:	d07b      	beq.n	24fbb8 <nearest-symbol-label-elided>
+  24fac0:	4281      	cmp	r1, r0
+  24fac2:	f000 8107 	beq.w	24fcd4 <nearest-symbol-label-elided>
+  24fac6:	6801      	ldr	r1, [r0, #0]
+  24fac8:	6889      	ldr	r1, [r1, #8]
+  24faca:	4788      	blx	r1
+  24facc:	e075      	b.n	24fbba <nearest-symbol-label-elided>
+  24face:	6908      	ldr	r0, [r1, #16]
+  24fad0:	2800      	cmp	r0, #0
+  24fad2:	d074      	beq.n	24fbbe <nearest-symbol-label-elided>
+  24fad4:	4281      	cmp	r1, r0
+  24fad6:	f000 810e 	beq.w	24fcf6 <nearest-symbol-label-elided>
+  24fada:	6801      	ldr	r1, [r0, #0]
+  24fadc:	6889      	ldr	r1, [r1, #8]
+  24fade:	4788      	blx	r1
+  24fae0:	e06e      	b.n	24fbc0 <nearest-symbol-label-elided>
+  24fae2:	6908      	ldr	r0, [r1, #16]
+  24fae4:	2800      	cmp	r0, #0
+  24fae6:	d06d      	beq.n	24fbc4 <nearest-symbol-label-elided>
+  24fae8:	4281      	cmp	r1, r0
+  24faea:	f000 8115 	beq.w	24fd18 <nearest-symbol-label-elided>
+  24faee:	6801      	ldr	r1, [r0, #0]
+  24faf0:	6889      	ldr	r1, [r1, #8]
+  24faf2:	4788      	blx	r1
+  24faf4:	e067      	b.n	24fbc6 <nearest-symbol-label-elided>
+  24faf6:	6908      	ldr	r0, [r1, #16]
+  24faf8:	2800      	cmp	r0, #0
+  24fafa:	d066      	beq.n	24fbca <nearest-symbol-label-elided>
+  24fafc:	4281      	cmp	r1, r0
+  24fafe:	f000 811c 	beq.w	24fd3a <nearest-symbol-label-elided>
+  24fb02:	6801      	ldr	r1, [r0, #0]
+  24fb04:	6889      	ldr	r1, [r1, #8]
+  24fb06:	4788      	blx	r1
+  24fb08:	e060      	b.n	24fbcc <nearest-symbol-label-elided>
+  24fb0a:	6908      	ldr	r0, [r1, #16]
+  24fb0c:	2800      	cmp	r0, #0
+  24fb0e:	d062      	beq.n	24fbd6 <nearest-symbol-label-elided>
+  24fb10:	4281      	cmp	r1, r0
+  24fb12:	f000 8135 	beq.w	24fd80 <nearest-symbol-label-elided>
+  24fb16:	6801      	ldr	r1, [r0, #0]
+  24fb18:	6889      	ldr	r1, [r1, #8]
+  24fb1a:	4788      	blx	r1
+  24fb1c:	e05c      	b.n	24fbd8 <nearest-symbol-label-elided>
+  24fb1e:	6908      	ldr	r0, [r1, #16]
+  24fb20:	2800      	cmp	r0, #0
+  24fb22:	d05b      	beq.n	24fbdc <nearest-symbol-label-elided>
+  24fb24:	4281      	cmp	r1, r0
+  24fb26:	f000 813d 	beq.w	24fda4 <nearest-symbol-label-elided>
+  24fb2a:	6801      	ldr	r1, [r0, #0]
+  24fb2c:	6889      	ldr	r1, [r1, #8]
+  24fb2e:	4788      	blx	r1
+  24fb30:	e055      	b.n	24fbde <nearest-symbol-label-elided>
+  24fb32:	6908      	ldr	r0, [r1, #16]
+  24fb34:	2800      	cmp	r0, #0
+  24fb36:	d054      	beq.n	24fbe2 <nearest-symbol-label-elided>
+  24fb38:	4281      	cmp	r1, r0
+  24fb3a:	f000 8145 	beq.w	24fdc8 <nearest-symbol-label-elided>
+  24fb3e:	6801      	ldr	r1, [r0, #0]
+  24fb40:	6889      	ldr	r1, [r1, #8]
+  24fb42:	4788      	blx	r1
+  24fb44:	e04e      	b.n	24fbe4 <nearest-symbol-label-elided>
+  24fb46:	6908      	ldr	r0, [r1, #16]
+  24fb48:	2800      	cmp	r0, #0
+  24fb4a:	d04d      	beq.n	24fbe8 <nearest-symbol-label-elided>
+  24fb4c:	4281      	cmp	r1, r0
+  24fb4e:	f000 814d 	beq.w	24fdec <nearest-symbol-label-elided>
+  24fb52:	6801      	ldr	r1, [r0, #0]
+  24fb54:	6889      	ldr	r1, [r1, #8]
+  24fb56:	4788      	blx	r1
+  24fb58:	e047      	b.n	24fbea <nearest-symbol-label-elided>
+  24fb5a:	6908      	ldr	r0, [r1, #16]
+  24fb5c:	2800      	cmp	r0, #0
+  24fb5e:	d046      	beq.n	24fbee <nearest-symbol-label-elided>
+  24fb60:	4281      	cmp	r1, r0
+  24fb62:	f000 8155 	beq.w	24fe10 <nearest-symbol-label-elided>
+  24fb66:	6801      	ldr	r1, [r0, #0]
+  24fb68:	6889      	ldr	r1, [r1, #8]
+  24fb6a:	4788      	blx	r1
+  24fb6c:	e040      	b.n	24fbf0 <nearest-symbol-label-elided>
+  24fb6e:	6908      	ldr	r0, [r1, #16]
+  24fb70:	2800      	cmp	r0, #0
+  24fb72:	d03f      	beq.n	24fbf4 <nearest-symbol-label-elided>
+  24fb74:	4281      	cmp	r1, r0
+  24fb76:	f000 815d 	beq.w	24fe34 <nearest-symbol-label-elided>
+  24fb7a:	6801      	ldr	r1, [r0, #0]
+  24fb7c:	6889      	ldr	r1, [r1, #8]
+  24fb7e:	4788      	blx	r1
+  24fb80:	e039      	b.n	24fbf6 <nearest-symbol-label-elided>
+  24fb82:	6908      	ldr	r0, [r1, #16]
+  24fb84:	b3c8      	cbz	r0, 24fbfa <nearest-symbol-label-elided>
+  24fb86:	4281      	cmp	r1, r0
+  24fb88:	f000 8166 	beq.w	24fe58 <nearest-symbol-label-elided>
+  24fb8c:	6801      	ldr	r1, [r0, #0]
+  24fb8e:	6889      	ldr	r1, [r1, #8]
+  24fb90:	4788      	blx	r1
+  24fb92:	e033      	b.n	24fbfc <nearest-symbol-label-elided>
+  24fb94:	6908      	ldr	r0, [r1, #16]
+  24fb96:	b398      	cbz	r0, 24fc00 <nearest-symbol-label-elided>
+  24fb98:	4281      	cmp	r1, r0
+  24fb9a:	f000 816f 	beq.w	24fe7c <nearest-symbol-label-elided>
+  24fb9e:	6801      	ldr	r1, [r0, #0]
+  24fba0:	6889      	ldr	r1, [r1, #8]
+  24fba2:	4788      	blx	r1
+  24fba4:	e02d      	b.n	24fc02 <nearest-symbol-label-elided>
+  24fba6:	2000      	movs	r0, #0
+  24fba8:	900c      	str	r0, [sp, #48]	@ 0x30
+  24fbaa:	e031      	b.n	24fc10 <nearest-symbol-label-elided>
+  24fbac:	2000      	movs	r0, #0
+  24fbae:	905a      	str	r0, [sp, #360]	@ 0x168
+  24fbb0:	e04a      	b.n	24fc48 <nearest-symbol-label-elided>
+  24fbb2:	2000      	movs	r0, #0
+  24fbb4:	904e      	str	r0, [sp, #312]	@ 0x138
+[319 additional selected lines not published; bounded excerpt]
+```
 
 ## D. Evidence boundary (automatic, intentionally conservative)
 
