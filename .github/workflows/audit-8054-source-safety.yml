@@ -6,6 +6,8 @@ on:
     paths:
       - '.github/workflows/audit-8054-source-safety.yml'
       - 'app/tvsettingsplus-mod/src/main/java/**'
+      - 'app/tvsettingsplus-mod/src/exact8054/java/**'
+      - 'app/tvsettingsplus-mod/ui-tests/**'
       - 'app/tvsettingsplus-mod/src/test/java/**'
       - 'app/tvsettingsplus-mod/src/testFixtures/java/**'
       - 'research/8054/**'
