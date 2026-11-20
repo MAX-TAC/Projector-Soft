@@ -1,4 +1,4 @@
-"""Generate the v39 function inventory from the pinned 96-item dependency graph."""
+"""Generate the 8054 function inventory from the pinned 96-item dependency graph."""
 import csv
 import json
 from pathlib import Path
@@ -134,6 +134,114 @@ columns=('id','function','original_menu','original_activity_or_controller_hint',
          'original_backend_hint','new_section','new_activity','status','ui_control','adapter','getter','setter',
          'range_or_values','readback','availability','side_effects','dependencies','rollback',
          'software_tests','hardware_status','outstanding')
+v41_updates = {
+    "PIC01": {
+        "ui_control": "ListPreference (read-only)",
+        "range_or_values": "OEM customer labels for stored mode",
+        "readback": "bracket mode/color/HDR snapshot",
+        "adapter": "NativePicturePanel",
+        "software_tests": "PicturePanelStateTest / UnifiedMenuUiTest",
+    },
+    "PIC02": {
+        "ui_control": "ListPreference (read-only)",
+        "range_or_values": "OEM User/Cool/Standard/Warm",
+        "adapter": "NativePicturePanel",
+        "software_tests": "PicturePanelStateTest / UnifiedMenuUiTest",
+    },
+    "PIC11": {
+        "ui_control": "SwitchPreference (read-only)",
+        "range_or_values": "OEM saved flag: 0 off / 1 on",
+        "adapter": "NativePicturePanel",
+        "software_tests": "PicturePanelStateTest / UnifiedMenuUiTest",
+    },
+    "PIC12": {
+        "new_activity": "MemcSettingsActivity",
+        "ui_control": "ListPreference (read-only)",
+        "range_or_values": "OEM user effect catalogue",
+        "adapter": "NativePicturePanel",
+        "software_tests": "PicturePanelStateTest / UnifiedMenuUiTest",
+    },
+    "SND01": {
+        "ui_control": "ListPreference",
+        "adapter": "NativeEqualizerPanel",
+        "getter": "Global sound_style + TVSettingConfig + OEM customer catalogue",
+        "setter": "guarded stock key via TvServices",
+        "range_or_values": "OEM catalogue; User=0; AIAQ conditional",
+        "readback": "bounded Global/config readback for unchanged output selectors",
+        "software_tests": "UnifiedMenuUiTest / OemSoundValuePolicyTest",
+    },
+    "SND07": {
+        "ui_control": "five native EQ rows",
+        "adapter": "NativeEqualizerPanel",
+        "getter": "Global EQ keys + TVSettingConfig",
+        "setter": "guarded stock key via TvServices only in User",
+        "range_or_values": "OEM min/max per band",
+        "readback": "bounded Global/config readback for unchanged mode and output selectors",
+        "software_tests": "UnifiedMenuUiTest / OemSoundValuePolicyTest",
+        "outstanding": "Verify D-pad, User persistence and audible effect separately on speaker / BT / HDMI ARC/eARC",
+    },
+    "SND12": {
+        "range_or_values": "OEM min/max, step 10 ms; separate speaker/SPDIF feature gates",
+        "software_tests": "SoundDelayStateTest / UnifiedMenuUiTest",
+    },
+    "PIC03": {
+        "ui_control": "OEM lower layout (read-only)",
+        "range_or_values": "TVSettingConfig min/max",
+        "readback": "stable PQ snapshot and Global/config agree",
+        "adapter": "NativePicturePanel",
+        "software_tests": "PicturePanelStateTest / UnifiedMenuUiTest",
+    },
+    "PIC04": {
+        "ui_control": "OEM lower layout (read-only)",
+        "range_or_values": "TVSettingConfig min/max",
+        "readback": "stable PQ snapshot and Global/config agree",
+        "adapter": "NativePicturePanel",
+        "software_tests": "PicturePanelStateTest / UnifiedMenuUiTest",
+    },
+    "PIC05": {
+        "ui_control": "OEM lower layout (read-only)",
+        "range_or_values": "TVSettingConfig min/max",
+        "readback": "stable PQ snapshot and Global/config agree",
+        "adapter": "NativePicturePanel",
+        "software_tests": "PicturePanelStateTest / UnifiedMenuUiTest",
+    },
+    "PIC06": {
+        "ui_control": "OEM lower layout (read-only)",
+        "range_or_values": "TVSettingConfig min/max",
+        "readback": "stable PQ snapshot and Global/config agree",
+        "adapter": "NativePicturePanel",
+        "software_tests": "PicturePanelStateTest / UnifiedMenuUiTest",
+    },
+    "PIC07": {
+        "ui_control": "OEM lower layout (read-only)",
+        "range_or_values": "TVSettingConfig min/max",
+        "readback": "stable PQ snapshot and Global/config agree",
+        "adapter": "NativePicturePanel",
+        "software_tests": "PicturePanelStateTest / UnifiedMenuUiTest",
+    },
+    "PIC08": {
+        "ui_control": "OEM lower layout (read-only)",
+        "range_or_values": "TVSettingConfig min/max",
+        "readback": "stable PQ snapshot and Global/config agree",
+        "adapter": "NativePicturePanel",
+        "software_tests": "PicturePanelStateTest / UnifiedMenuUiTest",
+    },
+    "PIC09": {
+        "ui_control": "OEM lower layout (read-only)",
+        "range_or_values": "TVSettingConfig min/max",
+        "readback": "stable PQ snapshot and Global/config agree",
+        "adapter": "NativePicturePanel",
+        "software_tests": "PicturePanelStateTest / UnifiedMenuUiTest",
+    },
+    "PIC10": {
+        "ui_control": "OEM lower layout (read-only)",
+        "range_or_values": "TVSettingConfig min/max",
+        "readback": "stable PQ snapshot and Global/config agree",
+        "adapter": "NativePicturePanel",
+        "software_tests": "PicturePanelStateTest / UnifiedMenuUiTest",
+    },
+}
+
 path=root / 'FINAL_FUNCTION_PARITY_8054.csv'
 with path.open('w',encoding='utf-8',newline='') as out:
     writer=csv.writer(out,lineterminator='\n')
@@ -154,9 +262,11 @@ with path.open('w',encoding='utf-8',newline='') as out:
             outstanding=previous[key]['next_check']
         if key in held_tone:
             outstanding = tone_check
-        writer.writerow((key,row['function'],row['section'],row['owner_hint'],row['entry_point_hint'],
+        values = (key,row['function'],row['section'],row['owner_hint'],row['entry_point_hint'],
                          row['backend_hint'],area,activity,status,widget,adapter,getter,setter,bounds,verify,
                          row['precondition'] or ('Check platform or OEM capability' if activity else ''),
                          row['side_effects_hint'],row['target'] or row['owner_hint'],row['rollback'],
-                         tests,'RUNTIME_TEST_REQUIRED' if activity else 'NOT_TESTED',outstanding))
-print('PASS v39 parity: 96 unique rows')
+                         tests,'RUNTIME_TEST_REQUIRED' if activity else 'NOT_TESTED',outstanding)
+        override = v41_updates.get(key, {})
+        writer.writerow(override.get(column, value) for column, value in zip(columns, values))
+print('PASS v41 parity: 96 unique rows')

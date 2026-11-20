@@ -1,3 +1,12 @@
+# v41 — изображение и звук после проверки v39
+
+Подписанный Exact-8054, `versionCode 41`, код `ae87ea0`, статус `BUILT_UNTESTED`. SHA-256 APK `2e4b4cf0b81a8c72ea2d6807dd15e905d9c33be1434df8e0e85d1160f8e7d51f`. [APK и отчёт](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44768273366/artifacts/14644709349)
+
+- В исходном MainSettings убраны технические строки изображения. Для пяти регулировок и RGB добавлено нижнее окно просмотра OEM. Профили режима, температуры, гаммы и MEMC показывают названия. HDR показывает сохранённый флаг. MEMC вынесен в отдельную Activity. Запись PQ требует установления контекста HDMI, формата и профиля.
+- Эквалайзер сохраняет пять строк. Запись разрешена в User при подтверждённых границах и согласии Global/config. Смена профиля и аудиоустройств обновляет панель автоматически. Убраны обновление и снимок. Общий OEM-сброс затрагивает eARC и динамики, поэтому отдельный сброс EQ недоступен.
+- SPDIF и задержка динамиков имеют независимость по штатным признакам. Последняя строка звука называется «Системные звуки».
+- Exact сверил сертификат STOCK, исходный MainSettings, Manifest, 15 неизменённых оригинальных DEX и ограниченный diff classes13.dex. Изменения UI прошли AndroidX и OEM/JVM. [AndroidX](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44768273540) · [OEM/JVM](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44768273389) · [Аппаратная проверка и ручной возврат](8054_PQ_EQ_V41_TEST.md)
+
 # v40 — регрессии, обнаруженные владельцем на v39
 
 Опубликован подписанный Exact-8054, `versionCode 40`, код `4bce714`. SHA-256 APK `b3c363b0500465fcf5954bb8bbefdd4622054d2e253f9688346d11fc65056d7e`. Статус `BUILT_UNTESTED`. [APK и отчёт](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44757119865/artifacts/14640720285)
