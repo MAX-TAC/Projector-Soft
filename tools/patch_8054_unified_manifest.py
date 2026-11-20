@@ -7,7 +7,6 @@ from patch_axml_version import change_version_code
 
 PREFIX = 'dev.projectorsoft.tvsettings.'
 ACTIVITIES = (
-    ('ModMainSettingsActivity', 'Настройки'),
     ('NetworkSettingsActivity', 'Wi-Fi и сеть'),
     ('BluetoothSettingsActivity', 'Bluetooth'),
     ('SourcesSettingsActivity', 'Источники'),
@@ -15,7 +14,7 @@ ACTIVITIES = (
     ('PictureSettingsActivity', 'Изображение'),
     ('SoundSettingsActivity', 'Звук'),
     ('AppsSettingsActivity', 'Приложения'),
-    ('SystemSettingsActivity', 'Система'),
+    ('SystemSettingsActivity', 'Настройки устройства'),
 )
 DISABLED = (('receiver', 'KuSourceRecoveryBootReceiver'), ('service', 'KuSourceRecoveryService'))
 
@@ -72,30 +71,13 @@ def patch_unified(data, version):
                 attr(android, pool.index('exported'), exported),
                 attr(android, pool.index('enabled'), enabled)]
 
-    def intent_item(tag, value):
-        return startnode(tag, [attr(android, pool.index('name'), pool.index(value))]) + endnode(tag)
-
-    def activity_filter():
-        tag = pool.index('intent-filter')
-        result = startnode(tag)
-        result += intent_item(pool.index('action'), 'android.intent.action.MAIN')
-        for category in ('LAUNCHER', 'LEANBACK_LAUNCHER'):
-            result += intent_item(pool.index('category'), 'android.intent.category.' + category)
-        return result + endnode(tag)
-
     extension = b''
     activity = pool.index('activity')
-    for idx, (name, label) in enumerate(ACTIVITIES):
+    for name, label in ACTIVITIES:
         attrs = attributes(name, True, True)
         attrs.append(attr(android, pool.index('label'), pool.index(label)))
         attrs.append(refattr(android, pool.index('theme'), themes[0]))
-        if idx == 0:
-            # exact-8054 stock MainSettings already uses these verified TV gear and banner resources.
-            attrs.append(refattr(android, pool.index('icon'), 0x7f08022e))
-            attrs.append(refattr(android, pool.index('banner'), 0x7f080142))
         extension += startnode(activity, attrs)
-        if idx == 0:
-            extension += activity_filter()
         extension += endnode(activity)
     for tag, name in DISABLED:
         node = pool.index(tag)

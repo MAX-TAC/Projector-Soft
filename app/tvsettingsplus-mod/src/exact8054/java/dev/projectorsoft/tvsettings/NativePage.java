@@ -13,7 +13,7 @@ enum NativePage {
     SOUND("Звук",SoundSettingsActivity.class,NativeSections.Sound.class.getName()),
     APPS("Приложения",AppsSettingsActivity.class,
             "com.android.tv.settings.device.apps.AppsFragment"),
-    SYSTEM("Система",SystemSettingsActivity.class,NativeSections.System.class.getName());
+    SYSTEM("Настройки устройства",SystemSettingsActivity.class,NativeSections.System.class.getName());
 
     final String title;
     final Class<? extends Activity> activity;

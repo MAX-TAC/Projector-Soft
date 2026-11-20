@@ -10,6 +10,9 @@ import android.view.KeyEvent;
 import android.view.View;
 import androidx.leanback.preference.LeanbackPreferenceFragmentCompat;
 import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
+import com.android.tv.settings.MainSettings;
+import com.android.tv.settings.MainFragment;
 import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SwitchPreference;
@@ -31,13 +34,54 @@ import static org.robolectric.Shadows.shadowOf;
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk=33)
 public class UnifiedMenuUiTest {
+    @Test public void stockMainSettingsHostInstallsVisibleRootAndRetainsControllerPreferences() {
+        MainSettings main = Robolectric.buildActivity(MainSettings.class).setup().get();
+        MainFragment fragment = (MainFragment) main.getSupportFragmentManager().findFragmentById(android.R.id.content);
+        PreferenceScreen screen = fragment.getPreferenceScreen();
+        PreferenceCategory active = screen.findPreference(StockMainSettingsMenu.CATEGORY);
+        assertEquals("Общие настройки", active.getTitle());
+        assertNotNull(fragment.getListView().getAdapter());
+        String[] expected = {"Wi-Fi и сеть", "Bluetooth", "Источники", "Проекция",
+                "Изображение", "Звук", "Приложения", "Настройки устройства"};
+        assertEquals(expected.length, active.getPreferenceCount());
+        assertEquals(expected.length + 1, fragment.getListView().getAdapter().getItemCount());
+        for (int i = 0; i < expected.length; i++) {
+            Preference row = active.getPreference(i);
+            assertEquals(expected[i], row.getTitle());
+            assertEquals(NativePage.values()[i].fragment, row.getFragment());
+            assertNotNull(row.getOnPreferenceClickListener());
+        }
+        assertEquals("com.android.tv.settings.connectivity.NetworkActivity",
+                StockMainSettingsMenu.target(main, NativePage.NETWORK).getClassName());
+        assertEquals("com.android.tv.settings.device.apps.AppsActivity",
+                StockMainSettingsMenu.target(main, NativePage.APPS).getClassName());
+        assertNotNull(screen.findPreference("take_bug_report"));
+        assertNotNull(screen.findPreference("channel"));
+        assertFalse(screen.findPreference("general_settings").isVisible());
+        assertFalse(screen.findPreference("quick_settings").isVisible());
+        StockMainSettingsMenu.install(fragment);
+        assertSame(active, screen.findPreference(StockMainSettingsMenu.CATEGORY));
+        PreferenceCategory late = new PreferenceCategory(main);
+        late.setKey("suggestions");
+        assertTrue(StockMainSettingsMenu.addAuxiliary(screen, late));
+        assertFalse(late.isVisible());
+    }
+
+    @Test public void settingsKeyInsideSectionTargetsOriginalMainSettings() {
+        SourcesSettingsActivity activity = Robolectric.buildActivity(SourcesSettingsActivity.class).setup().get();
+        assertTrue(activity.onKeyUp(KeyEvent.KEYCODE_SETTINGS,
+                new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_SETTINGS)));
+        assertEquals(StockMainSettingsMenu.STOCK_MAIN,
+                shadowOf(activity).getNextStartedActivity().getComponent().getClassName());
+    }
+
     @Test public void rootStartsAndBuildsOrderedNativePreviewRoutes(){
         ModMainSettingsActivity root=Robolectric.buildActivity(ModMainSettingsActivity.class).setup().get();
         NativeRootFragment fragment=(NativeRootFragment)root.getSupportFragmentManager().findFragmentById(android.R.id.content);
         assertNotNull(fragment.getView());
         assertNotNull(fragment.getListView().getAdapter());
         PreferenceScreen screen=fragment.getPreferenceScreen();
-        String[] titles={"Wi-Fi и сеть","Bluetooth","Источники","Проекция","Изображение","Звук","Приложения","Система"};
+        String[] titles={"Wi-Fi и сеть","Bluetooth","Источники","Проекция","Изображение","Звук","Приложения","Настройки устройства"};
         assertEquals(titles.length,screen.getPreferenceCount());
         for(int i=0;i<titles.length;i++){
             Preference row=screen.getPreference(i);
@@ -238,7 +282,7 @@ public class UnifiedMenuUiTest {
 
     @Test @GraphicsMode(GraphicsMode.Mode.NATIVE)
     public void captureLeanbackFixtureScreensAt720p() throws Exception {
-        capture("root",ModMainSettingsActivity.class);
+        capture("root",MainSettings.class);
         capture("sources",SourcesSettingsActivity.class);
         capture("projection",ProjectionSettingsActivity.class);
         capture("picture",PictureSettingsActivity.class);

@@ -64,12 +64,7 @@ def verify_manifest(stock, module):
             raise ValueError('Menu Activity not directly launchable: ' + name)
         if theme not in node:
             raise ValueError('Menu Activity does not share the stock theme: ' + name)
-        if name == ACTIVITIES[0][0]:
-            for value in ('android.intent.action.MAIN','android.intent.category.LAUNCHER',
-                          'android.intent.category.LEANBACK_LAUNCHER'):
-                if value not in node:
-                    raise ValueError('Missing launcher contract: ' + value)
-        elif 'E: intent-filter' in node:
+        if 'E: intent-filter' in node:
             raise ValueError('Unexpected implicit route for ' + name)
     for kind, name in DISABLED:
         node = additions[name]
@@ -78,7 +73,7 @@ def verify_manifest(stock, module):
                 raise ValueError('Recovery must remain dormant: ' + name)
         if ('E: ' + kind + ' ') not in node or 'E: intent-filter' in node:
             raise ValueError('Recovery must remain unregistered for implicit activation')
-    print('PASS original MainSettings and all stock Manifest nodes; 9 new Activities; recovery dormant')
+    print('PASS original MainSettings and all stock Manifest nodes; explicit section Activities; recovery dormant')
 
 
 def verify_payload(stock, module):
@@ -86,8 +81,13 @@ def verify_payload(stock, module):
         unchanged = {entry for entry in original.namelist()
                      if entry != 'AndroidManifest.xml' and not entry.startswith('META-INF/')}
         dex = {name for name in unchanged if re.fullmatch(r'classes\d*\.dex', name)}
-        if len(dex) != 16 or any(original.read(entry) != candidate.read(entry) for entry in unchanged):
+        edited = 'classes13.dex'
+        if len(dex) != 16 or any(original.read(entry) != candidate.read(entry)
+                                 for entry in unchanged - {edited}):
             raise ValueError('Unexpected delta in original 8054 DEX/resources')
+        before, after = original.read(edited), candidate.read(edited)
+        if before == after or dex_classes(before) != dex_classes(after):
+            raise ValueError('Invalid original MainFragment DEX delta')
         extra = {name for name in candidate.namelist() if name not in original.namelist()}
         if extra != {'classes17.dex'} or candidate.testzip():
             raise ValueError('Unexpected module archive entry or invalid ZIP')
@@ -98,7 +98,7 @@ def verify_payload(stock, module):
             descriptor = 'L' + (PREFIX + name).replace('.', '/') + ';'
             if descriptor not in classes:
                 raise ValueError('DESCRIPTOR missing for ' + name)
-    print('PASS all 16 original DEX and stock resources byte-identical')
+    print('PASS 15 original DEX and all stock resources byte-identical, classes13 DEX class set intact')
 
 
 if __name__ == '__main__':

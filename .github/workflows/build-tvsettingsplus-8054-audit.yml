@@ -408,19 +408,27 @@ jobs:
           assert 'Landroid/content/Context;->startActivity(Landroid/content/Intent;)V' in launch
           print('PASS stock keystone fallback Intent')
           PY
-      - name: Compose unified menu while retaining every original OEM DEX
+      - name: Integrate original MainSettings and verify the single changed OEM DEX
         run: |
           set -euo pipefail
           STOCK=/tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk
-          printf '{"edited_smali":[],"edited_dex":[],"main_settings":"STOCK_BYTE_IDENTICAL"}\n' > /tmp/tv33/patch_report.json
-          python3 tools/compose_brightness_v3_apk.py "$STOCK" "$STOCK" \
+          mkdir -p /tmp/tv33/report
+          cp -a /tmp/tv33/decoded/smali_classes13 /tmp/tv33/stock-classes13
+          python3 tools/patch_8054_mainsettings.py /tmp/tv33/decoded \
+            /tmp/tv33/patch_report.json /tmp/tv33/report/mainsettings-smali.diff
+          apktool b -p /tmp/tv33/framework /tmp/tv33/decoded -o /tmp/tv33/rebuilt.apk
+          python3 tools/compose_brightness_v3_apk.py "$STOCK" /tmp/tv33/rebuilt.apk \
             /tmp/tv33/dex/classes.dex /tmp/tv33/patch_report.json /tmp/tv33/unsigned.apk \
-            --version-code 37 --unified-8054
-          aapt dump badging /tmp/tv33/unsigned.apk | grep "name='com.android.tv.settings' versionCode='37'"
+            --version-code 38 --unified-8054
+          aapt dump badging /tmp/tv33/unsigned.apk | grep "name='com.android.tv.settings' versionCode='38'"
           aapt dump xmltree "$STOCK" AndroidManifest.xml > /tmp/tv33/stock-manifest-tree.txt
           aapt dump xmltree /tmp/tv33/unsigned.apk AndroidManifest.xml > /tmp/tv33/manifest-tree.txt
           python3 tools/verify_8054_unified.py "$STOCK" /tmp/tv33/unsigned.apk \
             /tmp/tv33/stock-manifest-tree.txt /tmp/tv33/manifest-tree.txt
+          apktool d -r -p /tmp/tv33/framework /tmp/tv33/unsigned.apk -o /tmp/tv33/candidate
+          diff -qr /tmp/tv33/decoded/smali_classes13 /tmp/tv33/candidate/smali_classes13
+          sha256sum /tmp/tv33/stock-classes13/com/android/tv/settings/MainSettings.smali \
+            /tmp/tv33/candidate/smali_classes13/com/android/tv/settings/MainSettings.smali
           python3 tools/collect_8054_ui_reference.py "$STOCK" /tmp/tv33/report/stock-ui-reference
           cp /tmp/tv33/stock-manifest-tree.txt /tmp/tv33/report/stock-ui-reference/
       - name: Cert-verified platform signing and archive integrity
@@ -430,17 +438,18 @@ jobs:
           curl -fsSL --retry 3 https://raw.githubusercontent.com/aosp-mirror/platform_build/master/target/product/security/platform.pk8 -o /tmp/tv33/keys/platform.pk8
           ORIGINAL="$(apksigner verify --print-certs /tmp/flix8054_erofs/system_ext_a_tree/priv-app/TvSettingsPlus/TvSettingsPlus.apk | grep 'Signer #1 certificate SHA-256 digest:' | head -1 | awk '{print $NF}')"
           PLATFORM="$(openssl x509 -in /tmp/tv33/keys/platform.x509.pem -noout -fingerprint -sha256 | cut -d= -f2 | tr -d : | tr '[:upper:]' '[:lower:]')"
+          test "$ORIGINAL" = c8a2e9bccf597c2fb6dc66bee293fc13f2fc47ec77bc6b2b0d52c11f51192ab8
           test "$ORIGINAL" = "$PLATFORM"
           zipalign -f -p 4 /tmp/tv33/unsigned.apk /tmp/tv33/aligned.apk
           apksigner sign --key /tmp/tv33/keys/platform.pk8 --cert /tmp/tv33/keys/platform.x509.pem \
-            --v1-signing-enabled true --v2-signing-enabled true --v3-signing-enabled true --out /tmp/tv33/TvSettingsPlus-8054-v37-NATIVE-SETTINGS-EXPERIMENTAL.apk /tmp/tv33/aligned.apk
-          CANDIDATE=/tmp/tv33/TvSettingsPlus-8054-v37-NATIVE-SETTINGS-EXPERIMENTAL.apk
+            --v1-signing-enabled true --v2-signing-enabled true --v3-signing-enabled true --out /tmp/tv33/TvSettingsPlus-8054-v38-MAINSETTINGS-EXPERIMENTAL.apk /tmp/tv33/aligned.apk
+          CANDIDATE=/tmp/tv33/TvSettingsPlus-8054-v38-MAINSETTINGS-EXPERIMENTAL.apk
           apksigner verify --verbose --print-certs "$CANDIDATE"
           MOD="$(apksigner verify --print-certs "$CANDIDATE" | awk -F ': ' '/Signer #1 certificate SHA-256 digest:/ {print $2}')"
           test -n "$MOD" && test "$MOD" = "$ORIGINAL"
           grep -F 'android:sharedUserId(0x0101000b)="android.uid.system"' /tmp/tv33/manifest-tree.txt
-          aapt dump badging /tmp/tv33/TvSettingsPlus-8054-v37-NATIVE-SETTINGS-EXPERIMENTAL.apk | grep "name='com.android.tv.settings' versionCode='37'"
-          sha256sum /tmp/tv33/TvSettingsPlus-8054-v37-NATIVE-SETTINGS-EXPERIMENTAL.apk
+          aapt dump badging /tmp/tv33/TvSettingsPlus-8054-v38-MAINSETTINGS-EXPERIMENTAL.apk | grep "name='com.android.tv.settings' versionCode='38'"
+          sha256sum /tmp/tv33/TvSettingsPlus-8054-v38-MAINSETTINGS-EXPERIMENTAL.apk
       - name: Experimental-only metadata
         if: always()
         run: |
@@ -449,26 +458,26 @@ jobs:
           cat /tmp/tv33/report/stock-input-routes.txt
           cat > /tmp/tv33/report/README.txt <<'EOF'
           WARNING: EXPERIMENTAL. Not tested on actual projector; DO NOT install as production.
-          TvSettingsPlus 8054 EXACT-BUILD platform-signature-matched v37.
+          TvSettingsPlus 8054 EXACT-BUILD platform-signature-matched v38.
           Static verification only. Code and CI links are in the integration audit for this commit.
-          Package com.android.tv.settings, versionCode 37, original 8054 signing certificate.
+          Package com.android.tv.settings, versionCode 38, original 8054 signing certificate.
           PIC18 reads only an existing stock panel cache. No new hardware settings on startup.
           MOD navigation does not apply the inactivity policy. Dormant recovery components are disabled.
-          Menu uses a separate Activity. Stock MainSettings and all original OEM DEX are identical.
+          Stock MainSettings hosts the redesigned root. Only classes13.dex changes, with a reported smali diff.
           This candidate does not replace the pinned 9f8fc64 recovery/installation kit.
           Installation and rollback readiness require the owner's separately authorized read-only preflight.
           EOF
           printf '%s\n' "$GITHUB_SHA" > /tmp/tv33/report/source-commit.txt
-          if [ -f /tmp/tv33/TvSettingsPlus-8054-v37-NATIVE-SETTINGS-EXPERIMENTAL.apk ]; then
-            (cd /tmp/tv33 && sha256sum TvSettingsPlus-8054-v37-NATIVE-SETTINGS-EXPERIMENTAL.apk) > /tmp/tv33/report/SHA256SUMS
+          if [ -f /tmp/tv33/TvSettingsPlus-8054-v38-MAINSETTINGS-EXPERIMENTAL.apk ]; then
+            (cd /tmp/tv33 && sha256sum TvSettingsPlus-8054-v38-MAINSETTINGS-EXPERIMENTAL.apk) > /tmp/tv33/report/SHA256SUMS
           fi
           cp /tmp/tv33/patch_report.json /tmp/tv33/report/patch_report.json 2>/dev/null || true
       - uses: actions/upload-artifact@v4
         if: success()
         with:
-          name: tvsettingsplus-8054-v37-native-experimental
+          name: tvsettingsplus-8054-v38-mainsettings-experimental
           path: |
-            /tmp/tv33/TvSettingsPlus-8054-v37-NATIVE-SETTINGS-EXPERIMENTAL.apk
+            /tmp/tv33/TvSettingsPlus-8054-v38-MAINSETTINGS-EXPERIMENTAL.apk
             /tmp/tv33/report/
           retention-days: 14
           if-no-files-found: warn

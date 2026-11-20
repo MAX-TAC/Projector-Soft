@@ -25,7 +25,7 @@ public abstract class ModSettingsActivity extends TvSettingsActivity {
 
     @Override public boolean onKeyUp(int code,KeyEvent event) {
         if(code==KeyEvent.KEYCODE_SETTINGS) {
-            if(page()!=null)startActivity(new Intent(this,ModMainSettingsActivity.class)
+            if(page()!=null)startActivity(new Intent().setClassName(this,StockMainSettingsMenu.STOCK_MAIN)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP));
             return true;
         }

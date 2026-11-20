@@ -17,7 +17,7 @@ def main():
  p.add_argument("compiled_dex",type=Path)
  p.add_argument("patch_report",type=Path)
  p.add_argument("output",type=Path)
- p.add_argument("--version-code",type=int,default=3,choices=(3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,27,28,29,30,31,32,33,34,35,36,37))
+ p.add_argument("--version-code",type=int,default=3,choices=(3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,27,28,29,30,31,32,33,34,35,36,37,38))
  p.add_argument("--projector-entry",action="store_true")
  p.add_argument("--unified-8054",action="store_true")
  a=p.parse_args()
@@ -31,8 +31,9 @@ def main():
   if not a.compiled_dex.read_bytes().startswith(b"dex\n"):
    raise ValueError("Bad Android classes17 DEX")
   if a.unified_8054:
-   if modified or a.projector_entry or a.version_code<35:
-    raise ValueError("Unified menu requires stock OEM DEX and versionCode 35 or later")
+   expected = {"classes13.dex"} if a.version_code >= 38 else set()
+   if modified != expected or a.projector_entry or a.version_code < 38:
+    raise ValueError("Integrated menu requires only the checked classes13 DEX change")
    manifest=patch_unified(src.read("AndroidManifest.xml"),a.version_code)
    actions=[]
   else:
