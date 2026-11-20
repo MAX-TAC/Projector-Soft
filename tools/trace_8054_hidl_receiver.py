@@ -341,7 +341,14 @@ def main():
             m2 = re.search(r"\bldr\s+pc,\s*\[ip,\s*#(\d+)\]!", plt_dump[k+2], re.I)
             if m1 and m2:
                 jump = int(m0.group(1),16)
-                got = jump+8+int(m0.group(2))+int(m1.group(1))+int(m2.group(1))
+                # ARM rotated immediates print as "#4, 20 @ 0x4000".
+                # The comment is the actual encoded constant, not 4.
+                def immediate(line, captured):
+                    effective = re.search(r"@\\s*(0x[0-9a-f]+)", line, re.I)
+                    return int(effective.group(1), 16) if effective else int(captured)
+                got = jump + 8 + immediate(plt_dump[k], m0.group(2)) + \
+                      immediate(plt_dump[k+1], m1.group(1)) + \
+                      immediate(plt_dump[k+2], m2.group(1))
                 if any(line.lower().startswith(f"{got:08x} ") for line in setter_relocs):
                     decoded_plts.append((jump,got))
         rows.append("- Backend setter PLT decoded: " +
