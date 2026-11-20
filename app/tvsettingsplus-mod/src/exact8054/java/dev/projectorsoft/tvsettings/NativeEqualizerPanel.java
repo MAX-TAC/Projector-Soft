@@ -78,9 +78,10 @@ final class NativeEqualizerPanel {
             return true;
         }
         boolean matches(String key, int value) {
-            if (MODE.equals(key)) return profileReady() && String.valueOf(value).equals(profile);
+            if (!profileReady()) return false;
+            if (MODE.equals(key)) return String.valueOf(value).equals(profile);
             int i = Arrays.asList(KEYS).indexOf(key);
-            return i >= 0 && bands.get(i).coherent() && bands.get(i).stored == value;
+            return "0".equals(profile) && i >= 0 && bands.get(i).coherent() && bands.get(i).stored == value;
         }
     }
 
