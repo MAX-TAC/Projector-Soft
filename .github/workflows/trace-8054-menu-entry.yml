@@ -2,7 +2,7 @@ name: Trace exact 8054 settings entry
 on:
   push:
     branches: [audit/8054-tvsettingsplus-20261117]
-    paths: ['tools/trace_8054_menu_entry.py', 'tools/trace_8054_remaining_controls.py', 'tools/trace_8054_stock_root.py', 'tools/trace_8054_stock_pq.py', 'tools/trace_8054_post_v39.py', '.github/workflows/trace-8054-menu-entry.yml']
+    paths: ['tools/trace_8054_menu_entry.py', 'tools/trace_8054_remaining_controls.py', 'tools/trace_8054_stock_root.py', 'tools/trace_8054_stock_pq.py', 'tools/trace_8054_post_v39.py', 'tools/trace_8054_picture_sound_editors.py', '.github/workflows/trace-8054-menu-entry.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -45,3 +45,5 @@ jobs:
           python3 tools/trace_8054_stock_pq.py /tmp/stock-ui /tmp/stock.apk "$AAPT"
       - name: Trace exact Bluetooth, Sources, CEC and projection
         run: python3 tools/trace_8054_post_v39.py /tmp/stock-ui
+      - name: Trace the stock picture and sound editor contracts
+        run: python3 tools/trace_8054_picture_sound_editors.py /tmp/stock-ui
