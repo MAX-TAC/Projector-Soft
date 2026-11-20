@@ -1,6 +1,6 @@
 # Exact-8054 MediaTek native/API audit
 
-**Status on 2026-11-20: exact owner firmware SHA-256 verified; native inventory and JNI exports CONFIRMED; NATIVE-004 JNI `setConfigValue_native` → `a_mtktvapi_config_set_value` **PROVEN_STATIC by ARM PLT/GOT (BLX 0x7ae90 → GOT 0x7dff8)**. HIDL service receiver, -1/3 semantics, runtime readback and hardware effect NOT VERIFIED.**
+**Status on 2026-11-20: exact owner firmware SHA-256 verified. NATIVE-004 proved JNI → C setter (BLX `0x7ae90` → GOT `0x7dff8`). NATIVE-005 found exact HIDL service ELF and proved a service `BLX 0x29e48` → PLT `0x43490` → imported RPC setter GOT `0x47fa0`. C-wrapper vtable → concrete HIDL handler → service callsite, `inputGroup=-1` / `isUpdate=3` semantics, device readback and physical effects remain UNVERIFIED.**
 
 ## Provenance — corrected
 
@@ -57,5 +57,6 @@ Earlier wording that the owner's **full original dump is unavailable** was incor
 - [logs/INDEX.md](logs/INDEX.md) — authoritative index and status.
 - [Initial action journal](logs/2026-11-20_INITIAL_NATIVE_AUDIT.md) — verified actions, commit/run links and failures.
 - [Prompt for a new chat](PROMPT_FOR_NEW_AGENT.md) — reusable onboarding instructions.
-- [TRACE_004](TRACE_004_CONFIG_JNI_TO_HIDL.md) · [machine evidence](generated/NATIVE_004_ELF_MACHINE_EVIDENCE_8054.md) · [NATIVE-004 action log](logs/2026-11-20_NATIVE-004.md) · [successful final workflow 44799645224](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44799645224). Next stage: NATIVE-005 concrete HIDL receiver and `inputGroup=-1` / `isUpdate=3` semantics.
+- [TRACE_004](TRACE_004_CONFIG_JNI_TO_HIDL.md) · [machine evidence](generated/NATIVE_004_ELF_MACHINE_EVIDENCE_8054.md) · [NATIVE-004 action log](logs/2026-11-20_NATIVE-004.md) · [successful run 44799645224](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44799645224).
+- [TRACE_005](TRACE_005_CONFIG_HIDL_SERVICE_RPC.md) · [HIDL service/RPC machine evidence](generated/NATIVE_005_HIDL_RECEIVER_EVIDENCE_8054.md) · [NATIVE-005 action log](logs/2026-11-20_NATIVE-005.md) · [successful final workflow 44804034895](https://github.com/MAX-TAC/Projector-Soft/actions/runs/44804034895). Next: NATIVE-005b concrete HIDL handler & RPC receiver, not unverified direct MOD writes.
 - Every new trace must include a dated `logs/YYYY-MM-DD_TASK-ID.md` with source hashes, tools, commands, positive/negative evidence, CI outcomes, commit and next blocker. Always update the INDEX and commit to the isolated research branch rather than only answering in chat.
