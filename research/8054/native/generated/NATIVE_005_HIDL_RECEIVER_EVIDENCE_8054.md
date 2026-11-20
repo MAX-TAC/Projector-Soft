@@ -670,6 +670,10 @@ Static pointers carry Thumb state in bit0; compare against exact ELF symbol valu
 | `vendor::mediatek::api::mtktvapi::V1_0::IMtkTvApiConfig` | `0x30a0dc` | `0x00000000` | `NO_EXACT_FUNCTION_MATCH` |
   - vtable slot `0x30a120` ELF relocation: NO_NAMED_RELOCATION_FOUND
 
+### Search full BpHw vtable object for the setter pointer
+
+- exact BpHw set function pointer `0x24ca29` in this vtable object: NOT_FOUND
+
 ## C3. Original HIDL service binary import and registration evidence
 
 - Exact service ELF SHA-256: `15360fa27a7039f57f6173cc28942d4458e9f4d0beeaa31620e71bc785f275f6`.
@@ -709,6 +713,25 @@ NO_MATCHING_EXPORTED_DEFINITION
 ```
 
 - Backend setter PLT decoded: NOT_FOUND
+- Setter R_ARM_JUMP_SLOT index in service: 300
+- Index-based candidate PLT = 0x421b0+32+16*300 = 0x43490; check actual jump-to-GOT below.
+
+```asm
+
+
+Disassembly of section .plt:
+
+00043490 <.plt+0x12e0>:
+   43490:	e28fc600 	add	ip, pc, #0, 12
+   43494:	e28cca04 	add	ip, ip, #4, 20	@ 0x4000
+   43498:	e5bcfb08 	ldr	pc, [ip, #2824]!	@ 0xb08
+   4349c:	d4d4d4d4 	ldrble	sp, [r4], #1236	@ 0x4d4
+```
+- Candidate service direct BL/BLX callsites into indexed PLT:
+
+```text
+29e42:	4628      	mov	r0, r5 | 29e44:	4632      	mov	r2, r6 | 29e46:	4643      	mov	r3, r8 | 29e48:	f019 eb22 	blx	43490  | 29e4c:	2100      	movs	r1, #0
+```
 ## C4. C-wrapper getService() exported helper and PLT indirection
 
 - Service getter: getMtkTvApiConfigService()
