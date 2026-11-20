@@ -93,7 +93,7 @@ final class NativeEqualizerPanel {
     private final boolean profileOptionsKnown;
     private final BandRow[] rows = new BandRow[KEYS.length];
     private boolean active, polling, ready, audioRegistered;
-    private Snapshot shown, previous;
+    private Snapshot shown, previous, pendingContext;
     private int attempt, equalReads;
     private String pendingKey, feedback;
     private int pendingValue;
@@ -178,12 +178,14 @@ final class NativeEqualizerPanel {
         active = false;
         polling = ready = false;
         pendingKey = null;
+        pendingContext = null;
         main.removeCallbacks(poll);
         try { resolver.unregisterContentObserver(observer); }
         catch (RuntimeException unavailable) { Log.w(TAG, "Sound observer teardown unavailable", unavailable); }
         if (audioRegistered) {
-            audio.unregisterAudioDeviceCallback(audioDevices);
             audioRegistered = false;
+            try { audio.unregisterAudioDeviceCallback(audioDevices); }
+            catch (RuntimeException unavailable) { Log.w(TAG, "Audio device callback teardown unavailable", unavailable); }
         }
     }
 
@@ -215,6 +217,13 @@ final class NativeEqualizerPanel {
         Snapshot current = read();
         equalReads = current != null && current.same(previous) ? equalReads + 1 : 0;
         previous = current;
+        if (pendingKey != null && current != null
+                && (!pendingContext.output.equals(current.output)
+                    || !MODE.equals(pendingKey) && !pendingContext.profile.equals(current.profile))) {
+            pendingKey = null;
+            pendingContext = null;
+            feedback = "Звуковой профиль или выход изменился. Применение не подтверждено";
+        }
         boolean applied = pendingKey == null || current != null && current.matches(pendingKey, pendingValue);
         boolean settled = attempt >= 3 && equalReads >= 2 && applied;
         if (!settled && attempt < DELAYS.length - 1) {
@@ -226,6 +235,7 @@ final class NativeEqualizerPanel {
         ready = settled;
         if (!applied) feedback = "Применение звука не подтверждено";
         pendingKey = null;
+        pendingContext = null;
         render(current, ready);
         if (feedback != null) {
             Toast.makeText(context, feedback, Toast.LENGTH_SHORT).show();
@@ -253,6 +263,7 @@ final class NativeEqualizerPanel {
             if (backend.write(key, requested)) {
                 pendingKey = key;
                 pendingValue = requested;
+                pendingContext = fresh;
             } else {
                 feedback = "Изменение звука отклонено";
             }

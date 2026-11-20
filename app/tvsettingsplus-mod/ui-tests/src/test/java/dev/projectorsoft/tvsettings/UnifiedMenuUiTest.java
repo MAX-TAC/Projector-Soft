@@ -485,6 +485,7 @@ public class UnifiedMenuUiTest {
         class Device implements NativeEqualizerPanel.Backend {
             String stored = "4", applied = "4";
             Integer band = 0, appliedBand = 0;
+            String output = "speakers";
             boolean missing;
             int writes;
 
@@ -492,7 +493,7 @@ public class UnifiedMenuUiTest {
                 java.util.List<NativeEqualizerPanel.Band> bands = new java.util.ArrayList<>();
                 for (int i = 0; i < 5; i++) bands.add(new NativeEqualizerPanel.Band(true,
                         i == 4 && missing ? null : band, appliedBand, 0, 100));
-                return new NativeEqualizerPanel.Snapshot(stored, applied, java.util.List.of("speakers"), bands);
+                return new NativeEqualizerPanel.Snapshot(stored, applied, java.util.List.of(output), bands);
             }
 
             @Override public boolean write(String key, int value) {
@@ -542,9 +543,18 @@ public class UnifiedMenuUiTest {
         assertTrue(first.isEnabled());
         assertEquals(25, first.getValue());
 
-        device.stored = device.applied = "4";
         assertFalse(first.callChangeListener(26));
-        assertEquals(2, device.writes);
+        assertEquals(3, device.writes);
+        device.output = "bluetooth";
+        device.appliedBand = 26;
+        shadowOf(Looper.getMainLooper()).idleFor(java.time.Duration.ofSeconds(2));
+        assertEquals(26, first.getValue());
+        assertEquals("Звуковой профиль или выход изменился. Применение не подтверждено",
+                org.robolectric.shadows.ShadowToast.getTextOfLatestToast());
+
+        device.stored = device.applied = "4";
+        assertFalse(first.callChangeListener(27));
+        assertEquals(3, device.writes);
         assertNull(screen.findPreference("projectorsoft_sound_refresh"));
         assertNull(screen.findPreference("projectorsoft_sound_original"));
         panel.stop();
