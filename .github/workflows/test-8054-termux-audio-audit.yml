@@ -53,7 +53,7 @@ jobs:
           unzip -p "$file" '*/15_chinese_sound_main.txt' | grep -q 'mCurrentFocus='
           echo 'PASS: all six manual screens captured, archive valid, no unsafe adb call'
           bash -n tools/collect_8054_factory_audio_termux.sh
-          printf 'Audio root\\nq\\n' | PATH="/tmp/audio-test-bin:$PATH" HOME=/tmp/audio-test-home bash tools/collect_8054_factory_audio_termux.sh
+          printf 'Audio root\nq\n' | PATH="/tmp/audio-test-bin:$PATH" HOME=/tmp/audio-test-home bash tools/collect_8054_factory_audio_termux.sh
           factory_zip="$(find /tmp/audio-test-home/storage/downloads -maxdepth 1 -name 'Projector_8054_FACTORY_AUDIO_*.zip' -print -quit)"
           test -n "$factory_zip"
           unzip -tq "$factory_zip"
