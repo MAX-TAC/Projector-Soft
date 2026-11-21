@@ -42,7 +42,7 @@ jobs:
           clone_pinned https://github.com/MAX-TAC/Everycom-Cinelux-Firmware.git \
             custom-v0-branding-debloat-ota-design-20261021 \
             4f936565b3b81e34d05beb0defbdd98481a32456 /tmp/firmware-base
-          git -C /tmp/firmware-base sparse-checkout set analysis custom-v0 ota tools README.md
+          git -C /tmp/firmware-base sparse-checkout set analysis custom-v0 ota tools
           cp -a /tmp/firmware-base/{analysis,custom-v0,tools} /tmp/external-ai-bundle/02_EVERYCOM_FIRMWARE/
           if test -d /tmp/firmware-base/ota; then cp -a /tmp/firmware-base/ota /tmp/external-ai-bundle/02_EVERYCOM_FIRMWARE/; fi
 
