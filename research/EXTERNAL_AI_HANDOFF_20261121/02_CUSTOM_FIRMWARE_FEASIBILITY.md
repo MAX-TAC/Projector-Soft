@@ -8,6 +8,25 @@
 
 **Полный ROM теперь технически более реалистичен, чем ранее оценивалось**. Запрет на саму возможность custom flashing был необоснованным. Однако **успешная загрузка конкретного custom image, наличие рабочего recovery и обратимость ошибок пока не проверены**. В частности, из user listing `C:\Users\a804483\Downloads\d11_bk` видно 24 partition images (493 879 296 bytes): `boot_a/b`, `mboot_a/b`, `dtbo_a/b`, `vbmeta_a/b`, `vbmeta_system_a/b`, `optee_a`, `tvconfig_a`, `factory_a_a/b`, `persist`, `eeprom_a`, `private`, `tvcertificate`, `project_id` и др. **В этом каталоге нет `super.img`, `tvservice_a/b`, `linux_rootfs_*`, `userdata`;** отдельный FlixTone backup release мог содержать `super.img`, но это должно быть сведено в единый конкретный рестор-пакет с SHA/slot/калибровками, а не молчаливо считаться полным. Не публиковать в открытом GitHub `private`, `tvcertificate`, `eeprom`, `factory`, `persist`, `project_id`.
 
+## 21.11.2026 — LP metadata slot 1 / Virtual A/B и ограничения shell
+
+**Новое аппаратное evidence, 22:32–22:33 local:** `lpdump --slot 1 /dev/block/by-name/super` успешно прочитан и **совпадает со slot 0**: metadata v10.2, 3 slots metadata (не boot slots), `virtual_ab_device`, все 4 logical A с прежними extents, logical `system_b/vendor_b/product_b/system_ext_b` **без extents**. Следовательно, сейчас обе LP metadata records не подтверждают готовую B system; `fastboot set_active b` **не использовать** для пробы.
+
+`ro.virtual_ab.enabled=true`, `ro.virtual_ab.userspace.snapshots.enabled=true`, `ro.virtual_ab.compression.enabled=true`. Пустое значение `init.svc.snapuserd` означает лишь, что это init property не предоставило состояния службы. Не делать вывод «snapuserd не установлен» или «OTA выключено». Android 13 Virtual A/B compression uses COW/userspace snapshot and merge ([AOSP](https://source.android.com/docs/core/ota/virtual_ab)).
+
+`bootctl get-current-slot` выдал `0`; следующие 4 команды `is-slot-bootable 0/1`, `is-slot-marked-successful 0/1` не дали видимого вывода. **Нельзя интерпретировать это как true/false** без проверки exit status отдельной командой и выявления Boot HAL behavior. По [AOSP bootctl source](https://android.googlesource.com/platform/system/extras/+/main/bootctl/bootctl.cpp) bool-check имеет значение return status; vendor build может отличаться. `dmctl list devices -v` и `dmctl table system-verity` оба возвращают `Failed to open device-mapper: Permission denied` с shell UID; это ожидаемое ограничение, **не** признак сломанной dm-verity. Не требовать root только ради чтения таблиц.
+
+**Следующая минимальная диагностика без изменения устройства:**
+```bat
+adb shell "bootctl hal-info; bootctl get-number-slots; bootctl get-active-boot-slot; bootctl get-snapshot-merge-status"
+adb shell "for n in 0 1; do echo SLOT=$n; bootctl is-slot-bootable $n; echo bootable_rc=$?; bootctl is-slot-marked-successful $n; echo successful_rc=$?; done"
+adb shell "getprop | grep -Ei 'virtual_ab|snapshot|snapuserd|slot_suffix|boot_completed' "
+adb shell "ls -l /dev/block/by-name | grep -E 'super|boot_[ab]|vbmeta_[ab]'"
+```
+**Предупреждение CMD shell quoting:** внутри команд в двойных кавычках переменные `$n`, `$?` раскрываются *на Android shell*, не cmd.exe. Код возврата 0 для bool в типичном AOSP означает true, ненулевой — false/ошибка, трактовать вместе со stderr. `get-active-boot-slot` может быть не поддержан vendor HAL: не ошибка пользовательского окружения. Не запускать state-changing `set-active`, `set-snapshot-merge-status`, `fastboot flash` и relock.
+
+**Статус:** `UNLOCKED_ORANGE_STOCK_BOOT_OK / VIRTUAL_AB_COMPRESSION_TRUE / LP_SLOT0_SLOT1_IDENTICAL / EMPTY_B_EXTENTS / B_BOOTCTL_STATUS_UNKNOWN / DMCTL_SHELL_DENIED`.
+
 ## 21.11.2026 — LP metadata /dm mounts: Virtual A/B, но B logical partitions пусты
 
 **Владелец получил реальный `lpdump --slot 0 /dev/block/by-name/super` на разблокированном, нормально загруженном Android 13 exact-8054.**
