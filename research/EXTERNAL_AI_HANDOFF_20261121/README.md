@@ -18,6 +18,10 @@
 | [`FINAL_FUNCTION_PARITY_8054.csv`](https://github.com/MAX-TAC/Projector-Soft/blob/audit/8054-tvsettingsplus-20261117/research/8054/FINAL_FUNCTION_PARITY_8054.csv) | Канонический полный реестр 96 функций в исходном проекте; в офлайн ZIP вложен отдельно |
 | [`USER_SETTINGS_MIGRATION_TRACKER.md`](https://github.com/MAX-TAC/Projector-Soft/blob/feature/8054-user-settings-migration-20261120/research/8054/USER_SETTINGS_MIGRATION_TRACKER.md) | Живой трекер перехода на пользовательские MOD обработчики; в офлайн ZIP вложен отдельно |
 
+## Критическое обновление 21.11.2026 — реальный 8054 FASTBOOT UNLOCK
+
+Владелец **успешно разблокировал** загрузчик реального 8054: `fastboot flashing unlock = OKAY`; `unlocked: no → yes`, `secure: yes → no`; активный слот `a`, два слота, MBOOT `01.01.260905`. Поэтому выводы ниже о **недоказанной возможности unlock** устарели; самостоятельный custom firmware теперь существенно реальнее. **Это ещё не доказанная загрузка собственного Android image и не гарантия безопасного восстановления.** Исправление зафиксировано в [02_CUSTOM_FIRMWARE_FEASIBILITY.md](02_CUSTOM_FIRMWARE_FEASIBILITY.md); не выдавать прежний блокер за факт. Данные в `evidence_manifest.json` относятся к исходному snapshot до этой дополнительной device observation.
+
 ## С чего начинать другому ИИ
 
 1. Прочитать **07_INDEPENDENT_AI_REVIEW_TASK.md** для корректной постановки задачи.
