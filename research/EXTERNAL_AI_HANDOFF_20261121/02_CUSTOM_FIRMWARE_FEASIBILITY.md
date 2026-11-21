@@ -8,6 +8,18 @@
 
 **Полный ROM теперь технически более реалистичен, чем ранее оценивалось**. Запрет на саму возможность custom flashing был необоснованным. Однако **успешная загрузка конкретного custom image, наличие рабочего recovery и обратимость ошибок пока не проверены**. В частности, из user listing `C:\Users\a804483\Downloads\d11_bk` видно 24 partition images (493 879 296 bytes): `boot_a/b`, `mboot_a/b`, `dtbo_a/b`, `vbmeta_a/b`, `vbmeta_system_a/b`, `optee_a`, `tvconfig_a`, `factory_a_a/b`, `persist`, `eeprom_a`, `private`, `tvcertificate`, `project_id` и др. **В этом каталоге нет `super.img`, `tvservice_a/b`, `linux_rootfs_*`, `userdata`;** отдельный FlixTone backup release мог содержать `super.img`, но это должно быть сведено в единый конкретный рестор-пакет с SHA/slot/калибровками, а не молчаливо считаться полным. Не публиковать в открытом GitHub `private`, `tvcertificate`, `eeprom`, `factory`, `persist`, `project_id`.
 
+## 21.11.2026 — локальный `super.img` реально имеется, 2 225 078 272 bytes, SHA256
+
+**Владелец подтвердил на Windows локальную резервную копию:** `C:\Users\a804483\Downloads\FlixTone_8054_Backup\super.img`, дата в dir 16.11.2026 17:38, точный размер **2 225 078 272 bytes**, что совпадает с physical super в `lpdump` и `fastboot getvar partition-size:super=0x84a00000`. `certutil -hashfile` показал `ac16996dddaa7c8f5e5429a0736f73d18a12df7dc6b58a4e89a475f5af0c5a02`. **Локальный файл не загружен в этот чат и его байты не проверялись моделью**. Совпадение размера — убедительный аргумент за RAW full super dump, но пока не проверены LP geometry/header, EROFS sig, CRC/metadata tables, независимая идентичность с текущей флеш-памятью и recovery.
+
+**Следующий безопасный тест — прочесть 4-байтовые сигнатуры в файле средствами Windows PowerShell, без изменения eMMC:**
+- offset 0: sparse `3A-FF-26-ED` или RAW (обычно не sparse)
+- offsets 4096/8192: LP geometry `67-44-6C-61` (`0x616c4467`, little endian)
+- offset 12288: LP metadata header `30-50-4C-41` (`0x414c5030`)
+- EROFS: sector start×512 +1024 from live lpdump: system `1049600`, vendor `857736192`, product `1120928768`, system_ext `1198523392` — expected `E2-E1-F5-E0` (`0xE0F5E1E2`). These offsets are exact only if backup's LP layout matches live `lpdump`; mismatch needs offline lpdump before concluding corrupted backup. [LP format](https://android.googlesource.com/platform/system/core/+/master/fs_mgr/liblp/include/liblp/metadata_format.h), [EROFS](https://erofs.docs.kernel.org/en/latest/ondisk/core_ondisk.html).
+
+**Corrected engineering statement:** AOSP permits flashing a factory `super.img` directly to physical super from bootloader fastboot when supported by device/flash utility, whereas individual `system_a/vendor_a/product_a/system_ext_a` logical partitions generally use fastbootd. Don't blindly assume `fastbootd` is the only restoration mechanism for a full physical super. [AOSP Implement dynamic partitions](https://source.android.com/docs/core/ota/dynamic_partitions/implement). Owner's bootloader `max-download-size=0x3df00000` is smaller than raw full-super, so transfer chunking/sparse support must be validated before a write. Do **not** flash or change active slot in this diagnostic phase.
+
 ## 21.11.2026, 22:24 — BOOT HAL 1.2, штатный Android A успешен, B bootable-but-not-successful
 
 Владелец на exact-8054 выполнил read-only:
