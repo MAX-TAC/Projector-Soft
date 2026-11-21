@@ -2,11 +2,13 @@ package dev.projectorsoft.tvsettings;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Gravity;
@@ -24,6 +26,7 @@ import androidx.preference.SwitchPreference;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.Objects;
 
 /** STOCK names and slider layout, with no PQ mutation or OEM reset callback. */
 final class NativePicturePanel {
@@ -54,6 +57,24 @@ final class NativePicturePanel {
     private boolean listening;
     private Dialog slider;
     private Map<String, Integer> sliderSnapshot;
+    private String sliderKey;
+    private ProgressBar sliderBar;
+    private TextView sliderValue;
+    private int sliderMin, sliderMax, requestedValue, confirmations;
+    private long confirmationDeadline;
+    private boolean waitingForBackend;
+    private final Handler confirmationHandler = new Handler(Looper.getMainLooper());
+    private final Runnable confirmStep = this::confirmSliderStep;
+
+    /** Allow an expected change of the edited scalar, but no other picture keys. */
+    static boolean otherKeysUnchanged(Map<String, Integer> before, Map<String, Integer> after, String edited) {
+        if (before == null || after == null || edited == null
+                || !before.keySet().equals(after.keySet())) return false;
+        for (String key : before.keySet()) {
+            if (!edited.equals(key) && !Objects.equals(before.get(key), after.get(key))) return false;
+        }
+        return true;
+    }
 
     NativePicturePanel(NativeSections.Page host, PreferenceScreen screen, Page page) {
         this(host, screen, page, key -> stockOptions(host.requireContext(), key));
@@ -128,7 +149,9 @@ final class NativePicturePanel {
 
     void refresh() {
         Map<String, Integer> snapshot = snapshot();
-        if (slider != null && !sliderSnapshot.equals(snapshot)) slider.dismiss();
+        if (slider != null && sliderSnapshot != null
+                && (!otherKeysUnchanged(sliderSnapshot, snapshot, sliderKey)
+                    || (!waitingForBackend && !sliderSnapshot.equals(snapshot)))) slider.dismiss();
         for (Map.Entry<String, Preference> item : rows.entrySet()) {
             String key = item.getKey();
             Preference row = item.getValue();
@@ -144,7 +167,7 @@ final class NativePicturePanel {
                 hdr.setSummary(!known ? "Состояние недоступно"
                         : (value == 1 ? "Включён" : "Выключен") + " · только просмотр");
             } else {
-                row.setSummary(value == null ? "Значение недоступно" : value + " · только просмотр");
+                row.setSummary(value == null ? "Значение недоступно" : value + " · тестовая регулировка");
                 row.setEnabled(value != null && "8054".equals(OemHdmiPortInfo.machineId()));
             }
         }
@@ -211,20 +234,31 @@ final class NativePicturePanel {
             bar.setMax(max);
             bar.setMin(min);
             bar.setProgress(actual);
-            name.setText(title + " · только просмотр");
+            name.setText(title + " · тестовый обработчик OEM");
             value.setText(String.valueOf(actual));
             Dialog dialog = new Dialog(host.requireActivity());
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.setContentView(layout);
             dialog.setCanceledOnTouchOutside(false);
-            dialog.setOnKeyListener((item, code, event) -> code == KeyEvent.KEYCODE_DPAD_LEFT
-                    || code == KeyEvent.KEYCODE_DPAD_RIGHT || code == KeyEvent.KEYCODE_DPAD_CENTER);
+            dialog.setOnKeyListener((item, code, event) -> {
+                if (code == KeyEvent.KEYCODE_DPAD_LEFT || code == KeyEvent.KEYCODE_DPAD_RIGHT) {
+                    if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0)
+                        applySliderStep(code == KeyEvent.KEYCODE_DPAD_RIGHT ? 1 : -1);
+                    return true;
+                }
+                return code == KeyEvent.KEYCODE_DPAD_CENTER;
+            });
             View menu = host.requireActivity().findViewById(android.R.id.content);
             int visible = menu.getVisibility();
             dialog.setOnDismissListener(item -> {
+                confirmationHandler.removeCallbacks(confirmStep);
                 menu.setVisibility(visible);
                 slider = null;
                 sliderSnapshot = null;
+                sliderKey = null;
+                sliderBar = null;
+                sliderValue = null;
+                waitingForBackend = false;
                 refresh();
             });
             Window window = dialog.getWindow();
@@ -235,6 +269,12 @@ final class NativePicturePanel {
             dialog.show();
             window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
             sliderSnapshot = before;
+            sliderKey = key;
+            sliderBar = bar;
+            sliderValue = value;
+            sliderMin = min;
+            sliderMax = max;
+            waitingForBackend = false;
             slider = dialog;
             menu.setVisibility(View.INVISIBLE);
         } catch (Exception | LinkageError unavailable) {
@@ -242,5 +282,95 @@ final class NativePicturePanel {
             if (slider != null) slider.dismiss();
             android.widget.Toast.makeText(context, "Просмотр недоступен", android.widget.Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /**
+     * Same system-provider route as the original OEM slider. This is an opt-in
+     * candidate for device testing, NOT evidence of hardware/profile correctness.
+     * No KuSettings Activity or Chinese UI controller is called.
+     */
+    private void applySliderStep(int direction) {
+        if (slider == null || sliderKey == null || waitingForBackend || direction == 0) return;
+        try {
+            if (!"8054".equals(OemHdmiPortInfo.machineId())) throw new IllegalStateException("Wrong board");
+            Map<String, Integer> before = snapshot();
+            if (before == null || !before.equals(sliderSnapshot))
+                throw new IllegalStateException("Picture context changed");
+            Integer original = before.get(sliderKey);
+            if (original == null || original < sliderMin || original > sliderMax
+                    || readMediaTekValue(sliderKey) != original)
+                throw new IllegalStateException("OEM/global values disagree");
+            // Candidate step of one, not yet calibrated against stock D-pad increment.
+            int desired = original + direction;
+            if (desired < sliderMin || desired > sliderMax) return;
+            if (!saveOriginal(before, original))
+                throw new IllegalStateException("Original value could not be saved");
+            if (!before.equals(snapshot())) throw new IllegalStateException("Context changed before write");
+            if (!Settings.Global.putInt(context.getContentResolver(), sliderKey, desired))
+                throw new IllegalStateException("Settings.Global rejected the value");
+            requestedValue = desired;
+            confirmations = 0;
+            waitingForBackend = true;
+            confirmationDeadline = SystemClock.uptimeMillis() + 5000;
+            confirmationHandler.postDelayed(confirmStep, 250);
+        } catch (Exception | LinkageError failure) {
+            Log.w(TAG, "Picture edit refused for " + sliderKey, failure);
+            stopUnconfirmed("Изменение не выполнено или контекст изменился");
+        }
+    }
+
+    private int readMediaTekValue(String key) throws Exception {
+        Class<?> type = Class.forName(CONFIG);
+        Object config = type.getMethod("getInstance", Context.class).invoke(null, context);
+        return (Integer) type.getMethod("getConfigValueInt", String.class)
+                .invoke(config, SLIDER_CONFIG.get(key));
+    }
+
+    private boolean saveOriginal(Map<String, Integer> before, int original) {
+        Integer mode = before.get(PicturePanelState.MODE);
+        Integer temp = before.get(PicturePanelState.TEMPERATURE);
+        Integer hdr = before.get(PicturePanelState.HDR);
+        if (mode == null || temp == null || hdr == null) return false;
+        // Audit record only: active HDMI is not authenticated; never auto-restore.
+        String recordKey = sliderKey + "/mode=" + mode + "/temp=" + temp + "/hdr=" + hdr;
+        SharedPreferences journal = context.getSharedPreferences(
+                "projectorsoft_picture_candidate_originals", Context.MODE_PRIVATE);
+        return journal.contains(recordKey)
+                || journal.edit().putInt(recordKey, original).commit();
+    }
+
+    private void confirmSliderStep() {
+        if (slider == null || !waitingForBackend || sliderKey == null) return;
+        try {
+            Map<String, Integer> now = snapshot();
+            if (!otherKeysUnchanged(sliderSnapshot, now, sliderKey))
+                throw new IllegalStateException("Picture context changed");
+            boolean confirmed = Objects.equals(now.get(sliderKey), requestedValue)
+                    && readMediaTekValue(sliderKey) == requestedValue;
+            confirmations = confirmed ? confirmations + 1 : 0;
+            if (confirmations >= 2) {
+                waitingForBackend = false;
+                sliderSnapshot = now;
+                sliderBar.setProgress(requestedValue);
+                sliderValue.setText(String.valueOf(requestedValue));
+                refresh();
+                return;
+            }
+            if (SystemClock.uptimeMillis() >= confirmationDeadline) {
+                stopUnconfirmed("Не подтверждено службой MediaTek; проверьте значение в штатном меню");
+                return;
+            }
+            confirmationHandler.postDelayed(confirmStep, 250);
+        } catch (Exception | LinkageError failure) {
+            Log.w(TAG, "Picture readback failed for " + sliderKey, failure);
+            stopUnconfirmed("Не удалось подтвердить значение; проверьте штатные настройки");
+        }
+    }
+
+    private void stopUnconfirmed(String message) {
+        confirmationHandler.removeCallbacks(confirmStep);
+        waitingForBackend = false;
+        android.widget.Toast.makeText(context, message, android.widget.Toast.LENGTH_LONG).show();
+        if (slider != null) slider.dismiss();
     }
 }
