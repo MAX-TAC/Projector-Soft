@@ -56,6 +56,13 @@ public class UnifiedMenuUiTest {
                 StockMainSettingsMenu.target(main, NativePage.NETWORK).getClassName());
         assertEquals("com.android.tv.settings.device.apps.AppsActivity",
                 StockMainSettingsMenu.target(main, NativePage.APPS).getClassName());
+        // The owner's live ADB confirms this exact stock Android TV component.
+        ComponentName picture = StockMainSettingsMenu.target(main, NativePage.PICTURE);
+        assertEquals("com.android.tv.settings", picture.getPackageName());
+        assertEquals("com.android.tv.settings.partnercustomizer.picture.PictureActivity",
+                picture.getClassName());
+        assertNotEquals(PictureSettingsActivity.class.getName(), picture.getClassName());
+        assertFalse(picture.getClassName().startsWith("com.my.settings"));
         assertNotNull(screen.findPreference("take_bug_report"));
         assertNotNull(screen.findPreference("channel"));
         assertFalse(screen.findPreference("general_settings").isVisible());
