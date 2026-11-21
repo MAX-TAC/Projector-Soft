@@ -87,6 +87,12 @@ public final class StockMainSettingsMenu {
             return new ComponentName(PACKAGE, PACKAGE + ".connectivity.NetworkActivity");
         if (page == NativePage.APPS)
             return new ComponentName(PACKAGE, PACKAGE + ".device.apps.AppsActivity");
+        // Verified on the owner's exact-8054 projector: Android TV's OEM
+        // PictureActivity already edits PQ and opens the original lower sliders.
+        // This is owned by com.android.tv.settings, NOT Chinese KuSettings.
+        // Do not substitute NativePicturePanel's experimental write path here.
+        if (page == NativePage.PICTURE)
+            return new ComponentName(PACKAGE, PACKAGE + ".partnercustomizer.picture.PictureActivity");
         return new ComponentName(context, page.activity);
     }
 
