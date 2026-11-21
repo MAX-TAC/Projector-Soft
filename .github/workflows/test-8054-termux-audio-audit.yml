@@ -1,0 +1,53 @@
+name: Test 8054 full-audio read-only Termux ADB collector
+on:
+  push:
+    paths:
+      - 'tools/collect_8054_audio_termux.sh'
+      - '.github/workflows/test-8054-termux-audio-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  mock-readonly-audio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bash syntax and read-only ADB mock test
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash -n tools/collect_8054_audio_termux.sh
+          mkdir -p /tmp/audio-test-home/storage/downloads /tmp/audio-test-bin
+          cat > /tmp/audio-test-bin/adb <<'ADB_STUB'
+          #!/usr/bin/env bash
+          set -euo pipefail
+          if [ "$1" = get-state ]; then
+            echo device
+          elif [ "$1" = shell ]; then
+            command="$2"
+            # Only a single read-only composite shell script is allowed.
+            if grep -Eq '(^|[; ])(settings[[:space:]]+put|am[[:space:]]+start|pm[[:space:]]+disable|reboot|su[[:space:]]|dd[[:space:]]+)' <<< "$command"; then
+              echo "UNSAFE command unexpectedly requested: $command" >&2; exit 9
+            fi
+            if [[ "$command" == *"CURRENT ACTIVITY"* ]]; then
+              echo 'mCurrentFocus=Window{mock u0 com.android.tv.settings/com.android.tv.settings.partnercustomizer.sound.SoundActivity}'
+              echo 'sound_style=0'
+              echo 'sound_equalizer_detail_120hz=50'
+            else
+              echo 'Read-only ADB mock response'
+            fi
+          else
+            echo "Unexpected ADB command: $*" >&2
+            exit 9
+          fi
+          ADB_STUB
+          chmod +x /tmp/audio-test-bin/adb
+          printf '\n\n\n\n\n\n' | PATH="/tmp/audio-test-bin:$PATH" HOME=/tmp/audio-test-home bash tools/collect_8054_audio_termux.sh
+          file="$(find /tmp/audio-test-home/storage/downloads -maxdepth 1 -name 'Projector_8054_AUDIO_*.zip' -print -quit)"
+          test -n "$file"
+          unzip -tq "$file"
+          test "$(unzip -Z1 "$file" | grep -Ec '/1[0-6]_.*\.txt$')" -eq 7
+          unzip -p "$file" '*/10_android_sound_main.txt' | grep -q 'sound_style=0'
+          unzip -p "$file" '*/15_chinese_sound_main.txt' | grep -q 'mCurrentFocus='
+          echo 'PASS: all six manual screens captured, archive valid, no unsafe adb call'
