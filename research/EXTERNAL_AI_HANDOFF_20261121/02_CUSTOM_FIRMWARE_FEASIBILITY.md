@@ -8,6 +8,29 @@
 
 **Полный ROM теперь технически более реалистичен, чем ранее оценивалось**. Запрет на саму возможность custom flashing был необоснованным. Однако **успешная загрузка конкретного custom image, наличие рабочего recovery и обратимость ошибок пока не проверены**. В частности, из user listing `C:\Users\a804483\Downloads\d11_bk` видно 24 partition images (493 879 296 bytes): `boot_a/b`, `mboot_a/b`, `dtbo_a/b`, `vbmeta_a/b`, `vbmeta_system_a/b`, `optee_a`, `tvconfig_a`, `factory_a_a/b`, `persist`, `eeprom_a`, `private`, `tvcertificate`, `project_id` и др. **В этом каталоге нет `super.img`, `tvservice_a/b`, `linux_rootfs_*`, `userdata`;** отдельный FlixTone backup release мог содержать `super.img`, но это должно быть сведено в единый конкретный рестор-пакет с SHA/slot/калибровками, а не молчаливо считаться полным. Не публиковать в открытом GitHub `private`, `tvcertificate`, `eeprom`, `factory`, `persist`, `project_id`.
 
+## 21.11.2026, 22:24 — BOOT HAL 1.2, штатный Android A успешен, B bootable-but-not-successful
+
+Владелец на exact-8054 выполнил read-only:
+- `bootctl hal-info`: `android.hardware.boot@1.2::IBootControl`
+- `bootctl get-number-slots=2`, `bootctl get-active-boot-slot=0` (A)
+- `bootctl get-snapshot-merge-status=none`
+- `bootctl is-slot-bootable 0` → `rc=0`; `is-slot-marked-successful 0` → `rc=0`
+- `bootctl is-slot-bootable 1` → `rc=0`; `is-slot-marked-successful 1` → `rc=70`
+- `ro.virtual_ab.enabled=true`, `ro.virtual_ab.compression.enabled=true`, `ro.virtual_ab.userspace.snapshots.enabled=true`, `ro.virtual_ab.io_uring.enabled=true`, `sys.boot_completed=1`, `vendor.mtk.boot_completed=1`. `init.svc.apexd-snapshotde=stopped` нормален сам по себе.
+- `dmctl list devices -v` и `dmctl table system-verity` shell UID → Permission denied; не повторять без необходимости.
+
+**Семантика exit 70 проверена по оригинальному AOSP `bootctl.cpp`:** `handle_return(Return<BoolResult>)` возвращает `EX_OK` лишь при `BoolResult::TRUE`, а `EX_SOFTWARE` (70) при `FALSE` или `INVALID_SLOT` либо IPC-ошибке. Для **валидного B (slot 1 при numberSlots=2) и без stderr** `rc=70` практически означает `isSlotMarkedSuccessful(B)=FALSE`; в сочетании с `isSlotBootable(B)=TRUE` нельзя утверждать, что B реально содержит полный Android. [AOSP bootctl.cpp](https://android.googlesource.com/platform/system/extras/+/d0655ccfbe939988f6ca32c508d9576cc7df4ee7/bootctl/bootctl.cpp#134), [Virtual A/B](https://source.android.com/docs/core/ota/virtual_ab).
+
+**Проверенные статусы:** `A: bootable=true/successful=true/running`; `B: bootable=true/successful=false/no LP system_b extents in either LP metadata slot`. `Merge status=none` означает Boot HAL не сообщает текущий merge; это не тест вручную установленных images. Слот B нельзя использовать как безопасный fallback через set_active.
+
+**Следующий этап — не новая серия повторных диагностик, а проверка доступности restore material:**
+1. Сверить полный локальный набор original exact-8054 образов и их SHA256. В пользовательском `C:\Users\a804483\Downloads\d11_bk` 24 images суммарно 493 879 296 B, без `super.img`, `tvservice_b` и некоторых других. В repository release `MAX-TAC/FlixTone_8054_Backup` известен архив `FlixTone_8054_Backup.zip` размером 2 011 878 129 B; **состав должен быть проверен**, архив не равен автоматически полноценной emergency restore.
+2. Получить **реальный** `super.img` того же exact build и желательно обе физические boot/vbmeta images + проверенный live recovery path; хранить private/cert/calibration backups локально, не публиковать.
+3. Только потом решать, какие LP images, EROFS, VBMeta/AVB и SELinux пересобирать, и способен ли bootloader/fastbootd принимать images.
+4. Никакого `set_active b`, `fastboot flashing lock`, `flash/erase`, заводского reset, отключения verity до выполнения restore prerequisites.
+
+**Статус:** `OWNER_BOOTCTL_HAL_1_2_VERIFIED / A_SUCCESSFUL / B_BOOTABLE_NOT_SUCCESSFUL / NO_MERGE / FULL_RECOVERY_NOT_VERIFIED`.
+
 ## 21.11.2026 — LP metadata slot 1 / Virtual A/B и ограничения shell
 
 **Новое аппаратное evidence, 22:32–22:33 local:** `lpdump --slot 1 /dev/block/by-name/super` успешно прочитан и **совпадает со slot 0**: metadata v10.2, 3 slots metadata (не boot slots), `virtual_ab_device`, все 4 logical A с прежними extents, logical `system_b/vendor_b/product_b/system_ext_b` **без extents**. Следовательно, сейчас обе LP metadata records не подтверждают готовую B system; `fastboot set_active b` **не использовать** для пробы.
