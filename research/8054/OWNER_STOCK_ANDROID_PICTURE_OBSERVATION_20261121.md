@@ -38,7 +38,7 @@ com.android.tv.settings.partnercustomizer.picture.PictureActivity
 
 Этот **конкретный штатный Picture call chain НЕ обращается к `com.my.settings.SettingActivity`, не вызывает `com.my.settings` контроллер и не требует запуска китайской GUI Activity**. Другое меню видит изменения, поскольку provider/backend общие. Original `PictureFragment` обладает собственным lower `ProgressDialogPreference` и обработчиками, которые **уже физически работают** на устройстве при установленном KuSettings.
 
-Кодовые указатели: [PICTURE_BLOCK_STATUS_8054.md](PICTURE_BLOCK_STATUS_8054.md), [PRODUCT-001 contract](native/PRODUCT_001_PIC04_INTEGRATION_CONTRACT.md), [TRACE_001](native/TRACE_001_PICTURE_CONTRAST.md). Native research documents находятся в независимой ветке research PR #3 (не в этой ветке PR #5).
+Кодовые указатели: [PICTURE_BLOCK_STATUS_8054.md](PICTURE_BLOCK_STATUS_8054.md), [PRODUCT-001 contract](https://github.com/MAX-TAC/Projector-Soft/blob/research/8054-mediatek-native-api-20261120/research/8054/native/PRODUCT_001_PIC04_INTEGRATION_CONTRACT.md), [TRACE_001](https://github.com/MAX-TAC/Projector-Soft/blob/research/8054-mediatek-native-api-20261120/research/8054/native/TRACE_001_PICTURE_CONTRAST.md). Native research documents находятся в независимой ветке research PR #3 (не в этой ветке PR #5).
 
 ## 3. Рекомендованное изменение реализации
 
