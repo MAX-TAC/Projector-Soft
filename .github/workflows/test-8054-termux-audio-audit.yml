@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - 'tools/collect_8054_audio_termux.sh'
+      - 'tools/collect_8054_factory_audio_termux.sh'
       - '.github/workflows/test-8054-termux-audio-audit.yml'
   workflow_dispatch:
 permissions:
@@ -51,3 +52,11 @@ jobs:
           unzip -p "$file" '*/10_android_sound_main.txt' | grep -q 'sound_style=0'
           unzip -p "$file" '*/15_chinese_sound_main.txt' | grep -q 'mCurrentFocus='
           echo 'PASS: all six manual screens captured, archive valid, no unsafe adb call'
+          bash -n tools/collect_8054_factory_audio_termux.sh
+          printf 'Audio root\\nq\\n' | PATH="/tmp/audio-test-bin:$PATH" HOME=/tmp/audio-test-home bash tools/collect_8054_factory_audio_termux.sh
+          factory_zip="$(find /tmp/audio-test-home/storage/downloads -maxdepth 1 -name 'Projector_8054_FACTORY_AUDIO_*.zip' -print -quit)"
+          test -n "$factory_zip"
+          unzip -tq "$factory_zip"
+          unzip -Z1 "$factory_zip" | grep -q '/01_focus.txt'
+          unzip -Z1 "$factory_zip" | grep -q '/01_audio_keys.txt'
+          echo 'PASS: factory audio menu inventory safely captures read-only activity/keys with screenshot failure fallback'
