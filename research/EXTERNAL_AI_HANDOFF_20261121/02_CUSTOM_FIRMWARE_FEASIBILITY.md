@@ -8,6 +8,31 @@
 
 **Полный ROM теперь технически более реалистичен, чем ранее оценивалось**. Запрет на саму возможность custom flashing был необоснованным. Однако **успешная загрузка конкретного custom image, наличие рабочего recovery и обратимость ошибок пока не проверены**. В частности, из user listing `C:\Users\a804483\Downloads\d11_bk` видно 24 partition images (493 879 296 bytes): `boot_a/b`, `mboot_a/b`, `dtbo_a/b`, `vbmeta_a/b`, `vbmeta_system_a/b`, `optee_a`, `tvconfig_a`, `factory_a_a/b`, `persist`, `eeprom_a`, `private`, `tvcertificate`, `project_id` и др. **В этом каталоге нет `super.img`, `tvservice_a/b`, `linux_rootfs_*`, `userdata`;** отдельный FlixTone backup release мог содержать `super.img`, но это должно быть сведено в единый конкретный рестор-пакет с SHA/slot/калибровками, а не молчаливо считаться полным. Не публиковать в открытом GitHub `private`, `tvcertificate`, `eeprom`, `factory`, `persist`, `project_id`.
 
+## 21.11.2026 — LP metadata /dm mounts: Virtual A/B, но B logical partitions пусты
+
+**Владелец получил реальный `lpdump --slot 0 /dev/block/by-name/super` на разблокированном, нормально загруженном Android 13 exact-8054.**
+
+- LP metadata `10.2`, metadata slot count `3` (**не** три загрузочных слота), header flag `virtual_ab_device`; physical `super` size **2 225 078 272 B**.
+- `group_oem_a` и `group_oem_b`: каждый max **2 220 883 968 B** (не могут быть одновременно заполнены до максимума).
+- Реальные extents только у A: `system_a` 1 671 432×512=**855 773 184 B** (816,13 MiB); `vendor_a` 513 016×512=**262 664 192 B** (250,50 MiB); `product_a` 150 696×512=**77 156 352 B** (73,58 MiB); `system_ext_a` 170 496×512=**87 293 952 B** (83,25 MiB).
+- Сумма A extents **1 282 887 680 B** (1 223,46 MiB). Простая разница `super−used` **942 190 592 B** (~898,54 MiB), **не** гарантированное свободное пространство для добавления — есть зарезервированные blocks/выравнивание/LP metadata. Предел `group_oem_a−used` **937 996 288 B** (~894,54 MiB).
+- `system_b`, `vendor_b`, `product_b`, `system_ext_b` перечислены, но **не имеют extents** в LP metadata slot 0. Для Virtual A/B это штатная возможность ([AOSP overview](https://source.android.com/docs/core/ota/virtual_ab)). **Не полагаться на B как на заведомо рабочий fallback**; физические `boot_b` и `vbmeta_b` не обеспечивают полноценный Android B.
+- Реальные mount points: `/dev/block/dm-4 /` (EROFS RO, System-as-root); `dm-5 /vendor` (EROFS RO), `dm-6 /product` (EROFS RO), `dm-7 /system_ext` (EROFS RO). Отдельно `dm-9 /mnt/vendor/tvservice` (ext4 RO), `dm-10 /mnt/vendor/factory` (ext4 RO), `dm-11 /mnt/vendor/linux_rootfs` (squashfs RO), `dm-12 /mnt/vendor/3rd` (squashfs RO), `dm-13 /mnt/vendor/bootdata` (ext4 RO); `dm-8 /data` F2FS RW.
+- `/sys/block/dm-*/dm/name`: `dm-0..3` — `system_a/vendor_a/product_a/system_ext_a`, `dm-4..7` — соответствующие `*-verity`, `dm-9..13` — OEM отдельные `*-verity`. Такая схема показывает **активную runtime integrity mapping**: UNLOCKED/ORANGE не выключил слой проверки автоматически.
+- `lpdump --slot 1` **ещё не проведён**, как и проверка `bootctl is-slot-bootable 1`/`is-slot-marked-successful 1` или snapshot merge state. Нельзя объявлять B usable/unusable только по slot 0, но slot 0 уже показывает, что physical Android B в текущем состоянии не гарантирован.
+
+**Следующий безопасный read-only пакет:**
+```bat
+adb shell "lpdump --slot 1 /dev/block/by-name/super 2>&1"
+adb shell "getprop ro.virtual_ab.enabled; getprop ro.virtual_ab.userspace.snapshots.enabled; getprop ro.virtual_ab.compression.enabled; getprop init.svc.snapuserd"
+adb shell "command -v bootctl; bootctl get-current-slot; bootctl is-slot-bootable 0; bootctl is-slot-bootable 1; bootctl is-slot-marked-successful 0; bootctl is-slot-marked-successful 1"
+adb shell "dmctl list devices -v 2>&1"
+adb shell "dmctl table system-verity 2>&1"
+```
+**Никаких `bootctl set-active-boot-slot`, `fastboot set_active`, `fastboot flash`, `fastboot flashing lock` до доказанного full recovery.** Актуальный каталог local `d11_bk` содержит лишь 24 отдельных backup image, **не** `super.img` — наличие старой 8054 backup ZIP в отдельном release не доказывает, что она соответствует текущим блокам после unlock. Не публиковать личные калибровки, `tvcertificate`, `private`, `persist`, `eeprom`.
+
+**Вывод по проекту:** для **самой пользовательской программы TvSettingsPlus** минимально рискованна подписанная APK-подмена в сохранённой OEM привилегированной системе, а не пересборка всего `super`. Цель полноценного custom firmware теперь обоснованна, но для изменения системного EROFS слоя потребуются корректные image build + LP метаданные + SELinux + AVB / dm-verity и проверяемый откат. [AOSP Dynamic partitions](https://source.android.com/docs/core/ota/dynamic_partitions/implement), [Virtual A/B](https://source.android.com/docs/core/ota/virtual_ab), [fastbootd](https://source.android.com/docs/core/architecture/bootloader/fastbootd).
+
 ## 21.11.2026 — аппаратно подтверждены AVB enforcing + dynamic partition/EROFS после unlock
 
 **Данные из второго read-only ADB обхода после успешного загрузочного теста:**
