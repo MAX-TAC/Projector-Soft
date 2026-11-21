@@ -44,7 +44,8 @@ Review the ZIP before uploading: audio outputs may reveal device names.
 TXT
 
 capture() {
-    local name="$1" command="$2" target="$WORK/$REPORT/$name"
+    local name="$1" command="$2"
+    local target="$WORK/$REPORT/$name"
     echo "Capturing: $name"
     if ! "${ADB[@]}" shell "$command" > "$target" 2>&1; then
         printf '\n[ADB command returned an error; partial output may follow]\n' >> "$target"
