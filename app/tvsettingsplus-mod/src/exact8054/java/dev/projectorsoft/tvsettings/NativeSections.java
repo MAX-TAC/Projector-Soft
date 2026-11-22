@@ -4,6 +4,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -64,10 +66,13 @@ public final class NativeSections {
             Context context=requireContext();
             guarded(key,()->{
                 Intent intent=route.resolve();
-                if(intent==null || !CheckedPreferenceLaunch.accessible(context,intent.getComponent()))return;
+                boolean available = intent != null
+                        && CheckedPreferenceLaunch.accessible(context,intent.getComponent());
                 Preference row=new Preference(context);
                 row.setTitle(label);
                 row.setKey(key);
+                row.setEnabled(available);
+                if (!available) row.setSummary("Недоступно в этой версии прошивки");
                 row.setOnPreferenceClickListener(item->{
                     if(!CheckedPreferenceLaunch.open(context,route))
                         android.widget.Toast.makeText(context,"Экран недоступен",android.widget.Toast.LENGTH_SHORT).show();
@@ -308,12 +313,34 @@ public final class NativeSections {
     }
 
     public static final class System extends Page {
+        private final Handler cpuHandler = new Handler(Looper.getMainLooper());
+        private final Runnable cpuTick = new Runnable() {
+            @Override public void run() {
+                if (!isAdded()) return;
+                Preference cpu = findPreference("projectorsoft_cpu_live");
+                if (cpu != null) {
+                    cpu.setSummary(OemCpuTemperature.read(requireContext()));
+                    cpuHandler.postDelayed(this, 2000);
+                }
+            }
+        };
         @Override NativePage section(){return NativePage.SYSTEM;}
         @Override void populate(PreferenceScreen screen){
             Context context = requireContext();
-            link(screen, NativePage.ABOUT, 0);
+            // Restore the complete ORIGINAL OEM About UI rather than a second
+            // read-only facsimile of its controls.
+            stock(screen,"about_stock","Об устройстве","about.AboutActivity");
+            Preference cpu = new Preference(context);
+            cpu.setKey("projectorsoft_cpu_live");
+            cpu.setTitle("Температура CPU");
+            cpu.setSummary(OemCpuTemperature.read(context));
+            cpu.setSelectable(false);
+            cpu.setOrder(1);
+            screen.addPreference(cpu);
+            stock(screen,"device_name","Имя устройства","name.DeviceNameSettingsActivity");
             stock(screen,"time","Дата и время","system.DateTimeActivity");
             stock(screen,"language","Язык и ввод","system.LanguageActivity");
+            stock(screen,"location","Местоположение","system.LocationActivity");
             stock(screen,"accounts","Учётные записи","accounts.AccountsActivity");
             stock(screen,"storage","Хранилище","device.StorageResetActivity");
             link(screen, NativePage.POWER, 20);
@@ -322,6 +349,15 @@ public final class NativeSections {
             stock(screen,"accessibility","Специальные возможности","oemlink.AccessibilitySettingsActivity");
             stock(screen,"developer","Для разработчиков","system.development.DevelopmentActivity");
             OemFontScaleHook.install(context,screen,Preference.class);
+        }
+        @Override public void onResume() {
+            super.onResume();
+            cpuHandler.removeCallbacks(cpuTick);
+            cpuHandler.post(cpuTick);
+        }
+        @Override public void onStop() {
+            cpuHandler.removeCallbacks(cpuTick);
+            super.onStop();
         }
     }
 
