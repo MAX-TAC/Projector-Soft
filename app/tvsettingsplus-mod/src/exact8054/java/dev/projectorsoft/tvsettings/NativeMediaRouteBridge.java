@@ -210,8 +210,10 @@ final class NativeMediaRouteBridge {
         requirePermission();
         if (original == null) throw new IllegalArgumentException("Original preference not captured");
         if (original.isEmpty()) {
-            boolean ok = Boolean.TRUE.equals(removePreferred.invoke(audio, mediaStrategy));
-            return ok && preferred().isEmpty();
+            // Removing an already cleared preference can return false on some builds.
+            if (preferred().isEmpty()) return true;
+            removePreferred.invoke(audio, mediaStrategy);
+            return preferred().isEmpty();
         }
         for (Object item : original)
             if (!deviceAttributesClass.isInstance(item)) return false;
