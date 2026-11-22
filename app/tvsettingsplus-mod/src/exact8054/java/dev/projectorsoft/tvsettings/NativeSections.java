@@ -123,7 +123,7 @@ public final class NativeSections {
                 default: return;
             }
             int resource = requireContext().getResources().getIdentifier(drawable, "drawable", OWN);
-            if (resource != 0) row.setIcon(resource);
+            row.setIcon(resource != 0 ? resource : android.R.drawable.ic_menu_preferences);
         }
     }
 
