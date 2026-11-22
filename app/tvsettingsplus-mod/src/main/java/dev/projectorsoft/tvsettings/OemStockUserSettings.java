@@ -14,7 +14,7 @@ final class OemStockUserSettings {
     private OemStockUserSettings() {}
 
     static boolean installAudioOutput(Context context,Object group,Class<?> pref) {
-        return installActivity(context,group,pref,"AUDIO_OUTPUT","projectorsoft_audio_output","Аудиовыход",246);
+        return installActivity(context,group,pref,"AUDIO_OUTPUT","projectorsoft_audio_output","Цифровой выход (SPDIF)",246);
     }
 
     static void installPictureFormat(Context context,Object group,Class<?> pref) {
