@@ -179,6 +179,12 @@ final class NativePicturePanel {
         rows.put(key, row);
     }
 
+    /** Same bounded bottom-dialog geometry for User PQ and User RGB. */
+    static int compactSliderWidth(int displayWidth, int bottomInsetPx) {
+        return Math.max(1, Math.min(displayWidth - 2 * bottomInsetPx,
+                Math.round(displayWidth * 0.66f)));
+    }
+
     private static Preference stockSliderRow(Context context) {
         // The original ProgressDialogPreference has its *own* onClick which can
         // intercept our custom popup. Use a plain preference with the exact
@@ -434,9 +440,7 @@ final class NativePicturePanel {
                     .getDisplayMetrics().widthPixels;
             int dp = Math.round(host.requireActivity().getResources()
                     .getDisplayMetrics().density * 28f);
-            int compactWidth = Math.min(displayWidth - 2 * dp,
-                    Math.round(displayWidth * 0.66f));
-            compactWidth = Math.max(1, compactWidth);
+            int compactWidth = compactSliderWidth(displayWidth, dp);
             window.setLayout(compactWidth, WindowManager.LayoutParams.WRAP_CONTENT);
             WindowManager.LayoutParams params = window.getAttributes();
             params.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
