@@ -258,6 +258,10 @@ public final class NativeSections {
             if (getPreferenceScreen() != null)
                 NativeAudioOutputReadout.refresh(requireContext(), getPreferenceScreen());
         }
+        @Override public void onStop() {
+            NativeMediaRoutePicker.cancelOnStop();
+            super.onStop();
+        }
     }
 
     public static final class Equalizer extends Page {
