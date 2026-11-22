@@ -46,8 +46,6 @@ final class NativeMediaRoutePicker {
             }
             new AlertDialog.Builder(context)
                     .setTitle("Устройство вывода звука")
-                    .setMessage("Выберите подключённый выход. Для теста изменение "
-                            + "будет автоматически отменено, если не подтвердить звук.")
                     .setItems(entries.toArray(new CharSequence[0]), (dialog, which) -> {
                         NativeMediaRouteBridge.Output target =
                                 which == 0 ? null : outputs.get(which - 1);
