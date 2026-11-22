@@ -65,9 +65,14 @@ public final class NativeSections {
         protected void action(PreferenceGroup group,String key,String label,CheckedPreferenceLaunch.Route route){
             Context context=requireContext();
             guarded(key,()->{
-                Intent intent=route.resolve();
-                boolean available = intent != null
-                        && CheckedPreferenceLaunch.accessible(context,intent.getComponent());
+                boolean available = false;
+                try {
+                    Intent intent=route.resolve();
+                    available = intent != null
+                            && CheckedPreferenceLaunch.accessible(context,intent.getComponent());
+                } catch (Exception | LinkageError missing) {
+                    android.util.Log.d("TvSettingsPlusMOD", "Stock shortcut unavailable: " + key, missing);
+                }
                 Preference row=new Preference(context);
                 row.setTitle(label);
                 row.setKey(key);
