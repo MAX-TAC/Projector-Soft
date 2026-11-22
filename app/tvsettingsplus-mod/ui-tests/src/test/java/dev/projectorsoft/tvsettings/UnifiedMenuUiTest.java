@@ -74,7 +74,10 @@ public class UnifiedMenuUiTest {
         NativeSections.System system = (NativeSections.System)
                 activity.getSupportFragmentManager().findFragmentById(android.R.id.content);
         PreferenceScreen screen = system.getPreferenceScreen();
-        assertNotNull(screen.findPreference("about_stock"));
+        Preference about = screen.findPreference("about_stock");
+        assertNotNull(about);
+        assertEquals("com.android.tv.settings.about.AboutFragment", about.getFragment());
+        assertNull(about.getOnPreferenceClickListener());
         assertNull(screen.findPreference("device_name"));
         assertNull(screen.findPreference("projectorsoft_cpu_live"));
         for (String key : new String[]{"about_stock","time","language",
