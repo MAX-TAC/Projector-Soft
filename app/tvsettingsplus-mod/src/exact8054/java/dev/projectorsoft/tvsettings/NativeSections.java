@@ -105,6 +105,15 @@ public final class NativeSections {
             action(group,key,label,()->new Intent().setComponent(new ComponentName(OWN,OWN+"."+name)));
         }
 
+        protected void stockFragment(PreferenceGroup group,String key,String label,String className) {
+            Preference row = new Preference(requireContext());
+            row.setKey(key);
+            row.setTitle(label);
+            row.setFragment(OWN + "." + className);
+            setSystemIcon(row, key);
+            group.addPreference(row);
+        }
+
         private void setSystemIcon(Preference row, String key) {
             // Reuse the exact 8054 OEM drawables, not an unthemed Android icon.
             String drawable;
@@ -341,7 +350,9 @@ public final class NativeSections {
         @Override NativePage section(){return NativePage.SYSTEM;}
         @Override void populate(PreferenceScreen screen){
             Context context = requireContext();
-            stock(screen,"about_stock","Об устройстве","about.AboutActivity");
+            // Actual OEM AboutFragment (verified in stock classes13.dex).
+            // It stays inside MainSettings so the background remains visible.
+            stockFragment(screen,"about_stock","Об устройстве","about.AboutFragment");
             // Device rename already exists inside the genuine AboutFragment.
             // CPU is injected into the bottom of About via its own lifecycle.
             stock(screen,"time","Дата и время","system.DateTimeActivity");
