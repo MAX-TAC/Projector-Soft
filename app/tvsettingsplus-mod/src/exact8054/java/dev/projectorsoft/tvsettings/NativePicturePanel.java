@@ -116,11 +116,25 @@ final class NativePicturePanel {
             if ((page == Page.PICTURE && !COLOR.contains(key))
                     || (page == Page.COLOR && COLOR.contains(key))
                     || (page == Page.MEMC && MEMC.equals(key))) {
-                add(host, screen, key, PicturePanelState.TITLES[i], 211 + i);
+                add(host, screen, key, PicturePanelState.TITLES[i],
+                        page == Page.PICTURE ? pictureOrder(key) : 211 + i);
             }
         }
-        if (page == Page.PICTURE) add(host, screen, GAMMA, "Гамма", 224);
+        if (page == Page.PICTURE) add(host, screen, GAMMA, "Гамма", 126);
         refresh();
+    }
+
+    /** Frequently used signal-processing options first; gamma follows hue. */
+    private static int pictureOrder(String key) {
+        if (PicturePanelState.HDR.equals(key)) return 100;
+        if (MEMC.equals(key)) return 101;
+        if (PicturePanelState.MODE.equals(key)) return 110;
+        if ("picture_brightness".equals(key)) return 120;
+        if ("picture_contrast".equals(key)) return 121;
+        if ("picture_saturation".equals(key)) return 122;
+        if ("picture_sharpness".equals(key)) return 123;
+        if ("picture_hue".equals(key)) return 125;
+        return 150;
     }
 
     private void add(NativeSections.Page host, PreferenceScreen screen, String key, String title, int order) {
