@@ -88,6 +88,17 @@ adb shell dumpsys hdmi_control > "%USERPROFILE%\Downloads\8054_hdmi_control.txt"
 - Рассмотреть **Poweramp Equalizer** (возможность per-device presets, advanced player tracking с permission; Android TV D-pad не доказан) и **Wavelet** (device-based profiles, Bluetooth support; совместимость Android TV и системным выводом не доказана), как **необязательные внешние** приложения.
 - Главный путь: deep link/launch external EQ if installed; ручная установка; отсутствие вмешательства в system audio policy ради EQ.
 
+### TV-first EQ вариант для удалённого пульта
+
+Для запасного пункта «Расширенный эквалайзер» приоритет исследовательских кандидатов по **удобству управления с Android TV пульта**:
+
+1. **SoundWave TV: Equalizer** (Google Play, `com.soundwave.tv`) — опубликовано описание интерфейса с D-pad и remote support; рекламируется TV EQ, но производитель предупреждает, что HDMI/BT и сторонние приложения могут ограничить эффект. Нужен тест на 8054: <https://play.google.com/store/apps/details?id=com.soundwave.tv>.
+2. **Poweramp Equalizer** (`com.maxmpz.equalizer`) — многополосные и параметрические EQ, per-device preset assignments; на Android TV могут быть проблемы с фокусом/пультом, advanced player tracking требует дополнительных разрешений; прямой путь Google Play: <https://play.google.com/store/apps/details?id=com.maxmpz.equalizer>.
+3. **Wavelet** (`com.pittvandewitt.wavelet`) — профили по типу/имени аудиоустройства, особенности Bluetooth и совместимости; UI для пульта не подтверждён: <https://play.google.com/store/apps/details?id=com.pittvandewitt.wavelet>.
+4. **RootlessJamesDSP** (`me.timschneeberger.rootlessjamesdsp`) — открытый проект, альтернативная глобальная программная DSP, но требует первоначального Shizuku/ADB setup, не рассматривать как пользовательский вариант «просто установить» до проверки: <https://github.com/timschneeb/RootlessJamesDSP>.
+
+Эти ссылки обозначают **кандидатов**, а не доказанную поддержку exact-8054, работы со всеми потоками или HDMI passthrough. Любой launcher внешнего EQ должен проверять наличие приложения/доступного activity, не устанавливать APK автоматически и сохранять D-pad/Back навигацию.
+
 ## 6. Acceptance criteria
 
 1. Кино/Стандартный → значения PIC видны, любые edit callbacks немедленно отказывают без единой записи; User → нижний попап, D-pad, корректный readback и возврат; переключение пресета обновляет значения.
