@@ -30,6 +30,7 @@ public final class StockMainSettingsMenu {
         PreferenceScreen screen = fragment.getPreferenceScreen();
         if (screen == null) return;
         NativeOverlayWindow.apply(fragment.getActivity());
+        StockAboutTemperatureBridge.install(fragment.getActivity());
         PreferenceCategory added = null;
         try {
             Preference header = screen.findPreference("general_settings");
