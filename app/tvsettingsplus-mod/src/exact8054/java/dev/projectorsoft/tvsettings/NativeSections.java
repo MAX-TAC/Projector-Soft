@@ -238,6 +238,7 @@ public final class NativeSections {
         @Override NativePage section(){return NativePage.SOUND;}
         @Override void populate(PreferenceScreen screen){
             Context context = requireContext();
+            NativeAudioOutputReadout.install(context, screen);
             link(screen, NativePage.EQUALIZER, 200);
             OemStockUserSettings.installAudioOutput(context, screen, Preference.class);
             PreferenceCategory effects = group(screen, "sound_processing", "Обработка звука");
@@ -251,6 +252,11 @@ public final class NativeSections {
                 Preference tone = screen.findPreference("projectorsoft_key_tone");
                 if (tone != null) tone.setOrder(500);
             }
+        }
+        @Override public void onResume() {
+            super.onResume();
+            if (getPreferenceScreen() != null)
+                NativeAudioOutputReadout.refresh(requireContext(), getPreferenceScreen());
         }
     }
 
