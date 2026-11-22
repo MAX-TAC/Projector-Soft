@@ -43,6 +43,31 @@
 - eARC может быть реализован как OEM proprietary TV audio route, а не обычное аудиоустройство в \`AudioManager.getDevices\`; **не обещать** унифицированный selector без проверки. eARC/CEC побочные действия должны учитывать текущие настройки и быть обратимыми, без raw setter только из-за наличия названия.
 - Не включать автоматическую установку/настройку привилегий без OEM approval; bootloader unlocked не даёт \`MODIFY_AUDIO_ROUTING\` автоматически.
 
+## Результаты новой офлайн-проверки **точного STOCK 8054** (22.11.2026)
+
+**Источник:** [GitHub Actions #45015345541](https://github.com/MAX-TAC/FlixTone_8054_Backup/actions/runs/45015345541), успешно извлечён `super.img` из verified owner ZIP, прочитаны EROFS системных разделов, Manifest оригинальных APK и `vendor/etc/audio_policy_configuration.xml`. Ни один байт проектора не менялся.
+
+**MediaTek Audio Policy действительно содержит следующие output devicePorts:**
+- `Speaker / AUDIO_DEVICE_OUT_SPEAKER`;
+- `BT A2DP Out / AUDIO_DEVICE_OUT_BLUETOOTH_A2DP`, `BT A2DP Speaker / AUDIO_DEVICE_OUT_BLUETOOTH_A2DP_SPEAKER`, `BT A2DP Headphones / AUDIO_DEVICE_OUT_BLUETOOTH_A2DP_HEADPHONES`;
+- `HDMI ARC / AUDIO_DEVICE_OUT_HDMI_ARC`;
+- `HDMI Out / AUDIO_DEVICE_OUT_AUX_DIGITAL`;
+- `Spdif / AUDIO_DEVICE_OUT_SPDIF`;
+- USB output endpoints.
+
+**В том же XML есть маршруты** от `primary output` к `Speaker`, `BT A2DP Speaker`, `HDMI ARC` и `HDMI Out`, а также `offload output`, `hw_av_sync output`. Это доказательство **реализованной в конфигурации возможности нескольких направлений**, но **не** подтверждение, что все доступны, одновременно подключены, переключаются или соответствуют реальному eARC-устройству. Особенно важно не путать `HDMI ARC` port из generic MTK policy с проверкой физической eARC handshake на 8054.
+
+**Original TvSettingsPlus.apk (exact-8054 `system_ext/priv-app`)**:
+- `android.permission.MODIFY_AUDIO_ROUTING`: **не объявлено**;
+- `android.permission.QUERY_AUDIO_STATE`: **не объявлено**;
+- `android.permission.BLUETOOTH_CONNECT` и `BLUETOOTH_PRIVILEGED`: **объявлены**;
+- в `system_ext/etc/permissions/privapp-permissions-mediatek.xml` для `com.android.tv.settings` `MODIFY_AUDIO_ROUTING` **отсутствует**;
+- `RJBluetoothSpeaker` уже имеет `MODIFY_AUDIO_SETTINGS` и `BLUETOOTH_PRIVILEGED`, но **не** `MODIFY_AUDIO_ROUTING`.
+
+**Следствие:** сейчас не можем утверждать, что установленный stock MOD может использовать privileged `AudioManager.setPreferredDevicesForStrategy`. Перед реализацией необходимо проверить сертификат stock `TvSettingsPlus` против `framework-res.apk` Android, затем добавить `uses-permission` в MOD (если допустимо) и подтвердить grant runtime. Подпись и отсутствие permission в старом Manifest — независимые условия. В Android 13 `MODIFY_AUDIO_ROUTING` имеет `signature|privileged|role`: если exact Android package signer совпадает с signer MOD, разрешение потенциально может быть предоставлено по `signature`, без новой allowlist; иначе для privileged request может потребоваться правка системного allowlist в образе. **Пока никакого grant не выполнено, не тестировано**.
+
+[Воспроизводимый инструмент аудита](https://github.com/MAX-TAC/FlixTone_8054_Backup/blob/research/8054-audio-output-policy-20261122/tools/audit_8054_audio_output_policy.py) · [Draft PR резервного репозитория](https://github.com/MAX-TAC/FlixTone_8054_Backup/pull/2).
+
 ## 4. Что нам уже известно, а что ещё не проверено
 
 | Возможность | Статус |
