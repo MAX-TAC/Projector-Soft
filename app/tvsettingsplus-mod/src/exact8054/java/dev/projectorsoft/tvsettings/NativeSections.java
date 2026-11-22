@@ -94,11 +94,8 @@ public final class NativeSections {
             row.setTitle(page.title);
             row.setOrder(order);
             row.setFragment(page.fragment);
-            row.setOnPreferenceClickListener(item -> {
-                if (!CheckedPreferenceLaunch.open(context, () -> new Intent(context, page.activity)))
-                    android.widget.Toast.makeText(context,"Экран недоступен",android.widget.Toast.LENGTH_SHORT).show();
-                return true;
-            });
+            // Let stock Leanback/TwoPanelSettings resolve Preference.fragment.
+            // Activity-based navigation creates an extra opaque window.
             group.addPreference(row);
         }
 
