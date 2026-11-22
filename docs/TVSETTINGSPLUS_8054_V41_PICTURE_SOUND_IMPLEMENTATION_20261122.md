@@ -14,14 +14,14 @@
 
 1. **Picture:** `PictureUserEditPolicy` разрешает экспериментальную регулировку только при exact machine `8054`, стабильном `picture_mode=0` и наличии OEM User ID `0` в динамическом каталоге. Factory presets показывают текущее значение с пометкой «только просмотр», редактирование отключено. Guard вызывается также внутри callback, непосредственно перед `Settings.Global.putInt` и при подтверждении readback. Это НЕ решает неизвестную адресацию MediaTek `inputGroup=-1` и не разрешает развертывание editor в production.
 2. **Sound:** `NativeEqualizerPanel` расширен с пяти полос до семи пользовательских регуляторов: Bass/Treble плюс пять OEM EQ полос. Все доступны только в `sound_style=User`, а их запись дополнительно ограничена единственным Media-маршрутом `TYPE_BUILTIN_SPEAKER`. При BT/eARC/неизвестном маршруте значения остаются видимыми, запись закрыта. Для Surround применена та же User-only policy, заводские пресеты read-only.
-3. **Audio output:** пункт «Устройство вывода · диагностика» показывает ожидаемый Media-маршрут через Android 13 public `AudioManager.getAudioDevicesForAttributes(USAGE_MEDIA)` и реальные доступные устройства через `getDevices(GET_DEVICES_OUTPUTS)`. Это *индикатор*, а не переключатель. Нажатие перечитывает состояние. В списке не используются сопряжённые, но не подключённые Bluetooth устройства.
-4. Добавлены UI/JVM регрессионные тесты User/factory mapping и типизированных названий аудиоустройств.
+3. **Audio output (экспериментальная реализация):** пункт «Устройство вывода звука» открывает список подключённых Speaker / Bluetooth A2DP и режима Android AudioPolicy. `NativeMediaRouteBridge` получает MEDIA `AudioProductStrategy` динамически из Android 13, проверяет `MODIFY_AUDIO_ROUTING` в процессе, сохраняет исходный список preferred devices, назначает выбранный выход через `setPreferredDevicesForStrategy` и читает фактический Media route. `NativeMediaRoutePicker` запрещает повторные операции, требует подтверждения реального звука и откатывает маршрут при ошибке, отключении Bluetooth, уходе со страницы или тайм-ауте 25 секунд. Связь Bluetooth сама не разрывается. eARC отсутствует в первой активной версии списка.
+4. Добавлены UI/JVM регрессионные тесты User/factory mapping, типизированных названий аудиоустройств и допускаемых Media outputs (только Speaker/A2DP). Полноценный интеграционный тест route setter/rollback возможен только на аппаратном 8054.
 
 ## Зафиксированные ограничения
 
 - `picture_mode` / `sound_style` используют OEM consumer backend; автоматического copy-on-edit в User нет.
 - UI источника и текущий HDMI/SDR/HDR profile до native write достоверно не установлен. Нет безопасного универсального rollback для PQ.
-- Смена медиа-выхода без BT-disconnect **не реализована**. Для неё нужен отдельный обратимый тест предпочтений AudioProductStrategy с `MODIFY_AUDIO_ROUTING`, реальным звуком и возвратом прежних настроек.
+- Смена медиа-выхода без BT-disconnect **реализована в исходниках, не испытана аппаратно**. Нужен exact-8054 APK build и обратимый тест на физическом проекторе. Критично проверить `checkSelfPermission` уже в модифицированном APK, реальный звук на Speaker/BT, правильный readback Media route и отсутствие Bluetooth-disconnect.
 - Native Picture mode picker по-прежнему read-only в данном пакете; открытие User через штатный OEM Android TV экран допускается. Отдельный нативный picker — следующая итерация после profile scope теста.
 - Никакие Factory PEQ / PQ defaults / DSP calibration / China KuSettings Activity не используются как прокси; никакого отключения KuSettings, CEC, eARC, флэшинга или изменения оригинального APK.
 
@@ -33,3 +33,7 @@
 - Отдельно разрешить один ручной шаг контраста в **штатном** UI и полный возврат. Сопоставить значения в HOME/HDMI1/HDMI2 и SDR/HDR. До завершения этого теста не объявлять NativePicturePanel write аппаратно безопасным.
 - EQ Bass/Treble и каждую полосу тестировать на динамиках и BT одним и тем же сигналом с возвратом исходного значения. Нельзя считать Global/Config echo доказательством физического эффекта.
 - Если целевой v41 stock PictureActivity используется как корневой маршрут в другой ветке, нельзя просто перенести его: это обойдёт собственную User-only политику. Нужна интеграция после теста.
+
+## Проверка на 8054 с играющим Media
+
+Перед установкой необходимы build+signature+APK hash и явный rollback исходного приложения. Пошаговый протокол: `docs/TVSETTINGSPLUS_8054_AUDIO_ROUTE_HARDWARE_ACCEPTANCE_20261122.md`.
