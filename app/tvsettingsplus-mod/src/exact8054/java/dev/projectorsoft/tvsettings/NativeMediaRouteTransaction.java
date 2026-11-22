@@ -15,6 +15,11 @@ final class NativeMediaRouteTransaction {
         boolean routeIs(NativeMediaRouteBridge.Output output);
         boolean stillConnected(List<NativeMediaRouteBridge.Output> bluetooth);
         boolean restore(List<Object> original) throws Exception;
+        int mediaForce() throws Exception;
+        boolean canControlA2dpMedia() throws Exception;
+        void allowA2dpMedia(boolean allow) throws Exception;
+        boolean mediaForceAllowsA2dp() throws Exception;
+        boolean mediaForceDisallowsA2dp() throws Exception;
     }
 
     private final Port port;
@@ -22,6 +27,11 @@ final class NativeMediaRouteTransaction {
     private final List<Object> original;
     private final List<NativeMediaRouteBridge.Output> bluetooth;
     private boolean attempted;
+    private boolean forceAttempted;
+    private final int forceBefore;
+    // getForceUse(FOR_MEDIA): FORCE_NONE=0 and FORCE_NO_BT_A2DP=10 per Android 13.
+    private static final int NONE = 0;
+    private static final int NO_BT = 10;
 
     NativeMediaRouteTransaction(Port port, NativeMediaRouteBridge.Output target) throws Exception {
         this.port = port;
@@ -29,6 +39,11 @@ final class NativeMediaRouteTransaction {
         // Capture before any write. An unreadable original is a hard stop.
         original = new ArrayList<>(port.preferred());
         bluetooth = new ArrayList<>(port.connectedBluetooth());
+        forceBefore = port.mediaForce();
+        if ((forceBefore != NONE && forceBefore != NO_BT)
+                || !port.canControlA2dpMedia()) {
+            throw new IllegalStateException("Cannot snapshot/restore MEDIA force policy safely");
+        }
     }
 
     boolean noChangeNeeded() {
@@ -44,6 +59,14 @@ final class NativeMediaRouteTransaction {
         if (!targetAvailable()) return false;
         // A binder write may be partially applied before an exception is thrown.
         attempted = true;
+        // An earlier explicit Speaker selection might have retained the A2DP
+        // exclusion. Switching back to Bluetooth/Automatic must undo that first.
+        if (target == null || target.type == android.media.AudioDeviceInfo.TYPE_BLUETOOTH_A2DP) {
+            if (port.mediaForceDisallowsA2dp()) {
+                forceAttempted = true;
+                port.allowA2dpMedia(true);
+            }
+        }
         return port.apply(target);
     }
 
@@ -54,13 +77,47 @@ final class NativeMediaRouteTransaction {
                 : port.preferredIs(target) && port.routeIs(target);
     }
 
+    /**
+     * Invoke only after preferred(Speaker) was accepted but real output is still
+     * A2DP. An 8054 may ignore the preferred strategy while A2DP is active.
+     */
+    boolean trySpeakerForceFallback() throws Exception {
+        if (!attempted || forceAttempted || target == null
+                || target.type != android.media.AudioDeviceInfo.TYPE_BUILTIN_SPEAKER
+                || !port.canControlA2dpMedia() || !port.preferredIs(target)) return false;
+        forceAttempted = true; // mark before binder write, even if it throws
+        port.allowA2dpMedia(false);
+        return true;
+    }
+
+    boolean speakerForceApplied() throws Exception {
+        return forceAttempted && port.mediaForceDisallowsA2dp();
+    }
+
     boolean bluetoothPreserved() {
         return port.stillConnected(bluetooth);
     }
 
     boolean rollback() throws Exception {
-        return !attempted || port.restore(original);
+        if (!attempted && !forceAttempted) return true;
+        // Restore global force policy first, then previous preferred strategy.
+        // A failure is reported instead of silently claiming success.
+        int current = port.mediaForce();
+        if (current != forceBefore) {
+            if (forceBefore != NONE && forceBefore != NO_BT) return false;
+            port.allowA2dpMedia(forceBefore == NONE);
+        }
+        boolean preferenceRestored = port.restore(original);
+        // Broker media policy update may be asynchronous; final readback is
+        // performed in UI (and may report pending), not asserted immediately.
+        return preferenceRestored;
     }
+
+    boolean forceRestored() throws Exception {
+        return port.mediaForce() == forceBefore;
+    }
+
+    int originalForce() { return forceBefore; }
 
     List<Object> originalPreference() {
         return new ArrayList<>(original);
