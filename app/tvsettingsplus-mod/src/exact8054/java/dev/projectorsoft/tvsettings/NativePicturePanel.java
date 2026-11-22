@@ -163,6 +163,7 @@ final class NativePicturePanel {
         if (slider != null && sliderSnapshot != null
                 && (!otherKeysUnchanged(sliderSnapshot, snapshot, sliderKey)
                     || (!waitingForBackend && !sliderSnapshot.equals(snapshot)))) slider.dismiss();
+        final boolean userModeVerified = canEdit(snapshot);
         for (Map.Entry<String, Preference> item : rows.entrySet()) {
             String key = item.getKey();
             Preference row = item.getValue();
@@ -178,7 +179,7 @@ final class NativePicturePanel {
                 hdr.setSummary(!known ? "Состояние недоступно"
                         : (value == 1 ? "Включён" : "Выключен") + " · только просмотр");
             } else {
-                boolean editable = value != null && canEdit(snapshot);
+                boolean editable = value != null && userModeVerified;
                 row.setSummary(value == null ? "Значение недоступно"
                         : value + (editable ? " · пользовательский режим (тест)" : " · только просмотр"));
                 row.setEnabled(editable);
