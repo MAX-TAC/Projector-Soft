@@ -363,7 +363,8 @@ final class NativeEqualizerPanel {
         @Override public Snapshot read() throws Exception {
             if (!"8054".equals(OemHdmiPortInfo.machineId())) return null;
             List<String> supported = OemFiveBandEqualizerHook.nativeAvailableBands();
-            if (supported == null) return null;
+            // Keep Bass/Treble independent from optional five-band EQ resources.
+            if (supported == null) supported = java.util.Collections.emptyList();
             String profile = Settings.Global.getString(resolver, MODE);
             List<String> output = output();
             Class<?> type = Class.forName("com.android.tv.settings.partnercustomizer.tvsettingservice.TVSettingConfig");
