@@ -56,12 +56,11 @@ public final class StockMainSettingsMenu {
                 row.setOrder(page.ordinal());
                 row.setFragment(page.fragment);
                 row.setIcon(icon(context, screen, page));
-                CheckedPreferenceLaunch.Route route = () -> new Intent().setComponent(target(context, page));
-                row.setOnPreferenceClickListener(item -> {
-                    if (!CheckedPreferenceLaunch.open(context, route))
-                        Toast.makeText(context, "Экран недоступен", Toast.LENGTH_SHORT).show();
-                    return true;
-                });
+                // IMPORTANT: do not start another Activity. The stock 8054
+                // two-panel navigator owns fragments and keeps its translucent
+                // home/HDMI surface visible behind the right-hand settings pane.
+                // Launching a separate opaque Activity caused the black backing
+                // reported in R3 (Picture, Sound, System, Bluetooth, Sources).
                 added.addPreference(row);
             }
             screen.setTitle("Настройки Android TV");
