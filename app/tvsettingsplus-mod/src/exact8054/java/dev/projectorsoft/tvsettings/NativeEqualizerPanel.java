@@ -251,6 +251,11 @@ final class NativeEqualizerPanel {
 
     private void change(String key, int requested) {
         if (!active || !ready || shown == null || !profileOptionsKnown) return;
+        if (!MODE.equals(key) && !NativeAudioOutputReadout.speakerOnly(audio)) {
+            feedback = "OEM тембр и EQ проверены только на встроенных динамиках";
+            refresh();
+            return;
+        }
         Snapshot fresh = read();
         if (!shown.same(fresh) || !fresh.profileReady()) {
             feedback = "Звуковой профиль или выход изменился";
@@ -296,13 +301,18 @@ final class NativeEqualizerPanel {
                 row.setMin(band.min);
                 row.setValue(band.stored);
                 row.display(true);
-                row.setSummary(profileReady && !"0".equals(profile) ? "Редактируется в пользовательском профиле" : null);
+                row.setSummary(!"0".equals(profile)
+                        ? "Только просмотр · заводской профиль"
+                        : !NativeAudioOutputReadout.speakerOnly(audio)
+                            ? "Только просмотр · OEM DSP не проверен на этом выходе"
+                            : null);
             } else {
                 row.display(false);
                 row.setSummary(band != null && !band.supported
                         ? "Полоса не поддерживается текущей конфигурацией" : "Значение недоступно");
             }
-            row.setEnabled(profileReady && band != null && band.coherent()
+            row.setEnabled(profileReady && NativeAudioOutputReadout.speakerOnly(audio)
+                    && band != null && band.coherent()
                     && OemSoundValuePolicy.acceptsBandChange(String.valueOf(band.stored), band.stored,
                             band.min, band.max, profile, profile));
         }
