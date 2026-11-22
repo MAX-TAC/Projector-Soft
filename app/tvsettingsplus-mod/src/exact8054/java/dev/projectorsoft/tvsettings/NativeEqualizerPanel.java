@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BooleanSupplier;
 
 /** Owns a stable set of preferences while TvServices switches and republishes profiles. */
 final class NativeEqualizerPanel {
@@ -93,6 +94,7 @@ final class NativeEqualizerPanel {
     private final Backend backend;
     private final ContentResolver resolver;
     private final AudioManager audio;
+    private final BooleanSupplier speakerRouteProbe;
     private final Handler main = new Handler(Looper.getMainLooper());
     private final ListPreference mode;
     private final boolean profileOptionsKnown;
@@ -117,10 +119,18 @@ final class NativeEqualizerPanel {
     }
 
     NativeEqualizerPanel(Context context, PreferenceGroup group, Backend backend) {
+        this(context, group, backend, null);
+    }
+
+    /** RouteProbe is injectable for tests; production always queries Android AudioManager. */
+    NativeEqualizerPanel(Context context, PreferenceGroup group, Backend backend,
+                         BooleanSupplier routeProbe) {
         this.context = context;
         this.backend = backend;
         resolver = context.getContentResolver();
         audio = context.getSystemService(AudioManager.class);
+        speakerRouteProbe = routeProbe == null
+                ? () -> NativeAudioOutputReadout.speakerOnly(audio) : routeProbe;
         mode = new ListPreference(context);
         mode.setTitle("Звуковой профиль");
         mode.setKey("projectorsoft_sound_mode");
@@ -249,9 +259,14 @@ final class NativeEqualizerPanel {
         }
     }
 
+    private boolean speakerRoute() {
+        try { return speakerRouteProbe.getAsBoolean(); }
+        catch (RuntimeException unavailable) { return false; }
+    }
+
     private void change(String key, int requested) {
         if (!active || !ready || shown == null || !profileOptionsKnown) return;
-        if (!MODE.equals(key) && !NativeAudioOutputReadout.speakerOnly(audio)) {
+        if (!MODE.equals(key) && !speakerRoute()) {
             feedback = "OEM тембр и EQ проверены только на встроенных динамиках";
             refresh();
             return;
@@ -293,7 +308,7 @@ final class NativeEqualizerPanel {
         mode.setSummary(name == null ? "Профиль недоступен" : name);
         boolean profileReady = stable && profileOptionsKnown && name != null && snapshot != null && snapshot.profileReady();
         mode.setEnabled(profileReady);
-        final boolean speakerRouteVerified = NativeAudioOutputReadout.speakerOnly(audio);
+        final boolean speakerRouteVerified = speakerRoute();
         for (int i = 0; i < rows.length; i++) {
             Band band = snapshot == null ? null : snapshot.bands.get(i);
             BandRow row = rows[i];
