@@ -26,8 +26,12 @@ import java.util.Objects;
 final class NativeEqualizerPanel {
     private static final String TAG = "TvSettingsPlusMOD";
     static final String MODE = "sound_style";
-    static final String[] KEYS = OemFiveBandEqualizerHook.KEYS;
-    private static final String[] CONFIG = {"g_fusion_sound__equalizer_120hz", "g_fusion_sound__equalizer_500hz",
+    static final String[] KEYS = {"sound_bass", "sound_treble",
+            "sound_equalizer_detail_120hz", "sound_equalizer_detail_500hz",
+            "sound_equalizer_detail_1500hz", "sound_equalizer_detail_5000hz",
+            "sound_equalizer_detail_10000hz"};
+    private static final String[] CONFIG = {"g_audio__aud_bass", "g_audio__aud_treble",
+            "g_fusion_sound__equalizer_120hz", "g_fusion_sound__equalizer_500hz",
             "g_fusion_sound__equalizer_1.5khz", "g_fusion_sound__equalizer_5khz", "g_fusion_sound__equalizer_10khz"};
     private static final String[] OUTPUT = {"sound_digital_output_to_device", "sound_spdif_type", "sound_earc"};
     private static final long[] DELAYS = {0, 150, 200, 300, 450, 600};
@@ -144,7 +148,8 @@ final class NativeEqualizerPanel {
             final String key = KEYS[i];
             BandRow row = new BandRow(context);
             row.setKey("projectorsoft_eq_" + key);
-            row.setTitle(OemFiveBandEqualizerHook.LABELS[i]);
+            row.setTitle(i == 0 ? "Низкие частоты" : i == 1 ? "Высокие частоты"
+                    : OemFiveBandEqualizerHook.LABELS[i - 2]);
             row.setOrder(240 + i);
             row.setPersistent(false);
             row.setSeekBarIncrement(1);
@@ -343,7 +348,9 @@ final class NativeEqualizerPanel {
             List<Band> bands = new ArrayList<>();
             for (int i = 0; i < KEYS.length; i++) {
                 Integer value = Settings.Global.getInt(resolver, KEYS[i], Integer.MIN_VALUE);
-                boolean offered = supported.contains(KEYS[i]);
+                // Bass/Treble are separate native OEM controls. The five EQ
+                // bands still require their own exact capability discovery.
+                boolean offered = i < 2 || supported.contains(KEYS[i]);
                 if (!offered) {
                     bands.add(new Band(false, null, null, 0, 0));
                     continue;
