@@ -1,0 +1,166 @@
+{
+  "schema_version": "1.0",
+  "snapshot_date": "2026-11-21",
+  "purpose": "independent AI evidence handoff; not a flashable firmware",
+  "evidence_classes": [
+    "RELEASE_METADATA",
+    "STATIC_CONFIRMED",
+    "BUILD_TESTED",
+    "DEVICE_OBSERVED_OTHER",
+    "DEVICE_8054_VERIFIED",
+    "UNVERIFIED",
+    "DEFERRED"
+  ],
+  "repos": [
+    {
+      "name": "MAX-TAC/Everycom-Cinelux-Firmware",
+      "main_sha": "9775a324f6f93ac48579825168d438f20c03a0f3",
+      "selected_research_shas": [
+        "4f936565b3b81e34d05beb0defbdd98481a32456",
+        "f89993bde272821d985ea6312601c7409634e13d"
+      ],
+      "releases": [
+        {
+          "tag": "Original_Firmware_for_1_HDMI_ports",
+          "asset": "4K.HDMI-.-20260813.1.rar",
+          "bytes": 1122636304,
+          "sha256": "bff981a9d440d1495bd6ab48a72fb13c4572de69fcbe81448fc117a3bba5f30f",
+          "board": "8052",
+          "firmware_version": "RUIOS.8052.1.0.1",
+          "type": "factory_pkg_in_rar"
+        },
+        {
+          "tag": "Original_Firmware",
+          "asset": "4KTOF.HDMI-.-DPLS.-09.30.rar",
+          "bytes": 1301025233,
+          "sha256": "170f745dc1711c2dae6410dd51f0a8bf5bb7c637e11b8dd3e5f59fbea8c388f3",
+          "board": "8054",
+          "firmware_version": "RUIOS.8054.1.0.1",
+          "type": "factory_pkg_in_rar"
+        },
+        {
+          "tag": "OTA_Updates",
+          "asset": "RJMT9660_firmware_8052.zip",
+          "bytes": 851685795,
+          "sha256": "bedea70fbf3f08d3c18e59d5f91e7d12828c77fac314c30fcc98332c32c88e35",
+          "board": "8052",
+          "firmware_version": "RUIOS.8052.1.0.4",
+          "type": "android_ab_ota"
+        },
+        {
+          "tag": "OTA_Updates",
+          "asset": "RJMT9660_firmware_8053.zip",
+          "bytes": 841648271,
+          "sha256": "9ca8276448e79587b82e55cec0cf3da55154b750774f608378f64619c84f556b",
+          "board": "8053_not_confirmed_target",
+          "firmware_version": "RUIOS.8053.1.0.0",
+          "type": "android_ab_ota"
+        }
+      ]
+    },
+    {
+      "name": "MAX-TAC/FlixTone_8054_Backup",
+      "main_sha": "a0f63c7e49515766be432c3cfe2e360b21717bbb",
+      "release": {
+        "tag": "FlixTone_8054_Backup",
+        "asset": "FlixTone_8054_Backup.zip",
+        "bytes": 2011878129,
+        "sha256": "4f53f2224c98b4c832a19a591b9dd7f925bde28528b5674a09732c0f0e41d362",
+        "board": "8054",
+        "type": "owner_runtime_dump_zip",
+        "super_img_bytes": 2225078272
+      }
+    },
+    {
+      "name": "MAX-TAC/Projector-Soft",
+      "default_main_sha": "543048320cc9def40cb6fc4e3d437de99dcd820a",
+      "mod_v41_sha": "fbb41e92a47a94a2a4b0f4122100e5a1cb43cfe5",
+      "native_research_sha": "d1854db0539c522f81f3c2ee355d08338197ae8a",
+      "pic04_policy_sha": "4c3f68e5bda55dda9a38c232df2667898a456d97",
+      "user_migration_sha": "289ef297ca9e5f8319ca9b9a0501d000ec258368"
+    }
+  ],
+  "important_software": {
+    "stock_tvsettingsplus_sha256": "f8e0c6fe0f46e7eb8db651c31d85ef8b32a769b37e4dd0f96ed19a64725d74ee",
+    "platform_cert_sha256": "c8a2e9bccf597c2fb6dc66bee293fc13f2fc47ec77bc6b2b0d52c11f51192ab8",
+    "mod_v41_apk_versionCode": 41,
+    "mod_v41_apk_sha256": "a93af51dda3ec723a1e895c935f7d68c31760b6f8d8169090e5d02b19256037e",
+    "mod_v41_apk_source_short": "a3ca1a2",
+    "firmware_factory_avb_pubkey_fingerprint_sha256": "dcf38badcd7784d2aa892739eba5e239a649362edb03586a455b3f8ded046cfe",
+    "firmware_aosp_test_avb_pubkey_sha256": "7728e30f50bfa5cea165f473175a08803f6a8346642b5aa10913e9d9e6defef6"
+  },
+  "pull_requests": [
+    {
+      "number": 2,
+      "sha": "fbb41e92a47a94a2a4b0f4122100e5a1cb43cfe5",
+      "status": "draft; v41 base, hardware_unverified"
+    },
+    {
+      "number": 3,
+      "sha": "d1854db0539c522f81f3c2ee355d08338197ae8a",
+      "status": "draft; exact 8054 static research"
+    },
+    {
+      "number": 4,
+      "sha": "4c3f68e5bda55dda9a38c232df2667898a456d97",
+      "status": "draft; pure policy, no Android UI"
+    },
+    {
+      "number": 5,
+      "sha": "289ef297ca9e5f8319ca9b9a0501d000ec258368",
+      "status": "draft; 8 picture scalar candidate, not hardware verified"
+    }
+  ],
+  "verified_ci": [
+    {
+      "run_id": 44769301913,
+      "part": "stock-exact v41 APK",
+      "status": "success"
+    },
+    {
+      "run_id": 44808298783,
+      "part": "PIC04 policy",
+      "status": "success"
+    },
+    {
+      "run_id": 44816235981,
+      "part": "PR5 AndroidX",
+      "status": "success"
+    },
+    {
+      "run_id": 44816235966,
+      "part": "PR5 OEM capabilities",
+      "status": "success"
+    },
+    {
+      "run_id": 44816462929,
+      "part": "PR5 exact APK build",
+      "status": "success",
+      "head_sha": "050f684ad6b6538058d34c812860a4e1f0bd5877"
+    },
+    {
+      "run_id": 39626053724,
+      "part": "Custom v0 NONFLASHABLE 8052/8054 overlay ZIPs",
+      "status": "success"
+    }
+  ],
+  "inventory": {
+    "firmware_assets": 5,
+    "registered_features": 96,
+    "github_source_catalog_entries": 291
+  },
+  "exclusions": [
+    "No actual 8054 hardware functional tests certified by this handoff",
+    "No bootloader unlock/flash/write performed",
+    "No full flashable custom firmware available",
+    "No binary firmware assets embedded",
+    "Do not infer hardware compatibility from common SoC",
+    "Do not disable KuSettings yet"
+  ],
+  "links": {
+    "releases": "https://github.com/MAX-TAC/Everycom-Cinelux-Firmware/releases",
+    "owner_dump": "https://github.com/MAX-TAC/FlixTone_8054_Backup/releases/tag/FlixTone_8054_Backup",
+    "source": "https://github.com/MAX-TAC/Projector-Soft",
+    "main_parity": "https://github.com/MAX-TAC/Projector-Soft/blob/audit/8054-tvsettingsplus-20261117/research/8054/FINAL_FUNCTION_PARITY_8054.csv"
+  }
+}
