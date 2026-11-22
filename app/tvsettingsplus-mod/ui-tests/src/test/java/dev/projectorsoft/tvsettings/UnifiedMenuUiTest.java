@@ -50,7 +50,8 @@ public class UnifiedMenuUiTest {
             Preference row = active.getPreference(i);
             assertEquals(expected[i], row.getTitle());
             assertEquals(NativePage.ROOT.get(i).fragment, row.getFragment());
-            assertNotNull(row.getOnPreferenceClickListener());
+            // The stock two-panel host, not a new Activity, owns navigation.
+            assertNull(row.getOnPreferenceClickListener());
         }
         assertEquals("com.android.tv.settings.connectivity.NetworkActivity",
                 StockMainSettingsMenu.target(main, NativePage.NETWORK).getClassName());
@@ -66,6 +67,27 @@ public class UnifiedMenuUiTest {
         late.setKey("suggestions");
         assertTrue(StockMainSettingsMenu.addAuxiliary(screen, late));
         assertFalse(late.isVisible());
+    }
+
+    @Test public void systemUsesRealOemIconsAndDoesNotDuplicateDeviceNameOrCpu() {
+        SystemSettingsActivity activity = Robolectric.buildActivity(SystemSettingsActivity.class).setup().get();
+        NativeSections.System system = (NativeSections.System)
+                activity.getSupportFragmentManager().findFragmentById(android.R.id.content);
+        PreferenceScreen screen = system.getPreferenceScreen();
+        assertNotNull(screen.findPreference("about_stock"));
+        assertNull(screen.findPreference("device_name"));
+        assertNull(screen.findPreference("projectorsoft_cpu_live"));
+        for (String key : new String[]{"about_stock","time","language",
+                "location","accounts","storage","privacy","security",
+                "accessibility","developer"}) {
+            Preference item = screen.findPreference(key);
+            assertNotNull("Missing System row: " + key, item);
+            assertNotNull("Missing stock icon: " + key, item.getIcon());
+        }
+        Preference power = screen.findPreference("projectorsoft_page_POWER");
+        assertNotNull(power);
+        assertEquals(NativePage.POWER.fragment, power.getFragment());
+        assertNull(power.getOnPreferenceClickListener());
     }
 
     @Test public void settingsKeyInsideSectionTargetsOriginalMainSettings() {
