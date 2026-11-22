@@ -40,7 +40,8 @@ public final class StockMainSettingsMenu {
             Context context = screen.getContext();
             added = new PreferenceCategory(context);
             added.setKey(CATEGORY);
-            added.setTitle(header.getTitle());
+            // No duplicate blue section heading on the custom main menu.
+            added.setTitle((CharSequence) null);
             added.setOrder(header.getOrder());
             if (!screen.addPreference(added)) return;
             for (NativePage page : NativePage.ROOT) {
