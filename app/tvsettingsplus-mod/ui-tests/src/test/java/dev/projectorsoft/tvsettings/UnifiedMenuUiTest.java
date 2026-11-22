@@ -658,7 +658,9 @@ public class UnifiedMenuUiTest {
         editor.refresh();
         assertTrue(gamma.isEnabled());
         assertFalse(gamma.callChangeListener("3")); // listener handles explicit write
-        assertEquals("3", Settings.Global.getString(resolver, "picture_gamma"));
+        // Implementation writes through putInt; Robolectric's typed shadow does
+        // not guarantee getString() reflects values written via putInt().
+        assertEquals(3, Settings.Global.getInt(resolver, "picture_gamma", -1));
         MemcSettingsActivity activityMemc = Robolectric.buildActivity(MemcSettingsActivity.class).setup().get();
         NativeSections.Memc memc = (NativeSections.Memc)
                 activityMemc.getSupportFragmentManager().findFragmentById(android.R.id.content);
