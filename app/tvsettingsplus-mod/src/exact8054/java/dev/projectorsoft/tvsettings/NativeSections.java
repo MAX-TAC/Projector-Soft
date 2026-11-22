@@ -126,13 +126,20 @@ public final class NativeSections {
                 case "storage": drawable = "ic_storage"; break;
                 case "power": drawable = "ic_settings_power"; break;
                 case "privacy": drawable = "ic_lock"; break;
-                case "security": drawable = "ic_lock_black"; break;
+                case "security": drawable = "ic_lock"; break;
                 case "accessibility": drawable = "ic_accessibility_new"; break;
                 case "developer": drawable = "ic_settings_developeroptions"; break;
                 default: return;
             }
             int resource = requireContext().getResources().getIdentifier(drawable, "drawable", OWN);
-            row.setIcon(resource != 0 ? resource : android.R.drawable.ic_menu_preferences);
+            android.graphics.drawable.Drawable icon = resource != 0
+                    ? requireContext().getDrawable(resource)
+                    : requireContext().getDrawable(android.R.drawable.ic_menu_preferences);
+            if (icon != null) {
+                icon = icon.mutate();
+                icon.setTint(android.graphics.Color.WHITE);
+                row.setIcon(icon);
+            }
         }
     }
 
@@ -229,6 +236,8 @@ public final class NativeSections {
             if (movement != null) movement.setOrder(200);
             OemProjectionPanel.installEditors(context, geometry, Preference.class);
             if (geometry.getPreferenceCount() == 0) screen.removePreference(geometry);
+            // Font scaling is a display/projection preference, not a system-security setting.
+            OemFontScaleHook.install(context, screen, Preference.class);
         }
     }
 
@@ -257,7 +266,7 @@ public final class NativeSections {
         @Override NativePicturePanel.Page picturePage() { return NativePicturePanel.Page.PICTURE; }
         @Override void populate(PreferenceScreen screen) {
             super.populate(screen);
-            link(screen, NativePage.COLOR_TEMPERATURE, 228);
+            link(screen, NativePage.COLOR_TEMPERATURE, 130);
             // MEMC is now a popup ListPreference on this page, like Gamma.
             OemStockUserSettings.installPictureFormat(requireContext(), screen, Preference.class);
         }
@@ -361,11 +370,10 @@ public final class NativeSections {
             stock(screen,"accounts","Учётные записи","accounts.AccountsActivity");
             stock(screen,"storage","Хранилище","device.StorageResetActivity");
             link(screen, NativePage.POWER, 20);
-            stock(screen,"privacy","Конфиденциальность","enterprise.EnterprisePrivacySettingsActivity");
+            // Empty EnterprisePrivacy screen is not relevant on this exact 8054.
             stock(screen,"security","Безопасность","system.SecurityActivity");
             stock(screen,"accessibility","Специальные возможности","oemlink.AccessibilitySettingsActivity");
             stock(screen,"developer","Для разработчиков","system.development.DevelopmentActivity");
-            OemFontScaleHook.install(context,screen,Preference.class);
         }
     }
 
