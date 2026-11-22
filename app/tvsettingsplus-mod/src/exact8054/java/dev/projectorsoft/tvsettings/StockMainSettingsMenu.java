@@ -29,6 +29,7 @@ public final class StockMainSettingsMenu {
     public static void install(PreferenceFragmentCompat fragment) {
         PreferenceScreen screen = fragment.getPreferenceScreen();
         if (screen == null) return;
+        NativeOverlayWindow.apply(fragment.getActivity());
         PreferenceCategory added = null;
         try {
             Preference header = screen.findPreference("general_settings");
