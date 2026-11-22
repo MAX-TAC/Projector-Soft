@@ -602,6 +602,45 @@ public class UnifiedMenuUiTest {
         panel.stop();
     }
 
+    @Test public void pictureHasThreeStockBlueSectionsInRequestedOrder() {
+        PictureSettingsActivity activity =
+                Robolectric.buildActivity(PictureSettingsActivity.class).setup().get();
+        NativeSections.Picture picture = (NativeSections.Picture)
+                activity.getSupportFragmentManager().findFragmentById(android.R.id.content);
+        PreferenceScreen screen = picture.getPreferenceScreen();
+
+        assertEquals("Only 3 top-level blue section groups", 3, screen.getPreferenceCount());
+        PreferenceCategory processing =
+                screen.findPreference("projectorsoft_picture_group_processing");
+        PreferenceCategory color =
+                screen.findPreference("projectorsoft_picture_group_color");
+        PreferenceCategory video =
+                screen.findPreference("projectorsoft_picture_group_video");
+        assertNotNull(processing);
+        assertNotNull(color);
+        assertNotNull(video);
+        assertEquals("Обработка изображения", processing.getTitle());
+        assertEquals("Цвет и баланс белого", color.getTitle());
+        assertEquals("Параметры видеотракта", video.getTitle());
+        assertSame(processing, screen.getPreference(0));
+        assertSame(color, screen.getPreference(1));
+        assertSame(video, screen.getPreference(2));
+        assertEquals(2, processing.getPreferenceCount());
+        assertEquals("projectorsoft_picture_read_picture_list_hdr",
+                processing.getPreference(0).getKey());
+        assertEquals("projectorsoft_picture_read_tv_picture_advance_video_mjc_effect",
+                processing.getPreference(1).getKey());
+        assertEquals(1, color.getPreferenceCount());
+        assertEquals("projectorsoft_page_COLOR_TEMPERATURE",
+                color.getPreference(0).getKey());
+        assertEquals("projectorsoft_picture_read_picture_mode",
+                video.getPreference(0).getKey());
+        assertNotNull(video.findPreference("projectorsoft_picture_video_pipeline_info"));
+        assertNotNull(video.findPreference("projectorsoft_picture_read_picture_gamma"));
+        assertNotNull(screen.findPreference("projectorsoft_picture_read_picture_contrast"));
+        assertNotNull(screen.findPreference("projectorsoft_picture_read_picture_saturation"));
+    }
+
     @Test public void pictureViewerUsesOemLabelsAndStaysReadOnly() {
         PictureSettingsActivity activity = Robolectric.buildActivity(PictureSettingsActivity.class).setup().get();
         NativeSections.Picture picture = (NativeSections.Picture)
