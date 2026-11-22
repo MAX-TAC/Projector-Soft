@@ -79,9 +79,11 @@ public class UnifiedMenuUiTest {
         assertEquals("com.android.tv.settings.about.AboutFragment", about.getFragment());
         assertNull(about.getOnPreferenceClickListener());
         assertNull(screen.findPreference("device_name"));
+        assertNull(screen.findPreference("privacy"));
+        assertNull(screen.findPreference("projectorsoft_font_scale"));
         assertNull(screen.findPreference("projectorsoft_cpu_live"));
         for (String key : new String[]{"about_stock","time","language",
-                "location","accounts","storage","privacy","security",
+                "location","accounts","storage","security",
                 "accessibility","developer"}) {
             Preference item = screen.findPreference(key);
             assertNotNull("Missing System row: " + key, item);
@@ -91,6 +93,7 @@ public class UnifiedMenuUiTest {
         assertNotNull(power);
         assertEquals(NativePage.POWER.fragment, power.getFragment());
         assertNull(power.getOnPreferenceClickListener());
+        assertNotNull("Power icon is required", power.getIcon());
     }
 
     @Test public void settingsKeyInsideSectionTargetsOriginalMainSettings() {
@@ -348,8 +351,8 @@ public class UnifiedMenuUiTest {
     }
 
     @Test public void fontScaleSummaryRendersLiteralPercent() {
-        SystemSettingsActivity activity = Robolectric.buildActivity(SystemSettingsActivity.class).setup().get();
-        NativeSections.System page = (NativeSections.System)
+        ProjectionSettingsActivity activity = Robolectric.buildActivity(ProjectionSettingsActivity.class).setup().get();
+        NativeSections.Projection page = (NativeSections.Projection)
                 activity.getSupportFragmentManager().findFragmentById(android.R.id.content);
         Preference row = page.findPreference("projectorsoft_font_scale");
         assertNotNull(row);
@@ -625,6 +628,15 @@ public class UnifiedMenuUiTest {
         assertEquals("Вариант OEM", gamma.getEntry());
         assertTrue(hdr.isChecked());
         assertTrue(hdr.isEnabled());
+        Preference memcOnPicture = screen.findPreference(
+                "projectorsoft_picture_read_tv_picture_advance_video_mjc_effect");
+        Preference hue = screen.findPreference("projectorsoft_picture_read_picture_hue");
+        assertNotNull(memcOnPicture);
+        assertTrue(hdr.getOrder() < memcOnPicture.getOrder());
+        assertTrue(memcOnPicture.getOrder() < profile.getOrder());
+        assertTrue(hue.getOrder() < gamma.getOrder());
+        assertTrue(gamma.getOrder() < picture.findPreference(
+                "projectorsoft_page_COLOR_TEMPERATURE").getOrder());
         assertEquals("7", Settings.Global.getString(resolver, "picture_mode"));
         assertEquals("2", Settings.Global.getString(resolver, "picture_gamma"));
         MemcSettingsActivity activityMemc = Robolectric.buildActivity(MemcSettingsActivity.class).setup().get();
