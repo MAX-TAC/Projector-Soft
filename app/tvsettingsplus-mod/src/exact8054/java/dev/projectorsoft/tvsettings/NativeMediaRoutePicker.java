@@ -65,19 +65,19 @@ final class NativeMediaRoutePicker {
                               NativeMediaRouteBridge.Output target) {
         if (active != null) return;
         try {
-            List<Object> original = bridge.preferred();
-            if (target == null && original.isEmpty()) {
+            NativeMediaRouteTransaction transaction =
+                    new NativeMediaRouteTransaction(bridge, target);
+            if (transaction.noChangeNeeded()) {
                 Toast.makeText(context, "Автоматическая маршрутизация уже выбрана",
                         Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (target != null && bridge.findConnected(target) == null) {
+            if (!transaction.targetAvailable()) {
                 Toast.makeText(context, "Устройство отключилось. Обновите список",
                         Toast.LENGTH_SHORT).show();
                 return;
             }
-            Pending pending = new Pending(context, screen, bridge, target,
-                    original, bridge.connectedBluetooth());
+            Pending pending = new Pending(context, screen, transaction, target);
             pending.open();
         } catch (Exception | LinkageError unavailable) {
             Log.w(TAG, "Unable to prepare safe MEDIA route transaction", unavailable);
@@ -93,10 +93,8 @@ final class NativeMediaRoutePicker {
     private static final class Pending {
         final Context context;
         final PreferenceScreen screen;
-        final NativeMediaRouteBridge bridge;
+        final NativeMediaRouteTransaction transaction;
         final NativeMediaRouteBridge.Output target;
-        final List<Object> original;
-        final List<NativeMediaRouteBridge.Output> bluetoothBefore;
         final Handler main = new Handler(Looper.getMainLooper());
         final AlertDialog dialog;
         final Runnable poll = this::sample;
@@ -107,14 +105,12 @@ final class NativeMediaRoutePicker {
         String failure;
 
         Pending(Context context, PreferenceScreen screen,
-                NativeMediaRouteBridge bridge, NativeMediaRouteBridge.Output target,
-                List<Object> original, List<NativeMediaRouteBridge.Output> bluetoothBefore) {
+                NativeMediaRouteTransaction transaction,
+                NativeMediaRouteBridge.Output target) {
             this.context = context;
             this.screen = screen;
-            this.bridge = bridge;
+            this.transaction = transaction;
             this.target = target;
-            this.original = original;
-            this.bluetoothBefore = bluetoothBefore;
             dialog = new AlertDialog.Builder(context)
                     .setTitle("Тест аудиовыхода")
                     .setMessage("Подготовка маршрута…")
@@ -135,7 +131,7 @@ final class NativeMediaRoutePicker {
             try {
                 // Mark before the call: a vendor implementation may throw after partial apply.
                 changed = true;
-                if (!bridge.apply(target)) {
+                if (!transaction.apply()) {
                     failure = "Системная AudioPolicy отклонила изменение";
                     dialog.dismiss();
                     return;
@@ -151,18 +147,17 @@ final class NativeMediaRoutePicker {
         private void sample() {
             if (active != this || approved || !dialog.isShowing()) return;
             try {
-                if (!bridge.stillConnected(bluetoothBefore)) {
+                if (!transaction.bluetoothPreserved()) {
                     failure = "Bluetooth-устройство отключилось — исходный маршрут восстановлен";
                     dialog.dismiss();
                     return;
                 }
-                if (target != null && bridge.findConnected(target) == null) {
+                if (!transaction.targetAvailable()) {
                     failure = "Выбранный выход исчез — исходный маршрут восстановлен";
                     dialog.dismiss();
                     return;
                 }
-                boolean settled = target == null ? bridge.preferredIsAutomatic()
-                        : bridge.preferredIs(target) && bridge.routeIs(target);
+                boolean settled = transaction.confirmed();
                 long now = SystemClock.uptimeMillis();
                 if (!confirmedRoute) {
                     if (settled) {
@@ -212,7 +207,7 @@ final class NativeMediaRoutePicker {
                         Toast.LENGTH_LONG).show();
             } else if (changed) {
                 boolean restored = false;
-                try { restored = bridge.restore(original); }
+                try { restored = transaction.rollback(); }
                 catch (Exception | LinkageError error) {
                     Log.e(TAG, "MEDIA route rollback failed", error);
                 }
