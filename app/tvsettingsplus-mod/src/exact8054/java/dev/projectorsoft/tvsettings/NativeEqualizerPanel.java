@@ -266,11 +266,9 @@ final class NativeEqualizerPanel {
 
     private void change(String key, int requested) {
         if (!active || !ready || shown == null || !profileOptionsKnown) return;
-        if (!MODE.equals(key) && !speakerRoute()) {
-            feedback = "OEM тембр и EQ проверены только на встроенных динамиках";
-            refresh();
-            return;
-        }
+        // OEM tone controls configure the internal-speaker profile even when
+        // media currently plays over Bluetooth. They must not be represented
+        // as a Bluetooth-wide EQ, but editing the saved User profile is valid.
         Snapshot fresh = read();
         if (!shown.same(fresh) || !fresh.profileReady()) {
             feedback = "Звуковой профиль или выход изменился";
@@ -305,10 +303,13 @@ final class NativeEqualizerPanel {
         String profile = snapshot == null ? null : snapshot.profile;
         mode.setValue(OemSoundValuePolicy.validProfile(profile) ? profile : null);
         CharSequence name = mode.getEntry();
-        mode.setSummary(name == null ? "Профиль недоступен" : name);
+        mode.setSummary(name == null ? "Профиль недоступен"
+                : !speakerRoute() && "0".equals(profile)
+                    ? name + " · настройки для динамиков" : name);
         boolean profileReady = stable && profileOptionsKnown && name != null && snapshot != null && snapshot.profileReady();
         mode.setEnabled(profileReady);
-        final boolean speakerRouteVerified = speakerRoute();
+        // The DSP effect is output-dependent, but User profile controls are
+        // still editable while BT is active for future speaker playback.
         for (int i = 0; i < rows.length; i++) {
             Band band = snapshot == null ? null : snapshot.bands.get(i);
             BandRow row = rows[i];
@@ -317,18 +318,13 @@ final class NativeEqualizerPanel {
                 row.setMin(band.min);
                 row.setValue(band.stored);
                 row.display(true);
-                row.setSummary(!"0".equals(profile)
-                        ? "Только просмотр · заводской профиль"
-                        : !speakerRouteVerified
-                            ? "Только просмотр · OEM DSP не проверен на этом выходе"
-                            : null);
+                row.setSummary(null);
             } else {
                 row.display(false);
                 row.setSummary(band != null && !band.supported
                         ? "Полоса не поддерживается текущей конфигурацией" : "Значение недоступно");
             }
-            row.setEnabled(profileReady && speakerRouteVerified
-                    && band != null && band.coherent()
+            row.setEnabled(profileReady && band != null && band.coherent()
                     && OemSoundValuePolicy.acceptsBandChange(String.valueOf(band.stored), band.stored,
                             band.min, band.max, profile, profile));
         }
