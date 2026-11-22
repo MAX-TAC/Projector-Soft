@@ -26,11 +26,11 @@ final class NativeAudioOutputReadout {
     static void install(Context context, PreferenceScreen screen) {
         Preference row = new Preference(context);
         row.setKey(KEY);
-        row.setTitle("Устройство вывода · диагностика");
+        row.setTitle("Устройство вывода звука");
         row.setOrder(195);
         row.setPersistent(false);
         row.setOnPreferenceClickListener(item -> {
-            refresh(context, screen);
+            NativeMediaRoutePicker.show(context, screen);
             return true;
         });
         screen.addPreference(row);
@@ -59,7 +59,7 @@ final class NativeAudioOutputReadout {
             }
             row.setSummary("Media: " + (activeNames.isEmpty() ? "не определён" : String.join(", ", activeNames))
                     + "\nДоступны: " + (availableNames.isEmpty() ? "нет данных" : String.join(", ", availableNames))
-                    + "\nНажмите для обновления. Переключение пока не разрешено.");
+                    + "\nНажмите для выбора и проверки маршрута.");
         } catch (RuntimeException | LinkageError error) {
             Log.w(TAG, "Media output readout unavailable", error);
             row.setSummary("Аудиомаршрут недоступен для чтения");
