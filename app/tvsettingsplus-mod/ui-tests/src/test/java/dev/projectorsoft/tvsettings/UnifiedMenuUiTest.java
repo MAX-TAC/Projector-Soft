@@ -40,10 +40,10 @@ public class UnifiedMenuUiTest {
         MainFragment fragment = (MainFragment) main.getSupportFragmentManager().findFragmentById(android.R.id.content);
         PreferenceScreen screen = fragment.getPreferenceScreen();
         PreferenceCategory active = screen.findPreference(StockMainSettingsMenu.CATEGORY);
-        assertEquals("Общие настройки", active.getTitle());
+        assertNull(active.getTitle());
         assertNotNull(fragment.getListView().getAdapter());
         String[] expected = {"Wi-Fi и сеть", "Bluetooth", "Источники", "Проекция",
-                "Изображение", "Звук", "Приложения", "Настройки устройства"};
+                "Изображение", "Звук", "Приложения", "Настройки системы"};
         assertEquals(expected.length, active.getPreferenceCount());
         assertEquals(expected.length + 1, fragment.getListView().getAdapter().getItemCount());
         for (int i = 0; i < expected.length; i++) {
@@ -579,7 +579,9 @@ public class UnifiedMenuUiTest {
         NativeSections.Picture picture = (NativeSections.Picture)
                 activity.getSupportFragmentManager().findFragmentById(android.R.id.content);
         assertNull(picture.findPreference("projectorsoft_picture_status"));
-        assertNotNull(picture.findPreference("projectorsoft_page_MEMC"));
+        assertNull(picture.findPreference("projectorsoft_page_MEMC"));
+        assertTrue(picture.findPreference("projectorsoft_picture_read_tv_picture_advance_video_mjc_effect")
+                instanceof androidx.preference.ListPreference);
         android.content.ContentResolver resolver = activity.getContentResolver();
         Settings.Global.putString(resolver, "picture_mode", "7");
         Settings.Global.putString(resolver, "picture_list_hdr", "1");
