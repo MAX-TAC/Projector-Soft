@@ -268,6 +268,28 @@ final class NativeMediaRouteBridge implements NativeMediaRouteTransaction.Port {
         return samePreferred(original, preferred());
     }
 
+    /** Minimal live diagnostics, no Bluetooth MAC addresses in Android logcat. */
+    @Override public String diagnostic() {
+        StringBuilder value = new StringBuilder();
+        try { value.append("mediaForce=").append(mediaForce()); }
+        catch (Exception error) { value.append("mediaForce=?"); }
+        try {
+            List<Object> requested = preferred();
+            value.append(" preferredCount=").append(requested.size());
+            if (!requested.isEmpty()) {
+                value.append(" preferredTypes=");
+                for (Object o : requested) value.append(preferredType.invoke(o)).append(',');
+            }
+        } catch (Exception error) { value.append(" preferred=?"); }
+        try {
+            List<AudioDeviceInfo> actual = audio.getAudioDevicesForAttributes(MEDIA);
+            value.append(" mediaRoutes=");
+            if (actual != null) for (AudioDeviceInfo d : actual)
+                if (d != null) value.append(d.getType()).append('#').append(d.getId()).append(',');
+        } catch (Exception error) { value.append(" mediaRoutes=?"); }
+        return value.toString();
+    }
+
     boolean samePreferred(List<Object> first, List<Object> second) throws Exception {
         if (first.size() != second.size()) return false;
         for (int i = 0; i < first.size(); i++) {
