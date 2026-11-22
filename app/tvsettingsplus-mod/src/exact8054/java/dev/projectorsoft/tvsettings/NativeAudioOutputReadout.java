@@ -57,9 +57,8 @@ final class NativeAudioOutputReadout {
             if (available != null) for (AudioDeviceInfo device : available) {
                 if (device != null && isMediaCandidate(device)) availableNames.add(name(device));
             }
-            row.setSummary("Media: " + (activeNames.isEmpty() ? "не определён" : String.join(", ", activeNames))
-                    + "\nДоступны: " + (availableNames.isEmpty() ? "нет данных" : String.join(", ", availableNames))
-                    + "\nНажмите для выбора и проверки маршрута.");
+            row.setSummary("Сейчас: " + (activeNames.isEmpty() ? "не определён" : String.join(", ", activeNames))
+                    + "\nДоступные: " + (availableNames.isEmpty() ? "нет данных" : String.join(", ", availableNames)));
         } catch (RuntimeException | LinkageError error) {
             Log.w(TAG, "Media output readout unavailable", error);
             row.setSummary("Аудиомаршрут недоступен для чтения");
