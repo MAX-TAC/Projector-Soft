@@ -20,6 +20,7 @@ final class NativeMediaRouteTransaction {
         void allowA2dpMedia(boolean allow) throws Exception;
         boolean mediaForceAllowsA2dp() throws Exception;
         boolean mediaForceDisallowsA2dp() throws Exception;
+        default String diagnostic() { return "diagnostic unavailable"; }
     }
 
     private final Port port;
@@ -126,6 +127,10 @@ final class NativeMediaRouteTransaction {
     }
 
     int originalForce() { return forceBefore; }
+
+    String diagnostic() {
+        return port.diagnostic();
+    }
 
     List<Object> originalPreference() {
         return new ArrayList<>(original);
