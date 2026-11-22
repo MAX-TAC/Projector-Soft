@@ -56,6 +56,12 @@ final class NativeMediaRouteBridge implements NativeMediaRouteTransaction.Port {
     private final Constructor<?> deviceAttributesConstructor;
     private final Method preferredType;
     private final Method preferredAddress;
+    // AudioSystem.FOR_MEDIA = 1; FORCE_NONE = 0; FORCE_NO_BT_A2DP = 10.
+    // Resolve all constants reflectively from the actual Android 13 framework.
+    private final Method getForceUse;
+    private final int forMedia;
+    private final int forceNone;
+    private final int forceNoBluetooth;
 
     private NativeMediaRouteBridge(Context context, AudioManager audio, Object strategy,
                                    Class<?> strategyClass, Class<?> deviceAttributesClass)
@@ -73,6 +79,11 @@ final class NativeMediaRouteBridge implements NativeMediaRouteTransaction.Port {
         deviceAttributesConstructor = deviceAttributesClass.getConstructor(AudioDeviceInfo.class);
         preferredType = deviceAttributesClass.getMethod("getType");
         preferredAddress = deviceAttributesClass.getMethod("getAddress");
+        Class<?> audioSystem = Class.forName("android.media.AudioSystem");
+        getForceUse = audioSystem.getMethod("getForceUse", int.class);
+        forMedia = audioSystem.getField("FOR_MEDIA").getInt(null);
+        forceNone = audioSystem.getField("FORCE_NONE").getInt(null);
+        forceNoBluetooth = audioSystem.getField("FORCE_NO_BT_A2DP").getInt(null);
     }
 
     static NativeMediaRouteBridge open(Context context) throws Exception {
@@ -135,6 +146,40 @@ final class NativeMediaRouteBridge implements NativeMediaRouteTransaction.Port {
             if (output.id == selected.id && output.same(selected)) return output;
         }
         return null;
+    }
+
+    /** Snapshot of the native media force policy; never override an unknown owner. */
+    @Override public int mediaForce() throws Exception {
+        requirePermission();
+        return (Integer) getForceUse.invoke(null, forMedia);
+    }
+
+    @Override public boolean canControlA2dpMedia() throws Exception {
+        int current = mediaForce();
+        return (current == forceNone || current == forceNoBluetooth)
+                && context.checkSelfPermission(android.Manifest.permission.MODIFY_AUDIO_SETTINGS)
+                    == PackageManager.PERMISSION_GRANTED;
+    }
+
+    /**
+     * AudioManager delegates to AudioService.setBluetoothA2dpOnInt. This changes
+     * media force use (FORCE_NO_BT_A2DP/FORCE_NONE); it does NOT disconnect A2DP.
+     * Binder handling is asynchronous: caller must verify effective policy later.
+     */
+    @SuppressWarnings("deprecation")
+    @Override public void allowA2dpMedia(boolean allow) throws Exception {
+        if (!canControlA2dpMedia())
+            throw new SecurityException("Media force policy cannot be safely changed");
+        audio.setBluetoothA2dpOn(allow);
+        Log.i("TvSettingsPlusMOD", "A2DP MEDIA force requested: allow=" + allow);
+    }
+
+    @Override public boolean mediaForceAllowsA2dp() throws Exception {
+        return mediaForce() == forceNone;
+    }
+
+    @Override public boolean mediaForceDisallowsA2dp() throws Exception {
+        return mediaForce() == forceNoBluetooth;
     }
 
     @Override public List<Object> preferred() throws Exception {
