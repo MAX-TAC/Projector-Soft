@@ -123,17 +123,82 @@ final class NativePicturePanel {
         row.setOrder(order);
         row.setKey("projectorsoft_picture_read_" + key);
         row.setPersistent(false);
-        if (!SLIDER_CONFIG.containsKey(key)) row.setEnabled(false);
+        if (row instanceof ListPreference) {
+            ((ListPreference) row).setOnPreferenceChangeListener((pref, value) -> {
+                if (value instanceof String) updateChoice(key, (String) value);
+                return false; // refresh only after reading back OEM state
+            });
+        } else if (row instanceof SwitchPreference) {
+            ((SwitchPreference) row).setOnPreferenceChangeListener((pref, value) -> {
+                if (value instanceof Boolean) updateChoice(key, (Boolean) value ? "1" : "0");
+                return false;
+            });
+        }
         screen.addPreference(row);
         rows.put(key, row);
     }
 
     private static Preference stockSliderRow(Context context) {
+        // The original ProgressDialogPreference has its *own* onClick which can
+        // intercept our custom popup. Use a plain preference with the exact
+        // stock partner_progressbar_dialog.xml as the actual bottom editor.
+        return new Preference(context);
+    }
+
+    /**
+     * Real OEM consumer keys, not Factory PQ setters. Presets, HDR and MEMC are
+     * independent from the User-only restriction on five scalar PQ sliders.
+     */
+    private void updateChoice(String key, String selected) {
+        Map<String, Integer> before = snapshot();
+        Integer previous = before == null ? null :
+                (GAMMA.equals(key) ? storedGamma() : before.get(key));
+        if (!"8054".equals(OemHdmiPortInfo.machineId()) || previous == null || selected == null)
+            return;
+        boolean toggle = PicturePanelState.HDR.equals(key);
+        if (toggle && !("0".equals(selected) || "1".equals(selected))) return;
+        if (!toggle) {
+            String[][] choices;
+            try { choices = options.options(key); }
+            catch (Exception | LinkageError error) {
+                Log.w(TAG, "Picture options unavailable for " + key, error);
+                return;
+            }
+            if (!OemCustomerOptions.valid(choices)) return;
+            boolean matched = false;
+            for (String value : choices[1]) {
+                if (selected.equals(value)) { matched = true; break; }
+            }
+            if (!matched) return;
+        }
+        // RGB/temperature choices are user adjustments. Do not mutate factory
+        // preset calibration; gamma/HDR/MEMC and mode remain separate controls.
+        if (PicturePanelState.TEMPERATURE.equals(key) && !canEdit(before)) return;
+        final int requested;
+        try { requested = Integer.parseInt(selected); }
+        catch (NumberFormatException invalid) { return; }
+        if (requested == previous) return;
+        if (!before.equals(snapshot())) return;
         try {
-            return (Preference) Class.forName(ROOT + ".partnercustomizer.utils.ProgressDialogPreference")
-                    .getConstructor(Context.class).newInstance(context);
-        } catch (ReflectiveOperationException | LinkageError unavailable) {
-            return new Preference(context);
+            if (!Settings.Global.putInt(context.getContentResolver(), key, requested)) {
+                android.widget.Toast.makeText(context, "Настройка не применена",
+                        android.widget.Toast.LENGTH_SHORT).show();
+                return;
+            }
+            Log.i(TAG, "Picture OEM consumer change requested: " + key
+                    + " " + previous + " -> " + requested);
+            confirmationHandler.postDelayed(() -> {
+                refresh();
+                Integer result = GAMMA.equals(key) ? storedGamma()
+                        : snapshot() == null ? null : snapshot().get(key);
+                if (!Objects.equals(result, requested))
+                    Log.w(TAG, "Picture OEM consumer readback not confirmed: " + key
+                            + " requested=" + requested + " actual=" + result);
+            }, 450);
+        } catch (RuntimeException error) {
+            Log.w(TAG, "Picture OEM consumer change failed: " + key, error);
+            android.widget.Toast.makeText(context, "Не удалось изменить настройку",
+                    android.widget.Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -177,11 +242,12 @@ final class NativePicturePanel {
                 boolean known = value != null && (value == 0 || value == 1);
                 hdr.setChecked(known && value == 1);
                 hdr.setSummary(!known ? "Состояние недоступно"
-                        : (value == 1 ? "Включён" : "Выключен") + " · только просмотр");
+                        : (value == 1 ? "Включён" : "Выключен"));
+                hdr.setEnabled(known);
             } else {
                 boolean editable = value != null && userModeVerified;
                 row.setSummary(value == null ? "Значение недоступно"
-                        : value + (editable ? " · пользовательский режим (тест)" : " · только просмотр"));
+                        : String.valueOf(value));
                 row.setEnabled(editable);
             }
         }
@@ -205,7 +271,8 @@ final class NativePicturePanel {
             list.setEntries(new CharSequence[0]);
             list.setEntryValues(new CharSequence[0]);
             list.setValue(null);
-            list.setSummary("Штатные варианты недоступны");
+            list.setSummary("Нет доступных вариантов");
+            list.setEnabled(false);
             return;
         }
         list.setEntries(table[0]);
@@ -214,7 +281,9 @@ final class NativePicturePanel {
         list.setValue(list.findIndexOfValue(id) >= 0 ? id : null);
         CharSequence label = list.getEntry();
         list.setSummary(label == null ? "Текущий режим недоступен"
-                : label.toString().replace("%", "%%") + " · только просмотр");
+                : label.toString().replace("%", "%%"));
+        list.setEnabled(label != null && (!PicturePanelState.TEMPERATURE.equals(key)
+                || canEdit(snapshot())));
     }
 
     private static String[][] stockOptions(Context context, String key) throws Exception {
@@ -241,7 +310,7 @@ final class NativePicturePanel {
             int min = ((Integer) type.getMethod("getMin", String.class).invoke(cfg, configId));
             int max = ((Integer) type.getMethod("getMax", String.class).invoke(cfg, configId));
             int actual = ((Integer) type.getMethod("getConfigValueInt", String.class).invoke(cfg, configId));
-            if (stored == null || stored != actual || min >= max || actual < min || actual > max
+            if (stored == null || min >= max || stored < min || stored > max
                     || !before.equals(snapshot()) || !canEdit(snapshot())) {
                 android.widget.Toast.makeText(context, "Текущее значение недоступно", android.widget.Toast.LENGTH_SHORT).show();
                 return;
@@ -253,9 +322,12 @@ final class NativePicturePanel {
             if (bar == null || name == null || value == null || host.getActivity() == null) return;
             bar.setMax(max);
             bar.setMin(min);
-            bar.setProgress(actual);
-            name.setText(title + " · тестовый обработчик OEM");
-            value.setText(String.valueOf(actual));
+            bar.setProgress(stored);
+            name.setText(title);
+            value.setText(String.valueOf(stored));
+            if (actual != stored)
+                Log.w(TAG, "OEM PQ state not yet in sync for " + key
+                        + ": stored=" + stored + " applied=" + actual);
             Dialog dialog = new Dialog(host.requireActivity());
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.setContentView(layout);
@@ -298,9 +370,9 @@ final class NativePicturePanel {
             slider = dialog;
             menu.setVisibility(View.INVISIBLE);
         } catch (Exception | LinkageError unavailable) {
-            Log.w(TAG, "Read-only OEM picture slider unavailable", unavailable);
+            Log.w(TAG, "OEM picture slider unavailable", unavailable);
             if (slider != null) slider.dismiss();
-            android.widget.Toast.makeText(context, "Просмотр недоступен", android.widget.Toast.LENGTH_SHORT).show();
+            android.widget.Toast.makeText(context, "Регулятор недоступен", android.widget.Toast.LENGTH_SHORT).show();
         }
     }
 
