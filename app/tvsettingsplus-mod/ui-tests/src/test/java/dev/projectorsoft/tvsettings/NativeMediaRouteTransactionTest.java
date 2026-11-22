@@ -26,7 +26,17 @@ public final class NativeMediaRouteTransactionTest {
                 Arrays.asList(SPEAKER, BT));
         NativeMediaRouteBridge.Output selected = BT;
         boolean throwAfterApply, denyApply;
-        int writes, restores;
+        int writes, restores, force, forceWrites;
+
+        @Override public int mediaForce() { return force; }
+        @Override public boolean canControlA2dpMedia() { return true; }
+        @Override public boolean mediaForceAllowsA2dp() { return force == 0; }
+        @Override public boolean mediaForceDisallowsA2dp() { return force == 10; }
+        @Override public void allowA2dpMedia(boolean allow) {
+            forceWrites++;
+            force = allow ? 0 : 10;
+            if (!allow && preferred.contains(SPEAKER)) selected = SPEAKER;
+        }
 
         @Override public List<Object> preferred() {
             return new ArrayList<>(preferred);
@@ -153,5 +163,56 @@ public final class NativeMediaRouteTransactionTest {
         fake.selected = BT; // audio policy did not actually route to requested sink
         assertFalse(txn.confirmed());
         assertTrue(txn.rollback());
+    }
+
+    @Test public void noA2dpFallbackChangesPolicyButDoesNotDisconnectBluetooth() throws Exception {
+        FakePort fake = new FakePort();
+        NativeMediaRouteTransaction txn = new NativeMediaRouteTransaction(fake, SPEAKER);
+        assertTrue(txn.apply());
+        fake.selected = BT; // exact reproduced failure from physical 8054
+        assertFalse(txn.confirmed());
+        assertTrue(txn.trySpeakerForceFallback());
+        assertTrue(txn.speakerForceApplied());
+        assertTrue(txn.confirmed());
+        assertTrue(fake.devices.contains(BT));
+        assertTrue(txn.rollback());
+        assertEquals(0, fake.force);
+        assertTrue(txn.forceRestored());
+        assertEquals(2, fake.forceWrites);
+    }
+
+    @Test public void existingSpeakerExclusionIsRemovedWhenReturningToBluetooth() throws Exception {
+        FakePort fake = new FakePort();
+        fake.force = 10;
+        fake.selected = SPEAKER;
+        NativeMediaRouteTransaction txn = new NativeMediaRouteTransaction(fake, BT);
+        assertTrue(txn.apply());
+        assertEquals(0, fake.force);
+        assertTrue(txn.confirmed());
+        assertTrue(txn.rollback());
+        assertEquals(10, fake.force);
+        assertTrue(txn.forceRestored());
+    }
+
+    @Test public void automaticIsNotNoOpIfPreviousMediaForceDisablesBluetooth() throws Exception {
+        FakePort fake = new FakePort();
+        fake.force = 10;
+        NativeMediaRouteTransaction txn = new NativeMediaRouteTransaction(fake, null);
+        assertFalse(txn.noChangeNeeded());
+        assertTrue(txn.apply());
+        assertEquals(0, fake.force);
+        assertTrue(txn.confirmed());
+        assertTrue(txn.rollback());
+        assertEquals(10, fake.force);
+    }
+
+    @Test public void speakerFallbackCannotRunTwice() throws Exception {
+        FakePort fake = new FakePort();
+        NativeMediaRouteTransaction txn = new NativeMediaRouteTransaction(fake, SPEAKER);
+        assertTrue(txn.apply());
+        fake.selected = BT;
+        assertTrue(txn.trySpeakerForceFallback());
+        assertFalse(txn.trySpeakerForceFallback());
+        assertEquals(1, fake.forceWrites);
     }
 }
