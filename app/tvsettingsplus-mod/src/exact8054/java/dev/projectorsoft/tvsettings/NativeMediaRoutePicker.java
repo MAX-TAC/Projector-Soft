@@ -41,7 +41,7 @@ final class NativeMediaRoutePicker {
                 return;
             }
             List<String> entries = new ArrayList<>();
-            entries.add("Автоматически (Android AudioPolicy)");
+            entries.add("Автоматически");
             for (NativeMediaRouteBridge.Output output : outputs) {
                 entries.add(output.label);
             }
@@ -114,7 +114,7 @@ final class NativeMediaRoutePicker {
             this.transaction = transaction;
             this.target = target;
             dialog = new AlertDialog.Builder(context)
-                    .setTitle("Тест аудиовыхода")
+                    .setTitle("Переключение звука")
                     .setMessage("Подготовка маршрута…")
                     .setPositiveButton("Звук работает", (d, which) -> { approved = confirmedRoute; })
                     .setNegativeButton("Отменить и вернуть", (d, which) -> {})
