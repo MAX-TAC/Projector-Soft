@@ -20,7 +20,7 @@ import java.util.Objects;
  * Settings.Global sound_speaker_status writes, or Bluetooth disconnect.
  * Fail closed if any system method, permission, or exact strategy is unavailable.
  */
-final class NativeMediaRouteBridge {
+final class NativeMediaRouteBridge implements NativeMediaRouteTransaction.Port {
     static final String PERMISSION = "android.permission.MODIFY_AUDIO_ROUTING";
     static final AudioAttributes MEDIA =
             new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA).build();
@@ -128,7 +128,7 @@ final class NativeMediaRouteBridge {
                 || type == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP;
     }
 
-    Output findConnected(Output selected) {
+    @Override public Output findConnected(Output selected) {
         if (selected == null) return null;
         for (Output output : outputs()) {
             // Port ID is ephemeral; while switching require the same connected port.
@@ -137,7 +137,7 @@ final class NativeMediaRouteBridge {
         return null;
     }
 
-    List<Object> preferred() throws Exception {
+    @Override public List<Object> preferred() throws Exception {
         requirePermission();
         Object value = getPreferred.invoke(audio, mediaStrategy);
         if (!(value instanceof List))
@@ -145,16 +145,16 @@ final class NativeMediaRouteBridge {
         return new ArrayList<>((List<?>) value);
     }
 
-    boolean preferredIs(Output target) throws Exception {
+    @Override public boolean preferredIs(Output target) throws Exception {
         List<Object> list = preferred();
         return list.size() == 1 && sameAttributes(list.get(0), target);
     }
 
-    boolean preferredIsAutomatic() throws Exception {
+    @Override public boolean preferredIsAutomatic() throws Exception {
         return preferred().isEmpty();
     }
 
-    boolean routeIs(Output target) {
+    @Override public boolean routeIs(Output target) {
         if (target == null) return false;
         List<AudioDeviceInfo> routed = audio.getAudioDevicesForAttributes(MEDIA);
         if (routed == null || routed.size() != 1 || routed.get(0) == null) return false;
@@ -165,7 +165,7 @@ final class NativeMediaRouteBridge {
                         || Objects.equals(current.getAddress(), target.address));
     }
 
-    boolean stillConnected(List<Output> initiallyConnectedBluetooth) {
+    @Override public boolean stillConnected(List<Output> initiallyConnectedBluetooth) {
         List<Output> now = outputs();
         for (Output bt : initiallyConnectedBluetooth) {
             boolean present = false;
@@ -177,14 +177,14 @@ final class NativeMediaRouteBridge {
         return true;
     }
 
-    List<Output> connectedBluetooth() {
+    @Override public List<Output> connectedBluetooth() {
         List<Output> result = new ArrayList<>();
         for (Output d : outputs())
             if (d.type == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP) result.add(d);
         return result;
     }
 
-    boolean apply(Output selected) throws Exception {
+    @Override public boolean apply(Output selected) throws Exception {
         requirePermission();
         if (selected != null) {
             AudioDeviceInfo connected = null;
@@ -206,7 +206,7 @@ final class NativeMediaRouteBridge {
         return Boolean.TRUE.equals(removePreferred.invoke(audio, mediaStrategy));
     }
 
-    boolean restore(List<Object> original) throws Exception {
+    @Override public boolean restore(List<Object> original) throws Exception {
         requirePermission();
         if (original == null) throw new IllegalArgumentException("Original preference not captured");
         if (original.isEmpty()) {
