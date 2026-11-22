@@ -68,6 +68,13 @@
 
 [Воспроизводимый инструмент аудита](https://github.com/MAX-TAC/FlixTone_8054_Backup/blob/research/8054-audio-output-policy-20261122/tools/audit_8054_audio_output_policy.py) · [Draft PR резервного репозитория](https://github.com/MAX-TAC/FlixTone_8054_Backup/pull/2).
 
+### Дополнено: framework и TvSettingsPlus **подписаны одним сертификатом**
+
+Финальный read-only аудит [GitHub Actions #45015766483](https://github.com/MAX-TAC/FlixTone_8054_Backup/actions/runs/45015766483) сравнил оригинальные framework-res.apk (package android) и TvSettingsPlus.apk (package com.android.tv.settings) из точного stock super.img. В обоих случаях SHA-256 **сертификата подписи** = `c8a2e9bccf597c2fb6dc66bee293fc13f2fc47ec77bc6b2b0d52c11f51192ab8`; сравнение `FRAMEWORK_TVSETTINGS_CERT_EQUAL=True`.
+
+В Android 13 permission `MODIFY_AUDIO_ROUTING` имеет protection `signature|privileged|role`. Таким образом, будущий MOD APK, **сохранив точную подпись** и дополнив свой Manifest запросом этого permission, вероятно сможет получить его **по signature**, без изменения stock `privapp-permissions` на физической прошивке. Но это не доказательство фактического grant: штатный APK не запрашивает разрешение, новая APK не была установлена и MediaTek AudioPolicy route preference не проверяли. Для runtime использовать `dumpsys package` и `checkSelfPermission` до тестирования setter; программный код не должен менять route, если grant отсутствует. При пробном переключении первоначально сохранять и возвращать user audio route без отключения BT pairing/CEC/eARC.
+
+Все подробности (ports, routes, APK requested permissions, signer hashes, read-only ADB): [технический отчёт в репозитории бэкапа](https://github.com/MAX-TAC/FlixTone_8054_Backup/blob/research/8054-audio-output-policy-20261122/docs/8054_AUDIO_OUTPUT_ROUTING_STATIC_20261122.md).
 ## 4. Что нам уже известно, а что ещё не проверено
 
 | Возможность | Статус |
