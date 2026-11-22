@@ -29,6 +29,7 @@ Archive files:
 - `window.txt`: top visible `com.android.tv.settings` window has type `APPLICATION_OVERLAY`, not a new traditional settings Activity.
 - Thus the remote button is **not** routed through standard `android.settings.SETTINGS`; adding an intent-filter to the launcher does not intercept the firmware policy's direct service startup.
 - The source of direct `startService` in `PhoneWindowManager` / `TrdTvWindowMangerImpl` or service startup needs separate controlled binary/static investigation. Do not disable Chinese menu, remove FloatMenuService, edit vendor keylayout or redirect system global input without a verified restoration path.
+- The now-disproved R5 launcher-alias filter for implicit `android.settings.SETTINGS` has been removed in R7. The dedicated MAIN/LAUNCHER/LEANBACK_LAUNCHER MOD icon remains; the standard settings action and Chinese Activity are not hijacked by MOD.
 - `KEYCODE 307` is a numeric diagnostic fact, not a claim about the Android public key name. Ownership is established by log chain; no firmware file modified for remote support in R7.
 
 ## Acceptance
