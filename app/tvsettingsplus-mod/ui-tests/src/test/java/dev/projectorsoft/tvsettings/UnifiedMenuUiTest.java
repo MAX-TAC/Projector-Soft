@@ -281,7 +281,7 @@ public class UnifiedMenuUiTest {
         assertEquals(1,device.writes);
     }
 
-    @Test public void soundRoutesKeepEqAndDelayOnSeparateScreensWithoutMediaVolume() {
+    @Test public void soundRoutesKeepEqAndSpdifOnSingleScreensWithoutDuplicateDelay() {
         SoundSettingsActivity activity = Robolectric.buildActivity(SoundSettingsActivity.class).setup().get();
         NativeSections.Sound fragment = (NativeSections.Sound)
                 activity.getSupportFragmentManager().findFragmentById(android.R.id.content);
@@ -289,8 +289,9 @@ public class UnifiedMenuUiTest {
         Preference equalizer = screen.findPreference("projectorsoft_page_EQUALIZER");
         Preference delay = screen.findPreference("projectorsoft_page_DELAY");
         assertEquals(NativePage.EQUALIZER.fragment, equalizer.getFragment());
-        assertEquals(NativePage.DELAY.fragment, delay.getFragment());
-        assertTrue(equalizer.getOrder() < delay.getOrder());
+        assertNull(delay);
+        assertEquals("Цифровой выход (SPDIF)",
+                screen.findPreference("projectorsoft_audio_output").getTitle());
         assertNull(screen.findPreference("projectorsoft_media_volume"));
         assertNull(screen.findPreference("sound_mute"));
         assertNull(screen.findPreference("projectorsoft_sound_mode"));
@@ -587,12 +588,12 @@ public class UnifiedMenuUiTest {
         androidx.preference.ListPreference profile = screen.findPreference("projectorsoft_picture_read_picture_mode");
         androidx.preference.ListPreference gamma = screen.findPreference("projectorsoft_picture_read_picture_gamma");
         SwitchPreference hdr = screen.findPreference("projectorsoft_picture_read_picture_list_hdr");
-        assertFalse(profile.isEnabled());
-        assertFalse(gamma.isEnabled());
+        assertTrue(profile.isEnabled());
+        assertTrue(gamma.isEnabled());
         assertEquals("Профиль OEM", profile.getEntry());
         assertEquals("Вариант OEM", gamma.getEntry());
         assertTrue(hdr.isChecked());
-        assertFalse(hdr.isEnabled());
+        assertTrue(hdr.isEnabled());
         assertEquals("7", Settings.Global.getString(resolver, "picture_mode"));
         assertEquals("2", Settings.Global.getString(resolver, "picture_gamma"));
         MemcSettingsActivity activityMemc = Robolectric.buildActivity(MemcSettingsActivity.class).setup().get();
