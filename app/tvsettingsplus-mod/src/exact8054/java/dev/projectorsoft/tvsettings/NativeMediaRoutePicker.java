@@ -19,7 +19,8 @@ import java.util.List;
  */
 final class NativeMediaRoutePicker {
     private static final String TAG = "TvSettingsPlusMOD";
-    private static final int ROUTE_CHECK_MS = 4500;
+    private static final int ROUTE_CHECK_MS = 12000;
+    private static final int FALLBACK_CHECK_MS = 1100;
     private static final int CONFIRM_MS = 25000;
     private static final int POLL_MS = 250;
     private static Pending active;
@@ -101,6 +102,7 @@ final class NativeMediaRoutePicker {
         boolean changed;
         boolean approved;
         boolean confirmedRoute;
+        boolean fallbackRequested;
         long startedAt, confirmedAt;
         String failure;
 
@@ -132,10 +134,11 @@ final class NativeMediaRoutePicker {
                 // Mark before the call: a vendor implementation may throw after partial apply.
                 changed = true;
                 if (!transaction.apply()) {
-                    failure = "Системная AudioPolicy отклонила изменение";
+                    failure = "AudioPolicy не приняла новый выход";
                     dialog.dismiss();
                     return;
                 }
+                Log.i(TAG, "MEDIA route requested: " + (target == null ? "AUTO" : target.label));
                 main.postDelayed(poll, POLL_MS);
             } catch (Exception | LinkageError problem) {
                 Log.w(TAG, "MEDIA output route write failed", problem);
@@ -159,18 +162,30 @@ final class NativeMediaRoutePicker {
                 }
                 boolean settled = transaction.confirmed();
                 long now = SystemClock.uptimeMillis();
+                if (!settled && !fallbackRequested && target != null
+                        && target.type == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER
+                        && now - startedAt >= FALLBACK_CHECK_MS) {
+                    // Evidence on 8054: preferred Speaker is accepted while
+                    // actual MEDIA keeps playing via A2DP. Force exclusion
+                    // through AudioService, with separately captured rollback.
+                    fallbackRequested = transaction.trySpeakerForceFallback();
+                    if (fallbackRequested) Log.i(TAG, "MEDIA Speaker A2DP exclusion requested");
+                }
                 if (!confirmedRoute) {
                     if (settled) {
                         confirmedRoute = true;
                         confirmedAt = now;
+                        Log.i(TAG, "MEDIA route readback confirmed: " + (target == null ? "AUTO" : target.label));
                         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
                     } else if (now - startedAt >= ROUTE_CHECK_MS) {
-                        failure = "Новый маршрут не подтвердился — выполнен откат";
+                        failure = "Звук не переключился — прежний выход восстановлен";
+                        Log.w(TAG, "MEDIA route failed after alternate policy; target="
+                                + (target == null ? "AUTO" : target.label));
                         dialog.dismiss();
                         return;
                     } else {
-                        dialog.setMessage("AudioPolicy переключает выход…"
-                                + "\nЕсли звук исчезнет, маршрут будет автоматически восстановлен.");
+                        dialog.setMessage("Переключение звука…"
+                                + "\nПри неудаче прежний выход восстановится автоматически.");
                     }
                 }
                 if (confirmedRoute) {
@@ -216,6 +231,8 @@ final class NativeMediaRoutePicker {
                     Toast.makeText(context, "ВНИМАНИЕ: откат не подтверждён. "
                             + "Верните аудиовыход через штатные настройки", Toast.LENGTH_LONG).show();
                 } else {
+                    Log.i(TAG, "MEDIA preferred strategy restored; original media force="
+                            + transaction.originalForce());
                     Toast.makeText(context, failure == null
                             ? "Исходный аудиомаршрут восстановлен" : failure,
                             Toast.LENGTH_LONG).show();
