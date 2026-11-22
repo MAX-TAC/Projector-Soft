@@ -425,9 +425,25 @@ final class NativePicturePanel {
             if (window == null) return;
             window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-            window.setGravity(Gravity.BOTTOM);
+            // Use the same compact bottom editor for video PQ and RGB.
+            // MATCH_PARENT stretched the main Picture editor edge-to-edge,
+            // unlike the original compact color-temperature control.
+            window.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
             dialog.show();
-            window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+            int displayWidth = host.requireActivity().getResources()
+                    .getDisplayMetrics().widthPixels;
+            int dp = Math.round(host.requireActivity().getResources()
+                    .getDisplayMetrics().density * 28f);
+            int compactWidth = Math.min(displayWidth - 2 * dp,
+                    Math.round(displayWidth * 0.66f));
+            compactWidth = Math.max(1, compactWidth);
+            window.setLayout(compactWidth, WindowManager.LayoutParams.WRAP_CONTENT);
+            WindowManager.LayoutParams params = window.getAttributes();
+            params.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+            params.y = dp; // inset above the bottom edge, not attached to it
+            params.dimAmount = 0f;
+            window.setAttributes(params);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
             sliderSnapshot = before;
             sliderKey = key;
             sliderBar = bar;
