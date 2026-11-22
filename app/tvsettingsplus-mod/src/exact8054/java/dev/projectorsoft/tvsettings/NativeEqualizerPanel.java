@@ -21,13 +21,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BooleanSupplier;
 
 /** Owns a stable set of preferences while TvServices switches and republishes profiles. */
 final class NativeEqualizerPanel {
     private static final String TAG = "TvSettingsPlusMOD";
     static final String MODE = "sound_style";
-    static final String[] KEYS = OemFiveBandEqualizerHook.KEYS;
-    private static final String[] CONFIG = {"g_fusion_sound__equalizer_120hz", "g_fusion_sound__equalizer_500hz",
+    static final String[] KEYS = {"sound_bass", "sound_treble",
+            "sound_equalizer_detail_120hz", "sound_equalizer_detail_500hz",
+            "sound_equalizer_detail_1500hz", "sound_equalizer_detail_5000hz",
+            "sound_equalizer_detail_10000hz"};
+    private static final String[] CONFIG = {"g_audio__aud_bass", "g_audio__aud_treble",
+            "g_fusion_sound__equalizer_120hz", "g_fusion_sound__equalizer_500hz",
             "g_fusion_sound__equalizer_1.5khz", "g_fusion_sound__equalizer_5khz", "g_fusion_sound__equalizer_10khz"};
     private static final String[] OUTPUT = {"sound_digital_output_to_device", "sound_spdif_type", "sound_earc"};
     private static final long[] DELAYS = {0, 150, 200, 300, 450, 600};
@@ -89,6 +94,7 @@ final class NativeEqualizerPanel {
     private final Backend backend;
     private final ContentResolver resolver;
     private final AudioManager audio;
+    private final BooleanSupplier speakerRouteProbe;
     private final Handler main = new Handler(Looper.getMainLooper());
     private final ListPreference mode;
     private final boolean profileOptionsKnown;
@@ -113,10 +119,18 @@ final class NativeEqualizerPanel {
     }
 
     NativeEqualizerPanel(Context context, PreferenceGroup group, Backend backend) {
+        this(context, group, backend, null);
+    }
+
+    /** RouteProbe is injectable for tests; production always queries Android AudioManager. */
+    NativeEqualizerPanel(Context context, PreferenceGroup group, Backend backend,
+                         BooleanSupplier routeProbe) {
         this.context = context;
         this.backend = backend;
         resolver = context.getContentResolver();
         audio = context.getSystemService(AudioManager.class);
+        speakerRouteProbe = routeProbe == null
+                ? () -> NativeAudioOutputReadout.speakerOnly(audio) : routeProbe;
         mode = new ListPreference(context);
         mode.setTitle("Звуковой профиль");
         mode.setKey("projectorsoft_sound_mode");
@@ -144,7 +158,8 @@ final class NativeEqualizerPanel {
             final String key = KEYS[i];
             BandRow row = new BandRow(context);
             row.setKey("projectorsoft_eq_" + key);
-            row.setTitle(OemFiveBandEqualizerHook.LABELS[i]);
+            row.setTitle(i == 0 ? "Низкие частоты" : i == 1 ? "Высокие частоты"
+                    : OemFiveBandEqualizerHook.LABELS[i - 2]);
             row.setOrder(240 + i);
             row.setPersistent(false);
             row.setSeekBarIncrement(1);
@@ -201,7 +216,8 @@ final class NativeEqualizerPanel {
         polling = true;
         attempt = equalReads = 0;
         previous = null;
-        render(shown, false);
+        // Keep visible, last stable controls during the short TvServices sync.
+        // The previous code disabled every widget on each observer callback.
         main.post(poll);
     }
 
@@ -233,8 +249,14 @@ final class NativeEqualizerPanel {
             return;
         }
         polling = false;
-        ready = settled;
-        if (!applied) feedback = "Применение звука не подтверждено";
+        ready = current != null && OemSoundValuePolicy.validProfile(current.profile);
+        if (!applied) {
+            Log.w(TAG, "Sound backend did not settle: key=" + pendingKey
+                    + " requested=" + pendingValue
+                    + " global=" + (current == null ? null : current.profile)
+                    + " OEM=" + (current == null ? null : current.appliedProfile));
+            feedback = "Применение звука не подтверждено";
+        }
         pendingKey = null;
         pendingContext = null;
         render(current, ready);
@@ -244,10 +266,19 @@ final class NativeEqualizerPanel {
         }
     }
 
+    private boolean speakerRoute() {
+        try { return speakerRouteProbe.getAsBoolean(); }
+        catch (RuntimeException unavailable) { return false; }
+    }
+
     private void change(String key, int requested) {
-        if (!active || !ready || shown == null || !profileOptionsKnown) return;
+        if (!active || polling || shown == null || !profileOptionsKnown) return;
+        // OEM tone controls configure the internal-speaker profile even when
+        // media currently plays over Bluetooth. They must not be represented
+        // as a Bluetooth-wide EQ, but editing the saved User profile is valid.
         Snapshot fresh = read();
-        if (!shown.same(fresh) || !fresh.profileReady()) {
+        if (fresh == null || !Objects.equals(shown.profile, fresh.profile)
+                || !Objects.equals(shown.output, fresh.output)) {
             feedback = "Звуковой профиль или выход изменился";
             refresh();
             return;
@@ -256,12 +287,15 @@ final class NativeEqualizerPanel {
         if (!MODE.equals(key)) {
             if (i < 0) return;
             Band band = fresh.bands.get(i);
-            if (!band.coherent() || !OemSoundValuePolicy.acceptsBandChange(String.valueOf(band.stored), requested,
+            if (!band.supported || !band.inRange()
+                    || !OemSoundValuePolicy.acceptsBandChange(String.valueOf(band.stored), requested,
                     band.min, band.max, shown.profile, fresh.profile)) return;
         }
         if (fresh.matches(key, requested)) return;
         try {
             if (backend.write(key, requested)) {
+                Log.i(TAG, "Sound Global edit requested: " + key + "=" + requested
+                        + ", mode=" + fresh.profile + ", OEM mode=" + fresh.appliedProfile);
                 pendingKey = key;
                 pendingValue = requested;
                 pendingContext = fresh;
@@ -280,9 +314,14 @@ final class NativeEqualizerPanel {
         String profile = snapshot == null ? null : snapshot.profile;
         mode.setValue(OemSoundValuePolicy.validProfile(profile) ? profile : null);
         CharSequence name = mode.getEntry();
-        mode.setSummary(name == null ? "Профиль недоступен" : name);
-        boolean profileReady = stable && profileOptionsKnown && name != null && snapshot != null && snapshot.profileReady();
-        mode.setEnabled(profileReady);
+        mode.setSummary(name == null ? "Профиль недоступен"
+                : !speakerRoute() && "0".equals(profile)
+                    ? name + " · настройки для динамиков" : name);
+        boolean profileReady = profileOptionsKnown && name != null && snapshot != null
+                && OemSoundValuePolicy.validProfile(profile);
+        mode.setEnabled(profileReady && active && !polling);
+        // The DSP effect is output-dependent, but User profile controls are
+        // still editable while BT is active for future speaker playback.
         for (int i = 0; i < rows.length; i++) {
             Band band = snapshot == null ? null : snapshot.bands.get(i);
             BandRow row = rows[i];
@@ -291,13 +330,14 @@ final class NativeEqualizerPanel {
                 row.setMin(band.min);
                 row.setValue(band.stored);
                 row.display(true);
-                row.setSummary(profileReady && !"0".equals(profile) ? "Редактируется в пользовательском профиле" : null);
+                row.setSummary(null);
             } else {
                 row.display(false);
                 row.setSummary(band != null && !band.supported
                         ? "Полоса не поддерживается текущей конфигурацией" : "Значение недоступно");
             }
-            row.setEnabled(profileReady && band != null && band.coherent()
+            row.setEnabled(profileReady && active && !polling
+                    && band != null && band.supported && band.inRange()
                     && OemSoundValuePolicy.acceptsBandChange(String.valueOf(band.stored), band.stored,
                             band.min, band.max, profile, profile));
         }
@@ -332,7 +372,8 @@ final class NativeEqualizerPanel {
         @Override public Snapshot read() throws Exception {
             if (!"8054".equals(OemHdmiPortInfo.machineId())) return null;
             List<String> supported = OemFiveBandEqualizerHook.nativeAvailableBands();
-            if (supported == null) return null;
+            // Keep Bass/Treble independent from optional five-band EQ resources.
+            if (supported == null) supported = java.util.Collections.emptyList();
             String profile = Settings.Global.getString(resolver, MODE);
             List<String> output = output();
             Class<?> type = Class.forName("com.android.tv.settings.partnercustomizer.tvsettingservice.TVSettingConfig");
@@ -343,7 +384,9 @@ final class NativeEqualizerPanel {
             List<Band> bands = new ArrayList<>();
             for (int i = 0; i < KEYS.length; i++) {
                 Integer value = Settings.Global.getInt(resolver, KEYS[i], Integer.MIN_VALUE);
-                boolean offered = supported.contains(KEYS[i]);
+                // Bass/Treble are separate native OEM controls. The five EQ
+                // bands still require their own exact capability discovery.
+                boolean offered = i < 2 || supported.contains(KEYS[i]);
                 if (!offered) {
                     bands.add(new Band(false, null, null, 0, 0));
                     continue;

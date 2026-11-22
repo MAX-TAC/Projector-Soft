@@ -40,17 +40,18 @@ public class UnifiedMenuUiTest {
         MainFragment fragment = (MainFragment) main.getSupportFragmentManager().findFragmentById(android.R.id.content);
         PreferenceScreen screen = fragment.getPreferenceScreen();
         PreferenceCategory active = screen.findPreference(StockMainSettingsMenu.CATEGORY);
-        assertEquals("Общие настройки", active.getTitle());
+        assertNull(active.getTitle());
         assertNotNull(fragment.getListView().getAdapter());
         String[] expected = {"Wi-Fi и сеть", "Bluetooth", "Источники", "Проекция",
-                "Изображение", "Звук", "Приложения", "Настройки устройства"};
+                "Изображение", "Звук", "Приложения", "Настройки системы"};
         assertEquals(expected.length, active.getPreferenceCount());
         assertEquals(expected.length + 1, fragment.getListView().getAdapter().getItemCount());
         for (int i = 0; i < expected.length; i++) {
             Preference row = active.getPreference(i);
             assertEquals(expected[i], row.getTitle());
             assertEquals(NativePage.ROOT.get(i).fragment, row.getFragment());
-            assertNotNull(row.getOnPreferenceClickListener());
+            // The stock two-panel host, not a new Activity, owns navigation.
+            assertNull(row.getOnPreferenceClickListener());
         }
         assertEquals("com.android.tv.settings.connectivity.NetworkActivity",
                 StockMainSettingsMenu.target(main, NativePage.NETWORK).getClassName());
@@ -68,6 +69,33 @@ public class UnifiedMenuUiTest {
         assertFalse(late.isVisible());
     }
 
+    @Test public void systemUsesRealOemIconsAndDoesNotDuplicateDeviceNameOrCpu() {
+        SystemSettingsActivity activity = Robolectric.buildActivity(SystemSettingsActivity.class).setup().get();
+        NativeSections.System system = (NativeSections.System)
+                activity.getSupportFragmentManager().findFragmentById(android.R.id.content);
+        PreferenceScreen screen = system.getPreferenceScreen();
+        Preference about = screen.findPreference("about_stock");
+        assertNotNull(about);
+        assertEquals("com.android.tv.settings.about.AboutFragment", about.getFragment());
+        assertNull(about.getOnPreferenceClickListener());
+        assertNull(screen.findPreference("device_name"));
+        assertNull(screen.findPreference("privacy"));
+        assertNull(screen.findPreference("projectorsoft_font_scale"));
+        assertNull(screen.findPreference("projectorsoft_cpu_live"));
+        for (String key : new String[]{"about_stock","time","language",
+                "location","accounts","storage","security",
+                "accessibility","developer"}) {
+            Preference item = screen.findPreference(key);
+            assertNotNull("Missing System row: " + key, item);
+            assertNotNull("Missing stock icon: " + key, item.getIcon());
+        }
+        Preference power = screen.findPreference("projectorsoft_page_POWER");
+        assertNotNull(power);
+        assertEquals(NativePage.POWER.fragment, power.getFragment());
+        assertNull(power.getOnPreferenceClickListener());
+        assertNotNull("Power icon is required", power.getIcon());
+    }
+
     @Test public void settingsKeyInsideSectionTargetsOriginalMainSettings() {
         SourcesSettingsActivity activity = Robolectric.buildActivity(SourcesSettingsActivity.class).setup().get();
         assertTrue(activity.onKeyUp(KeyEvent.KEYCODE_SETTINGS,
@@ -82,7 +110,7 @@ public class UnifiedMenuUiTest {
         assertNotNull(fragment.getView());
         assertNotNull(fragment.getListView().getAdapter());
         PreferenceScreen screen=fragment.getPreferenceScreen();
-        String[] titles={"Wi-Fi и сеть","Bluetooth","Источники","Проекция","Изображение","Звук","Приложения","Настройки устройства"};
+        String[] titles={"Wi-Fi и сеть","Bluetooth","Источники","Проекция","Изображение","Звук","Приложения","Настройки системы"};
         assertEquals(titles.length,screen.getPreferenceCount());
         for(int i=0;i<titles.length;i++){
             Preference row=screen.getPreference(i);
@@ -281,7 +309,7 @@ public class UnifiedMenuUiTest {
         assertEquals(1,device.writes);
     }
 
-    @Test public void soundRoutesKeepEqAndDelayOnSeparateScreensWithoutMediaVolume() {
+    @Test public void soundRoutesKeepEqAndSpdifOnSingleScreensWithoutDuplicateDelay() {
         SoundSettingsActivity activity = Robolectric.buildActivity(SoundSettingsActivity.class).setup().get();
         NativeSections.Sound fragment = (NativeSections.Sound)
                 activity.getSupportFragmentManager().findFragmentById(android.R.id.content);
@@ -289,11 +317,14 @@ public class UnifiedMenuUiTest {
         Preference equalizer = screen.findPreference("projectorsoft_page_EQUALIZER");
         Preference delay = screen.findPreference("projectorsoft_page_DELAY");
         assertEquals(NativePage.EQUALIZER.fragment, equalizer.getFragment());
-        assertEquals(NativePage.DELAY.fragment, delay.getFragment());
-        assertTrue(equalizer.getOrder() < delay.getOrder());
+        assertNull(delay);
+        // Stock SPDIF Activity is absent in an isolated Robolectric fixture.
+        Preference spdif = screen.findPreference("projectorsoft_audio_output");
+        if (spdif != null) assertEquals("Цифровой выход (SPDIF)", spdif.getTitle());
         assertNull(screen.findPreference("projectorsoft_media_volume"));
         assertNull(screen.findPreference("sound_mute"));
         assertNull(screen.findPreference("projectorsoft_sound_mode"));
+        assertNotNull(screen.findPreference(NativeAudioOutputReadout.KEY));
 
         EqualizerSettingsActivity eq = Robolectric.buildActivity(EqualizerSettingsActivity.class).setup().get();
         NativeSections.Equalizer eqPage = (NativeSections.Equalizer)
@@ -320,8 +351,8 @@ public class UnifiedMenuUiTest {
     }
 
     @Test public void fontScaleSummaryRendersLiteralPercent() {
-        SystemSettingsActivity activity = Robolectric.buildActivity(SystemSettingsActivity.class).setup().get();
-        NativeSections.System page = (NativeSections.System)
+        ProjectionSettingsActivity activity = Robolectric.buildActivity(ProjectionSettingsActivity.class).setup().get();
+        NativeSections.Projection page = (NativeSections.Projection)
                 activity.getSupportFragmentManager().findFragmentById(android.R.id.content);
         Preference row = page.findPreference("projectorsoft_font_scale");
         assertNotNull(row);
@@ -329,7 +360,7 @@ public class UnifiedMenuUiTest {
         assertFalse(row.getSummary().toString().contains("%%"));
     }
 
-    @Test public void rgbHasItsOwnReadOnlyColorTemperatureScreen() {
+    @Test public void rgbHasItsOwnUserGatedColorTemperatureScreen() {
         PictureSettingsActivity activity = Robolectric.buildActivity(PictureSettingsActivity.class).setup().get();
         NativeSections.Picture picture = (NativeSections.Picture)
                 activity.getSupportFragmentManager().findFragmentById(android.R.id.content);
@@ -345,7 +376,10 @@ public class UnifiedMenuUiTest {
             Preference row = fragment.findPreference("projectorsoft_picture_read_" + key);
             assertNotNull(row);
             assertFalse(row.isEnabled());
-            assertNull(row.getOnPreferenceChangeListener());
+            if ("picture_color_temperature".equals(key))
+                assertNotNull(row.getOnPreferenceChangeListener());
+            else
+                assertNull(row.getOnPreferenceChangeListener());
         }
         assertNull(fragment.findPreference("projectorsoft_picture_read_picture_brightness"));
         assertNull(Settings.Global.getString(colors.getContentResolver(), "picture_red_gain"));
@@ -479,7 +513,7 @@ public class UnifiedMenuUiTest {
         assertEquals(2, property.writes);
     }
 
-    @Test public void equalizerKeepsFiveRowsAndOnlyWritesStableUserValues() {
+    @Test public void equalizerKeepsBassTrebleAndFiveRowsAndOnlyWritesStableUserValues() {
         android.content.Context context = org.robolectric.RuntimeEnvironment.getApplication();
         PreferenceScreen screen = new PreferenceManager(context).createPreferenceScreen(context);
         class Device implements NativeEqualizerPanel.Backend {
@@ -491,8 +525,10 @@ public class UnifiedMenuUiTest {
 
             @Override public NativeEqualizerPanel.Snapshot read() {
                 java.util.List<NativeEqualizerPanel.Band> bands = new java.util.ArrayList<>();
-                for (int i = 0; i < 5; i++) bands.add(new NativeEqualizerPanel.Band(true,
-                        i == 4 && missing ? null : band, appliedBand, 0, 100));
+                for (int i = 0; i < NativeEqualizerPanel.KEYS.length; i++)
+                    bands.add(new NativeEqualizerPanel.Band(true,
+                            i == NativeEqualizerPanel.KEYS.length - 1 && missing ? null : band,
+                            appliedBand, 0, 100));
                 return new NativeEqualizerPanel.Snapshot(stored, applied, java.util.List.of(output), bands);
             }
 
@@ -504,15 +540,20 @@ public class UnifiedMenuUiTest {
             }
         }
         Device device = new Device();
-        NativeEqualizerPanel panel = new NativeEqualizerPanel(context, screen, device);
+        java.util.concurrent.atomic.AtomicBoolean speakerRoute =
+                new java.util.concurrent.atomic.AtomicBoolean(true);
+        NativeEqualizerPanel panel = new NativeEqualizerPanel(context, screen, device,
+                speakerRoute::get);
         panel.start();
         shadowOf(Looper.getMainLooper()).idleFor(java.time.Duration.ofSeconds(2));
         androidx.preference.ListPreference mode = screen.findPreference("projectorsoft_sound_mode");
         String firstKey = "projectorsoft_eq_" + NativeEqualizerPanel.KEYS[0];
-        String lastKey = "projectorsoft_eq_" + NativeEqualizerPanel.KEYS[4];
+        String lastKey = "projectorsoft_eq_"
+                + NativeEqualizerPanel.KEYS[NativeEqualizerPanel.KEYS.length - 1];
         androidx.preference.SeekBarPreference first = screen.findPreference(firstKey);
         Preference last = screen.findPreference(lastKey);
-        assertEquals(6, screen.getPreferenceCount());
+        assertEquals(NativeEqualizerPanel.KEYS.length + 1, screen.getPreferenceCount());
+        assertNotNull(screen.findPreference("projectorsoft_eq_sound_treble"));
         assertTrue(mode.isEnabled());
         assertFalse(first.isEnabled());
         assertEquals(0, first.getValue());
@@ -537,7 +578,7 @@ public class UnifiedMenuUiTest {
 
         assertFalse(first.callChangeListener(25));
         assertEquals(2, device.writes);
-        assertFalse(first.isEnabled());
+        assertTrue(first.isEnabled());
         device.appliedBand = 25;
         shadowOf(Looper.getMainLooper()).idleFor(java.time.Duration.ofSeconds(2));
         assertTrue(first.isEnabled());
@@ -546,6 +587,7 @@ public class UnifiedMenuUiTest {
         assertFalse(first.callChangeListener(26));
         assertEquals(3, device.writes);
         device.output = "bluetooth";
+        speakerRoute.set(false);
         device.appliedBand = 26;
         shadowOf(Looper.getMainLooper()).idleFor(java.time.Duration.ofSeconds(2));
         assertEquals(26, first.getValue());
@@ -560,32 +602,114 @@ public class UnifiedMenuUiTest {
         panel.stop();
     }
 
+    @Test public void pictureAndRgbEditorsUseTheSameCompactBottomDialogGeometry() {
+        int screen = 1920, inset = 56;
+        int width = NativePicturePanel.compactSliderWidth(screen, inset);
+        assertTrue("Video sliders should not touch both display edges", width < screen);
+        assertEquals(1267, width);
+        assertTrue(width > screen / 2);
+        assertEquals(width, NativePicturePanel.compactSliderWidth(screen, inset));
+        assertTrue(NativePicturePanel.compactSliderWidth(320, 80) > 0);
+    }
+
+    @Test public void pictureHasThreeStockBlueSectionsInRequestedOrder() {
+        PictureSettingsActivity activity =
+                Robolectric.buildActivity(PictureSettingsActivity.class).setup().get();
+        NativeSections.Picture picture = (NativeSections.Picture)
+                activity.getSupportFragmentManager().findFragmentById(android.R.id.content);
+        PreferenceScreen screen = picture.getPreferenceScreen();
+
+        assertEquals("Only 3 top-level blue section groups", 3, screen.getPreferenceCount());
+        PreferenceCategory processing =
+                screen.findPreference("projectorsoft_picture_group_processing");
+        PreferenceCategory color =
+                screen.findPreference("projectorsoft_picture_group_color");
+        PreferenceCategory video =
+                screen.findPreference("projectorsoft_picture_group_video");
+        assertNotNull(processing);
+        assertNotNull(color);
+        assertNotNull(video);
+        assertEquals("Обработка изображения", processing.getTitle());
+        assertEquals("Цвет и баланс белого", color.getTitle());
+        assertEquals("Параметры видеотракта", video.getTitle());
+        assertSame(processing, screen.getPreference(0));
+        assertSame(color, screen.getPreference(1));
+        assertSame(video, screen.getPreference(2));
+        assertEquals(2, processing.getPreferenceCount());
+        assertEquals("projectorsoft_picture_read_picture_list_hdr",
+                processing.getPreference(0).getKey());
+        assertEquals("projectorsoft_picture_read_tv_picture_advance_video_mjc_effect",
+                processing.getPreference(1).getKey());
+        assertEquals(1, color.getPreferenceCount());
+        assertEquals("projectorsoft_page_COLOR_TEMPERATURE",
+                color.getPreference(0).getKey());
+        assertEquals("projectorsoft_picture_read_picture_mode",
+                video.getPreference(0).getKey());
+        assertNotNull(video.findPreference("projectorsoft_picture_video_pipeline_info"));
+        assertNotNull(video.findPreference("projectorsoft_picture_read_picture_gamma"));
+        assertNotNull(screen.findPreference("projectorsoft_picture_read_picture_contrast"));
+        assertNotNull(screen.findPreference("projectorsoft_picture_read_picture_saturation"));
+    }
+
     @Test public void pictureViewerUsesOemLabelsAndStaysReadOnly() {
         PictureSettingsActivity activity = Robolectric.buildActivity(PictureSettingsActivity.class).setup().get();
         NativeSections.Picture picture = (NativeSections.Picture)
                 activity.getSupportFragmentManager().findFragmentById(android.R.id.content);
         assertNull(picture.findPreference("projectorsoft_picture_status"));
-        assertNotNull(picture.findPreference("projectorsoft_page_MEMC"));
+        assertNull(picture.findPreference("projectorsoft_page_MEMC"));
+        assertTrue(picture.findPreference("projectorsoft_picture_read_tv_picture_advance_video_mjc_effect")
+                instanceof androidx.preference.ListPreference);
         android.content.ContentResolver resolver = activity.getContentResolver();
         Settings.Global.putString(resolver, "picture_mode", "7");
         Settings.Global.putString(resolver, "picture_list_hdr", "1");
         Settings.Global.putString(resolver, "picture_gamma", "2");
         assertEquals(Integer.valueOf(7), PicturePanelState.read(key -> Settings.Global.getString(resolver, key)).get("picture_mode"));
         PreferenceScreen screen = picture.getPreferenceManager().createPreferenceScreen(activity);
-        new NativePicturePanel(picture, screen, NativePicturePanel.Page.PICTURE, key ->
-                "picture_mode".equals(key) ? new String[][]{{"Профиль OEM"}, {"7"}}
-                        : new String[][]{{"Вариант OEM"}, {"2"}});
+        org.robolectric.shadows.ShadowSystemProperties.override("ro.rjpj.machine.id", "8054");
+        NativePicturePanel editor = new NativePicturePanel(picture, screen,
+                NativePicturePanel.Page.PICTURE, key ->
+                "picture_mode".equals(key)
+                        ? new String[][]{{"Профиль OEM", "Пользовательский"}, {"7", "0"}}
+                        : new String[][]{{"Вариант OEM", "Другой вариант"}, {"2", "3"}});
         androidx.preference.ListPreference profile = screen.findPreference("projectorsoft_picture_read_picture_mode");
         androidx.preference.ListPreference gamma = screen.findPreference("projectorsoft_picture_read_picture_gamma");
         SwitchPreference hdr = screen.findPreference("projectorsoft_picture_read_picture_list_hdr");
-        assertFalse(profile.isEnabled());
+        assertTrue(profile.isEnabled());
+        // The factory preset owns its gamma: disabled even if its value is readable.
         assertFalse(gamma.isEnabled());
+        assertTrue(gamma.getSummary().toString().contains("Пользовательский"));
+        assertFalse(gamma.callChangeListener("3")); // bypass disabled UI on purpose
+        assertEquals("2", Settings.Global.getString(resolver, "picture_gamma"));
         assertEquals("Профиль OEM", profile.getEntry());
         assertEquals("Вариант OEM", gamma.getEntry());
         assertTrue(hdr.isChecked());
-        assertFalse(hdr.isEnabled());
+        assertTrue(hdr.isEnabled());
+        Preference scope = screen.findPreference("projectorsoft_picture_video_pipeline_info");
+        assertNotNull(scope);
+        assertFalse(scope.isSelectable());
+        assertTrue(scope.getSummary().toString().contains("интерфейс Android"));
+        assertTrue(profile.getOrder() < scope.getOrder());
+        Preference memcOnPicture = screen.findPreference(
+                "projectorsoft_picture_read_tv_picture_advance_video_mjc_effect");
+        Preference hue = screen.findPreference("projectorsoft_picture_read_picture_hue");
+        assertNotNull(memcOnPicture);
+        assertTrue(hdr.getOrder() < memcOnPicture.getOrder());
+        assertTrue(memcOnPicture.getOrder() < profile.getOrder());
+        assertTrue(hue.getOrder() < gamma.getOrder());
+        assertTrue(gamma.getOrder() < picture.findPreference(
+                "projectorsoft_page_COLOR_TEMPERATURE").getOrder());
         assertEquals("7", Settings.Global.getString(resolver, "picture_mode"));
         assertEquals("2", Settings.Global.getString(resolver, "picture_gamma"));
+
+        // Switching to the verified User mode makes Gamma editable again,
+        // without changing its factory-preset value behind the owner's back.
+        Settings.Global.putString(resolver, "picture_mode", "0");
+        editor.refresh();
+        assertTrue(gamma.isEnabled());
+        assertFalse(gamma.callChangeListener("3")); // listener handles explicit write
+        // Implementation writes through putInt; Robolectric's typed shadow does
+        // not guarantee getString() reflects values written via putInt().
+        assertEquals(3, Settings.Global.getInt(resolver, "picture_gamma", -1));
         MemcSettingsActivity activityMemc = Robolectric.buildActivity(MemcSettingsActivity.class).setup().get();
         NativeSections.Memc memc = (NativeSections.Memc)
                 activityMemc.getSupportFragmentManager().findFragmentById(android.R.id.content);

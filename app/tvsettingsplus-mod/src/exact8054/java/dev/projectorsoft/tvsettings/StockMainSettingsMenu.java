@@ -29,6 +29,8 @@ public final class StockMainSettingsMenu {
     public static void install(PreferenceFragmentCompat fragment) {
         PreferenceScreen screen = fragment.getPreferenceScreen();
         if (screen == null) return;
+        NativeOverlayWindow.apply(fragment.getActivity());
+        StockAboutTemperatureBridge.install(fragment.getActivity());
         PreferenceCategory added = null;
         try {
             Preference header = screen.findPreference("general_settings");
@@ -40,7 +42,8 @@ public final class StockMainSettingsMenu {
             Context context = screen.getContext();
             added = new PreferenceCategory(context);
             added.setKey(CATEGORY);
-            added.setTitle(header.getTitle());
+            // No duplicate blue section heading on the custom main menu.
+            added.setTitle((CharSequence) null);
             added.setOrder(header.getOrder());
             if (!screen.addPreference(added)) return;
             for (NativePage page : NativePage.ROOT) {
@@ -54,12 +57,11 @@ public final class StockMainSettingsMenu {
                 row.setOrder(page.ordinal());
                 row.setFragment(page.fragment);
                 row.setIcon(icon(context, screen, page));
-                CheckedPreferenceLaunch.Route route = () -> new Intent().setComponent(target(context, page));
-                row.setOnPreferenceClickListener(item -> {
-                    if (!CheckedPreferenceLaunch.open(context, route))
-                        Toast.makeText(context, "Экран недоступен", Toast.LENGTH_SHORT).show();
-                    return true;
-                });
+                // IMPORTANT: do not start another Activity. The stock 8054
+                // two-panel navigator owns fragments and keeps its translucent
+                // home/HDMI surface visible behind the right-hand settings pane.
+                // Launching a separate opaque Activity caused the black backing
+                // reported in R3 (Picture, Sound, System, Bluetooth, Sources).
                 added.addPreference(row);
             }
             screen.setTitle("Настройки Android TV");

@@ -50,7 +50,7 @@ def patch_unified(data, version):
     if pool is None or resource_map is None:
         raise ValueError('Missing stock manifest resources')
     android = pool.lookup['http://schemas.android.com/apk/res/android']
-    for key in ('name', 'label', 'enabled', 'exported', 'icon', 'banner', 'theme'):
+    for key in ('name', 'label', 'enabled', 'exported', 'icon', 'banner', 'theme', 'targetActivity'):
         index = pool.lookup[key]
         if index >= len(resource_map) or not resource_map[index]:
             raise ValueError('Missing Android resource-map attribute: ' + key)
@@ -95,6 +95,43 @@ def patch_unified(data, version):
         node = pool.index(tag)
         extension += startnode(node, attributes(name, False, False))
         extension += endnode(node)
+
+    # One new explicit launcher shortcut, not an extra APK or a rewrite of
+    # the original MainSettings. Asset IDs are verified against exact-8054
+    # resources.arsc: ic_settings_launcher_icon / ic_launcher_banner_settings.
+    # This does NOT globally intercept KEYCODE_SETTINGS from the OEM key service.
+    alias_name = 'com.android.tv.settings.mod.SettingsLauncher'
+    alias_tag = pool.index('activity-alias')
+    filter_tag = pool.index('intent-filter')
+    action_tag = pool.index('action')
+    category_tag = pool.index('category')
+    alias_attrs = [
+        attr(android, pool.index('name'), pool.index(alias_name)),
+        attr(android, pool.index('targetActivity'),
+             pool.index('com.android.tv.settings.MainSettings')),
+        attr(android, pool.index('enabled'), True),
+        attr(android, pool.index('exported'), True),
+        attr(android, pool.index('label'), pool.index('TvSettingsPlus MOD')),
+        refattr(android, pool.index('icon'), 0x7f08022e),
+        refattr(android, pool.index('banner'), 0x7f080142),
+    ]
+    extension += startnode(alias_tag, alias_attrs)
+    extension += startnode(filter_tag)
+    extension += startnode(action_tag, [
+        attr(android, pool.index('name'), pool.index('android.intent.action.MAIN'))
+    ])
+    extension += endnode(action_tag)
+    for category in ('android.intent.category.LAUNCHER',
+                     'android.intent.category.LEANBACK_LAUNCHER'):
+        extension += startnode(category_tag, [
+            attr(android, pool.index('name'), pool.index(category))
+        ])
+        extension += endnode(category_tag)
+    extension += endnode(filter_tag)
+    # The physical Settings key (keyCode=307) is routed by PhoneWindowManager
+    # to FloatMenuService, NOT via android.settings.SETTINGS. Do not hijack the
+    # standard implicit Settings action as an ineffective remote-key workaround.
+    extension += endnode(alias_tag)
 
     rebuilt = [pool.output() if kind == STRINGS else chunk for kind, chunk in chunks]
     rebuilt.insert(application[0], extension)

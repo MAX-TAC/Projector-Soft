@@ -50,6 +50,32 @@ def verify_manifest(stock, module):
             end += 1
         additions[name] = '\n'.join(lines[begin:end])
         del lines[begin:end]
+    # New alias is a shortcut to the already-modified MainSettings. It must
+    # not replace/disable original OEM activities or take the Chinese UI away.
+    alias = 'com.android.tv.settings.mod.SettingsLauncher'
+    matches = [i for i, line in enumerate(lines)
+               if 'android:name(0x01010003)="' + alias + '"' in line]
+    if len(matches) != 1:
+        raise ValueError('Missing or duplicated TvSettingsPlus MOD launcher alias')
+    alias_start = matches[0] - 1
+    while alias_start >= 0 and lines[alias_start].startswith('        '):
+        alias_start -= 1
+    if not re.match(r'^      E: activity-alias ', lines[alias_start]):
+        raise ValueError('MOD launcher is not an activity-alias')
+    alias_end = alias_start + 1
+    while alias_end < len(lines) and lines[alias_end].startswith('        '):
+        alias_end += 1
+    alias_node = '\n'.join(lines[alias_start:alias_end])
+    for item in ('com.android.tv.settings.MainSettings',
+                 'android.intent.action.MAIN',
+                 'android.intent.category.LAUNCHER',
+                 'android.intent.category.LEANBACK_LAUNCHER',
+                 'TvSettingsPlus MOD', 'android:targetActivity',
+                 'android:icon', 'android:banner',
+                 '0x7f08022e', '0x7f080142'):
+        if item not in alias_node:
+            raise ValueError('MOD launcher alias missing ' + item)
+    del lines[alias_start:alias_end]
     if without_version(lines) != without_version(stock_lines):
         raise ValueError('Original manifest entries or filters changed')
     main = next(i for i, line in enumerate(stock_lines)
@@ -73,7 +99,7 @@ def verify_manifest(stock, module):
                 raise ValueError('Recovery must remain dormant: ' + name)
         if ('E: ' + kind + ' ') not in node or 'E: intent-filter' in node:
             raise ValueError('Recovery must remain unregistered for implicit activation')
-    print('PASS original MainSettings and all stock Manifest nodes; explicit section Activities; recovery dormant')
+    print('PASS original MainSettings, stock components, exact MOD TV launcher alias, recovery dormant')
 
 
 def verify_payload(stock, module):

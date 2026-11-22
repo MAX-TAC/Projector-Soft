@@ -4,6 +4,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -63,11 +65,20 @@ public final class NativeSections {
         protected void action(PreferenceGroup group,String key,String label,CheckedPreferenceLaunch.Route route){
             Context context=requireContext();
             guarded(key,()->{
-                Intent intent=route.resolve();
-                if(intent==null || !CheckedPreferenceLaunch.accessible(context,intent.getComponent()))return;
+                boolean available = false;
+                try {
+                    Intent intent=route.resolve();
+                    available = intent != null
+                            && CheckedPreferenceLaunch.accessible(context,intent.getComponent());
+                } catch (Exception | LinkageError missing) {
+                    android.util.Log.d("TvSettingsPlusMOD", "Stock shortcut unavailable: " + key, missing);
+                }
                 Preference row=new Preference(context);
                 row.setTitle(label);
                 row.setKey(key);
+                setSystemIcon(row, key);
+                row.setEnabled(available);
+                if (!available) row.setSummary("Недоступно в этой версии прошивки");
                 row.setOnPreferenceClickListener(item->{
                     if(!CheckedPreferenceLaunch.open(context,route))
                         android.widget.Toast.makeText(context,"Экран недоступен",android.widget.Toast.LENGTH_SHORT).show();
@@ -84,16 +95,51 @@ public final class NativeSections {
             row.setTitle(page.title);
             row.setOrder(order);
             row.setFragment(page.fragment);
-            row.setOnPreferenceClickListener(item -> {
-                if (!CheckedPreferenceLaunch.open(context, () -> new Intent(context, page.activity)))
-                    android.widget.Toast.makeText(context,"Экран недоступен",android.widget.Toast.LENGTH_SHORT).show();
-                return true;
-            });
+            if (page == NativePage.POWER) setSystemIcon(row, "power");
+            // Let stock Leanback/TwoPanelSettings resolve Preference.fragment.
+            // Activity-based navigation creates an extra opaque window.
             group.addPreference(row);
         }
 
         protected void stock(PreferenceGroup group,String key,String label,String name){
             action(group,key,label,()->new Intent().setComponent(new ComponentName(OWN,OWN+"."+name)));
+        }
+
+        protected void stockFragment(PreferenceGroup group,String key,String label,String className) {
+            Preference row = new Preference(requireContext());
+            row.setKey(key);
+            row.setTitle(label);
+            row.setFragment(OWN + "." + className);
+            setSystemIcon(row, key);
+            group.addPreference(row);
+        }
+
+        private void setSystemIcon(Preference row, String key) {
+            // Reuse the exact 8054 OEM drawables, not an unthemed Android icon.
+            String drawable;
+            switch (key) {
+                case "about_stock": drawable = "ic_devices_other"; break;
+                case "time": drawable = "ic_access_time"; break;
+                case "language": drawable = "ic_language"; break;
+                case "location": drawable = "ic_location_on"; break;
+                case "accounts": drawable = "ic_accounts_and_sign_in"; break;
+                case "storage": drawable = "ic_storage"; break;
+                case "power": drawable = "ic_settings_power"; break;
+                case "privacy": drawable = "ic_lock"; break;
+                case "security": drawable = "ic_lock"; break;
+                case "accessibility": drawable = "ic_accessibility_new"; break;
+                case "developer": drawable = "ic_settings_developeroptions"; break;
+                default: return;
+            }
+            int resource = requireContext().getResources().getIdentifier(drawable, "drawable", OWN);
+            android.graphics.drawable.Drawable icon = resource != 0
+                    ? requireContext().getDrawable(resource)
+                    : requireContext().getDrawable(android.R.drawable.ic_menu_preferences);
+            if (icon != null) {
+                icon = icon.mutate();
+                icon.setTint(android.graphics.Color.WHITE);
+                row.setIcon(icon);
+            }
         }
     }
 
@@ -190,6 +236,8 @@ public final class NativeSections {
             if (movement != null) movement.setOrder(200);
             OemProjectionPanel.installEditors(context, geometry, Preference.class);
             if (geometry.getPreferenceCount() == 0) screen.removePreference(geometry);
+            // Font scaling is a display/projection preference, not a system-security setting.
+            OemFontScaleHook.install(context, screen, Preference.class);
         }
     }
 
@@ -216,11 +264,57 @@ public final class NativeSections {
     public static final class Picture extends PictureRows {
         @Override NativePage section(){return NativePage.PICTURE;}
         @Override NativePicturePanel.Page picturePage() { return NativePicturePanel.Page.PICTURE; }
+
         @Override void populate(PreferenceScreen screen) {
             super.populate(screen);
-            link(screen, NativePage.COLOR_TEMPERATURE, 228);
-            link(screen, NativePage.MEMC, 229);
+            link(screen, NativePage.COLOR_TEMPERATURE, 130);
             OemStockUserSettings.installPictureFormat(requireContext(), screen, Preference.class);
+
+            // PreferenceCategory uses the stock blue section-heading style.
+            // Move the EXISTING preferences rather than constructing parallel
+            // controls: NativePicturePanel retains its observers and handlers.
+            PreferenceCategory processing = group(screen,
+                    "projectorsoft_picture_group_processing", "Обработка изображения");
+            processing.setOrder(0);
+            PreferenceCategory color = group(screen,
+                    "projectorsoft_picture_group_color", "Цвет и баланс белого");
+            color.setOrder(1);
+            PreferenceCategory video = group(screen,
+                    "projectorsoft_picture_group_video", "Параметры видеотракта");
+            video.setOrder(2);
+
+            move(screen, processing, "projectorsoft_picture_read_picture_list_hdr");
+            move(screen, processing,
+                    "projectorsoft_picture_read_tv_picture_advance_video_mjc_effect");
+
+            // The color-temperature page (Standard/Warm/Cool/User) follows
+            // directly after MEMC, independently of the Picture Mode preset.
+            move(screen, color, "projectorsoft_page_COLOR_TEMPERATURE");
+
+            String[] videoKeys = {
+                "projectorsoft_picture_read_picture_mode",
+                "projectorsoft_picture_video_pipeline_info",
+                "projectorsoft_picture_read_picture_brightness",
+                "projectorsoft_picture_read_picture_contrast",
+                "projectorsoft_picture_read_picture_saturation",
+                "projectorsoft_picture_read_picture_sharpness",
+                "projectorsoft_picture_read_picture_hue",
+                "projectorsoft_picture_read_picture_gamma",
+                "projectorsoft_picture_format"
+            };
+            for (String key : videoKeys) move(screen, video, key);
+        }
+
+        private void move(PreferenceScreen screen, PreferenceCategory destination,
+                          String key) {
+            Preference item = screen.findPreference(key);
+            if (item == null) return; // optional stock picture format
+            if (!screen.removePreference(item)) {
+                android.util.Log.w("TvSettingsPlusMOD",
+                        "Picture section item is not in root: " + key);
+                return;
+            }
+            destination.addPreference(item);
         }
     }
 
@@ -238,19 +332,27 @@ public final class NativeSections {
         @Override NativePage section(){return NativePage.SOUND;}
         @Override void populate(PreferenceScreen screen){
             Context context = requireContext();
+            NativeAudioOutputReadout.install(context, screen);
             link(screen, NativePage.EQUALIZER, 200);
             OemStockUserSettings.installAudioOutput(context, screen, Preference.class);
-            PreferenceCategory effects = group(screen, "sound_processing", "Обработка звука");
-            effects.setOrder(300);
             guarded("sound-processing", () -> OemInlinePreferencesHook.populateSoundProcessing(
-                    context, effects, Preference.class));
-            OemAdvancedSoundRoutes.install(context, effects, Preference.class);
-            if (effects.getPreferenceCount() == 0) screen.removePreference(effects);
-            link(screen, NativePage.DELAY, 400);
+                    context, screen, Preference.class));
+            OemAdvancedSoundRoutes.install(context, screen, Preference.class);
+            // SPDIF delay already lives on the OEM digital-output screen; do not
+            // expose a second editor for the same setting on the Sound root.
             if (OemKeyToneHook.install(context, screen, Preference.class)) {
                 Preference tone = screen.findPreference("projectorsoft_key_tone");
                 if (tone != null) tone.setOrder(500);
             }
+        }
+        @Override public void onResume() {
+            super.onResume();
+            if (getPreferenceScreen() != null)
+                NativeAudioOutputReadout.refresh(requireContext(), getPreferenceScreen());
+        }
+        @Override public void onStop() {
+            NativeMediaRoutePicker.cancelOnStop();
+            super.onStop();
         }
     }
 
@@ -303,17 +405,21 @@ public final class NativeSections {
         @Override NativePage section(){return NativePage.SYSTEM;}
         @Override void populate(PreferenceScreen screen){
             Context context = requireContext();
-            link(screen, NativePage.ABOUT, 0);
+            // Actual OEM AboutFragment (verified in stock classes13.dex).
+            // It stays inside MainSettings so the background remains visible.
+            stockFragment(screen,"about_stock","Об устройстве","about.AboutFragment");
+            // Device rename already exists inside the genuine AboutFragment.
+            // CPU is injected into the bottom of About via its own lifecycle.
             stock(screen,"time","Дата и время","system.DateTimeActivity");
             stock(screen,"language","Язык и ввод","system.LanguageActivity");
+            stock(screen,"location","Местоположение","system.LocationActivity");
             stock(screen,"accounts","Учётные записи","accounts.AccountsActivity");
             stock(screen,"storage","Хранилище","device.StorageResetActivity");
             link(screen, NativePage.POWER, 20);
-            stock(screen,"privacy","Конфиденциальность","enterprise.EnterprisePrivacySettingsActivity");
+            // Empty EnterprisePrivacy screen is not relevant on this exact 8054.
             stock(screen,"security","Безопасность","system.SecurityActivity");
             stock(screen,"accessibility","Специальные возможности","oemlink.AccessibilitySettingsActivity");
             stock(screen,"developer","Для разработчиков","system.development.DevelopmentActivity");
-            OemFontScaleHook.install(context,screen,Preference.class);
         }
     }
 
