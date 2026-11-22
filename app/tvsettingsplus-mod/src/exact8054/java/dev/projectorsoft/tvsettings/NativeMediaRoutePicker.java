@@ -103,7 +103,7 @@ final class NativeMediaRoutePicker {
         boolean approved;
         boolean confirmedRoute;
         boolean fallbackRequested;
-        long startedAt, confirmedAt;
+        long startedAt, confirmedAt, lastDiagnosticAt;
         String failure;
 
         Pending(Context context, PreferenceScreen screen,
@@ -162,6 +162,12 @@ final class NativeMediaRoutePicker {
                 }
                 boolean settled = transaction.confirmed();
                 long now = SystemClock.uptimeMillis();
+                if (now - lastDiagnosticAt >= 900) {
+                    lastDiagnosticAt = now;
+                    Log.i(TAG, "MEDIA switch elapsed=" + (now - startedAt) + "ms target="
+                            + (target == null ? "Automatic" : target.label)
+                            + " settled=" + settled + " " + transaction.diagnostic());
+                }
                 if (!settled && !fallbackRequested && target != null
                         && target.type == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER
                         && now - startedAt >= FALLBACK_CHECK_MS) {
