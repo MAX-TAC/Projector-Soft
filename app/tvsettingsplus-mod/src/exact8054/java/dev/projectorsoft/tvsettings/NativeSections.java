@@ -264,11 +264,57 @@ public final class NativeSections {
     public static final class Picture extends PictureRows {
         @Override NativePage section(){return NativePage.PICTURE;}
         @Override NativePicturePanel.Page picturePage() { return NativePicturePanel.Page.PICTURE; }
+
         @Override void populate(PreferenceScreen screen) {
             super.populate(screen);
             link(screen, NativePage.COLOR_TEMPERATURE, 130);
-            // MEMC is now a popup ListPreference on this page, like Gamma.
             OemStockUserSettings.installPictureFormat(requireContext(), screen, Preference.class);
+
+            // PreferenceCategory uses the stock blue section-heading style.
+            // Move the EXISTING preferences rather than constructing parallel
+            // controls: NativePicturePanel retains its observers and handlers.
+            PreferenceCategory processing = group(screen,
+                    "projectorsoft_picture_group_processing", "Обработка изображения");
+            processing.setOrder(0);
+            PreferenceCategory color = group(screen,
+                    "projectorsoft_picture_group_color", "Цвет и баланс белого");
+            color.setOrder(1);
+            PreferenceCategory video = group(screen,
+                    "projectorsoft_picture_group_video", "Параметры видеотракта");
+            video.setOrder(2);
+
+            move(screen, processing, "projectorsoft_picture_read_picture_list_hdr");
+            move(screen, processing,
+                    "projectorsoft_picture_read_tv_picture_advance_video_mjc_effect");
+
+            // The color-temperature page (Standard/Warm/Cool/User) follows
+            // directly after MEMC, independently of the Picture Mode preset.
+            move(screen, color, "projectorsoft_page_COLOR_TEMPERATURE");
+
+            String[] videoKeys = {
+                "projectorsoft_picture_read_picture_mode",
+                "projectorsoft_picture_video_pipeline_info",
+                "projectorsoft_picture_read_picture_brightness",
+                "projectorsoft_picture_read_picture_contrast",
+                "projectorsoft_picture_read_picture_saturation",
+                "projectorsoft_picture_read_picture_sharpness",
+                "projectorsoft_picture_read_picture_hue",
+                "projectorsoft_picture_read_picture_gamma",
+                "projectorsoft_picture_format"
+            };
+            for (String key : videoKeys) move(screen, video, key);
+        }
+
+        private void move(PreferenceScreen screen, PreferenceCategory destination,
+                          String key) {
+            Preference item = screen.findPreference(key);
+            if (item == null) return; // optional stock picture format
+            if (!screen.removePreference(item)) {
+                android.util.Log.w("TvSettingsPlusMOD",
+                        "Picture section item is not in root: " + key);
+                return;
+            }
+            destination.addPreference(item);
         }
     }
 
