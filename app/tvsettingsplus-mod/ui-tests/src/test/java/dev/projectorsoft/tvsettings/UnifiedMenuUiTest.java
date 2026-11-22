@@ -82,7 +82,7 @@ public class UnifiedMenuUiTest {
         assertNotNull(fragment.getView());
         assertNotNull(fragment.getListView().getAdapter());
         PreferenceScreen screen=fragment.getPreferenceScreen();
-        String[] titles={"Wi-Fi и сеть","Bluetooth","Источники","Проекция","Изображение","Звук","Приложения","Настройки устройства"};
+        String[] titles={"Wi-Fi и сеть","Bluetooth","Источники","Проекция","Изображение","Звук","Приложения","Настройки системы"};
         assertEquals(titles.length,screen.getPreferenceCount());
         for(int i=0;i<titles.length;i++){
             Preference row=screen.getPreference(i);
@@ -550,7 +550,7 @@ public class UnifiedMenuUiTest {
 
         assertFalse(first.callChangeListener(25));
         assertEquals(2, device.writes);
-        assertFalse(first.isEnabled());
+        assertTrue(first.isEnabled());
         device.appliedBand = 25;
         shadowOf(Looper.getMainLooper()).idleFor(java.time.Duration.ofSeconds(2));
         assertTrue(first.isEnabled());
