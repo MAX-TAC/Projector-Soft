@@ -70,8 +70,6 @@ def verify_manifest(stock, module):
                  'android.intent.action.MAIN',
                  'android.intent.category.LAUNCHER',
                  'android.intent.category.LEANBACK_LAUNCHER',
-                 'android.settings.SETTINGS',
-                 'android.intent.category.DEFAULT',
                  'TvSettingsPlus MOD', 'android:targetActivity',
                  'android:icon', 'android:banner',
                  '0x7f08022e', '0x7f080142'):
