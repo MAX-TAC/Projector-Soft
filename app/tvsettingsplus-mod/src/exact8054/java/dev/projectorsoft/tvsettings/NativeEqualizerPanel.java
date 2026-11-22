@@ -216,7 +216,8 @@ final class NativeEqualizerPanel {
         polling = true;
         attempt = equalReads = 0;
         previous = null;
-        render(shown, false);
+        // Keep visible, last stable controls during the short TvServices sync.
+        // The previous code disabled every widget on each observer callback.
         main.post(poll);
     }
 
@@ -248,8 +249,14 @@ final class NativeEqualizerPanel {
             return;
         }
         polling = false;
-        ready = settled;
-        if (!applied) feedback = "Применение звука не подтверждено";
+        ready = current != null && OemSoundValuePolicy.validProfile(current.profile);
+        if (!applied) {
+            Log.w(TAG, "Sound backend did not settle: key=" + pendingKey
+                    + " requested=" + pendingValue
+                    + " global=" + (current == null ? null : current.profile)
+                    + " OEM=" + (current == null ? null : current.appliedProfile));
+            feedback = "Применение звука не подтверждено";
+        }
         pendingKey = null;
         pendingContext = null;
         render(current, ready);
@@ -265,12 +272,13 @@ final class NativeEqualizerPanel {
     }
 
     private void change(String key, int requested) {
-        if (!active || !ready || shown == null || !profileOptionsKnown) return;
+        if (!active || polling || shown == null || !profileOptionsKnown) return;
         // OEM tone controls configure the internal-speaker profile even when
         // media currently plays over Bluetooth. They must not be represented
         // as a Bluetooth-wide EQ, but editing the saved User profile is valid.
         Snapshot fresh = read();
-        if (!shown.same(fresh) || !fresh.profileReady()) {
+        if (fresh == null || !Objects.equals(shown.profile, fresh.profile)
+                || !Objects.equals(shown.output, fresh.output)) {
             feedback = "Звуковой профиль или выход изменился";
             refresh();
             return;
@@ -279,12 +287,15 @@ final class NativeEqualizerPanel {
         if (!MODE.equals(key)) {
             if (i < 0) return;
             Band band = fresh.bands.get(i);
-            if (!band.coherent() || !OemSoundValuePolicy.acceptsBandChange(String.valueOf(band.stored), requested,
+            if (!band.supported || !band.inRange()
+                    || !OemSoundValuePolicy.acceptsBandChange(String.valueOf(band.stored), requested,
                     band.min, band.max, shown.profile, fresh.profile)) return;
         }
         if (fresh.matches(key, requested)) return;
         try {
             if (backend.write(key, requested)) {
+                Log.i(TAG, "Sound Global edit requested: " + key + "=" + requested
+                        + ", mode=" + fresh.profile + ", OEM mode=" + fresh.appliedProfile);
                 pendingKey = key;
                 pendingValue = requested;
                 pendingContext = fresh;
@@ -306,8 +317,9 @@ final class NativeEqualizerPanel {
         mode.setSummary(name == null ? "Профиль недоступен"
                 : !speakerRoute() && "0".equals(profile)
                     ? name + " · настройки для динамиков" : name);
-        boolean profileReady = stable && profileOptionsKnown && name != null && snapshot != null && snapshot.profileReady();
-        mode.setEnabled(profileReady);
+        boolean profileReady = profileOptionsKnown && name != null && snapshot != null
+                && OemSoundValuePolicy.validProfile(profile);
+        mode.setEnabled(profileReady && active && !polling);
         // The DSP effect is output-dependent, but User profile controls are
         // still editable while BT is active for future speaker playback.
         for (int i = 0; i < rows.length; i++) {
@@ -324,7 +336,8 @@ final class NativeEqualizerPanel {
                 row.setSummary(band != null && !band.supported
                         ? "Полоса не поддерживается текущей конфигурацией" : "Значение недоступно");
             }
-            row.setEnabled(profileReady && band != null && band.coherent()
+            row.setEnabled(profileReady && active && !polling
+                    && band != null && band.supported && band.inRange()
                     && OemSoundValuePolicy.acceptsBandChange(String.valueOf(band.stored), band.stored,
                             band.min, band.max, profile, profile));
         }
