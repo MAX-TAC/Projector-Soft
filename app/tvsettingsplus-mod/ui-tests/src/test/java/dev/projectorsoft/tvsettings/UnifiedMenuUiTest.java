@@ -602,6 +602,16 @@ public class UnifiedMenuUiTest {
         panel.stop();
     }
 
+    @Test public void pictureAndRgbEditorsUseTheSameCompactBottomDialogGeometry() {
+        int screen = 1920, inset = 56;
+        int width = NativePicturePanel.compactSliderWidth(screen, inset);
+        assertTrue("Video sliders should not touch both display edges", width < screen);
+        assertEquals(1267, width);
+        assertTrue(width > screen / 2);
+        assertEquals(width, NativePicturePanel.compactSliderWidth(screen, inset));
+        assertTrue(NativePicturePanel.compactSliderWidth(320, 80) > 0);
+    }
+
     @Test public void pictureHasThreeStockBlueSectionsInRequestedOrder() {
         PictureSettingsActivity activity =
                 Robolectric.buildActivity(PictureSettingsActivity.class).setup().get();
