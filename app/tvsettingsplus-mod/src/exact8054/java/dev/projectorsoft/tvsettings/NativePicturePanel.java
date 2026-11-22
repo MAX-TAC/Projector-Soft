@@ -120,7 +120,17 @@ final class NativePicturePanel {
                         page == Page.PICTURE ? pictureOrder(key) : 211 + i);
             }
         }
-        if (page == Page.PICTURE) add(host, screen, GAMMA, "Гамма", 126);
+        if (page == Page.PICTURE) {
+            add(host, screen, GAMMA, "Гамма", 126);
+            Preference scope = new Preference(context);
+            scope.setKey("projectorsoft_picture_video_pipeline_info");
+            scope.setTitle("Регулировки видеосигнала");
+            scope.setSummary("Яркость, контрастность, насыщенность, резкость, оттенок "
+                    + "и гамма влияют на видео, но не на рабочий стол и интерфейс Android.");
+            scope.setSelectable(false);
+            scope.setOrder(112); // picture profile first, scalars after explanation
+            screen.addPreference(scope);
+        }
         refresh();
     }
 
@@ -177,8 +187,8 @@ final class NativePicturePanel {
     }
 
     /**
-     * Real OEM consumer keys, not Factory PQ setters. Presets, HDR and MEMC are
-     * independent from the User-only restriction on five scalar PQ sliders.
+     * Real OEM consumer keys, not Factory PQ setters. Factory picture presets
+     * protect scalar PQ controls AND gamma. HDR and MEMC remain independent.
      */
     private void updateChoice(String key, String selected) {
         Map<String, Integer> before = snapshot();
@@ -186,6 +196,13 @@ final class NativePicturePanel {
                 (GAMMA.equals(key) ? storedGamma() : before.get(key));
         if (!"8054".equals(OemHdmiPortInfo.machineId()) || previous == null || selected == null)
             return;
+        if (GAMMA.equals(key) && !canEdit(before)) {
+            // A disabled ListPreference alone is not a write barrier:
+            // stale popup callbacks or programmatic changes must be blocked.
+            Log.w(TAG, "Gamma write denied outside OEM User picture preset");
+            refresh();
+            return;
+        }
         boolean toggle = PicturePanelState.HDR.equals(key);
         if (toggle && !("0".equals(selected) || "1".equals(selected))) return;
         if (!toggle) {
@@ -202,9 +219,8 @@ final class NativePicturePanel {
             }
             if (!matched) return;
         }
-        // RGB/temperature choices are user adjustments. Do not mutate factory
-        // preset calibration; gamma/HDR/MEMC and mode remain separate controls.
-        // Color-temperature mode is independent of the selected picture preset.
+        // Gamma is User-only; HDR/MEMC and preset selection remain independent.
+        // Color temperature remains independent of the picture preset.
         final int requested;
         try { requested = Integer.parseInt(selected); }
         catch (NumberFormatException invalid) { return; }
@@ -269,6 +285,15 @@ final class NativePicturePanel {
                 if (snapshot != null && GAMMA.equals(key))
                     value = storedGamma();
                 renderList((ListPreference) row, key, value);
+                if (GAMMA.equals(key) && !canEdit(snapshot)) {
+                    ListPreference gamma = (ListPreference) row;
+                    gamma.setEnabled(false);
+                    CharSequence label = gamma.getEntry();
+                    gamma.setSummary(label == null
+                            ? "Доступна только в режиме «Пользовательский»"
+                            : label.toString().replace("%", "%%")
+                                + " · изменение только в режиме «Пользовательский»");
+                }
             } else if (row instanceof SwitchPreference) {
                 SwitchPreference hdr = (SwitchPreference) row;
                 boolean known = value != null && (value == 0 || value == 1);
