@@ -128,20 +128,9 @@ def patch_unified(data, version):
         ])
         extension += endnode(category_tag)
     extension += endnode(filter_tag)
-    # Reversible trial for remote implementations that use an *implicit*
-    # android.settings.SETTINGS intent. If the MTK remote starts an explicit
-    # KuSettings component, this filter cannot intercept its button at all.
-    # Never disable KuSettings or override vendor input policy in the APK.
-    extension += startnode(filter_tag)
-    extension += startnode(action_tag, [
-        attr(android, pool.index('name'), pool.index('android.settings.SETTINGS'))
-    ])
-    extension += endnode(action_tag)
-    extension += startnode(category_tag, [
-        attr(android, pool.index('name'), pool.index('android.intent.category.DEFAULT'))
-    ])
-    extension += endnode(category_tag)
-    extension += endnode(filter_tag)
+    # The physical Settings key (keyCode=307) is routed by PhoneWindowManager
+    # to FloatMenuService, NOT via android.settings.SETTINGS. Do not hijack the
+    # standard implicit Settings action as an ineffective remote-key workaround.
     extension += endnode(alias_tag)
 
     rebuilt = [pool.output() if kind == STRINGS else chunk for kind, chunk in chunks]
