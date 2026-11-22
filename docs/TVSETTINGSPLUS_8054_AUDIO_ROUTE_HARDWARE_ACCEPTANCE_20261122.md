@@ -31,6 +31,8 @@
 
 Текущий точный build workflow `.github/workflows/build-tvsettingsplus-8054-audit.yml` использует исходную прошивку 8054, восстанавливает оригинальный TvSettingsPlus APK, компилирует `src/main`+`src/exact8054`, собирает v41, проверяет подпись и публикует `TvSettingsPlus-8054-v41-MAINSETTINGS-EXPERIMENTAL.apk`. Следует запускать *на HEAD этой ветки*. **Не** считать более ранний v41 APK содержащим эти изменения. Исторический APK и hash из PR #2/#7 не подходят.
 
+**CI trigger blocker:** текущий `on.push.branches` точного APK workflow включает только ветки `audit/8054-tvsettingsplus-20261117` и `feature/8054-user-settings-migration-20261120`. Наша новая ветка не включена, поэтому source/UI тесты запускаются, а exact signed APK build — **нет**. Для сборки необходимо отдельное изменение branch allowlist на текущей ветке с последующим `push`; до этого APK для проверки отсутствует. Нельзя выдавать старый workflow artifact за свежий релиз.
+
 Перед заменой системного приложения сделать проверку `pm path`, `versionCode`, `SHA-256` установленного/кандидата и штатный rollback. Не делать `pm disable`, `pm clear`, `pm uninstall` без проверенного восстановления.
 
 ## Порядок аппаратного теста
