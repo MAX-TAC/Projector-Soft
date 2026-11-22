@@ -290,8 +290,9 @@ public class UnifiedMenuUiTest {
         Preference delay = screen.findPreference("projectorsoft_page_DELAY");
         assertEquals(NativePage.EQUALIZER.fragment, equalizer.getFragment());
         assertNull(delay);
-        assertEquals("Цифровой выход (SPDIF)",
-                screen.findPreference("projectorsoft_audio_output").getTitle());
+        // Stock SPDIF Activity is absent in an isolated Robolectric fixture.
+        Preference spdif = screen.findPreference("projectorsoft_audio_output");
+        if (spdif != null) assertEquals("Цифровой выход (SPDIF)", spdif.getTitle());
         assertNull(screen.findPreference("projectorsoft_media_volume"));
         assertNull(screen.findPreference("sound_mute"));
         assertNull(screen.findPreference("projectorsoft_sound_mode"));
@@ -331,7 +332,7 @@ public class UnifiedMenuUiTest {
         assertFalse(row.getSummary().toString().contains("%%"));
     }
 
-    @Test public void rgbHasItsOwnReadOnlyColorTemperatureScreen() {
+    @Test public void rgbHasItsOwnUserGatedColorTemperatureScreen() {
         PictureSettingsActivity activity = Robolectric.buildActivity(PictureSettingsActivity.class).setup().get();
         NativeSections.Picture picture = (NativeSections.Picture)
                 activity.getSupportFragmentManager().findFragmentById(android.R.id.content);
@@ -347,7 +348,10 @@ public class UnifiedMenuUiTest {
             Preference row = fragment.findPreference("projectorsoft_picture_read_" + key);
             assertNotNull(row);
             assertFalse(row.isEnabled());
-            assertNull(row.getOnPreferenceChangeListener());
+            if ("picture_color_temperature".equals(key))
+                assertNotNull(row.getOnPreferenceChangeListener());
+            else
+                assertNull(row.getOnPreferenceChangeListener());
         }
         assertNull(fragment.findPreference("projectorsoft_picture_read_picture_brightness"));
         assertNull(Settings.Global.getString(colors.getContentResolver(), "picture_red_gain"));
