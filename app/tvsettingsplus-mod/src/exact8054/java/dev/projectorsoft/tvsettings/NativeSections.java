@@ -241,13 +241,11 @@ public final class NativeSections {
             NativeAudioOutputReadout.install(context, screen);
             link(screen, NativePage.EQUALIZER, 200);
             OemStockUserSettings.installAudioOutput(context, screen, Preference.class);
-            PreferenceCategory effects = group(screen, "sound_processing", "Обработка звука");
-            effects.setOrder(300);
             guarded("sound-processing", () -> OemInlinePreferencesHook.populateSoundProcessing(
-                    context, effects, Preference.class));
-            OemAdvancedSoundRoutes.install(context, effects, Preference.class);
-            if (effects.getPreferenceCount() == 0) screen.removePreference(effects);
-            link(screen, NativePage.DELAY, 400);
+                    context, screen, Preference.class));
+            OemAdvancedSoundRoutes.install(context, screen, Preference.class);
+            // SPDIF delay already lives on the OEM digital-output screen; do not
+            // expose a second editor for the same setting on the Sound root.
             if (OemKeyToneHook.install(context, screen, Preference.class)) {
                 Preference tone = screen.findPreference("projectorsoft_key_tone");
                 if (tone != null) tone.setOrder(500);
