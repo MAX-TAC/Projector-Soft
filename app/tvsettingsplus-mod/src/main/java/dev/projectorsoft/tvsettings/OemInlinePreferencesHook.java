@@ -215,6 +215,7 @@ public final class OemInlinePreferencesHook {
         if((oemKey.startsWith("picture_")||oemKey.startsWith("tv_picture_"))&&!OemPictureState.mayEdit())return;
         ContentResolver resolver=context.getContentResolver();
         final String openedMode=Settings.Global.getString(resolver,"sound_style");
+        final boolean userOnlySurround = "sound_sound_surround".equals(oemKey);
         String initial=Settings.Global.getString(resolver,oemKey);
         if (!"0".equals(initial) && !"1".equals(initial)) return;
         String[] displayed = {initial};
@@ -225,6 +226,11 @@ public final class OemInlinePreferencesHook {
         pref.getMethod("setOrder",int.class).invoke(item,order);
         pref.getMethod("setPersistent",boolean.class).invoke(item,false);
         switchType.getMethod("setChecked",boolean.class).invoke(item,"1".equals(initial));
+        if (userOnlySurround && !"0".equals(openedMode)) {
+            pref.getMethod("setEnabled",boolean.class).invoke(item,false);
+            pref.getMethod("setSummary",CharSequence.class).invoke(item,
+                    "Только просмотр · изменение доступно в пользовательском профиле");
+        }
         Class<?> listener=Class.forName("androidx.preference.Preference$OnPreferenceChangeListener");
         InvocationHandler callback=(proxy,method,args)-> {
             if (method.getName().equals("onPreferenceChange") && args!=null && args.length>=2) {
@@ -235,6 +241,9 @@ public final class OemInlinePreferencesHook {
                     if (!displayed[0].equals(before)) return false;
                     if (!oemKey.startsWith("picture_") && !oemKey.startsWith("tv_picture_")
                             && !openedModeMatches(resolver,openedMode)) return false;
+                    if (userOnlySurround && !OemSoundValuePolicy.acceptsBandChange(
+                            before, target, 0, 1, openedMode,
+                            Settings.Global.getString(resolver,"sound_style"))) return false;
                     if (before.equals(Integer.toString(target))) return true;
                     if (!Settings.Global.putInt(resolver,oemKey,target)) return false;
                     if (Settings.Global.getInt(resolver,oemKey,-999)!=target) return false;
