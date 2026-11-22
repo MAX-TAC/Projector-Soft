@@ -76,6 +76,7 @@ public final class NativeSections {
                 Preference row=new Preference(context);
                 row.setTitle(label);
                 row.setKey(key);
+                setSystemIcon(row, key);
                 row.setEnabled(available);
                 if (!available) row.setSummary("Недоступно в этой версии прошивки");
                 row.setOnPreferenceClickListener(item->{
@@ -94,6 +95,7 @@ public final class NativeSections {
             row.setTitle(page.title);
             row.setOrder(order);
             row.setFragment(page.fragment);
+            if (page == NativePage.POWER) setSystemIcon(row, "power");
             // Let stock Leanback/TwoPanelSettings resolve Preference.fragment.
             // Activity-based navigation creates an extra opaque window.
             group.addPreference(row);
@@ -101,6 +103,27 @@ public final class NativeSections {
 
         protected void stock(PreferenceGroup group,String key,String label,String name){
             action(group,key,label,()->new Intent().setComponent(new ComponentName(OWN,OWN+"."+name)));
+        }
+
+        private void setSystemIcon(Preference row, String key) {
+            // Reuse the exact 8054 OEM drawables, not an unthemed Android icon.
+            String drawable;
+            switch (key) {
+                case "about_stock": drawable = "ic_devices_other"; break;
+                case "time": drawable = "ic_access_time"; break;
+                case "language": drawable = "ic_language"; break;
+                case "location": drawable = "ic_location_on"; break;
+                case "accounts": drawable = "ic_accounts_and_sign_in"; break;
+                case "storage": drawable = "ic_storage"; break;
+                case "power": drawable = "ic_settings_power"; break;
+                case "privacy": drawable = "ic_lock"; break;
+                case "security": drawable = "ic_lock_black"; break;
+                case "accessibility": drawable = "ic_accessibility_new"; break;
+                case "developer": drawable = "ic_settings_developeroptions"; break;
+                default: return;
+            }
+            int resource = requireContext().getResources().getIdentifier(drawable, "drawable", OWN);
+            if (resource != 0) row.setIcon(resource);
         }
     }
 
@@ -315,31 +338,12 @@ public final class NativeSections {
     }
 
     public static final class System extends Page {
-        private final Handler cpuHandler = new Handler(Looper.getMainLooper());
-        private final Runnable cpuTick = new Runnable() {
-            @Override public void run() {
-                if (!isAdded()) return;
-                Preference cpu = findPreference("projectorsoft_cpu_live");
-                if (cpu != null) {
-                    cpu.setSummary(OemCpuTemperature.read(requireContext()));
-                    cpuHandler.postDelayed(this, 2000);
-                }
-            }
-        };
         @Override NativePage section(){return NativePage.SYSTEM;}
         @Override void populate(PreferenceScreen screen){
             Context context = requireContext();
-            // Restore the complete ORIGINAL OEM About UI rather than a second
-            // read-only facsimile of its controls.
             stock(screen,"about_stock","Об устройстве","about.AboutActivity");
-            Preference cpu = new Preference(context);
-            cpu.setKey("projectorsoft_cpu_live");
-            cpu.setTitle("Температура CPU");
-            cpu.setSummary(OemCpuTemperature.read(context));
-            cpu.setSelectable(false);
-            cpu.setOrder(1);
-            screen.addPreference(cpu);
-            stock(screen,"device_name","Имя устройства","name.DeviceNameSettingsActivity");
+            // Device rename already exists inside the genuine AboutFragment.
+            // CPU is injected into the bottom of About via its own lifecycle.
             stock(screen,"time","Дата и время","system.DateTimeActivity");
             stock(screen,"language","Язык и ввод","system.LanguageActivity");
             stock(screen,"location","Местоположение","system.LocationActivity");
@@ -351,15 +355,6 @@ public final class NativeSections {
             stock(screen,"accessibility","Специальные возможности","oemlink.AccessibilitySettingsActivity");
             stock(screen,"developer","Для разработчиков","system.development.DevelopmentActivity");
             OemFontScaleHook.install(context,screen,Preference.class);
-        }
-        @Override public void onResume() {
-            super.onResume();
-            cpuHandler.removeCallbacks(cpuTick);
-            cpuHandler.post(cpuTick);
-        }
-        @Override public void onStop() {
-            cpuHandler.removeCallbacks(cpuTick);
-            super.onStop();
         }
     }
 
