@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.util.Log;
 
 /**
  * Removes the OEM two-panel layout's opaque full-screen gray background while
@@ -23,6 +24,7 @@ final class NativeOverlayWindow {
 
     static void apply(Activity activity) {
         if (activity == null) return;
+        try {
         Window window = activity.getWindow();
         if (window == null) return;
         window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
@@ -43,5 +45,9 @@ final class NativeOverlayWindow {
                 if (panelRoot != null) panelRoot.setBackgroundColor(Color.TRANSPARENT);
             }
         });
+        } catch (RuntimeException | LinkageError error) {
+            // Presentation failure must never crash the system Settings app.
+            Log.w("TvSettingsPlusMOD", "Transparent settings overlay unavailable", error);
+        }
     }
 }
