@@ -66,6 +66,17 @@ final class NativePicturePanel {
     private final Handler confirmationHandler = new Handler(Looper.getMainLooper());
     private final Runnable confirmStep = this::confirmSliderStep;
 
+    /** Mode must be OEM User (numeric ID 0, verified against the device's mode catalog). */
+    private boolean canEdit(Map<String, Integer> values) {
+        try {
+            return PictureUserEditPolicy.allows(OemHdmiPortInfo.machineId(), values,
+                    options.options(PicturePanelState.MODE));
+        } catch (Exception | LinkageError unavailable) {
+            Log.w(TAG, "OEM User picture mode not verified", unavailable);
+            return false;
+        }
+    }
+
     /** Allow an expected change of the edited scalar, but no other picture keys. */
     static boolean otherKeysUnchanged(Map<String, Integer> before, Map<String, Integer> after, String edited) {
         if (before == null || after == null || edited == null
@@ -167,8 +178,10 @@ final class NativePicturePanel {
                 hdr.setSummary(!known ? "Состояние недоступно"
                         : (value == 1 ? "Включён" : "Выключен") + " · только просмотр");
             } else {
-                row.setSummary(value == null ? "Значение недоступно" : value + " · тестовая регулировка");
-                row.setEnabled(value != null && "8054".equals(OemHdmiPortInfo.machineId()));
+                boolean editable = value != null && canEdit(snapshot);
+                row.setSummary(value == null ? "Значение недоступно"
+                        : value + (editable ? " · пользовательский режим (тест)" : " · только просмотр"));
+                row.setEnabled(editable);
             }
         }
     }
@@ -215,6 +228,12 @@ final class NativePicturePanel {
         try {
             Map<String, Integer> before = snapshot();
             Integer stored = before == null ? null : before.get(key);
+            if (!canEdit(before)) {
+                android.widget.Toast.makeText(context,
+                        "Регулировка доступна только в пользовательском режиме",
+                        android.widget.Toast.LENGTH_SHORT).show();
+                return;
+            }
             String configId = SLIDER_CONFIG.get(key);
             Class<?> type = Class.forName(CONFIG);
             Object cfg = type.getMethod("getInstance", Context.class).invoke(null, context);
@@ -222,7 +241,7 @@ final class NativePicturePanel {
             int max = ((Integer) type.getMethod("getMax", String.class).invoke(cfg, configId));
             int actual = ((Integer) type.getMethod("getConfigValueInt", String.class).invoke(cfg, configId));
             if (stored == null || stored != actual || min >= max || actual < min || actual > max
-                    || !before.equals(snapshot())) {
+                    || !before.equals(snapshot()) || !canEdit(snapshot())) {
                 android.widget.Toast.makeText(context, "Текущее значение недоступно", android.widget.Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -294,7 +313,7 @@ final class NativePicturePanel {
         try {
             if (!"8054".equals(OemHdmiPortInfo.machineId())) throw new IllegalStateException("Wrong board");
             Map<String, Integer> before = snapshot();
-            if (before == null || !before.equals(sliderSnapshot))
+            if (before == null || !before.equals(sliderSnapshot) || !canEdit(before))
                 throw new IllegalStateException("Picture context changed");
             Integer original = before.get(sliderKey);
             if (original == null || original < sliderMin || original > sliderMax
@@ -305,7 +324,9 @@ final class NativePicturePanel {
             if (desired < sliderMin || desired > sliderMax) return;
             if (!saveOriginal(before, original))
                 throw new IllegalStateException("Original value could not be saved");
-            if (!before.equals(snapshot())) throw new IllegalStateException("Context changed before write");
+            Map<String, Integer> atWrite = snapshot();
+            if (!before.equals(atWrite) || !canEdit(atWrite))
+                throw new IllegalStateException("Picture User context changed before write");
             if (!Settings.Global.putInt(context.getContentResolver(), sliderKey, desired))
                 throw new IllegalStateException("Settings.Global rejected the value");
             requestedValue = desired;
@@ -343,7 +364,7 @@ final class NativePicturePanel {
         if (slider == null || !waitingForBackend || sliderKey == null) return;
         try {
             Map<String, Integer> now = snapshot();
-            if (!otherKeysUnchanged(sliderSnapshot, now, sliderKey))
+            if (!otherKeysUnchanged(sliderSnapshot, now, sliderKey) || !canEdit(now))
                 throw new IllegalStateException("Picture context changed");
             boolean confirmed = Objects.equals(now.get(sliderKey), requestedValue)
                     && readMediaTekValue(sliderKey) == requestedValue;
