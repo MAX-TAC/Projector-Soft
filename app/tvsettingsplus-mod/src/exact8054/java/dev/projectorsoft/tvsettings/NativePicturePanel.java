@@ -65,6 +65,8 @@ final class NativePicturePanel {
     private boolean waitingForBackend;
     private final Handler confirmationHandler = new Handler(Looper.getMainLooper());
     private final Runnable confirmStep = this::confirmSliderStep;
+    private final Runnable commitStep = this::flushSlider;
+    private boolean localSliderPending;
 
     /** Mode must be OEM User (numeric ID 0, verified against the device's mode catalog). */
     private boolean canEdit(Map<String, Integer> values) {
@@ -75,6 +77,21 @@ final class NativePicturePanel {
             Log.w(TAG, "OEM User picture mode not verified", unavailable);
             return false;
         }
+    }
+
+    /** RGB belongs to the user color-temperature profile, not the picture preset. */
+    private boolean canEditScalar(String key, Map<String, Integer> values) {
+        if (values == null || !"8054".equals(OemHdmiPortInfo.machineId())) return false;
+        if (!COLOR.contains(key)) return canEdit(values);
+        if (!Integer.valueOf(0).equals(values.get(PicturePanelState.TEMPERATURE))) return false;
+        try {
+            String[][] table = options.options(PicturePanelState.TEMPERATURE);
+            if (!OemCustomerOptions.valid(table)) return false;
+            for (String v : table[1]) if ("0".equals(v)) return true;
+        } catch (Exception | LinkageError error) {
+            Log.w(TAG, "Color-temperature User profile not verified", error);
+        }
+        return false;
     }
 
     /** Allow an expected change of the edited scalar, but no other picture keys. */
@@ -96,7 +113,7 @@ final class NativePicturePanel {
         context = host.requireContext();
         for (int i = 0; i < PicturePanelState.KEYS.length; i++) {
             String key = PicturePanelState.KEYS[i];
-            if ((page == Page.PICTURE && !COLOR.contains(key) && !MEMC.equals(key))
+            if ((page == Page.PICTURE && !COLOR.contains(key))
                     || (page == Page.COLOR && COLOR.contains(key))
                     || (page == Page.MEMC && MEMC.equals(key))) {
                 add(host, screen, key, PicturePanelState.TITLES[i], 211 + i);
@@ -173,7 +190,7 @@ final class NativePicturePanel {
         }
         // RGB/temperature choices are user adjustments. Do not mutate factory
         // preset calibration; gamma/HDR/MEMC and mode remain separate controls.
-        if (PicturePanelState.TEMPERATURE.equals(key) && !canEdit(before)) return;
+        // Color-temperature mode is independent of the selected picture preset.
         final int requested;
         try { requested = Integer.parseInt(selected); }
         catch (NumberFormatException invalid) { return; }
@@ -225,9 +242,10 @@ final class NativePicturePanel {
 
     void refresh() {
         Map<String, Integer> snapshot = snapshot();
+        // Own scalar changes are expected while the overlay is open. Only an
+        // unrelated mode/input/HDR/temperature change invalidates the editor.
         if (slider != null && sliderSnapshot != null
-                && (!otherKeysUnchanged(sliderSnapshot, snapshot, sliderKey)
-                    || (!waitingForBackend && !sliderSnapshot.equals(snapshot)))) slider.dismiss();
+                && !otherKeysUnchanged(sliderSnapshot, snapshot, sliderKey)) slider.dismiss();
         final boolean userModeVerified = canEdit(snapshot);
         for (Map.Entry<String, Preference> item : rows.entrySet()) {
             String key = item.getKey();
@@ -245,7 +263,7 @@ final class NativePicturePanel {
                         : (value == 1 ? "Включён" : "Выключен"));
                 hdr.setEnabled(known);
             } else {
-                boolean editable = value != null && userModeVerified;
+                boolean editable = value != null && canEditScalar(key, snapshot);
                 row.setSummary(value == null ? "Значение недоступно"
                         : String.valueOf(value));
                 row.setEnabled(editable);
@@ -282,8 +300,7 @@ final class NativePicturePanel {
         CharSequence label = list.getEntry();
         list.setSummary(label == null ? "Текущий режим недоступен"
                 : label.toString().replace("%", "%%"));
-        list.setEnabled(label != null && (!PicturePanelState.TEMPERATURE.equals(key)
-                || canEdit(snapshot())));
+        list.setEnabled(label != null);
     }
 
     private static String[][] stockOptions(Context context, String key) throws Exception {
@@ -298,7 +315,7 @@ final class NativePicturePanel {
         try {
             Map<String, Integer> before = snapshot();
             Integer stored = before == null ? null : before.get(key);
-            if (!canEdit(before)) {
+            if (!canEditScalar(key, before)) {
                 android.widget.Toast.makeText(context,
                         "Регулировка доступна только в пользовательском режиме",
                         android.widget.Toast.LENGTH_SHORT).show();
@@ -311,7 +328,7 @@ final class NativePicturePanel {
             int max = ((Integer) type.getMethod("getMax", String.class).invoke(cfg, configId));
             int actual = ((Integer) type.getMethod("getConfigValueInt", String.class).invoke(cfg, configId));
             if (stored == null || min >= max || stored < min || stored > max
-                    || !before.equals(snapshot()) || !canEdit(snapshot())) {
+                    || !before.equals(snapshot()) || !canEditScalar(key, snapshot())) {
                 android.widget.Toast.makeText(context, "Текущее значение недоступно", android.widget.Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -334,16 +351,28 @@ final class NativePicturePanel {
             dialog.setCanceledOnTouchOutside(false);
             dialog.setOnKeyListener((item, code, event) -> {
                 if (code == KeyEvent.KEYCODE_DPAD_LEFT || code == KeyEvent.KEYCODE_DPAD_RIGHT) {
-                    if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0)
-                        applySliderStep(code == KeyEvent.KEYCODE_DPAD_RIGHT ? 1 : -1);
+                    if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                        int repeat = event.getRepeatCount();
+                        int step = repeat > 15 ? 4 : repeat > 5 ? 2 : 1;
+                        applySliderStep((code == KeyEvent.KEYCODE_DPAD_RIGHT ? 1 : -1) * step);
+                    }
                     return true;
                 }
-                return code == KeyEvent.KEYCODE_DPAD_CENTER;
+                if (code == KeyEvent.KEYCODE_DPAD_CENTER) {
+                    if (event.getAction() == KeyEvent.ACTION_UP) {
+                        flushSlider();
+                        dialog.dismiss();
+                    }
+                    return true;
+                }
+                return false;
             });
             View menu = host.requireActivity().findViewById(android.R.id.content);
             int visible = menu.getVisibility();
             dialog.setOnDismissListener(item -> {
+                confirmationHandler.removeCallbacks(commitStep);
                 confirmationHandler.removeCallbacks(confirmStep);
+                flushSlider();
                 menu.setVisibility(visible);
                 slider = null;
                 sliderSnapshot = null;
@@ -367,6 +396,8 @@ final class NativePicturePanel {
             sliderMin = min;
             sliderMax = max;
             waitingForBackend = false;
+            localSliderPending = false;
+            requestedValue = stored;
             slider = dialog;
             menu.setVisibility(View.INVISIBLE);
         } catch (Exception | LinkageError unavailable) {
@@ -381,40 +412,56 @@ final class NativePicturePanel {
      * candidate for device testing, NOT evidence of hardware/profile correctness.
      * No KuSettings Activity or Chinese UI controller is called.
      */
+    /**
+     * D-pad handling is immediate: repeat events update the visible value.
+     * Write requests are coalesced to avoid waiting 250-500 ms for every press.
+     * The OEM backend is verified in a separate readback loop.
+     */
     private void applySliderStep(int direction) {
-        if (slider == null || sliderKey == null || waitingForBackend || direction == 0) return;
+        if (slider == null || sliderKey == null || direction == 0) return;
+        Map<String, Integer> state = snapshot();
+        if (!otherKeysUnchanged(sliderSnapshot, state, sliderKey)
+                || !canEditScalar(sliderKey, state)) {
+            stopUnconfirmed("Контекст регулировки изменился");
+            return;
+        }
+        int desired = Math.max(sliderMin, Math.min(sliderMax, requestedValue + direction));
+        if (desired == requestedValue) return;
+        requestedValue = desired;
+        sliderBar.setProgress(desired);
+        sliderValue.setText(String.valueOf(desired));
+        localSliderPending = true;
+        confirmationHandler.removeCallbacks(commitStep);
+        confirmationHandler.postDelayed(commitStep, 70);
+    }
+
+    /** Flush the latest requested value; never overwrite another PQ preset. */
+    private void flushSlider() {
+        if (slider == null || sliderKey == null || !localSliderPending) return;
+        confirmationHandler.removeCallbacks(commitStep);
         try {
-            if (!"8054".equals(OemHdmiPortInfo.machineId())) throw new IllegalStateException("Wrong board");
-            Map<String, Integer> before = snapshot();
-            if (before == null || !before.equals(sliderSnapshot) || !canEdit(before))
-                throw new IllegalStateException("Picture context changed");
-            Integer original = before.get(sliderKey);
-            if (original == null || original < sliderMin || original > sliderMax)
-                throw new IllegalStateException("User picture value outside OEM bounds");
-            int oemBefore = readMediaTekValue(sliderKey);
-            if (oemBefore != original)
-                Log.w(TAG, "Picture selected input OEM value differs from Global: "
-                        + sliderKey + " global=" + original + " oem=" + oemBefore);
-            // Candidate step of one, not yet calibrated against stock D-pad increment.
-            int desired = original + direction;
-            if (desired < sliderMin || desired > sliderMax) return;
-            if (!saveOriginal(before, original))
-                throw new IllegalStateException("Original value could not be saved");
-            Map<String, Integer> atWrite = snapshot();
-            if (!before.equals(atWrite) || !canEdit(atWrite))
-                throw new IllegalStateException("Picture User context changed before write");
+            Map<String, Integer> state = snapshot();
+            if (!otherKeysUnchanged(sliderSnapshot, state, sliderKey)
+                    || !canEditScalar(sliderKey, state))
+                throw new IllegalStateException("Picture context changed during edit");
+            Integer original = sliderSnapshot.get(sliderKey);
+            if (original == null || requestedValue < sliderMin || requestedValue > sliderMax)
+                throw new IllegalStateException("Slider outside OEM bounds");
+            if (!saveOriginal(sliderSnapshot, original))
+                throw new IllegalStateException("Cannot journal original value");
+            int desired = requestedValue;
             if (!Settings.Global.putInt(context.getContentResolver(), sliderKey, desired))
-                throw new IllegalStateException("Settings.Global rejected the value");
-            Log.i(TAG, "PQ user scalar requested: " + sliderKey
-                    + " before=" + original + " requested=" + desired);
-            requestedValue = desired;
-            confirmations = 0;
+                throw new IllegalStateException("Settings.Global rejected scalar");
+            localSliderPending = false;
             waitingForBackend = true;
-            confirmationDeadline = SystemClock.uptimeMillis() + 5000;
-            confirmationHandler.postDelayed(confirmStep, 250);
-        } catch (Exception | LinkageError failure) {
-            Log.w(TAG, "Picture edit refused for " + sliderKey, failure);
-            stopUnconfirmed("Изменение не выполнено или контекст изменился");
+            confirmations = 0;
+            confirmationDeadline = SystemClock.uptimeMillis() + 8000;
+            confirmationHandler.removeCallbacks(confirmStep);
+            confirmationHandler.postDelayed(confirmStep, 200);
+        } catch (Exception | LinkageError error) {
+            Log.w(TAG, "Cannot apply picture scalar " + sliderKey, error);
+            localSliderPending = false;
+            stopUnconfirmed("Регулировка не применена");
         }
     }
 
@@ -442,8 +489,14 @@ final class NativePicturePanel {
         if (slider == null || !waitingForBackend || sliderKey == null) return;
         try {
             Map<String, Integer> now = snapshot();
-            if (!otherKeysUnchanged(sliderSnapshot, now, sliderKey) || !canEdit(now))
+            if (!otherKeysUnchanged(sliderSnapshot, now, sliderKey) || !canEditScalar(sliderKey, now))
                 throw new IllegalStateException("Picture context changed");
+            // A new D-pad step can be queued while the previous write is still
+            // reaching TvServices. Defer completion until the last value settles.
+            if (localSliderPending) {
+                confirmationHandler.postDelayed(confirmStep, 200);
+                return;
+            }
             boolean confirmed = Objects.equals(now.get(sliderKey), requestedValue)
                     && readMediaTekValue(sliderKey) == requestedValue;
             confirmations = confirmed ? confirmations + 1 : 0;
