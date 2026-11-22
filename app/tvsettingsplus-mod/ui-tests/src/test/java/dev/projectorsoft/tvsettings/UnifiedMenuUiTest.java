@@ -616,18 +616,30 @@ public class UnifiedMenuUiTest {
         Settings.Global.putString(resolver, "picture_gamma", "2");
         assertEquals(Integer.valueOf(7), PicturePanelState.read(key -> Settings.Global.getString(resolver, key)).get("picture_mode"));
         PreferenceScreen screen = picture.getPreferenceManager().createPreferenceScreen(activity);
-        new NativePicturePanel(picture, screen, NativePicturePanel.Page.PICTURE, key ->
-                "picture_mode".equals(key) ? new String[][]{{"Профиль OEM"}, {"7"}}
-                        : new String[][]{{"Вариант OEM"}, {"2"}});
+        org.robolectric.shadows.ShadowSystemProperties.override("ro.rjpj.machine.id", "8054");
+        NativePicturePanel editor = new NativePicturePanel(picture, screen,
+                NativePicturePanel.Page.PICTURE, key ->
+                "picture_mode".equals(key)
+                        ? new String[][]{{"Профиль OEM", "Пользовательский"}, {"7", "0"}}
+                        : new String[][]{{"Вариант OEM", "Другой вариант"}, {"2", "3"}});
         androidx.preference.ListPreference profile = screen.findPreference("projectorsoft_picture_read_picture_mode");
         androidx.preference.ListPreference gamma = screen.findPreference("projectorsoft_picture_read_picture_gamma");
         SwitchPreference hdr = screen.findPreference("projectorsoft_picture_read_picture_list_hdr");
         assertTrue(profile.isEnabled());
-        assertTrue(gamma.isEnabled());
+        // The factory preset owns its gamma: disabled even if its value is readable.
+        assertFalse(gamma.isEnabled());
+        assertTrue(gamma.getSummary().toString().contains("Пользовательский"));
+        assertFalse(gamma.callChangeListener("3")); // bypass disabled UI on purpose
+        assertEquals("2", Settings.Global.getString(resolver, "picture_gamma"));
         assertEquals("Профиль OEM", profile.getEntry());
         assertEquals("Вариант OEM", gamma.getEntry());
         assertTrue(hdr.isChecked());
         assertTrue(hdr.isEnabled());
+        Preference scope = screen.findPreference("projectorsoft_picture_video_pipeline_info");
+        assertNotNull(scope);
+        assertFalse(scope.isSelectable());
+        assertTrue(scope.getSummary().toString().contains("интерфейс Android"));
+        assertTrue(profile.getOrder() < scope.getOrder());
         Preference memcOnPicture = screen.findPreference(
                 "projectorsoft_picture_read_tv_picture_advance_video_mjc_effect");
         Preference hue = screen.findPreference("projectorsoft_picture_read_picture_hue");
@@ -639,6 +651,14 @@ public class UnifiedMenuUiTest {
                 "projectorsoft_page_COLOR_TEMPERATURE").getOrder());
         assertEquals("7", Settings.Global.getString(resolver, "picture_mode"));
         assertEquals("2", Settings.Global.getString(resolver, "picture_gamma"));
+
+        // Switching to the verified User mode makes Gamma editable again,
+        // without changing its factory-preset value behind the owner's back.
+        Settings.Global.putString(resolver, "picture_mode", "0");
+        editor.refresh();
+        assertTrue(gamma.isEnabled());
+        assertFalse(gamma.callChangeListener("3")); // listener handles explicit write
+        assertEquals("3", Settings.Global.getString(resolver, "picture_gamma"));
         MemcSettingsActivity activityMemc = Robolectric.buildActivity(MemcSettingsActivity.class).setup().get();
         NativeSections.Memc memc = (NativeSections.Memc)
                 activityMemc.getSupportFragmentManager().findFragmentById(android.R.id.content);
