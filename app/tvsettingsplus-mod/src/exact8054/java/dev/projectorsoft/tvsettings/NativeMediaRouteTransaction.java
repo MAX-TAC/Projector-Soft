@@ -47,7 +47,7 @@ final class NativeMediaRouteTransaction {
     }
 
     boolean noChangeNeeded() {
-        return target == null && original.isEmpty();
+        return target == null && original.isEmpty() && forceBefore == NONE;
     }
 
     boolean targetAvailable() {
@@ -73,8 +73,12 @@ final class NativeMediaRouteTransaction {
     boolean confirmed() throws Exception {
         if (!attempted || !port.stillConnected(bluetooth) || !targetAvailable())
             return false;
-        return target == null ? port.preferredIsAutomatic()
-                : port.preferredIs(target) && port.routeIs(target);
+        if (target == null)
+            return port.preferredIsAutomatic() && port.mediaForceAllowsA2dp();
+        if (target.type == android.media.AudioDeviceInfo.TYPE_BLUETOOTH_A2DP)
+            return port.preferredIs(target) && port.routeIs(target)
+                    && port.mediaForceAllowsA2dp();
+        return port.preferredIs(target) && port.routeIs(target);
     }
 
     /**
