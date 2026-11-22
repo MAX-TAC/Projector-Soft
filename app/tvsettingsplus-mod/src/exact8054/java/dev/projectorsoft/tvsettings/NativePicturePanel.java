@@ -389,9 +389,12 @@ final class NativePicturePanel {
             if (before == null || !before.equals(sliderSnapshot) || !canEdit(before))
                 throw new IllegalStateException("Picture context changed");
             Integer original = before.get(sliderKey);
-            if (original == null || original < sliderMin || original > sliderMax
-                    || readMediaTekValue(sliderKey) != original)
-                throw new IllegalStateException("OEM/global values disagree");
+            if (original == null || original < sliderMin || original > sliderMax)
+                throw new IllegalStateException("User picture value outside OEM bounds");
+            int oemBefore = readMediaTekValue(sliderKey);
+            if (oemBefore != original)
+                Log.w(TAG, "Picture selected input OEM value differs from Global: "
+                        + sliderKey + " global=" + original + " oem=" + oemBefore);
             // Candidate step of one, not yet calibrated against stock D-pad increment.
             int desired = original + direction;
             if (desired < sliderMin || desired > sliderMax) return;
@@ -402,6 +405,8 @@ final class NativePicturePanel {
                 throw new IllegalStateException("Picture User context changed before write");
             if (!Settings.Global.putInt(context.getContentResolver(), sliderKey, desired))
                 throw new IllegalStateException("Settings.Global rejected the value");
+            Log.i(TAG, "PQ user scalar requested: " + sliderKey
+                    + " before=" + original + " requested=" + desired);
             requestedValue = desired;
             confirmations = 0;
             waitingForBackend = true;
@@ -443,6 +448,8 @@ final class NativePicturePanel {
                     && readMediaTekValue(sliderKey) == requestedValue;
             confirmations = confirmed ? confirmations + 1 : 0;
             if (confirmations >= 2) {
+                Log.i(TAG, "PQ user scalar accepted by MediaTek config: "
+                        + sliderKey + "=" + requestedValue);
                 waitingForBackend = false;
                 sliderSnapshot = now;
                 sliderBar.setProgress(requestedValue);
@@ -462,6 +469,8 @@ final class NativePicturePanel {
     }
 
     private void stopUnconfirmed(String message) {
+        Log.w(TAG, "PQ user slider: " + message + " key=" + sliderKey
+                + " requested=" + requestedValue);
         confirmationHandler.removeCallbacks(confirmStep);
         waitingForBackend = false;
         android.widget.Toast.makeText(context, message, android.widget.Toast.LENGTH_LONG).show();
