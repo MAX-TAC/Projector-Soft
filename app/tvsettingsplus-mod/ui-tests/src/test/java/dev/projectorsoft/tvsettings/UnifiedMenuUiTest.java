@@ -294,6 +294,7 @@ public class UnifiedMenuUiTest {
         assertNull(screen.findPreference("projectorsoft_media_volume"));
         assertNull(screen.findPreference("sound_mute"));
         assertNull(screen.findPreference("projectorsoft_sound_mode"));
+        assertNotNull(screen.findPreference(NativeAudioOutputReadout.KEY));
 
         EqualizerSettingsActivity eq = Robolectric.buildActivity(EqualizerSettingsActivity.class).setup().get();
         NativeSections.Equalizer eqPage = (NativeSections.Equalizer)
@@ -479,7 +480,7 @@ public class UnifiedMenuUiTest {
         assertEquals(2, property.writes);
     }
 
-    @Test public void equalizerKeepsFiveRowsAndOnlyWritesStableUserValues() {
+    @Test public void equalizerKeepsBassTrebleAndFiveRowsAndOnlyWritesStableUserValues() {
         android.content.Context context = org.robolectric.RuntimeEnvironment.getApplication();
         PreferenceScreen screen = new PreferenceManager(context).createPreferenceScreen(context);
         class Device implements NativeEqualizerPanel.Backend {
@@ -491,8 +492,10 @@ public class UnifiedMenuUiTest {
 
             @Override public NativeEqualizerPanel.Snapshot read() {
                 java.util.List<NativeEqualizerPanel.Band> bands = new java.util.ArrayList<>();
-                for (int i = 0; i < 5; i++) bands.add(new NativeEqualizerPanel.Band(true,
-                        i == 4 && missing ? null : band, appliedBand, 0, 100));
+                for (int i = 0; i < NativeEqualizerPanel.KEYS.length; i++)
+                    bands.add(new NativeEqualizerPanel.Band(true,
+                            i == NativeEqualizerPanel.KEYS.length - 1 && missing ? null : band,
+                            appliedBand, 0, 100));
                 return new NativeEqualizerPanel.Snapshot(stored, applied, java.util.List.of(output), bands);
             }
 
@@ -504,15 +507,20 @@ public class UnifiedMenuUiTest {
             }
         }
         Device device = new Device();
-        NativeEqualizerPanel panel = new NativeEqualizerPanel(context, screen, device);
+        java.util.concurrent.atomic.AtomicBoolean speakerRoute =
+                new java.util.concurrent.atomic.AtomicBoolean(true);
+        NativeEqualizerPanel panel = new NativeEqualizerPanel(context, screen, device,
+                speakerRoute::get);
         panel.start();
         shadowOf(Looper.getMainLooper()).idleFor(java.time.Duration.ofSeconds(2));
         androidx.preference.ListPreference mode = screen.findPreference("projectorsoft_sound_mode");
         String firstKey = "projectorsoft_eq_" + NativeEqualizerPanel.KEYS[0];
-        String lastKey = "projectorsoft_eq_" + NativeEqualizerPanel.KEYS[4];
+        String lastKey = "projectorsoft_eq_"
+                + NativeEqualizerPanel.KEYS[NativeEqualizerPanel.KEYS.length - 1];
         androidx.preference.SeekBarPreference first = screen.findPreference(firstKey);
         Preference last = screen.findPreference(lastKey);
-        assertEquals(6, screen.getPreferenceCount());
+        assertEquals(NativeEqualizerPanel.KEYS.length + 1, screen.getPreferenceCount());
+        assertNotNull(screen.findPreference("projectorsoft_eq_sound_treble"));
         assertTrue(mode.isEnabled());
         assertFalse(first.isEnabled());
         assertEquals(0, first.getValue());
@@ -546,6 +554,7 @@ public class UnifiedMenuUiTest {
         assertFalse(first.callChangeListener(26));
         assertEquals(3, device.writes);
         device.output = "bluetooth";
+        speakerRoute.set(false);
         device.appliedBand = 26;
         shadowOf(Looper.getMainLooper()).idleFor(java.time.Duration.ofSeconds(2));
         assertEquals(26, first.getValue());
