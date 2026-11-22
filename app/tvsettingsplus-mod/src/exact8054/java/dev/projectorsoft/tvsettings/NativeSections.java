@@ -219,7 +219,7 @@ public final class NativeSections {
         @Override void populate(PreferenceScreen screen) {
             super.populate(screen);
             link(screen, NativePage.COLOR_TEMPERATURE, 228);
-            link(screen, NativePage.MEMC, 229);
+            // MEMC is now a popup ListPreference on this page, like Gamma.
             OemStockUserSettings.installPictureFormat(requireContext(), screen, Preference.class);
         }
     }
