@@ -293,6 +293,7 @@ final class NativeEqualizerPanel {
         mode.setSummary(name == null ? "Профиль недоступен" : name);
         boolean profileReady = stable && profileOptionsKnown && name != null && snapshot != null && snapshot.profileReady();
         mode.setEnabled(profileReady);
+        final boolean speakerRouteVerified = NativeAudioOutputReadout.speakerOnly(audio);
         for (int i = 0; i < rows.length; i++) {
             Band band = snapshot == null ? null : snapshot.bands.get(i);
             BandRow row = rows[i];
@@ -303,7 +304,7 @@ final class NativeEqualizerPanel {
                 row.display(true);
                 row.setSummary(!"0".equals(profile)
                         ? "Только просмотр · заводской профиль"
-                        : !NativeAudioOutputReadout.speakerOnly(audio)
+                        : !speakerRouteVerified
                             ? "Только просмотр · OEM DSP не проверен на этом выходе"
                             : null);
             } else {
@@ -311,7 +312,7 @@ final class NativeEqualizerPanel {
                 row.setSummary(band != null && !band.supported
                         ? "Полоса не поддерживается текущей конфигурацией" : "Значение недоступно");
             }
-            row.setEnabled(profileReady && NativeAudioOutputReadout.speakerOnly(audio)
+            row.setEnabled(profileReady && speakerRouteVerified
                     && band != null && band.coherent()
                     && OemSoundValuePolicy.acceptsBandChange(String.valueOf(band.stored), band.stored,
                             band.min, band.max, profile, profile));
