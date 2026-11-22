@@ -11,6 +11,19 @@ import com.android.tv.settings.overlay.FlavorUtils;
 public abstract class ModSettingsActivity extends TvSettingsActivity {
     abstract NativePage page();
 
+    @Override protected void onCreate(Bundle state) {
+        super.onCreate(state);
+        NativeOverlayWindow.apply(this);
+        // The stock TvSettingsActivity already slides the right-hand pane.
+        // Prevent a second inconsistent diagonal Activity transition.
+        overridePendingTransition(0, 0);
+    }
+
+    @Override protected void onResume() {
+        super.onResume();
+        NativeOverlayWindow.apply(this);
+    }
+
     @Override protected Fragment createSettingsFragment() {
         NativePage current=page();
         String name=current==null?NativeRootFragment.class.getName():current.fragment;
@@ -21,6 +34,11 @@ public abstract class ModSettingsActivity extends TvSettingsActivity {
     @Override protected boolean isStartupVerificationRequired() {
         // Preserve the same startup verification as original MainSettings.
         return true;
+    }
+
+    @Override public void finish() {
+        super.finish();
+        overridePendingTransition(0, 0);
     }
 
     @Override public boolean onKeyUp(int code,KeyEvent event) {
