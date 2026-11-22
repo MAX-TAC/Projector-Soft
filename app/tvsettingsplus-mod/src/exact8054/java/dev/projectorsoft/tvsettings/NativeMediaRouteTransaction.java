@@ -106,8 +106,12 @@ final class NativeMediaRouteTransaction {
         if (!attempted && !forceAttempted) return true;
         // Restore global force policy first, then previous preferred strategy.
         // A failure is reported instead of silently claiming success.
+        // Force-use is updated by AudioService asynchronously. Even if the
+        // immediate readback still equals the original value, an earlier
+        // queued A2DP exclusion may apply AFTER the rollback. Queue the
+        // compensating write in all paths that attempted a force change.
         int current = port.mediaForce();
-        if (current != forceBefore) {
+        if (forceAttempted || current != forceBefore) {
             if (forceBefore != NONE && forceBefore != NO_BT) return false;
             port.allowA2dpMedia(forceBefore == NONE);
         }
