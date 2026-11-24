@@ -176,7 +176,6 @@ public final class OemAudioOutputHook {
             case AudioDeviceInfo.TYPE_HDMI: type = "HDMI"; break;
             case AudioDeviceInfo.TYPE_HDMI_ARC: type = "ARC"; break;
             case AudioDeviceInfo.TYPE_HDMI_EARC: type = "eARC"; break;
-            case AudioDeviceInfo.TYPE_SPDIF: type = "SPDIF"; break;
             case AudioDeviceInfo.TYPE_USB_DEVICE: type = "USB"; break;
             case AudioDeviceInfo.TYPE_USB_HEADSET: type = "USB-наушники"; break;
             case AudioDeviceInfo.TYPE_WIRED_HEADPHONES: type = "Наушники"; break;
@@ -221,7 +220,6 @@ public final class OemAudioOutputHook {
                 case PRIMARY_LINE:
                     wanted.addAll(byType(am, AudioDeviceInfo.TYPE_LINE_ANALOG));
                     wanted.addAll(byType(am, AudioDeviceInfo.TYPE_LINE_DIGITAL));
-                    wanted.addAll(byType(am, AudioDeviceInfo.TYPE_SPDIF));
                     wanted.addAll(byType(am, AudioDeviceInfo.TYPE_AUX_LINE));
                     wanted.addAll(byType(am, AudioDeviceInfo.TYPE_WIRED_HEADPHONES));
                     wanted.addAll(byType(am, AudioDeviceInfo.TYPE_WIRED_HEADSET));
