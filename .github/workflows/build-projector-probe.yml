@@ -75,10 +75,11 @@ jobs:
           cd work
           unzip -o ../base.apk >/dev/null
           cp /tmp/pb/dex/classes.dex .
-          zip -q -X -0 -r ../packed.apk resources.arsc
           zip -q -X -r ../packed.apk .
+          # resources.arsc должен быть НЕсжатым и выровненным (Android 11+)
+          zip -q -X -0 ../packed.apk resources.arsc
           cd ..
-          "$BT/zipalign" -f -p -a 4 packed.apk aligned.apk
+          "$BT/zipalign" -f -p 4 packed.apk aligned.apk
           keytool -genkeypair -keystore ks.jks -storepass android -keypass android \
             -alias probe -keyalg RSA -keysize 2048 -validity 10000 \
             -dname "CN=ProjectorProbe,O=DSH,C=RU" >/dev/null 2>&1
