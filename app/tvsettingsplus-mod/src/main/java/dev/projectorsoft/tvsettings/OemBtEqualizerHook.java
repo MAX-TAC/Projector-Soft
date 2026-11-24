@@ -46,7 +46,7 @@ public final class OemBtEqualizerHook {
     private static volatile Equalizer sEq;
 
     private static final String[] PRESET_NAMES = {
-            "Ровный", "Бас", "Высокие", "Голос", "Свой"
+            "Ровный", "Бас", "Высокие", "Голос", "Пользовательский"
     };
     private static final short[][] PRESETS = {
             {0, 0, 0, 0, 0},

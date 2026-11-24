@@ -148,6 +148,10 @@ public final class OemInlinePreferencesHook {
             // Game Mode and ALLM belong to the source screen: they matter when a
             // console or PC is attached, not while watching movies.
             OemGameModeHook.install(context,hdmiCategory,preference);
+            // AISR and Live Tone are picture enhancers whose effect depends on
+            // the video path, so they go to the picture screen. Both were
+            // inconclusive through Android apps on 8054; owner verifies on HDMI.
+            OemPictureEnhanceHook.install(context,pictureCategory,preference);
         } catch(Throwable e) {
             Log.w(TAG,"OEM quick controls unavailable; keep original settings",e);
         }
