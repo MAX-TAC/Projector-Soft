@@ -25,24 +25,31 @@ jobs:
           mkdir -p /tmp/pb/classes /tmp/pb/dex /tmp/pb/apk
           SDK_MANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | head -n 1)"
           yes | "$SDK_MANAGER" "platforms;android-33" "build-tools;33.0.3" >/dev/null 2>&1 || true
-          test -f "$ANDROID_HOME/platforms/android-33/android.jar"
-          test -x "$ANDROID_HOME/build-tools/33.0.3/d8"
-          echo "ANDROID_JAR=$ANDROID_HOME/platforms/android-33/android.jar" >> "$GITHUB_ENV"
-          echo "BT=$ANDROID_HOME/build-tools/33.0.3" >> "$GITHUB_ENV"
+          # Значения пишем РАСКРЫТЫМИ (без $VAR внутри GITHUB_ENV)
+          AJ="$ANDROID_HOME/platforms/android-33/android.jar"
+          BT="$ANDROID_HOME/build-tools/33.0.3"
+          test -f "$AJ" || { echo "android.jar missing"; exit 1; }
+          test -x "$BT/d8" || { echo "d8 missing"; exit 1; }
+          echo "ANDROID_JAR=$AJ" >> "$GITHUB_ENV"
+          echo "BT=$BT" >> "$GITHUB_ENV"
+          echo "AJ=$AJ  BT=$BT"
 
       - name: Compile Java
         run: |
           set -euo pipefail
+          echo "ANDROID_JAR=$ANDROID_JAR"
+          echo "BT=$BT"
+          ls -la "$ANDROID_JAR"
           javac -source 8 -target 8 -nowarn -cp "$ANDROID_JAR" -d /tmp/pb/classes \
-            probe/src/dev/projectorsoft/probe/*.java
-          echo "javac OK"
-          ls -R /tmp/pb/classes | head -20
+            probe/src/dev/projectorsoft/probe/*.java 2>&1 | tee /tmp/pb/javac.log
+          test "${PIPESTATUS[0]}" -eq 0
+          find /tmp/pb/classes -name '*.class' | head
 
       - name: Convert to DEX
         run: |
           set -euo pipefail
           find /tmp/pb/classes -name '*.class' -print0 | xargs -0 "$BT/d8" \
-            --lib "$ANDROID_JAR" --min-api 33 --output /tmp/pb/dex
+            --lib "$ANDROID_JAR" --min-api 33 --output /tmp/pb/dex 2>&1 | tee /tmp/pb/d8.log
           test -s /tmp/pb/dex/classes.dex
           ls -la /tmp/pb/dex/
           strings /tmp/pb/dex/classes.dex | grep -q 'setPreferredDevicesForStrategy'
@@ -55,25 +62,21 @@ jobs:
           cd /tmp/pb
           cp "$GITHUB_WORKSPACE/probe/AndroidManifest.xml" .
           mkdir -p emptypayload
-          # aapt package с пустой папкой ресурсов -> корректный бинарный манифест
-          "$BT/aapt" package -f \
-            -M AndroidManifest.xml \
-            -I "$ANDROID_JAR" \
-            -F base.apk \
-            emptypayload
+          # aapt2 (есть в build-tools 33) — надёжнее для бинарного манифеста
+          "$BT/aapt2" link --manifest AndroidManifest.xml -I "$ANDROID_JAR" \
+            --min-sdk-version 33 --target-sdk-version 33 \
+            --version-code 1 --version-name 1.0 -o base.apk 2>&1 | tee aapt2.log || true
+          if [ ! -s base.apk ]; then
+            echo "aapt2 failed, fallback to aapt"
+            "$BT/aapt" package -f -M AndroidManifest.xml -I "$ANDROID_JAR" -F base.apk emptypayload
+          fi
           test -s base.apk
-          # Проверяем, что манифест бинарный и читается
-          unzip -l base.apk
-          # Вливаем classes.dex внутрь zip
-          cd /tmp/pb
-          cp base.apk src.apk
           mkdir -p work
           cd work
-          unzip -o ../src.apk >/dev/null
+          unzip -o ../base.apk >/dev/null
           cp /tmp/pb/dex/classes.dex .
           zip -q -X -r ../packed.apk .
           cd ..
-          ls -la packed.apk
           "$BT/zipalign" -f -p 4 packed.apk aligned.apk
           keytool -genkeypair -keystore ks.jks -storepass android -keypass android \
             -alias probe -keyalg RSA -keysize 2048 -validity 10000 \
@@ -82,10 +85,25 @@ jobs:
             --ks-pass pass:android --key-pass pass:android \
             --out ProjectorProbe.apk aligned.apk
           java -jar "$BT/lib/apksigner.jar" verify --print-certs ProjectorProbe.apk
-          "$BT/aapt" dump badging ProjectorProbe.apk | head -5
+          "$BT/aapt" dump badging ProjectorProbe.apk | head -3
           ls -la ProjectorProbe.apk
 
+      - name: Collect build logs
+        if: always()
+        run: |
+          mkdir -p /tmp/pb/logs
+          cp /tmp/pb/*.log /tmp/pb/logs/ 2>/dev/null || true
+          ls -la /tmp/pb/ > /tmp/pb/logs/dir.txt 2>&1 || true
+
       - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ProjectorProbe-buildlogs
+          path: /tmp/pb/logs/
+          if-no-files-found: warn
+
+      - uses: actions/upload-artifact@v4
+        if: success()
         with:
           name: ProjectorProbe
           path: /tmp/pb/ProjectorProbe.apk
