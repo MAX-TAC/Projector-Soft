@@ -86,7 +86,8 @@ jobs:
           java -jar "$BT/lib/apksigner.jar" sign --ks ks.jks \
             --ks-pass pass:android --key-pass pass:android \
             --out ProjectorProbe.apk aligned.apk
-          unzip -v ProjectorProbe.apk | grep resources.arsc`n          java -jar "$BT/lib/apksigner.jar" verify --print-certs ProjectorProbe.apk
+          unzip -v ProjectorProbe.apk | grep resources.arsc
+          java -jar "$BT/lib/apksigner.jar" verify --print-certs ProjectorProbe.apk
           "$BT/aapt" dump badging ProjectorProbe.apk | head -3
           ls -la ProjectorProbe.apk
 
