@@ -136,9 +136,18 @@ public final class OemInlinePreferencesHook {
             OemProjectorOrientationHook.install(context,placementCategory,preference);
             OemHardwareDelegatedSettings.installProjectionLinks(
                     context,placementCategory,preference);
-            // Five genuine OEM bands via stock PartnerSettingsConfig only.
-            // Uses original ProgressDialog scale but native TV SeekBar widgets.
-            OemFiveBandEqualizerHook.install(context,soundCategory,preference);
+            // OEM five-band EQ only reaches the MediaTek DSP, so it is silent on
+            // Bluetooth (verified on 8054 with a BT soundbar). The audiofx
+            // Equalizer below works through AudioFlinger and therefore on any
+            // output, so the OEM one is not installed any more.
+            // OemFiveBandEqualizerHook.install(context,soundCategory,preference);
+            OemBtEqualizerHook.install(context,soundCategory,preference);
+            // Output routing needs @SystemApi, so it only works inside this
+            // system-uid settings APK. Verified inaccessible to a normal app.
+            OemAudioOutputHook.install(context,soundCategory,preference);
+            // Game Mode and ALLM belong to the source screen: they matter when a
+            // console or PC is attached, not while watching movies.
+            OemGameModeHook.install(context,hdmiCategory,preference);
         } catch(Throwable e) {
             Log.w(TAG,"OEM quick controls unavailable; keep original settings",e);
         }
