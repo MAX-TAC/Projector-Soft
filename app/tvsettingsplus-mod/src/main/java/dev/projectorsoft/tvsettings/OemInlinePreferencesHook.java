@@ -135,6 +135,8 @@ public final class OemInlinePreferencesHook {
             });
         }
         ProjectorMenuSections.optional("picture-sliders",()->OemInlineSlidersHook.installPicture(context,category,pref));
+        // AISR and Live Tone depend on the video path; owner verifies on HDMI.
+        OemPictureEnhanceHook.install(context,category,pref);
         if(!exact || OemPictureState.mayEdit())
             ProjectorMenuSections.optional("picture-state",()->OemPictureState.install(context,category,pref));
     }
@@ -150,6 +152,9 @@ public final class OemInlinePreferencesHook {
                 ()->exact ? OemCecAutoOff8054.install(context,category,pref)
                           : OemHdmiCecHook.install(context,category,pref));
         OemHardwareDelegatedSettings.installSourceLinks(context,category,pref,hasCec,hasBootApp);
+        // Game Mode and ALLM belong here: they matter when a console or PC is
+        // attached, not while watching movies.
+        OemGameModeHook.install(context,category,pref);
     }
 
     static void populateSound(Context context,Object category,Class<?> pref,Runnable soundModeChanged) throws Exception {
@@ -160,7 +165,14 @@ public final class OemInlinePreferencesHook {
             OemEarcDelegatedPreference.install(context,category,pref);
         }
         OemInlineSlidersHook.installSound(context,category,pref);
-        OemFiveBandEqualizerHook.install(context,category,pref);
+        // OEM five-band EQ only reaches the MediaTek DSP and is silent on
+        // Bluetooth (verified on 8054). The audiofx Equalizer works through
+        // AudioFlinger, so it applies to every output including BT.
+        // OemFiveBandEqualizerHook.install(context,category,pref);
+        OemBtEqualizerHook.install(context,category,pref);
+        // Output routing needs @SystemApi, so it only works inside this
+        // system-uid settings APK.
+        OemAudioOutputHook.install(context,category,pref);
     }
 
     static void populateSoundProfile(Context context,Object category,Class<?> pref,Runnable modeChanged)
