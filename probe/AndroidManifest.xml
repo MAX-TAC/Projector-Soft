@@ -30,5 +30,12 @@
                 <action android:name="dev.projectorsoft.probe.TRD" />
             </intent-filter>
         </receiver>
+        <receiver
+            android:name=".TrdRawProbeReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="dev.projectorsoft.probe.TRDRAW" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>
