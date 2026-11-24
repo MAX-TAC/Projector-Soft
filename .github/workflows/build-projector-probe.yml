@@ -75,16 +75,17 @@ jobs:
           cd work
           unzip -o ../base.apk >/dev/null
           cp /tmp/pb/dex/classes.dex .
+          zip -q -X -0 -r ../packed.apk resources.arsc
           zip -q -X -r ../packed.apk .
           cd ..
-          "$BT/zipalign" -f -p 4 packed.apk aligned.apk
+          "$BT/zipalign" -f -p -a 4 packed.apk aligned.apk
           keytool -genkeypair -keystore ks.jks -storepass android -keypass android \
             -alias probe -keyalg RSA -keysize 2048 -validity 10000 \
             -dname "CN=ProjectorProbe,O=DSH,C=RU" >/dev/null 2>&1
           java -jar "$BT/lib/apksigner.jar" sign --ks ks.jks \
             --ks-pass pass:android --key-pass pass:android \
             --out ProjectorProbe.apk aligned.apk
-          java -jar "$BT/lib/apksigner.jar" verify --print-certs ProjectorProbe.apk
+          unzip -v ProjectorProbe.apk | grep resources.arsc`n          java -jar "$BT/lib/apksigner.jar" verify --print-certs ProjectorProbe.apk
           "$BT/aapt" dump badging ProjectorProbe.apk | head -3
           ls -la ProjectorProbe.apk
 
