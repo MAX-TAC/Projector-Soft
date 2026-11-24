@@ -2,6 +2,7 @@ package dev.projectorsoft.tvsettings;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
@@ -15,6 +16,7 @@ import java.lang.reflect.Method;
  * Camera/focus/keystone calibration behavior remains OEM-owned.
  */
 public final class OemRootMenuHook {
+    private static final String TAG="TvSettingsPlusMOD";
     private static final String PREF_CLASS = "androidx.preference.Preference";
     private static final String SOURCE_ACTION = "dev.projectorsoft.settings.SOURCES";
     private static final String GENERAL_ACTION = "dev.projectorsoft.settings.GENERAL";
@@ -60,6 +62,16 @@ public final class OemRootMenuHook {
     public static void install(Object fragment) {
         try {
             if (fragment == null) return;
+            // The smali hook can fire from onCreateView, where the register holds a
+            // View rather than the fragment. Resolve the real fragment first, or
+            // every reflection call below throws and the root menu never appears.
+            if (!OemInlinePreferencesHook.looksLikeFragment(fragment)) {
+                fragment = OemInlinePreferencesHook.recoverFragment(fragment);
+                if (fragment == null) {
+                    Log.w(TAG, "root menu: no fragment available");
+                    return;
+                }
+            }
             Object contextObj=fragment.getClass().getMethod("getContext").invoke(fragment);
             if (!(contextObj instanceof Context)) return;
             Context context=(Context)contextObj;

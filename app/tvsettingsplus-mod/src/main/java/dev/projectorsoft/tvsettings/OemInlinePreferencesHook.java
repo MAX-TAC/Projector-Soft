@@ -47,7 +47,7 @@ public final class OemInlinePreferencesHook {
      * MOD menu (verified on 8054).
      */
     public static void install(Object first,View root) {
-        Object fragment=resolveFragment(first,root);
+        Object fragment=looksLikeFragment(first)?first:recoverFragment(first);
         if(fragment==null){
             android.util.Log.w(TAG,"install: no fragment found; menu not populated");
             return;
@@ -56,13 +56,61 @@ public final class OemInlinePreferencesHook {
         if(root!=null)bind(fragment,root);
     }
 
-    private static Object resolveFragment(Object first,View root) {
-        if(isFragment(first))return first;
-        if(isFragment(root))return root;
+    public static Object recoverFragment(Object first) {
+        if(looksLikeFragment(first))return first;
+        // The onCreateView hook passes the inflated view, not the fragment.
+        // Recover the fragment from the FragmentManager that owns this view.
+        View v=(first instanceof View)?(View)first:null;
+        Object fromView=findFragmentForView(v);
+        if(fromView!=null)return fromView;
+        return findVisibleMainFragment();
+    }
+
+    /** Walks up the view tree and asks any Fragment's FragmentManager for its view owner. */
+    private static Object findFragmentForView(View root) {
+        if(root==null)return null;
+        java.util.List<Object> candidates=new java.util.ArrayList<>();
+        collectFragments(root.getContext(),candidates);
+        for(Object f:candidates){
+            View fv=null;
+            try { fv=(View)callDeep(f,"getView"); } catch(Exception ignored) {}
+            if(fv!=null && fv==root)return f;
+            if(fv!=null && isSameTree(fv,root))return f;
+        }
         return null;
     }
 
-    private static boolean isFragment(Object candidate) {
+    private static boolean isSameTree(View a,View b) {
+        return a.getRootView()==b.getRootView();
+    }
+
+    /** Last resort: ask Activity for its FragmentManager and take the resumed fragment. */
+    @SuppressWarnings("unchecked")
+    private static void collectFragments(Context context,java.util.List<Object> out) {
+        try {
+            Context ctx=context;
+            while(ctx instanceof android.content.ContextWrapper){
+                if(ctx instanceof android.app.Activity){
+                    android.app.Activity act=(android.app.Activity)ctx;
+                    try {
+                        Object fm=callDeep(act,"getSupportFragmentManager");
+                        Object list=callDeep(fm,"getFragments");
+                        if(list instanceof java.util.List){
+                            for(Object f:(java.util.List<Object>)list) if(looksLikeFragment(f))out.add(f);
+                        }
+                    } catch(Exception ignored) {}
+                    return;
+                }
+                ctx=((android.content.ContextWrapper)ctx).getBaseContext();
+            }
+        } catch(Exception ignored) {}
+    }
+
+    private static Object findVisibleMainFragment() {
+        return null;
+    }
+
+    public static boolean looksLikeFragment(Object candidate) {
         if(candidate==null)return false;
         for(Class<?> c=candidate.getClass();c!=null;c=c.getSuperclass()){
             if("androidx.fragment.app.Fragment".equals(c.getName())
