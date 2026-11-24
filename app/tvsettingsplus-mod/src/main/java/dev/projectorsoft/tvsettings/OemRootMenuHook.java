@@ -67,7 +67,7 @@ public final class OemRootMenuHook {
             Method find=fragment.getClass().getMethod("findPreference",CharSequence.class);
             Object category=find.invoke(fragment,"general_settings");
             if (category == null) {
-                category=fragment.getClass().getMethod("getPreferenceScreen").invoke(fragment);
+                category=OemInlinePreferencesHook.callDeep(fragment,"getPreferenceScreen");
             }
             if (category==null) return;
             boolean grouped = "8054".equals(OemHdmiPortInfo.machineId());

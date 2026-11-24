@@ -50,7 +50,11 @@ public final class OemInlinePreferencesHook {
             if(!(ctx instanceof Context))throw new IllegalStateException("Fragment has no Android context");
             Context context=(Context)ctx;
             stage="preference-screen";
-            Object screen=fragment.getClass().getMethod("getPreferenceScreen").invoke(fragment);
+            // getPreferenceScreen() is not declared public on this build's
+            // PreferenceFragmentCompat, so getMethod() throws NoSuchMethodException
+            // and the whole MOD menu silently disappeared. Walk the class
+            // hierarchy with getDeclaredMethod instead (verified on 8054).
+            Object screen=callDeep(fragment,"getPreferenceScreen");
             if(screen==null)throw new IllegalStateException("PreferenceScreen not created");
             stage="androidx-reflection";
             ProjectorMenuSections sections=new ProjectorMenuSections(context,screen);
@@ -364,6 +368,22 @@ public final class OemInlinePreferencesHook {
         pref.getMethod("setOnPreferenceChangeListener",listenerType).invoke(preference,callback);
         category.getClass().getMethod("addPreference",pref).invoke(category,preference);
     }
+
+    /**
+     * Calls a no-arg method by walking the whole class hierarchy.
+     * getMethod() only sees public members, and several androidx and OEM
+     * members are package-private on this build. Verified on 8054.
+     */
+    public static Object callDeep(Object target,String name) throws Exception {
+        for(Class<?> c=target.getClass();c!=null;c=c.getSuperclass()){
+            try {
+                java.lang.reflect.Method m=c.getDeclaredMethod(name);
+                m.setAccessible(true);
+                return m.invoke(target);
+            } catch(NoSuchMethodException ignored){
+                // keep walking up
+            }
+        }
+        throw new NoSuchMethodException(name+" on "+target.getClass().getName());
+    }
 }
-
-
