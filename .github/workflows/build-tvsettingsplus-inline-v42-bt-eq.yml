@@ -268,7 +268,7 @@ jobs:
           apktool if vendor/reference/8052/APK/framework-res.apk -p /tmp/tv42/framework
           apktool d -f -r -p /tmp/tv42/framework vendor/reference/8052/APK/TvSettingsPlus.apk -o /tmp/tv42/decoded
           python3 tools/patch_customer0_lightmode_smali.py /tmp/tv42/decoded /tmp/tv42/brightness_report.json
-          python3 tools/patch_aosp_root_menu_smali.py /tmp/tv42/decoded /tmp/tv42/navigation_report.json
+          python3 tools/patch_aosp_root_menu_smali.py --exact-8054 /tmp/tv42/decoded /tmp/tv42/navigation_report.json
           python3 tools/patch_oem_sleep_menu_smali.py /tmp/tv42/decoded /tmp/tv42/sleep_menu_report.json
           python3 - <<'PY'
           import json,re

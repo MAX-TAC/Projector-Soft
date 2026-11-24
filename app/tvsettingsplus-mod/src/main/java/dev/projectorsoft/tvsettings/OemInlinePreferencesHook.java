@@ -36,10 +36,39 @@ public final class OemInlinePreferencesHook {
     public static int[] soundValues() {return SOUND_VALUES.clone();}
     static String[] soundTitles() {return SOUND_TITLES.clone();}
 
-    /** Compatibility bridge for older build profiles; exact 8054 installs before view creation. */
-    public static void install(Object fragment,View root) {
+    /**
+     * Compatibility bridge for older build profiles; exact 8054 installs before view creation.
+     *
+     * The smali patch injects this call at the return of MainFragment.onCreateView.
+     * Depending on the build profile the first register can be either the fragment
+     * (p0) or the inflated view, so never assume it: resolve the fragment first and
+     * only then populate. Passing a View straight to populate() threw
+     * NoSuchMethodException on getPreferenceScreen and silently removed the whole
+     * MOD menu (verified on 8054).
+     */
+    public static void install(Object first,View root) {
+        Object fragment=resolveFragment(first,root);
+        if(fragment==null){
+            android.util.Log.w(TAG,"install: no fragment found; menu not populated");
+            return;
+        }
         populate(fragment);
-        bind(fragment,root);
+        if(root!=null)bind(fragment,root);
+    }
+
+    private static Object resolveFragment(Object first,View root) {
+        if(isFragment(first))return first;
+        if(isFragment(root))return root;
+        return null;
+    }
+
+    private static boolean isFragment(Object candidate) {
+        if(candidate==null)return false;
+        for(Class<?> c=candidate.getClass();c!=null;c=c.getSuperclass()){
+            if("androidx.fragment.app.Fragment".equals(c.getName())
+                    ||"android.app.Fragment".equals(c.getName()))return true;
+        }
+        return false;
     }
 
     public static void populate(Object fragment) {
