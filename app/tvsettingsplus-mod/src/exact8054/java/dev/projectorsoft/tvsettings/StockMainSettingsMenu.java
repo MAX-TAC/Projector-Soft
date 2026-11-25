@@ -64,7 +64,7 @@ public final class StockMainSettingsMenu {
                 // reported in R3 (Picture, Sound, System, Bluetooth, Sources).
                 added.addPreference(row);
             }
-            screen.setTitle("Настройки Android TV");
+            screen.setTitle("Настройки");
             hideOriginal(screen);
         } catch (RuntimeException | LinkageError failure) {
             if (added != null) screen.removePreference(added);

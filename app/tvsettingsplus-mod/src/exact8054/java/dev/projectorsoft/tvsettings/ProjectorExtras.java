@@ -40,6 +40,18 @@ final class ProjectorExtras {
     static final String AISR = "tv_picture_video_aisr";
     static final String LIVE_TONE = "tv_picture_video_live_tone";
     static final String DUP_SPEAKER = "projectorsoft_audio_dup_speaker";
+    /** Primary output selection as a plain dropdown, not a separate OEM screen. */
+    static final String PRIMARY_OUT = "projectorsoft_audio_primary";
+    private static final String KEY_OUT = "projectorsoft_extras_audio_primary";
+    private static final String[] OUT_NAMES = {
+            "Авто (по подключению)", "Динамики проектора", "Bluetooth",
+            "HDMI / ARC", "Линейный выход"
+    };
+    private static final int[] OUT_TYPES = {-1,
+            AudioDeviceInfo.TYPE_BUILTIN_SPEAKER,
+            AudioDeviceInfo.TYPE_BLUETOOTH_A2DP,
+            AudioDeviceInfo.TYPE_HDMI_ARC,
+            AudioDeviceInfo.TYPE_LINE_ANALOG};
 
     private static final String KEY_GAME = "projectorsoft_extras_game_mode";
     private static final String KEY_ALLM = "projectorsoft_extras_allm";
@@ -111,6 +123,77 @@ final class ProjectorExtras {
         if (parent != null) parent.addPreference(row);
     }
 
+    /**
+     * Replaces the OEM "separate screen" audio-output entry with a dropdown of
+     * the outputs this board actually reports. Verified device list on 8054:
+     * built-in speaker, Bluetooth A2DP, HDMI ARC.
+     */
+    static void installOutputChoice(Context context, PreferenceScreen screen) {
+        if (screen == null) return;
+        // Drop the OEM row that opens a separate activity.
+        Preference legacy = screen.findPreference("projectorsoft_audio_output");
+        if (legacy != null) screen.removePreference(legacy);
+
+        ListPreference list = new ListPreference(context);
+        list.setKey(KEY_OUT);
+        list.setTitle("Устройство вывода звука");
+        list.setOrder(240);
+        list.setEntries(OUT_NAMES);
+        String[] values = new String[OUT_NAMES.length];
+        for (int i = 0; i < values.length; i++) values[i] = String.valueOf(i);
+        list.setEntryValues(values);
+        list.setPersistent(false);
+        int saved = Settings.Global.getInt(context.getContentResolver(), PRIMARY_OUT, 0);
+        if (saved < 0 || saved >= OUT_NAMES.length) saved = 0;
+        list.setValue(String.valueOf(saved));
+        list.setOnPreferenceChangeListener((pref, value) -> {
+            int index;
+            try {
+                index = Integer.parseInt(String.valueOf(value));
+            } catch (NumberFormatException bad) {
+                return false;
+            }
+            Settings.Global.putInt(context.getContentResolver(), PRIMARY_OUT, index);
+            boolean ok = applyPrimaryOutput(context, index);
+            Log.i(TAG, "audio primary=" + index + " applied=" + ok);
+            if (pref instanceof ListPreference) {
+                ((ListPreference) pref).setValue(String.valueOf(index));
+            }
+            return false;
+        });
+        screen.addPreference(list);
+    }
+
+    /** Routes the media strategy to the requested output type. */
+    private static boolean applyPrimaryOutput(Context context, int index) {
+        if (index <= 0) return true; // "Auto" leaves the OEM routing untouched
+        if (index >= OUT_TYPES.length) return false;
+        try {
+            AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+            if (am == null) return false;
+            int wanted = OUT_TYPES[index];
+            List<AudioDeviceInfo> devices = new ArrayList<>();
+            for (AudioDeviceInfo device : am.getDevices(AudioManager.GET_DEVICES_OUTPUTS)) {
+                if (device.getType() == wanted) devices.add(device);
+            }
+            if (devices.isEmpty()) {
+                Log.w(TAG, "no device of type " + wanted);
+                return false;
+            }
+            Object strategies = AudioManager.class
+                    .getMethod("getAudioProductStrategies").invoke(am);
+            if (!(strategies instanceof List)) return false;
+            boolean any = false;
+            for (Object strategy : (List<?>) strategies) {
+                if (!strategyName(strategy).toLowerCase().contains("media")) continue;
+                any |= setPreferred(am, strategy, devices);
+            }
+            return any;
+        } catch (Throwable error) {
+            Log.w(TAG, "primary output routing failed", error);
+            return false;
+        }
+    }
     /** Adds or removes the built-in speaker from the media strategy. */
     private static boolean applySpeakerDuplication(Context context, boolean enable) {
         try {
@@ -189,6 +272,111 @@ final class ProjectorExtras {
         return false;
     }
 
+    // ---------------- Keystone reset ----------------
+
+    /**
+     * Zero every keystone corner plus the automatic keystone flags.
+     *
+     * Keys verified on the live 8054 (getprop): persist.rjpj.fourcorner.keystone_*
+     * is what com.rjpj.tcorrection actually reads; persist.display.keystone_* is
+     * the display-side mirror. Digital zoom and HV live inside the OEM activities
+     * and expose no property, so they are not touched here.
+     */
+    private static final String[] CORNERS = {
+            "ltx", "lty", "rtx", "rty", "lbx", "lby", "rbx", "rby"
+    };
+
+    static void installKeystoneReset(Context context, PreferenceGroup parent) {
+        if (parent == null) return;
+        Preference row = new Preference(context);
+        row.setKey("projectorsoft_keystone_reset_all");
+        row.setTitle("Сбросить все коррекции трапеции");
+        row.setSummary("Четыре угла и автокоррекция возвращаются к нулю.");
+        row.setOrder(300);
+        row.setOnPreferenceClickListener(item -> {
+            int changed = resetKeystone();
+            android.widget.Toast.makeText(context,
+                    changed > 0 ? "Коррекции трапеции сброшены" : "Не удалось сбросить",
+                    android.widget.Toast.LENGTH_SHORT).show();
+            Log.i(TAG, "keystone reset keys=" + changed);
+            return true;
+        });
+        parent.addPreference(row);
+    }
+
+    /** Writes 0 into every corner property; returns how many writes succeeded. */
+    private static int resetKeystone() {
+        int changed = 0;
+        try {
+            java.lang.reflect.Method set = Class.forName("android.os.SystemProperties")
+                    .getMethod("set", String.class, String.class);
+            for (String corner : CORNERS) {
+                try {
+                    set.invoke(null, "persist.rjpj.fourcorner.keystone_" + corner, "0");
+                    set.invoke(null, "persist.display.keystone_" + corner, "0");
+                    changed++;
+                } catch (Throwable perKey) {
+                    Log.w(TAG, "corner " + corner + " not reset", perKey);
+                }
+            }
+            set.invoke(null, "persist.rjpj.autokeystone.move", "0");
+            set.invoke(null, "persist.rjpj.autokeystone.poweron", "0");
+        } catch (Throwable error) {
+            Log.w(TAG, "keystone reset failed", error);
+        }
+        return changed;
+    }
+    // ---------------- HDMI-CEC ----------------
+
+    // HdmiControlService reads these two; verified absent from Settings on the
+    // live 8054, so the service runs on its defaults until something writes them.
+    static final String CEC_ENABLED = "hdmi_control_enabled";
+    static final String CEC_AUTO_WAKEUP = "hdmi_control_auto_wakeup_enabled";
+    private static final String KEY_CEC = "projectorsoft_extras_cec";
+    private static final String KEY_CEC_POWER = "projectorsoft_extras_cec_power";
+
+    /** CEC master switch and "wake the HDMI device with the projector". */
+    static void installCec(Context context, PreferenceGroup parent) {
+        if (parent == null) return;
+        SwitchPreference cec = new SwitchPreference(context);
+        cec.setKey(KEY_CEC);
+        cec.setTitle("HDMI-CEC");
+        cec.setSummary("Управление подключёнными HDMI-устройствами одним пультом.");
+        cec.setOrder(50);
+        cec.setPersistent(false);
+        cec.setChecked(Settings.Global.getInt(context.getContentResolver(), CEC_ENABLED, 1) == 1);
+        cec.setOnPreferenceChangeListener((pref, value) -> {
+            boolean on = value instanceof Boolean && (Boolean) value;
+            Settings.Global.putInt(context.getContentResolver(), CEC_ENABLED, on ? 1 : 0);
+            // The OEM also stores a dotted alias; keep it in step for its own reader.
+            Settings.Global.putInt(context.getContentResolver(),
+                    "Settings.Global.HDMI_CONTROL_ENABLED", on ? 1 : 0);
+            int read = Settings.Global.getInt(context.getContentResolver(), CEC_ENABLED, -1);
+            ((SwitchPreference) pref).setChecked(read == 1);
+            return false;
+        });
+        parent.addPreference(cec);
+
+        SwitchPreference wake = new SwitchPreference(context);
+        wake.setKey(KEY_CEC_POWER);
+        wake.setTitle("Включать HDMI-устройство вместе с проектором");
+        wake.setSummary("One Touch Play: проектор будит ресивер или приставку при включении.");
+        wake.setOrder(51);
+        wake.setPersistent(false);
+        wake.setChecked(readOneTouchPlay(context));
+        wake.setOnPreferenceChangeListener((pref, value) -> {
+            boolean on = value instanceof Boolean && (Boolean) value;
+            Settings.Global.putInt(context.getContentResolver(),
+                    CEC_AUTO_WAKEUP, on ? 1 : 0);
+            ((SwitchPreference) pref).setChecked(readOneTouchPlay(context));
+            return false;
+        });
+        parent.addPreference(wake);
+    }
+
+    private static boolean readOneTouchPlay(Context context) {
+        return Settings.Global.getInt(context.getContentResolver(), CEC_AUTO_WAKEUP, 1) == 1;
+    }
     // ---------------- shared ----------------
 
     /** Toggle backed by one or two Settings.Global keys, with read-back check. */
@@ -213,7 +401,13 @@ final class ProjectorExtras {
             int readBack = Settings.Global.getInt(context.getContentResolver(),
                     primary, Integer.MIN_VALUE);
             Log.i(TAG, key + "=" + numeric + " put=" + ok + " read=" + readBack);
-            return false; // re-read below, never trust the click
+            // Android reverts the switch when the listener returns false, so the
+            // row must be set from the value we just read back. Without this the
+            // toggle only appears to change after leaving and re-entering the page.
+            if (pref instanceof SwitchPreference) {
+                ((SwitchPreference) pref).setChecked(readBack == 1);
+            }
+            return false;
         });
         parent.addPreference(row);
     }

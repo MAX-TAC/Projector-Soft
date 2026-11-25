@@ -165,9 +165,12 @@ final class OemProjectionSwitches implements View.OnAttachStateChangeListener,
 
         void render() throws ReflectiveOperationException {
             Boolean value = state.value();
+            // A null value only means the OEM property could not be read
+            // back; the setter still writes. Only a real dependent-state
+            // restriction disables the switch.
             String reason = state.restriction();
-            enabled.invoke(item, value != null && reason == null);
-            summary.invoke(item, value == null ? "Текущее значение недоступно" : reason);
+            enabled.invoke(item, reason == null);
+            summary.invoke(item, value == null ? "Сохранённое значение недоступно" : reason);
             if (value != null) checked.invoke(item, value);
         }
     }

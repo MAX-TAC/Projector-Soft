@@ -69,15 +69,19 @@ final class BtEqualizerPanel {
 
         SwitchPreference toggle = new SwitchPreference(context);
         toggle.setKey(KEY_ENABLED);
-        toggle.setTitle("Эквалайзер для любых выходов");
+        toggle.setTitle("Эквалайзер (работает на всех выходах)");
         toggle.setSummary("Работает и на Bluetooth. Независим от штатных полос выше.");
-        toggle.setOrder(300);
+        toggle.setOrder(100);
         toggle.setPersistent(false);
         toggle.setChecked(on);
         toggle.setOnPreferenceChangeListener((pref, value) -> {
             boolean enable = value instanceof Boolean && (Boolean) value;
             Settings.Global.putInt(context.getContentResolver(), PREF_ENABLED, enable ? 1 : 0);
             applyEnabled(enable);
+            if (pref instanceof SwitchPreference) {
+                ((SwitchPreference) pref).setChecked(
+                        Settings.Global.getInt(context.getContentResolver(), PREF_ENABLED, 0) == 1);
+            }
             return false;
         });
         parent.addPreference(toggle);
@@ -87,7 +91,7 @@ final class BtEqualizerPanel {
         preset.setTitle("Пресет");
         preset.setEntries(PRESET_NAMES);
         preset.setEntryValues(new String[]{"0", "1", "2", "3", "4"});
-        preset.setOrder(301);
+        preset.setOrder(101);
         preset.setPersistent(false);
         preset.setValue(String.valueOf(Settings.Global.getInt(
                 context.getContentResolver(), PREF_PRESET, 0)));

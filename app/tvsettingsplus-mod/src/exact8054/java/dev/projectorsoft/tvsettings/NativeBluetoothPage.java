@@ -147,7 +147,9 @@ public final class NativeBluetoothPage extends AccessoriesFragment {
             } else if (!enable && adapter.getState() == BluetoothAdapter.STATE_ON) {
                 new AlertDialog.Builder(requireContext())
                         .setMessage(WARNING + "\n\n" + BLOCKED + ".")
-                        .setNeutralButton(android.R.string.ok, null).show();
+                        .setNegativeButton("Отмена", null)
+                        .setPositiveButton("Отключить", (dialog, which) -> disableNow(adapter))
+                        .show();
                 refreshToggle(null);
             } else if (enable && adapter.getState() == BluetoothAdapter.STATE_OFF) {
                 enabling = adapter.enable();
@@ -156,6 +158,20 @@ public final class NativeBluetoothPage extends AccessoriesFragment {
             }
         } catch (RuntimeException refused) {
             Log.w(TAG, "Bluetooth enable request refused", refused);
+            refreshToggle("Изменение Bluetooth недоступно");
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    private void disableNow(BluetoothAdapter adapter) {
+        try {
+            if (adapter.disable()) {
+                refreshToggle(null);
+            } else {
+                refreshToggle("Не удалось отключить Bluetooth");
+            }
+        } catch (RuntimeException refused) {
+            Log.w(TAG, "Bluetooth disable request refused", refused);
             refreshToggle("Изменение Bluetooth недоступно");
         }
     }

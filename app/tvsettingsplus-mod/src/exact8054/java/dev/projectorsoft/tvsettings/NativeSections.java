@@ -159,7 +159,13 @@ public final class NativeSections {
         @Override void populate(PreferenceScreen screen){
             Context context=requireContext();
             PreferenceCategory inputs=group(screen,"inputs","Выбор источника");
-            action(inputs,"home","Android TV",()->HomeDestination.resolve(context));
+            int homeIndex = 0;
+            for (android.content.ComponentName launcher : HomeDestination.launchers(context)) {
+                final android.content.ComponentName target = launcher;
+                action(inputs, "home_" + homeIndex++,
+                        HomeDestination.label(context, target),
+                        () -> HomeDestination.intentFor(target));
+            }
             guarded("hdmi-ports", () -> OemHdmiPortInfo.install(context, inputs, Preference.class));
             if(inputs.getPreferenceCount()==0)info(inputs,"inputs-unavailable","Источники","Нет подтверждённого маршрута");
             guarded("boot-destination",()->NativeBootDestination.install(context,screen));
@@ -167,10 +173,14 @@ public final class NativeSections {
             guarded("hdmi-autoplay",()->OemHdmiAutoPlayHook.install(context,screen,Preference.class));
             Preference autoplay = screen.findPreference(OemHdmiAutoPlayHook.KEY);
             if (autoplay != null) autoplay.setTitle("Автопереключение HDMI");
-            guarded("hdmi-edid",()->OemHdmiEdidHook.install(context,screen,Preference.class));
+            // The EDID selector has no per-port meaning on 8054 (two ports, no
+            // port argument in the OEM query), so it is only offered on 8052.
+            if (!"8054".equals(OemHdmiPortInfo.machineId())) {
+                guarded("hdmi-edid",()->OemHdmiEdidHook.install(context,screen,Preference.class));
+                Preference edid = screen.findPreference(OemHdmiEdidHook.STATUS_KEY);
+                if (edid != null) edid.setOrder(290);
+            }
             ProjectorExtras.installSources(context,screen);
-            Preference edid = screen.findPreference(OemHdmiEdidHook.STATUS_KEY);
-            if (edid != null) edid.setOrder(290);
         }
 
         @Override public void onResume(){
@@ -179,8 +189,15 @@ public final class NativeSections {
             if (screen != null) {
                 NativeBootDestination.refresh(screen);
                 PreferenceCategory inputs = screen.findPreference("inputs");
-                if (inputs != null && inputs.findPreference("home") == null)
-                    action(inputs, "home", "Android TV", () -> HomeDestination.resolve(requireContext()));
+                if (inputs != null && inputs.getPreferenceCount() == 0) {
+                    int idx = 0;
+                    for (android.content.ComponentName launcher : HomeDestination.launchers(requireContext())) {
+                        final android.content.ComponentName target = launcher;
+                        action(inputs, "home_" + idx++,
+                                HomeDestination.label(requireContext(), target),
+                                () -> HomeDestination.intentFor(target));
+                    }
+                }
             }
         }
 
@@ -212,6 +229,7 @@ public final class NativeSections {
     public static final class Cec extends Page {
         @Override NativePage section(){return NativePage.HDMI_CEC;}
         @Override void populate(PreferenceScreen screen){
+            ProjectorExtras.installCec(requireContext(), screen);
             guarded("hdmi-cec",()->OemCecAutoOff8054.install(requireContext(),screen,Preference.class));
         }
         @Override public void onResume(){
@@ -236,6 +254,7 @@ public final class NativeSections {
             Preference movement = geometry.findPreference("projectorsoft_keystone_move");
             if (movement != null) movement.setOrder(200);
             OemProjectionPanel.installEditors(context, geometry, Preference.class);
+            ProjectorExtras.installKeystoneReset(context, geometry);
             if (geometry.getPreferenceCount() == 0) screen.removePreference(geometry);
             // Font scaling is a display/projection preference, not a system-security setting.
             OemFontScaleHook.install(context, screen, Preference.class);
@@ -336,7 +355,7 @@ public final class NativeSections {
             Context context = requireContext();
             NativeAudioOutputReadout.install(context, screen);
             link(screen, NativePage.EQUALIZER, 200);
-            OemStockUserSettings.installAudioOutput(context, screen, Preference.class);
+            ProjectorExtras.installOutputChoice(context, screen);
             guarded("sound-processing", () -> OemInlinePreferencesHook.populateSoundProcessing(
                     context, screen, Preference.class));
             OemAdvancedSoundRoutes.install(context, screen, Preference.class);
