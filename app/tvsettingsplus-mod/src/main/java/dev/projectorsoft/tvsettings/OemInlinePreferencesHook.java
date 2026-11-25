@@ -245,15 +245,16 @@ public final class OemInlinePreferencesHook {
         if (!"8054".equals(OemHdmiPortInfo.machineId())) {
             OemEarcDelegatedPreference.install(context,category,pref);
         }
-        OemInlineSlidersHook.installSound(context,category,pref);
+        // Bass/treble sliders removed: they write the same DSP-only keys as the
+        // old five-band panel and do nothing on Bluetooth or HDMI.
         // OEM five-band EQ only reaches the MediaTek DSP and is silent on
         // Bluetooth (verified on 8054). The audiofx Equalizer works through
         // AudioFlinger, so it applies to every output including BT.
         // OemFiveBandEqualizerHook.install(context,category,pref);
-        OemBtEqualizerHook.install(context,category,pref);
+        // Equalizer is offered on its own page via BtEqualizerPanel only.
         // Output routing needs @SystemApi, so it only works inside this
         // system-uid settings APK.
-        OemAudioOutputHook.install(context,category,pref);
+        // Output routing is offered as a dropdown on the Sound page.
     }
 
     static void populateSoundProfile(Context context,Object category,Class<?> pref,Runnable modeChanged)

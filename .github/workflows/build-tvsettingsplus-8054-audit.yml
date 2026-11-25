@@ -377,9 +377,6 @@ jobs:
           cp -a /tmp/tv33/decoded/smali_classes13 /tmp/tv33/stock-classes13
           python3 tools/patch_8054_mainsettings.py /tmp/tv33/decoded \
             /tmp/tv33/patch_report.json /tmp/tv33/report/mainsettings-smali.diff
-          # Ship the visible version as 2.0 (versionCode is patched separately).
-          sed -i 's/android:versionName="[^"]*"/android:versionName="2.0"/' /tmp/tv33/decoded/AndroidManifest.xml
-          grep -q 'android:versionName="2.0"' /tmp/tv33/decoded/AndroidManifest.xml
           apktool b -p /tmp/tv33/framework /tmp/tv33/decoded -o /tmp/tv33/rebuilt.apk
           python3 tools/compose_brightness_v3_apk.py "$STOCK" /tmp/tv33/rebuilt.apk \
             /tmp/tv33/dex/classes.dex /tmp/tv33/patch_report.json /tmp/tv33/unsigned.apk \

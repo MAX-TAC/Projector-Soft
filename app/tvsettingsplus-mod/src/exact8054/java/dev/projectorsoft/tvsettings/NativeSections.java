@@ -379,40 +379,25 @@ public final class NativeSections {
     }
 
     public static final class Equalizer extends Page {
-        private NativeEqualizerPanel panel;
+        // Only the AudioFlinger-level equalizer is offered. The old OEM five-band
+        // panel (NativeEqualizerPanel) wrote g_fusion_sound__* keys that reach the
+        // MediaTek DSP only, so bass/treble did nothing over Bluetooth or HDMI.
         private BtEqualizerPanel btPanel;
-        private final ViewTreeObserver.OnWindowFocusChangeListener eqFocus = focused -> {
-            if (focused && panel != null) panel.refresh();
-        };
         @Override NativePage section(){return NativePage.EQUALIZER;}
         @Override void populate(PreferenceScreen screen){
-            panel = new NativeEqualizerPanel(requireContext(), screen);
             btPanel = new BtEqualizerPanel(requireContext());
             btPanel.install(screen);
         }
-        @Override public void onViewCreated(View view, Bundle state) {
-            super.onViewCreated(view, state);
-            view.getViewTreeObserver().addOnWindowFocusChangeListener(eqFocus);
-        }
-        @Override public void onDestroyView() {
-            View view = getView();
-            if (view != null && view.getViewTreeObserver().isAlive())
-                view.getViewTreeObserver().removeOnWindowFocusChangeListener(eqFocus);
-            super.onDestroyView();
-        }
         @Override public void onStart() {
             super.onStart();
-            if (panel != null) panel.start();
             if (btPanel != null) btPanel.start();
         }
         @Override public void onResume() {
             super.onResume();
-            if (panel != null) panel.refresh();
             if (btPanel != null && getPreferenceScreen() != null)
                 btPanel.refresh(getPreferenceScreen());
         }
         @Override public void onStop() {
-            if (panel != null) panel.stop();
             if (btPanel != null) btPanel.stop();
             super.onStop();
         }
