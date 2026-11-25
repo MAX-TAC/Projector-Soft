@@ -121,8 +121,12 @@ jobs:
           gradle -p app/tvsettingsplus-mod/ui-tests compileDebugJavaWithJavac --no-daemon --console=plain \
             -PexactSources=/tmp/tv33/generated
           CLASSES=app/tvsettingsplus-mod/ui-tests/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes
-          find "$CLASSES/dev/projectorsoft" -type f -name '*.class' -print0 | xargs -0 "$ANDROID_HOME/build-tools/33.0.3/d8" \
-            --lib "$ANDROID_JAR" --classpath "$CLASSES" --min-api 33 --output /tmp/tv33/dex
+          # One d8 invocation over a jar: piping 130+ class files through xargs
+          # splits the command and every batch overwrites classes.dex, silently
+          # dropping the middle of the alphabet (KuSourceRecoveryService etc).
+          "$JAVA_HOME/bin/jar" cf /tmp/tv33/all-classes.jar -C "$CLASSES" .
+          "$ANDROID_HOME/build-tools/33.0.3/d8" --lib "$ANDROID_JAR" --min-api 33 \
+            --output /tmp/tv33/dex /tmp/tv33/all-classes.jar
           test -s /tmp/tv33/dex/classes.dex
           strings /tmp/tv33/dex/classes.dex | grep -q 'LegacyBrightnessUiHook'
           strings /tmp/tv33/dex/classes.dex | grep -q 'OemRootMenuHook'
