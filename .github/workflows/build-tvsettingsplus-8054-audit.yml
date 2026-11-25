@@ -196,7 +196,7 @@ jobs:
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemDelegatedMenuPolicy.java \
             app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/OemDelegatedMenuPolicyTest.java
           java -cp /tmp/tv33/menu-tests dev.projectorsoft.tvsettings.OemDelegatedMenuPolicyTest
-          grep -q 'tciv_system_online_update' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemHardwareDelegatedSettings.java
+          # OTA entry removed from the custom build on purpose
           grep -q 'tciv_source_power_on_app' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemHardwareDelegatedSettings.java
           grep -q 'Об устройстве · Проектор' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemInlinePreferencesHook.java
       - name: Software-test native factory AC-power boot switch
