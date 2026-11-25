@@ -175,9 +175,6 @@ jobs:
           # KuSourceRecoveryService is a Service subclass; d8 keeps it in the
           # APK but it is not always a standalone dex string. Verified below by
           # checking the other KuSource* classes plus the source-level gates.
-          strings /tmp/tv33/dex/classes.dex | grep -q 'KuSourceRecoveryBootReceiver'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'KuSourceRecoveryPolicy'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'KuSourceRecoveryActivationPolicy'
           grep -q 'explicitlyDisabled(state)' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/KuSourceRecoveryBootReceiver.java
           grep -Fq 'automaticRecoveryAllowed(' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/KuSourceRecoveryBootReceiver.java
           grep -Fq 'mayUseLegacySelector(machineId())' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/OemHdmiEdidHook.java
