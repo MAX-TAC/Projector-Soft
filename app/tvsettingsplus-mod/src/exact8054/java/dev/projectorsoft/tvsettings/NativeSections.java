@@ -168,6 +168,7 @@ public final class NativeSections {
             Preference autoplay = screen.findPreference(OemHdmiAutoPlayHook.KEY);
             if (autoplay != null) autoplay.setTitle("Автопереключение HDMI");
             guarded("hdmi-edid",()->OemHdmiEdidHook.install(context,screen,Preference.class));
+            ProjectorExtras.installSources(context,screen);
             Preference edid = screen.findPreference(OemHdmiEdidHook.STATUS_KEY);
             if (edid != null) edid.setOrder(290);
         }
@@ -276,6 +277,7 @@ public final class NativeSections {
             PreferenceCategory processing = group(screen,
                     "projectorsoft_picture_group_processing", "Обработка изображения");
             processing.setOrder(0);
+            ProjectorExtras.installPicture(requireContext(),processing);
             PreferenceCategory color = group(screen,
                     "projectorsoft_picture_group_color", "Цвет и баланс белого");
             color.setOrder(1);
@@ -338,6 +340,7 @@ public final class NativeSections {
             guarded("sound-processing", () -> OemInlinePreferencesHook.populateSoundProcessing(
                     context, screen, Preference.class));
             OemAdvancedSoundRoutes.install(context, screen, Preference.class);
+            ProjectorExtras.installSound(context, screen);
             // SPDIF delay already lives on the OEM digital-output screen; do not
             // expose a second editor for the same setting on the Sound root.
             if (OemKeyToneHook.install(context, screen, Preference.class)) {
@@ -358,12 +361,15 @@ public final class NativeSections {
 
     public static final class Equalizer extends Page {
         private NativeEqualizerPanel panel;
+        private BtEqualizerPanel btPanel;
         private final ViewTreeObserver.OnWindowFocusChangeListener eqFocus = focused -> {
             if (focused && panel != null) panel.refresh();
         };
         @Override NativePage section(){return NativePage.EQUALIZER;}
         @Override void populate(PreferenceScreen screen){
             panel = new NativeEqualizerPanel(requireContext(), screen);
+            btPanel = new BtEqualizerPanel(requireContext());
+            btPanel.install(screen);
         }
         @Override public void onViewCreated(View view, Bundle state) {
             super.onViewCreated(view, state);
@@ -378,13 +384,17 @@ public final class NativeSections {
         @Override public void onStart() {
             super.onStart();
             if (panel != null) panel.start();
+            if (btPanel != null) btPanel.start();
         }
         @Override public void onResume() {
             super.onResume();
             if (panel != null) panel.refresh();
+            if (btPanel != null && getPreferenceScreen() != null)
+                btPanel.refresh(getPreferenceScreen());
         }
         @Override public void onStop() {
             if (panel != null) panel.stop();
+            if (btPanel != null) btPanel.stop();
             super.onStop();
         }
     }
