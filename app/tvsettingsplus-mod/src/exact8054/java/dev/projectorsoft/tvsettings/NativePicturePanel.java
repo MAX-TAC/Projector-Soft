@@ -122,14 +122,8 @@ final class NativePicturePanel {
         }
         if (page == Page.PICTURE) {
             add(host, screen, GAMMA, "Гамма", 126);
-            Preference scope = new Preference(context);
-            scope.setKey("projectorsoft_picture_video_pipeline_info");
-            scope.setTitle("Регулировки видеосигнала");
-            scope.setSummary("Яркость, контрастность, насыщенность, резкость, оттенок "
-                    + "и гамма влияют на видео, но не на рабочий стол и интерфейс Android.");
-            scope.setSelectable(false);
-            scope.setOrder(112); // picture profile first, scalars after explanation
-            screen.addPreference(scope);
+            // The standalone "Регулировки видеосигнала" banner is gone: the
+            // scope note now lives in the section heading on the Picture page.
         }
         refresh();
     }

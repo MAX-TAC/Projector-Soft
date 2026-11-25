@@ -159,13 +159,9 @@ public final class NativeSections {
         @Override void populate(PreferenceScreen screen){
             Context context=requireContext();
             PreferenceCategory inputs=group(screen,"inputs","Выбор источника");
-            int homeIndex = 0;
-            for (android.content.ComponentName launcher : HomeDestination.launchers(context)) {
-                final android.content.ComponentName target = launcher;
-                action(inputs, "home_" + homeIndex++,
-                        HomeDestination.label(context, target),
-                        () -> HomeDestination.intentFor(target));
-            }
+            // One entry: the system launcher. Listing the two installed
+            // launchers separately was not what the owner wants here.
+            action(inputs, "home", "Android TV", () -> HomeDestination.homeIntent());
             guarded("hdmi-ports", () -> OemHdmiPortInfo.install(context, inputs, Preference.class));
             if(inputs.getPreferenceCount()==0)info(inputs,"inputs-unavailable","Источники","Нет подтверждённого маршрута");
             guarded("boot-destination",()->NativeBootDestination.install(context,screen));
@@ -189,15 +185,8 @@ public final class NativeSections {
             if (screen != null) {
                 NativeBootDestination.refresh(screen);
                 PreferenceCategory inputs = screen.findPreference("inputs");
-                if (inputs != null && inputs.getPreferenceCount() == 0) {
-                    int idx = 0;
-                    for (android.content.ComponentName launcher : HomeDestination.launchers(requireContext())) {
-                        final android.content.ComponentName target = launcher;
-                        action(inputs, "home_" + idx++,
-                                HomeDestination.label(requireContext(), target),
-                                () -> HomeDestination.intentFor(target));
-                    }
-                }
+                if (inputs != null && inputs.findPreference("home") == null)
+                    action(inputs, "home", "Android TV", () -> HomeDestination.homeIntent());
             }
         }
 
@@ -301,7 +290,7 @@ public final class NativeSections {
                     "projectorsoft_picture_group_color", "Цвет и баланс белого");
             color.setOrder(1);
             PreferenceCategory video = group(screen,
-                    "projectorsoft_picture_group_video", "Параметры видеотракта");
+                    "projectorsoft_picture_group_video", "Видеопоток (не влияет на Android)");
             video.setOrder(2);
 
             move(screen, processing, "projectorsoft_picture_read_picture_list_hdr");
@@ -353,7 +342,8 @@ public final class NativeSections {
         @Override NativePage section(){return NativePage.SOUND;}
         @Override void populate(PreferenceScreen screen){
             Context context = requireContext();
-            NativeAudioOutputReadout.install(context, screen);
+            // NativeAudioOutputReadout used to add a second, read-only
+            // "Устройство вывода звука" row above the real dropdown. Removed.
             link(screen, NativePage.EQUALIZER, 200);
             ProjectorExtras.installOutputChoice(context, screen);
             guarded("sound-processing", () -> OemInlinePreferencesHook.populateSoundProcessing(
@@ -369,8 +359,7 @@ public final class NativeSections {
         }
         @Override public void onResume() {
             super.onResume();
-            if (getPreferenceScreen() != null)
-                NativeAudioOutputReadout.refresh(requireContext(), getPreferenceScreen());
+            ProjectorExtras.refresh(getPreferenceScreen(), requireContext());
         }
         @Override public void onStop() {
             NativeMediaRoutePicker.cancelOnStop();

@@ -97,12 +97,12 @@ public final class OemHdmiPortInfo {
         if(port.inputId==null) return "Вход недоступен или неоднозначен";
         try {
             switch(tv.getInputState(port.inputId)) {
-                case TvInputManager.INPUT_STATE_CONNECTED: return "Активный вход (по данным TV Input)";
+                case TvInputManager.INPUT_STATE_CONNECTED: return "Подключен";
                 case TvInputManager.INPUT_STATE_CONNECTED_STANDBY:
                     // On MTK 8054 this state is returned for BOTH empty ports:
                     // it must NOT be displayed as evidence of a plugged-in cable.
-                    return "Нет активного сигнала · TV Input: ожидание";
-                case TvInputManager.INPUT_STATE_DISCONNECTED: return "Нет сигнала (TV Input: отключён)";
+                    return "Нет сигнала";
+                case TvInputManager.INPUT_STATE_DISCONNECTED: return "Нет подключения";
                 default: break;
             }
         } catch(RuntimeException ex) {

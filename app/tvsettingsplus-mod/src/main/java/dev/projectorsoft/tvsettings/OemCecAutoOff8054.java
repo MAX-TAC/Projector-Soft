@@ -99,9 +99,11 @@ final class OemCecAutoOff8054 {
                 });
             pref.getMethod("setOnPreferenceChangeListener",listener).invoke(autoOff,callback);
             Method add=group.getClass().getMethod("addPreference",pref);
-            boolean statusAdded=Boolean.TRUE.equals(add.invoke(group,cec));
+            // Drop the read-only "HDMI-CEC" status row: ProjectorExtras now
+            // provides a real on/off switch, so a disabled informational copy
+            // only confuses the screen.
             boolean switchAdded=Boolean.TRUE.equals(add.invoke(group,autoOff));
-            return statusAdded || switchAdded;
+            return switchAdded;
         } catch (Exception e) {
             Log.w(TAG,"8054 HDMI auto-off unavailable",e);
             return false;

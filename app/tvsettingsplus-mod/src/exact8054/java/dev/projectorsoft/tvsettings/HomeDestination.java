@@ -53,6 +53,11 @@ final class HomeDestination {
         return new java.util.ArrayList<>(found);
     }
 
+    /** Plain HOME intent: the system opens whichever launcher is the user's home. */
+    static Intent homeIntent() {
+        return new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    }
     /** Intent that opens one specific launcher. */
     static Intent intentFor(ComponentName component) {
         return new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME)

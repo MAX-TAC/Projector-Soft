@@ -114,6 +114,10 @@ final class ProjectorExtras {
                     DUP_SPEAKER, on ? 1 : 0);
             boolean applied = applySpeakerDuplication(context, on);
             Log.i(TAG, "dup speaker on=" + on + " stored=" + stored + " applied=" + applied);
+            android.widget.Toast.makeText(context,
+                    applied ? (on ? "Дублирование включено" : "Дублирование выключено")
+                            : "Дублирование недоступно на этом устройстве",
+                    android.widget.Toast.LENGTH_LONG).show();
             if (!applied) {
                 // Read back and reflect the real state instead of a lie.
                 ((SwitchPreference) pref).setChecked(
@@ -157,6 +161,10 @@ final class ProjectorExtras {
             Settings.Global.putInt(context.getContentResolver(), PRIMARY_OUT, index);
             boolean ok = applyPrimaryOutput(context, index);
             Log.i(TAG, "audio primary=" + index + " applied=" + ok);
+            android.widget.Toast.makeText(context,
+                    ok ? ("Выход переключён: " + OUT_NAMES[index])
+                       : ("Не удалось переключить: " + OUT_NAMES[index]),
+                    android.widget.Toast.LENGTH_LONG).show();
             if (pref instanceof ListPreference) {
                 ((ListPreference) pref).setValue(String.valueOf(index));
             }
@@ -184,11 +192,22 @@ final class ProjectorExtras {
             Object strategies = AudioManager.class
                     .getMethod("getAudioProductStrategies").invoke(am);
             if (!(strategies instanceof List)) return false;
+            List<?> all = (List<?>) strategies;
             boolean any = false;
-            for (Object strategy : (List<?>) strategies) {
-                if (!strategyName(strategy).toLowerCase().contains("media")) continue;
-                any |= setPreferred(am, strategy, devices);
+            boolean sawMedia = false;
+            Log.i(TAG, "audio strategies=" + all.size() + " wanted=" + wanted
+                    + " devices=" + devices.size());
+            for (Object strategy : all) {
+                String name = strategyName(strategy).toLowerCase();
+                boolean media = name.contains("media");
+                Log.i(TAG, "strategy " + name + " media=" + media);
+                if (media) { sawMedia = true; any |= setPreferred(am, strategy, devices); }
             }
+            if (!sawMedia) {
+                // Some builds name the strategy differently; fall back to all.
+                for (Object strategy : all) any |= setPreferred(am, strategy, devices);
+            }
+            Log.i(TAG, "audio primary applied=" + any);
             return any;
         } catch (Throwable error) {
             Log.w(TAG, "primary output routing failed", error);
@@ -305,27 +324,47 @@ final class ProjectorExtras {
         parent.addPreference(row);
     }
 
-    /** Writes 0 into every corner property; returns how many writes succeeded. */
+    /**
+     * Writes 0 into every corner property and verifies the write landed.
+     *
+     * A write only counts when reading the property back returns 0, because
+     * persist.* writes go through property_service and can be refused silently
+     * depending on SELinux policy. The result is logged so a failure is visible
+     * instead of looking like a dead button.
+     */
     private static int resetKeystone() {
         int changed = 0;
         try {
-            java.lang.reflect.Method set = Class.forName("android.os.SystemProperties")
-                    .getMethod("set", String.class, String.class);
+            Class<?> props = Class.forName("android.os.SystemProperties");
+            java.lang.reflect.Method set = props.getMethod("set", String.class, String.class);
+            java.lang.reflect.Method get = props.getMethod("get", String.class, String.class);
             for (String corner : CORNERS) {
-                try {
-                    set.invoke(null, "persist.rjpj.fourcorner.keystone_" + corner, "0");
-                    set.invoke(null, "persist.display.keystone_" + corner, "0");
-                    changed++;
-                } catch (Throwable perKey) {
-                    Log.w(TAG, "corner " + corner + " not reset", perKey);
-                }
+                if (writeAndVerify(set, get, "persist.rjpj.fourcorner.keystone_" + corner)) changed++;
+                writeAndVerify(set, get, "persist.display.keystone_" + corner);
             }
-            set.invoke(null, "persist.rjpj.autokeystone.move", "0");
-            set.invoke(null, "persist.rjpj.autokeystone.poweron", "0");
+            writeAndVerify(set, get, "persist.rjpj.autokeystone.move");
+            writeAndVerify(set, get, "persist.rjpj.autokeystone.poweron");
+            Log.i(TAG, "keystone reset verified corners=" + changed);
         } catch (Throwable error) {
             Log.w(TAG, "keystone reset failed", error);
         }
         return changed;
+    }
+
+    private static boolean writeAndVerify(java.lang.reflect.Method set,
+                                          java.lang.reflect.Method get,
+                                          String key) {
+        try {
+            set.invoke(null, key, "0");
+            Object after = get.invoke(null, key, "");
+            String value = after == null ? "" : after.toString().trim();
+            boolean ok = value.equals("0") || value.equals("0.0");
+            if (!ok) Log.w(TAG, "keystone key did not take: " + key + " -> " + value);
+            return ok;
+        } catch (Throwable error) {
+            Log.w(TAG, "keystone write failed: " + key, error);
+            return false;
+        }
     }
     // ---------------- HDMI-CEC ----------------
 

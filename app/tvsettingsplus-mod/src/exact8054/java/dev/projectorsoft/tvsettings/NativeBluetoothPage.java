@@ -145,12 +145,9 @@ public final class NativeBluetoothPage extends AccessoriesFragment {
             if (adapter == null || !mayChange(requireContext())) {
                 refreshToggle("Изменение Bluetooth недоступно");
             } else if (!enable && adapter.getState() == BluetoothAdapter.STATE_ON) {
-                new AlertDialog.Builder(requireContext())
-                        .setMessage(WARNING + "\n\n" + BLOCKED + ".")
-                        .setNegativeButton("Отмена", null)
-                        .setPositiveButton("Отключить", (dialog, which) -> disableNow(adapter))
-                        .show();
-                refreshToggle(null);
+                // The remote is IR, not Bluetooth, so switching the radio off
+                // cannot lock the user out. No warning, just do it.
+                disableNow(adapter);
             } else if (enable && adapter.getState() == BluetoothAdapter.STATE_OFF) {
                 enabling = adapter.enable();
                 if (enabling) handler.postDelayed(enableTimeout, 15000);
@@ -191,7 +188,7 @@ public final class NativeBluetoothPage extends AccessoriesFragment {
             String summary;
             if (state == BluetoothAdapter.STATE_TURNING_ON || enabling) summary = "Включается…";
             else if (state == BluetoothAdapter.STATE_TURNING_OFF) summary = "Выключается…";
-            else if (state == BluetoothAdapter.STATE_ON) summary = BLOCKED;
+            else if (state == BluetoothAdapter.STATE_ON) summary = "Включён";
             else if (state == BluetoothAdapter.STATE_OFF) summary = "Выключен";
             else summary = "Состояние Bluetooth недоступно";
             toggle.setSummary(failure == null ? summary : failure);
