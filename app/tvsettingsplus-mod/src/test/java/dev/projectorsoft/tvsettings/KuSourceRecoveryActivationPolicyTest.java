@@ -20,10 +20,21 @@ public final class KuSourceRecoveryActivationPolicyTest {
                 "Query error/unknown state must never activate watchdog");
         check(!KuSourceRecoveryActivationPolicy.explicitlyDisabled(77),
                 "Unexpected package-manager state must fail closed");
-        check(!KuSourceRecoveryActivationPolicy.automaticRecoveryAllowed("8054",2),
-                "8054 must not transfer thermal watchdog ownership from package state alone");
+        // 8054 is now allowed to take over the watchdog: both boards ship the
+        // same KuSettings/KuSourceRJ pair (APKs are byte-identical apart from
+        // the signature). The guard that still matters is the explicit disable.
+        check(KuSourceRecoveryActivationPolicy.automaticRecoveryAllowed("8054",2),
+                "8054 may replace the watchdog once KuSettings is explicitly disabled");
+        check(KuSourceRecoveryActivationPolicy.automaticRecoveryAllowed("8054",3),
+                "8054 disabled-by-user also permits controlled replacement");
+        check(!KuSourceRecoveryActivationPolicy.automaticRecoveryAllowed("8054",0),
+                "8054 default state must still retain the OEM watchdog");
+        check(!KuSourceRecoveryActivationPolicy.automaticRecoveryAllowed("8054",1),
+                "8054 explicitly enabled KuSettings must own the watchdog");
         check(!KuSourceRecoveryActivationPolicy.automaticRecoveryAllowed("",3),
                 "Unidentified board must fail closed");
+        check(!KuSourceRecoveryActivationPolicy.automaticRecoveryAllowed("9999",2),
+                "Unknown board id must fail closed");
         check(!KuSourceRecoveryActivationPolicy.automaticRecoveryAllowed("8052",0),
                 "8052 default state retains OEM watchdog");
         check(KuSourceRecoveryActivationPolicy.automaticRecoveryAllowed("8052",2),

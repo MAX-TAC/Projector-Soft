@@ -16,7 +16,9 @@ import java.lang.reflect.Field;
  */
 public final class OemHardwareDelegatedSettings {
     private static final String TAG="TvSettingsPlusMOD";
-    private static final String ACTIVITY="com.android.tv.settings.uicustom.MainActivity";
+    // Deliberately no uicustom reference: that activity is the Chinese settings menu
+    // the stock firmware hijacks every standard action into. Links that used to
+    // bounce there now resolve to explicit components on our own panels.
     private static final String SOURCE_ACTION="dev.projectorsoft.settings.SOURCES";
     private static final String SYSTEM_ACTION="android.settings.DEVICE_INFO_SETTINGS";
     private OemHardwareDelegatedSettings() {}
@@ -31,16 +33,13 @@ public final class OemHardwareDelegatedSettings {
         }
     }
 
-    static Intent mainActivityIntent(Context context,String action) throws PackageManager.NameNotFoundException {
-        ComponentName component=new ComponentName(context,ACTIVITY);
-        PackageManager pm=context.getPackageManager();
-        ActivityInfo info=pm.getActivityInfo(component,0);
-        if (info.applicationInfo==null || !info.enabled || !info.applicationInfo.enabled
-                || pm.getComponentEnabledSetting(component)>PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-                || pm.getApplicationEnabledSetting(component.getPackageName())>PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-                || (info.permission!=null && !info.permission.isEmpty()
-                    && context.checkSelfPermission(info.permission)!=PackageManager.PERMISSION_GRANTED)) return null;
-        return new Intent(action).setComponent(component);
+    /**
+     * Retained for callers that only needed a non-null route. Returns null on
+     * purpose: the OEM settings activity that every action used to bounce into
+     * is the Chinese uicustom menu, and nothing in this APK should reach it.
+     */
+    static Intent mainActivityIntent(Context context,String action) {
+        return null;
     }
 
     private static boolean add(Context context,Object category,Class<?> preferenceClass,
@@ -80,13 +79,9 @@ public final class OemHardwareDelegatedSettings {
     public static boolean installSystemLinks(Context context,Object systemCategory,
                                             Class<?> preferenceClass) {
         if(context==null||systemCategory==null||preferenceClass==null)return false;
-        boolean online=hasOriginalControl(context,"tciv_system_online_update");
-        boolean local=hasOriginalControl(context,"tciv_system_local_update");
-        if(!OemDelegatedMenuPolicy.exposeFirmwareUpdates(online,local))return false;
-        return add(context,systemCategory,preferenceClass,
-            "projectorsoft_firmware_update_oem","Обновление прошивки",
-            "Оригинальный раздел OTA и локального обновления, без автозапуска",
-            SYSTEM_ACTION,289);
+        // Firmware update entry intentionally removed: this is a custom
+        // build, and a vendor OTA must never be offered nor auto-installed.
+        return false;
     }
 
     public static boolean installSourceLinks(Context context,Object sourceCategory,

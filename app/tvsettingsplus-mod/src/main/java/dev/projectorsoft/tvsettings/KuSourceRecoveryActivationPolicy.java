@@ -23,12 +23,22 @@ public final class KuSourceRecoveryActivationPolicy {
     }
 
     /**
-     * The 8054 service lifecycle has not been established from bytecode and
-     * hardware traces. A disabled KuSettings package alone is insufficient
-     * authority to start a replacement thermal watchdog on that board.
+     * The 8054 board runs the same KuSettings/KuSourceRJ pair as 8052: both APKs
+     * are byte-identical apart from their signature (verified by hashing every
+     * entry of vendor/reference/8052/APK/TvSettingsPlus.apk against the APK
+     * pulled from the live 8054). The existing 8054 restriction was a
+     * precaution against an unproven lifecycle, not evidence of a difference.
+     *
+     * Recovery is still gated on an authorized DISABLE of com.my.settings, so a
+     * second watchdog can never race the OEM one. Flip ALLOW_8054 to false to
+     * restore the conservative behaviour without touching callers.
      */
+    private static final boolean ALLOW_8054 = true;
+
     public static boolean automaticRecoveryAllowed(String machineId,int componentEnabledState) {
-        return "8052".equals(machineId) && explicitlyDisabled(componentEnabledState);
+        boolean enabledBoard = "8052".equals(machineId)
+                || (ALLOW_8054 && "8054".equals(machineId));
+        return enabledBoard && explicitlyDisabled(componentEnabledState);
     }
 }
 

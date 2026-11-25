@@ -27,7 +27,7 @@ public final class OemRootMenuHook {
                                String action, int order) throws Exception {
         Intent intent="projectorsoft_projection".equals(key)
                 ? OemProjectionPanel.projectionIntent(context)
-                : OemHardwareDelegatedSettings.mainActivityIntent(context,action);
+                : OemCrossActivity.intentFor(context,"com.android.tv.settings","com.android.tv.settings.MainSettings");
         if(intent==null)return;
         if(groupedKey!=null && offersSameRoute(find.invoke(fragment,groupedKey),clazz,intent)) {
             Object old=find.invoke(fragment,key);
@@ -43,7 +43,7 @@ public final class OemRootMenuHook {
         clazz.getMethod("setOrder",int.class).invoke(preference,order);
         CheckedPreferenceLaunch.attach(context,clazz,preference,intent,()->
                 "projectorsoft_projection".equals(key) ? OemProjectionPanel.projectionIntent(context)
-                        : OemHardwareDelegatedSettings.mainActivityIntent(context,action));
+                        : OemCrossActivity.intentFor(context,"com.android.tv.settings","com.android.tv.settings.MainSettings"));
         // Category already belongs to MainFragment's preference tree.
         category.getClass().getMethod("addPreference",clazz).invoke(category,preference);
     }

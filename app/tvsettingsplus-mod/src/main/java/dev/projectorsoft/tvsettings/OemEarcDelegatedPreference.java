@@ -4,18 +4,22 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import java.lang.reflect.Method;
 
 /**
- * Explicitly routes a complex eARC preference to the original sound controller.
- * Two OEM fragments assign different polarities to KEY_SOUND_EARC; this
- * launcher deliberately never reads/writes that setting or the audio HAL.
+ * eARC entry on the sound screen.
  *
- * This is a controlled compatibility bridge, not yet an inline audio switch.
+ * The OEM ships two fragments that assign different polarities to
+ * KEY_SOUND_EARC, so this app must never write that key or touch the audio HAL
+ * directly. It only opens the original sound controller that owns the polarity.
+ *
+ * The route is explicit: it used to point at com.android.tv.settings.uicustom
+ * .MainActivity, which is the Chinese settings menu the firmware hijacks every
+ * standard sound action into. That is gone; the entry now opens the stock
+ * SoundActivity of this same package.
  */
 public final class OemEarcDelegatedPreference {
     private static final String TAG="TvSettingsPlusMOD";
-    private static final String SOUND_PAGE="com.android.tv.settings.uicustom.MainActivity";
+    private static final String SOUND_PAGE="com.android.tv.settings.device.sound.SoundActivity";
     private OemEarcDelegatedPreference() {}
 
     public static boolean install(Context context,Object category,Class<?> preferenceClass) {
@@ -33,12 +37,12 @@ public final class OemEarcDelegatedPreference {
             preferenceClass.getMethod("setTitle",CharSequence.class)
                     .invoke(item,"HDMI eARC");
             preferenceClass.getMethod("setSummary",CharSequence.class)
-                    .invoke(item,"Открыть заводские настройки аудиовыхода");
+                    .invoke(item,"Открыть настройки аудиовыхода");
             preferenceClass.getMethod("setOrder",int.class).invoke(item,219);
-            Intent intent=new Intent("android.settings.SOUND_SETTINGS");
-            intent.setComponent(target); // Never resolves to KuSettings.
+            Intent intent=new Intent(Intent.ACTION_MAIN);
+            intent.setComponent(target);
             CheckedPreferenceLaunch.attach(context,preferenceClass,item,intent,()->
-                    OemHardwareDelegatedSettings.mainActivityIntent(context,"android.settings.SOUND_SETTINGS"));
+                    OemCrossActivity.intentFor(context,"com.android.tv.settings",SOUND_PAGE));
             Object inserted=category.getClass().getMethod("addPreference",preferenceClass)
                     .invoke(category,item);
             return Boolean.TRUE.equals(inserted);
@@ -48,4 +52,3 @@ public final class OemEarcDelegatedPreference {
         }
     }
 }
-

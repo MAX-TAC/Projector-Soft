@@ -60,7 +60,9 @@ public final class OemProjectionPanel {
                 if(accessible(context,pm,component,info))return route.setComponent(component);
             }
         }
-        return OemHardwareDelegatedSettings.mainActivityIntent(context,"android.settings.SETTINGS");
+        // Do not fall back to the OEM uicustom menu: use the projector panels
+        // already present in this settings app instead.
+        return null;
     }
 
     private static Intent editorIntent(Context context,String action) {
