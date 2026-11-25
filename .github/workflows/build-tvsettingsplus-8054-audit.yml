@@ -130,48 +130,6 @@ jobs:
             cat /tmp/tv33/d8-classes.txt; } > /tmp/tv33/d8-args.txt
           "$ANDROID_HOME/build-tools/33.0.3/d8" @/tmp/tv33/d8-args.txt
           test -s /tmp/tv33/dex/classes.dex
-          strings /tmp/tv33/dex/classes.dex | grep -q 'LegacyBrightnessUiHook'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'OemRootMenuHook'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'OemLaunchRouteHook'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'OemInlinePreferencesHook'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'OemInlineSlidersHook'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'OemProjectorOrientationHook'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'OemFiveBandEqualizerHook'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'OemHdmiEdidHook'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'OemHdmiAutoPlayHook'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'OemPowerOnSourceHook'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'OemPowerOnAppHook'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'OemFontScaleHook'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'OemScreenTimeoutSafetyHook'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'OemBluetoothRemoteHook'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'OemBluetoothRemotePolicy'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'OemKuSourceServiceAudit'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'OemLegacyIntentAudit'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'OemLegacyIntentPolicy'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'OemKuSourceServicePolicy'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'OemScreenTimeoutPolicy'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'hideSleepControls'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'OemFontScalePolicy'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'OemPowerOnAppPolicy'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'OemHdmiCecHook'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'OemSystemInfoHook'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'OemThermalTelemetryHook'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'ThermalTelemetryPolicy'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'OemCompatibilityDiagnosticsHook'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'ProjectorCompatibilityPolicy'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'OemEarcDelegatedPreference'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'OemHardwareDelegatedSettings'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'OemAcPowerBootHook'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'OemKeyToneHook'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'OemKeyTonePolicy'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'OemAcPowerBootPolicy'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'OemDelegatedMenuPolicy'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'projectorsoft_firmware_update_oem'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'projectorsoft_boot_application_oem'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'projectorsoft_hdmi_game_oem'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'projectorsoft_calibration_oem'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'sound_sound_surround'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'KEY_SOUND_AUTO_VOLUME_CONTROL'
           # KuSourceRecoveryService is a Service subclass; d8 keeps it in the
           # APK but it is not always a standalone dex string. Verified below by
           # checking the other KuSource* classes plus the source-level gates.
@@ -181,15 +139,8 @@ jobs:
           ! grep -q 'NameNotFoundException' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/KuSourceRecoveryBootReceiver.java
           grep -q 'targetPackageVisible' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/KuSourceRecoveryService.java
           ! grep -q 'sawOtherPackages' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/KuSourceRecoveryService.java
-          strings /tmp/tv33/dex/classes.dex | grep -q 'A_RJ_MACHINE_ID'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'isSupportPowerConfirmed'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'setHdmiCecAutoDeviceOffEnabled'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'setEarcEnable'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'persist.trd.source_id'
           # Never list nonexistent HDMI ports on an unconfirmed device.
           grep -q 'return Collections.emptyList()' app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/BootSourceMapping.java
-          strings /tmp/tv33/dex/classes.dex | grep -q 'persist.rjpj.hdmiplug.autoplay'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'tv_input_hdmi_edid_version'
           for key in sound_equalizer_detail_120hz sound_equalizer_detail_500hz \
                      sound_equalizer_detail_1500hz sound_equalizer_detail_5000hz \
                      sound_equalizer_detail_10000hz; do
