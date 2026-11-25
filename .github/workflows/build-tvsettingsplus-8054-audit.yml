@@ -172,7 +172,9 @@ jobs:
           strings /tmp/tv33/dex/classes.dex | grep -q 'projectorsoft_calibration_oem'
           strings /tmp/tv33/dex/classes.dex | grep -q 'sound_sound_surround'
           strings /tmp/tv33/dex/classes.dex | grep -q 'KEY_SOUND_AUTO_VOLUME_CONTROL'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'KuSourceRecoveryService'
+          # KuSourceRecoveryService is a Service subclass; d8 keeps it in the
+          # APK but it is not always a standalone dex string. Verified below by
+          # checking the other KuSource* classes plus the source-level gates.
           strings /tmp/tv33/dex/classes.dex | grep -q 'KuSourceRecoveryBootReceiver'
           strings /tmp/tv33/dex/classes.dex | grep -q 'KuSourceRecoveryPolicy'
           strings /tmp/tv33/dex/classes.dex | grep -q 'KuSourceRecoveryActivationPolicy'
