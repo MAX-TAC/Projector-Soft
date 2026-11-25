@@ -87,7 +87,7 @@ jobs:
           strings /tmp/tv33/dex/classes.dex | grep -q 'OemKeyTonePolicy'
           strings /tmp/tv33/dex/classes.dex | grep -q 'OemAcPowerBootPolicy'
           strings /tmp/tv33/dex/classes.dex | grep -q 'OemDelegatedMenuPolicy'
-          strings /tmp/tv33/dex/classes.dex | grep -q 'projectorsoft_firmware_update_oem'
+          # firmware-update entry removed in the custom build (no vendor OTA)
           strings /tmp/tv33/dex/classes.dex | grep -q 'projectorsoft_boot_application_oem'
           strings /tmp/tv33/dex/classes.dex | grep -q 'projectorsoft_hdmi_game_oem'
           strings /tmp/tv33/dex/classes.dex | grep -q 'projectorsoft_calibration_oem'
