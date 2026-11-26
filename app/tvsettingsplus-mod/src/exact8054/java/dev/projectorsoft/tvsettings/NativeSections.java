@@ -121,6 +121,7 @@ public final class NativeSections {
             row.setOrder(order);
             row.setFragment(page.fragment);
             if (page == NativePage.POWER) setSystemIcon(row, "power");
+            if (page == NativePage.LANGUAGE_INPUT) setSystemIcon(row, "language");
             // Let stock Leanback/TwoPanelSettings resolve Preference.fragment.
             // Activity-based navigation creates an extra opaque window.
             group.addPreference(row);
@@ -139,11 +140,94 @@ public final class NativeSections {
             group.addPreference(row);
         }
 
+        /** Same as stock() but with an explicit order. */
+        protected void stockOrdered(PreferenceGroup group, String key, String label,
+                                    String name, int order) {
+            Preference row = new Preference(requireContext());
+            row.setKey(key);
+            row.setTitle(label);
+            row.setOrder(order);
+            setSystemIcon(row, key);
+            row.setOnPreferenceClickListener(item -> {
+                try {
+                    requireContext().startActivity(new Intent().setComponent(
+                            new ComponentName(OWN, OWN + "." + name)));
+                } catch (RuntimeException unavailable) {
+                    android.widget.Toast.makeText(requireContext(), "Экран недоступен",
+                            android.widget.Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            });
+            group.addPreference(row);
+        }
+
+        /** Same as stockFragment() but with an explicit order. */
+        protected void stockFragmentOrdered(PreferenceGroup group, String key, String label,
+                                            String className, int order) {
+            Preference row = new Preference(requireContext());
+            row.setKey(key);
+            row.setTitle(label);
+            row.setOrder(order);
+            row.setFragment(OWN + "." + className);
+            setSystemIcon(row, key);
+            group.addPreference(row);
+        }
+
+        /**
+         * Row that names the current default keyboard and opens its own
+         * settings activity when the IME declares one, falling back to the
+         * stock keyboard screen.
+         */
+        protected void keyboardRow(PreferenceGroup group) {
+            Context context = requireContext();
+            android.view.inputmethod.InputMethodManager imm =
+                    (android.view.inputmethod.InputMethodManager)
+                    context.getSystemService(Context.INPUT_METHOD_SERVICE);
+            android.view.inputmethod.InputMethodInfo info =
+                    imm == null ? null : imm.getCurrentInputMethodInfo();
+            String label = "Клавиатура";
+            android.content.Intent target = null;
+            if (info != null) {
+                try {
+                    CharSequence name = context.getPackageManager()
+                            .getApplicationLabel(context.getPackageManager()
+                            .getApplicationInfo(info.getPackageName(), 0));
+                    if (name != null && name.length() > 0) label = name.toString();
+                } catch (Throwable ignored) { }
+                String settings = info.getSettingsActivity();
+                if (settings != null && !settings.isEmpty()) {
+                    target = new android.content.Intent(android.content.Intent.ACTION_MAIN)
+                            .setComponent(new ComponentName(info.getPackageName(), settings));
+                }
+            }
+            Preference row = new Preference(context);
+            row.setKey("projectorsoft_keyboard_current");
+            row.setTitle("Клавиатура: " + label);
+            row.setOrder(20);
+            setSystemIcon(row, "keyboard");
+            final android.content.Intent open = target;
+            row.setOnPreferenceClickListener(item -> {
+                if (open != null) {
+                    try { context.startActivity(open); return true; }
+                    catch (RuntimeException unavailable) { }
+                }
+                try {
+                    context.startActivity(new Intent().setComponent(
+                            new ComponentName(OWN, OWN + ".inputmethod.KeyboardActivity")));
+                } catch (RuntimeException unavailable) {
+                    android.widget.Toast.makeText(context, "Настройки клавиатуры недоступны",
+                            android.widget.Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            });
+            group.addPreference(row);
+        }
+
         private void setSystemIcon(Preference row, String key) {
             // Reuse the exact 8054 OEM drawables, not an unthemed Android icon.
             String drawable;
             switch (key) {
-                case "about_stock": drawable = "ic_devices_other"; break;
+                case "about_stock": drawable = "settingslib_ic_info"; break;
                 case "time": drawable = "ic_access_time"; break;
                 case "language": drawable = "ic_language"; break;
                 case "location": drawable = "ic_location_on"; break;
@@ -416,7 +500,8 @@ public final class NativeSections {
                 btPanel.refresh(getPreferenceScreen());
         }
         @Override public void onStop() {
-            if (btPanel != null) btPanel.stop();
+            // The equalizer is a process-wide effect. Releasing it here made
+            // the preset stop working as soon as the user left the page.
             super.onStop();
         }
     }
@@ -439,19 +524,19 @@ public final class NativeSections {
             Context context = requireContext();
             // Actual OEM AboutFragment (verified in stock classes13.dex).
             // It stays inside MainSettings so the background remains visible.
-            stockFragment(screen,"about_stock","Об устройстве","about.AboutFragment");
+            stockFragmentOrdered(screen,"about_stock","Об устройстве","about.AboutFragment",10);
             // Device rename already exists inside the genuine AboutFragment.
             // CPU is injected into the bottom of About via its own lifecycle.
-            stock(screen,"time","Дата и время","system.DateTimeActivity");
-            link(screen, NativePage.LANGUAGE_INPUT, 15);
-            stock(screen,"location","Местоположение","system.LocationActivity");
-            stock(screen,"accounts","Учётные записи","accounts.AccountsActivity");
-            stock(screen,"storage","Хранилище","device.StorageResetActivity");
+            stockOrdered(screen,"time","Дата и время","system.DateTimeActivity",20);
+            link(screen, NativePage.LANGUAGE_INPUT, 30);
+            stockOrdered(screen,"location","Местоположение","system.LocationActivity",40);
+            stockOrdered(screen,"accounts","Учётные записи","accounts.AccountsActivity",50);
+            stockOrdered(screen,"storage","Хранилище","device.StorageResetActivity",60);
             // Power moved to the main screen at the owner request.
             // Empty EnterprisePrivacy screen is not relevant on this exact 8054.
-            stock(screen,"security","Безопасность","system.SecurityActivity");
-            stock(screen,"accessibility","Специальные возможности","oemlink.AccessibilitySettingsActivity");
-            stock(screen,"developer","Для разработчиков","system.development.DevelopmentActivity");
+            stockOrdered(screen,"security","Безопасность","system.SecurityActivity",70);
+            stockOrdered(screen,"accessibility","Специальные возможности","oemlink.AccessibilitySettingsActivity",80);
+            stockOrdered(screen,"developer","Для разработчиков","system.development.DevelopmentActivity",90);
         }
     }
 
@@ -464,7 +549,9 @@ public final class NativeSections {
         @Override NativePage section(){return NativePage.LANGUAGE_INPUT;}
         @Override void populate(PreferenceScreen screen){
             stock(screen,"language_system","Язык системы","system.LanguageActivity");
-            stock(screen,"keyboard_input","Клавиатура и способы ввода","inputmethod.KeyboardActivity");
+            // Shows the CURRENT default keyboard and opens its own settings,
+            // instead of the factory AOSP keyboard page.
+            keyboardRow(screen);
         }
     }
     /**

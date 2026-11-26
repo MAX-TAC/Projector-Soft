@@ -49,9 +49,9 @@ final class BtEqualizerPanel {
     static final int LEVEL_MIN = -1500;
     static final int LEVEL_MAX = 1500;
 
+    private static AudioTrack track;
+    private static Equalizer equalizer;
     private final Context context;
-    private AudioTrack track;
-    private Equalizer equalizer;
     private ListPreference presetRow;
     private final BandRow[] bandRows = new BandRow[BAND_LABELS.length];
 
@@ -209,7 +209,17 @@ final class BtEqualizerPanel {
     // ---------------- engine ----------------
 
     private synchronized void ensureSession() {
-        if (track != null && equalizer != null) return;
+        if (equalizer != null) return;
+        // Session 0 attaches the effect to the global output mix, so it acts on
+        // whatever plays on the device. The previous version bound the effect
+        // to a private silent AudioTrack, which is why nothing was audible.
+        try {
+            equalizer = new Equalizer(0, 0);
+            Log.i(TAG, "eq global session bands=" + equalizer.getNumberOfBands());
+            return;
+        } catch (Throwable global) {
+            Log.w(TAG, "global eq session unavailable, falling back", global);
+        }
         try {
             int rate = 48000;
             int buffer = AudioTrack.getMinBufferSize(rate,
