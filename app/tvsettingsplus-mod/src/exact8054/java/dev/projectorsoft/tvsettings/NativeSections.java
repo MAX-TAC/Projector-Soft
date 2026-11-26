@@ -137,6 +137,7 @@ public final class NativeSections {
             if (page == NativePage.POWER) setSystemIcon(row, "power");
             if (page == NativePage.LANGUAGE_INPUT) setSystemIcon(row, "language");
             if (page == NativePage.KEYBOARD) setSystemIcon(row, "keyboard");
+            if (page == NativePage.ACCOUNTS) setSystemIcon(row, "accounts");
             // Let stock Leanback/TwoPanelSettings resolve Preference.fragment.
             // Activity-based navigation creates an extra opaque window.
             group.addPreference(row);
@@ -195,6 +196,19 @@ public final class NativeSections {
          * stock keyboard screen.
          */
         /** Keyboard entry that opens our own keyboard screen. */
+        /** Account types known to the system, for the "add account" screen. */
+        private static String[] accountTypes(Context context) {
+            try {
+                android.accounts.AuthenticatorDescription[] all =
+                        android.accounts.AccountManager.get(context).getAuthenticatorTypes();
+                String[] types = new String[all.length];
+                for (int index = 0; index < all.length; index++) types[index] = all[index].type;
+                return types;
+            } catch (Throwable unavailable) {
+                return null;
+            }
+        }
+
         protected void keyboardRow(PreferenceGroup group) {
             link(group, NativePage.KEYBOARD, 20);
         }
@@ -208,6 +222,7 @@ public final class NativeSections {
                 case "language": drawable = "ic_language"; break;
                 case "location": drawable = "ic_location_on"; break;
                 case "accounts": drawable = "ic_accounts_and_sign_in"; break;
+                case "keyboard": drawable = "ic_keyboard"; break;
                 case "storage": drawable = "ic_storage"; break;
                 case "power": drawable = "ic_settings_power"; break;
                 case "privacy": drawable = "ic_lock"; break;
@@ -541,30 +556,54 @@ public final class NativeSections {
      * used because it listed a duplicate physical keyboard and always linked
      * the AOSP keyboard settings.
      */
+    /**
+     * Keyboard screen: every installed IME is listed and can be made the
+     * default, plus one row that opens the current keyboard own settings.
+     * The stock screen is not used: it listed a duplicate physical keyboard
+     * and a fixed AOSP settings entry.
+     */
     public static final class Keyboard extends Page {
         @Override NativePage section(){return NativePage.KEYBOARD;}
         @Override void populate(PreferenceScreen screen){
             Context context = requireContext();
-            String name = KeyboardScreenHook.currentKeyboardName(context);
-            // "Текущая клавиатура" opens the stock chooser so another IME can
-            // become the default one.
-            Preference current = new Preference(context);
-            current.setKey("projectorsoft_current_keyboard");
-            current.setTitle("Текущая клавиатура");
-            current.setSummary(name);
-            current.setOrder(10);
-            setSystemIcon(current, "keyboard");
-            current.setFragment(OWN + ".inputmethod.AvailableVirtualKeyboardFragment");
-            screen.addPreference(current);
+            String currentId = KeyboardScreenHook.currentKeyboardId(context);
+            java.util.List<android.view.inputmethod.InputMethodInfo> all =
+                    KeyboardScreenHook.installedKeyboards(context);
+            int order = 10;
+            for (android.view.inputmethod.InputMethodInfo info : all) {
+                final String id = info.getId();
+                String label = KeyboardScreenHook.labelOf(context, info);
+                boolean active = id.equals(currentId);
+                Preference row = new Preference(context);
+                row.setKey("projectorsoft_kb_" + id);
+                row.setTitle(label);
+                row.setOrder(order++);
+                row.setSummary(active ? "Используется сейчас" : "Нажмите, чтобы выбрать");
+                setSystemIcon(row, "keyboard");
+                row.setOnPreferenceClickListener(item -> {
+                    boolean ok = KeyboardScreenHook.setDefaultKeyboard(context, id);
+                    android.widget.Toast.makeText(context,
+                            ok ? "Клавиатура: " + label : "Не удалось сменить клавиатуру",
+                            android.widget.Toast.LENGTH_SHORT).show();
+                    if (getActivity() != null) getActivity().recreate();
+                    return true;
+                });
+                screen.addPreference(row);
+            }
+            if (all.isEmpty()) {
+                info(screen, "projectorsoft_kb_none", "Клавиатуры",
+                        "Не найдено ни одной клавиатуры");
+            }
             Preference settings = new Preference(context);
             settings.setKey("projectorsoft_keyboard_settings");
-            settings.setTitle("Настройки: " + name);
-            settings.setOrder(20);
+            settings.setTitle("Настройки: "
+                    + KeyboardScreenHook.currentKeyboardName(context));
+            settings.setOrder(500);
             setSystemIcon(settings, "keyboard");
             settings.setOnPreferenceClickListener(item -> {
                 if (!KeyboardScreenHook.openCurrentKeyboardSettings(context)) {
                     android.widget.Toast.makeText(context,
-                            "Эта клавиатура не имеет своих настроек",
+                            "У этой клавиатуры нет своих настроек",
                             android.widget.Toast.LENGTH_SHORT).show();
                 }
                 return true;
@@ -611,8 +650,13 @@ public final class NativeSections {
             setSystemIcon(add, "accounts");
             add.setOnPreferenceClickListener(item -> {
                 try {
-                    context.startActivity(new Intent(android.provider.Settings.ACTION_ADD_ACCOUNT)
-                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                    Intent addIntent = new Intent(android.provider.Settings.ACTION_ADD_ACCOUNT)
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    String[] types = accountTypes(context);
+                    if (types != null && types.length > 0) {
+                        addIntent.putExtra(android.provider.Settings.EXTRA_ACCOUNT_TYPES, types);
+                    }
+                    context.startActivity(addIntent);
                     slideIn();
                 } catch (RuntimeException unavailable) {
                     android.widget.Toast.makeText(context, "Добавление аккаунта недоступно",

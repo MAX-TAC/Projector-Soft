@@ -120,6 +120,7 @@ def strip(data):
     name_index = strings.index('name') if 'name' in strings else -1
     if name_index < 0:
         raise ValueError('no android:name attribute')
+    target_index = strings.index('targetActivity') if 'targetActivity' in strings else -1
 
     xml_off, xml_size = 0, outer_size
     body_end = xml_off + xml_size
@@ -167,13 +168,23 @@ def strip(data):
             attr_count = u16(data, start + hsize + 12)
             attr_off = start + hsize + attr_start
             target = None
+            alias_target = None
             for a in range(attr_count):
                 base = attr_off + a * 20
-                if u32(data, base + 4) == name_index:
-                    raw = u32(data, base + 8)
-                    if raw != NO and raw < len(strings):
-                        target = strings[raw]
-                    break
+                attr_name = u32(data, base + 4)
+                raw = u32(data, base + 8)
+                value = strings[raw] if raw != NO and raw < len(strings) else None
+                if attr_name == name_index:
+                    target = value
+                elif target_index >= 0 and attr_name == target_index:
+                    alias_target = value
+            # An activity-alias pointing at a removed activity makes the whole
+            # package uninstallable, so it must go with its target.
+            if tag == 'activity-alias' and alias_target in JUNK:
+                removed.add(alias_target)
+                depth_removal = 1
+                index += 1
+                continue
             if tag in ('activity', 'activity-alias') and target in JUNK:
                 removed.add(target)
                 depth_removal = 1
