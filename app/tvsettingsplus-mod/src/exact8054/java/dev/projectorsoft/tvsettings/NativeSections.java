@@ -136,6 +136,7 @@ public final class NativeSections {
             row.setFragment(page.fragment);
             if (page == NativePage.POWER) setSystemIcon(row, "power");
             if (page == NativePage.LANGUAGE_INPUT) setSystemIcon(row, "language");
+            if (page == NativePage.KEYBOARD) setSystemIcon(row, "keyboard");
             // Let stock Leanback/TwoPanelSettings resolve Preference.fragment.
             // Activity-based navigation creates an extra opaque window.
             group.addPreference(row);
@@ -193,27 +194,9 @@ public final class NativeSections {
          * settings activity when the IME declares one, falling back to the
          * stock keyboard screen.
          */
+        /** Keyboard entry that opens our own keyboard screen. */
         protected void keyboardRow(PreferenceGroup group) {
-            Context context = requireContext();
-            // Just "Клавиатура": the screen itself now names and opens the
-            // current default keyboard through KeyboardScreenHook.
-            Preference row = new Preference(context);
-            row.setKey("projectorsoft_keyboard_current");
-            row.setTitle("Клавиатура");
-            row.setOrder(20);
-            setSystemIcon(row, "keyboard");
-            row.setOnPreferenceClickListener(item -> {
-                try {
-                    context.startActivity(new Intent().setComponent(
-                            new ComponentName(OWN, OWN + ".inputmethod.KeyboardActivity")));
-                    slideIn();
-                } catch (RuntimeException unavailable) {
-                    android.widget.Toast.makeText(context, "Настройки клавиатуры недоступны",
-                            android.widget.Toast.LENGTH_SHORT).show();
-                }
-                return true;
-            });
-            group.addPreference(row);
+            link(group, NativePage.KEYBOARD, 20);
         }
 
         private void setSystemIcon(Preference row, String key) {
@@ -552,6 +535,37 @@ public final class NativeSections {
      * "Приложение…" row on the Sources screen. Selecting a package stores it in
      * persist.trd.source_id, which is what the OEM boot path reads.
      */
+    /**
+     * Keyboard screen: shows the current default IME, opens its own settings
+     * and keeps one way to switch to another keyboard. The stock screen is not
+     * used because it listed a duplicate physical keyboard and always linked
+     * the AOSP keyboard settings.
+     */
+    public static final class Keyboard extends Page {
+        @Override NativePage section(){return NativePage.KEYBOARD;}
+        @Override void populate(PreferenceScreen screen){
+            Context context = requireContext();
+            String name = KeyboardScreenHook.currentKeyboardName(context);
+            info(screen, "projectorsoft_current_keyboard", "Текущая клавиатура", name);
+            Preference settings = new Preference(context);
+            settings.setKey("projectorsoft_keyboard_settings");
+            settings.setTitle("Настройки: " + name);
+            settings.setOrder(20);
+            setSystemIcon(settings, "keyboard");
+            settings.setOnPreferenceClickListener(item -> {
+                if (!KeyboardScreenHook.openCurrentKeyboardSettings(context)) {
+                    android.widget.Toast.makeText(context,
+                            "Эта клавиатура не имеет своих настроек",
+                            android.widget.Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            });
+            screen.addPreference(settings);
+            stockFragmentOrdered(screen, "keyboard_switch", "Сменить клавиатуру",
+                    "inputmethod.AvailableVirtualKeyboardFragment", 30);
+        }
+    }
+
     public static final class BootApp extends Page {
         @Override NativePage section(){return NativePage.BOOT_APP;}
         @Override void populate(PreferenceScreen screen){
