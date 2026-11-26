@@ -197,7 +197,7 @@ public final class NativeSections {
          */
         /** Keyboard entry that opens our own keyboard screen. */
         /** Account types known to the system, for the "add account" screen. */
-        private static String[] accountTypes(Context context) {
+        protected static String[] accountTypes(Context context) {
             try {
                 android.accounts.AuthenticatorDescription[] all =
                         android.accounts.AccountManager.get(context).getAuthenticatorTypes();
