@@ -477,7 +477,7 @@ public final class NativeSections {
         @Override NativePage section(){return NativePage.BOOT_APP;}
         @Override void populate(PreferenceScreen screen){
             Context context = requireContext();
-            String current = bootSource();
+            String current = NativeBootDestination.bootSource();
             java.util.Map<String, String> apps;
             try {
                 apps = new java.util.TreeMap<>(OemPowerOnAppHook.candidates(context));
@@ -508,7 +508,7 @@ public final class NativeSections {
                 boolean selected = pkg.equals(current);
                 row.setSummary(selected ? "Выбрано для включения" : null);
                 row.setOnPreferenceClickListener(item -> {
-                    setBootSource(pkg);
+                    NativeBootDestination.setBootSource(pkg);
                     android.widget.Toast.makeText(context,
                             "Приложение при включении: " + entry.getValue(),
                             android.widget.Toast.LENGTH_SHORT).show();
