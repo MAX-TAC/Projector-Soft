@@ -314,7 +314,7 @@ final class ProjectorExtras {
         row.setSummary("Четыре угла и автокоррекция возвращаются к нулю.");
         row.setOrder(300);
         row.setOnPreferenceClickListener(item -> {
-            int changed = resetKeystone();
+            int changed = resetKeystone(context);
             android.widget.Toast.makeText(context,
                     changed > 0 ? "Коррекции трапеции сброшены" : "Не удалось сбросить",
                     android.widget.Toast.LENGTH_SHORT).show();
@@ -332,13 +332,13 @@ final class ProjectorExtras {
      * depending on SELinux policy. The result is logged so a failure is visible
      * instead of looking like a dead button.
      */
-    private static int resetKeystone() {
+    private static int resetKeystone(Context context) {
         // The OEM applies a reset through KeystoneUtil.resetKeystone(), which
         // pushes the corners to the display flinger. Writing the properties
         // alone only takes effect the next time an OEM keystone screen runs,
         // which is exactly the "resets only after I open the correction
         // screen" behaviour reported by the owner.
-        boolean nativeReset = resetKeystoneNative();
+        boolean nativeReset = resetKeystoneNative(context);
         Log.i(TAG, "keystone native reset=" + nativeReset);
         int changed = 0;
         try {
@@ -358,7 +358,7 @@ final class ProjectorExtras {
         return changed;
     }
 
-    private static boolean resetKeystoneNative() {
+    private static boolean resetKeystoneNative(Context context) {
         String[] candidates = {
                 "/system/priv-app/KeystoneCorrection/KeystoneCorrection.apk",
                 "/system/app/KeystoneCorrection/KeystoneCorrection.apk",
@@ -367,10 +367,8 @@ final class ProjectorExtras {
         for (String path : candidates) {
             if (!new java.io.File(path).exists()) continue;
             try {
-                java.io.File cache = android.app.AppGlobals.getInitialApplication()
-                        .getCodeCacheDir();
                 ClassLoader loader = new dalvik.system.DexClassLoader(
-                        path, cache.getAbsolutePath(), null,
+                        path, context.getCodeCacheDir().getAbsolutePath(), null,
                         ProjectorExtras.class.getClassLoader());
                 Class<?> util = loader.loadClass("com.rjpj.tcorrection.KeystoneUtil");
                 Object instance = util.getMethod("getInstance").invoke(null);
