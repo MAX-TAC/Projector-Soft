@@ -6,6 +6,7 @@ import zipfile
 from pathlib import Path
 
 from patch_8054_unified_manifest import ACTIVITIES, DISABLED, PREFIX
+from strip_8054_junk_activities import JUNK
 
 
 def dex_classes(dex):
@@ -29,6 +30,23 @@ def dex_classes(dex):
 
 def without_version(lines):
     return [line for line in lines if 'A: android:versionCode(' not in line]
+
+
+def drop_junk_nodes(lines):
+    """Return the tree without the deliberately removed junk activities."""
+    drop = set()
+    for index, line in enumerate(lines):
+        match = re.search(r'android:name\(0x01010003\)="(com\.android\.tv\.settings\.[^"]+)"', line)
+        if not match or match.group(1) not in JUNK:
+            continue
+        begin = index
+        while begin > 0 and lines[begin].startswith('        '):
+            begin -= 1
+        end = index + 1
+        while end < len(lines) and lines[end].startswith('        '):
+            end += 1
+        drop.update(range(begin, end))
+    return [line for index, line in enumerate(lines) if index not in drop]
 
 
 def verify_manifest(stock, module):
@@ -76,7 +94,7 @@ def verify_manifest(stock, module):
         if item not in alias_node:
             raise ValueError('MOD launcher alias missing ' + item)
     del lines[alias_start:alias_end]
-    if without_version(lines) != without_version(stock_lines):
+    if without_version(lines) != without_version(drop_junk_nodes(stock_lines)):
         raise ValueError('Original manifest entries or filters changed')
     main = next(i for i, line in enumerate(stock_lines)
                 if 'android:name(0x01010003)="com.android.tv.settings.MainSettings"' in line)
