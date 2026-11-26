@@ -546,7 +546,16 @@ public final class NativeSections {
         @Override void populate(PreferenceScreen screen){
             Context context = requireContext();
             String name = KeyboardScreenHook.currentKeyboardName(context);
-            info(screen, "projectorsoft_current_keyboard", "Текущая клавиатура", name);
+            // "Текущая клавиатура" opens the stock chooser so another IME can
+            // become the default one.
+            Preference current = new Preference(context);
+            current.setKey("projectorsoft_current_keyboard");
+            current.setTitle("Текущая клавиатура");
+            current.setSummary(name);
+            current.setOrder(10);
+            setSystemIcon(current, "keyboard");
+            current.setFragment(OWN + ".inputmethod.AvailableVirtualKeyboardFragment");
+            screen.addPreference(current);
             Preference settings = new Preference(context);
             settings.setKey("projectorsoft_keyboard_settings");
             settings.setTitle("Настройки: " + name);
@@ -561,8 +570,6 @@ public final class NativeSections {
                 return true;
             });
             screen.addPreference(settings);
-            stockFragmentOrdered(screen, "keyboard_switch", "Сменить клавиатуру",
-                    "inputmethod.AvailableVirtualKeyboardFragment", 30);
         }
     }
 
