@@ -18,6 +18,41 @@ final class NativeBootDestination {
 
     private NativeBootDestination() {}
 
+    /** Human label for a package, falling back to the package id. */
+    private static String appLabel(android.content.Context context, String pkg) {
+        try {
+            android.content.pm.PackageManager pm = context.getPackageManager();
+            CharSequence label = pm.getApplicationLabel(pm.getApplicationInfo(pkg, 0));
+            if (label != null && label.length() > 0) return label.toString();
+        } catch (Throwable ignored) {
+        }
+        return pkg;
+    }
+    /** Current power-on source (package, HOME, or HW id). */
+    static String bootSource() {
+        try {
+            Object value = Class.forName("android.os.SystemProperties")
+                    .getMethod("get", String.class, String.class)
+                    .invoke(null, "persist.trd.source_id", "");
+            return value == null ? "" : value.toString();
+        } catch (Throwable unavailable) {
+            Log.w(TAG, "boot source unreadable", unavailable);
+            return "";
+        }
+    }
+
+    /** Stores the chosen power-on source. */
+    static boolean setBootSource(String value) {
+        try {
+            Class.forName("android.os.SystemProperties")
+                    .getMethod("set", String.class, String.class)
+                    .invoke(null, "persist.trd.source_id", value);
+            return true;
+        } catch (Throwable unavailable) {
+            Log.w(TAG, "boot source not stored", unavailable);
+            return false;
+        }
+    }
     private static Map<String, String> choices(Context context) throws Exception {
         if (!"8054".equals(OemHdmiPortInfo.machineId())) return Collections.emptyMap();
         Map<String, String> result = new LinkedHashMap<>();
@@ -30,8 +65,9 @@ final class NativeBootDestination {
             ports = declaredPorts();
         }
         result.putAll(ports);
-        for (Map.Entry<String, String> entry : new TreeMap<>(OemPowerOnAppHook.candidates(context)).entrySet())
-            result.putIfAbsent(entry.getKey(), "Приложение · " + entry.getValue());
+        // Applications get their own screen with icons, so here only the
+        // entry point to that picker is offered.
+        result.put("projectorsoft_boot_app", "Приложение…");
         return result;
     }
 
@@ -116,6 +152,18 @@ final class NativeBootDestination {
             dialogChoices = Collections.emptyMap();
             dialogBaseline = null;
             try {
+                // "Приложение…" opens the icon picker instead of being stored.
+                if ("projectorsoft_boot_app".equals(value)) {
+                    try {
+                        getContext().startActivity(new android.content.Intent(
+                                getContext(), BootAppPickerSettingsActivity.class)
+                                .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK));
+                    } catch (RuntimeException unavailable) {
+                        Log.w(TAG, "boot app picker unavailable", unavailable);
+                    }
+                    render(loadChoices.call());
+                    return false;
+                }
                 Map<String, String> fresh = loadChoices.call();
                 if (value instanceof String && before != null && fresh.size() >= 2) {
                     try {
@@ -146,8 +194,11 @@ final class NativeBootDestination {
             if (known) {
                 setValue(current);
                 setSummary(offered.get(current).replace("%", "%%"));
-            } else {
+            } else if (current != null && current.contains(".")) {
+                // A stored package is a chosen application: show its label.
                 setValue(null);
+                setSummary("Приложение · " + appLabel(getContext(), current));
+            } else {
                 setSummary("Не задан · сейчас Android TV");
             }
             setEnabled(fresh.size() >= 2);

@@ -88,6 +88,31 @@ public final class NativeSections {
             });
         }
 
+        /**
+         * Launcher row that starts a plain HOME intent. A component-less HOME
+         * intent has no component for CheckedPreferenceLaunch.accessible(), so
+         * the generic action() helper always disabled it. This one resolves at
+         * click time instead.
+         */
+        protected void homeAction(PreferenceGroup group, String key, String label) {
+            Context context = requireContext();
+            Preference row = new Preference(context);
+            row.setTitle(label);
+            row.setKey(key);
+            setSystemIcon(row, key);
+            row.setEnabled(true);
+            row.setOnPreferenceClickListener(item -> {
+                try {
+                    context.startActivity(HomeDestination.homeIntent());
+                } catch (RuntimeException noHome) {
+                    android.widget.Toast.makeText(context,
+                            "Не удалось открыть рабочий стол",
+                            android.widget.Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            });
+            group.addPreference(row);
+        }
         protected void link(PreferenceGroup group, NativePage page, int order) {
             Context context = requireContext();
             Preference row = new Preference(context);
@@ -161,7 +186,7 @@ public final class NativeSections {
             PreferenceCategory inputs=group(screen,"inputs","Выбор источника");
             // One entry: the system launcher. Listing the two installed
             // launchers separately was not what the owner wants here.
-            action(inputs, "home", "Android TV", () -> HomeDestination.homeIntent());
+            homeAction(inputs, "home", "Android TV");
             guarded("hdmi-ports", () -> OemHdmiPortInfo.install(context, inputs, Preference.class));
             if(inputs.getPreferenceCount()==0)info(inputs,"inputs-unavailable","Источники","Нет подтверждённого маршрута");
             guarded("boot-destination",()->NativeBootDestination.install(context,screen));
@@ -190,7 +215,7 @@ public final class NativeSections {
                 NativeBootDestination.refresh(screen);
                 PreferenceCategory inputs = screen.findPreference("inputs");
                 if (inputs != null && inputs.findPreference("home") == null)
-                    action(inputs, "home", "Android TV", () -> HomeDestination.homeIntent());
+                    homeAction(inputs, "home", "Android TV");
             }
         }
 
@@ -443,6 +468,56 @@ public final class NativeSections {
             stock(screen,"keyboard_input","Клавиатура и способы ввода","inputmethod.KeyboardActivity");
         }
     }
+    /**
+     * Full-page power-on application picker with real icons. Opened from the
+     * "Приложение…" row on the Sources screen. Selecting a package stores it in
+     * persist.trd.source_id, which is what the OEM boot path reads.
+     */
+    public static final class BootApp extends Page {
+        @Override NativePage section(){return NativePage.BOOT_APP;}
+        @Override void populate(PreferenceScreen screen){
+            Context context = requireContext();
+            String current = bootSource();
+            java.util.Map<String, String> apps;
+            try {
+                apps = new java.util.TreeMap<>(OemPowerOnAppHook.candidates(context));
+            } catch (RuntimeException unavailable) {
+                info(screen, "bootapp_unavailable", "Приложения",
+                        "Список приложений недоступен");
+                return;
+            }
+            if (apps.isEmpty()) {
+                info(screen, "bootapp_empty", "Приложения",
+                        "Нет установленных приложений с ярлыком");
+                return;
+            }
+            int order = 0;
+            for (java.util.Map.Entry<String, String> entry : apps.entrySet()) {
+                final String pkg = entry.getKey();
+                Preference row = new Preference(context);
+                row.setKey("projectorsoft_bootapp_" + pkg);
+                row.setTitle(entry.getValue());
+                row.setOrder(order++);
+                // Always show a real launcher icon so the list reads like a picker.
+                try {
+                    android.content.pm.PackageManager pm = context.getPackageManager();
+                    row.setIcon(pm.getApplicationIcon(pkg));
+                } catch (android.content.pm.PackageManager.NameNotFoundException noIcon) {
+                    // leave the row without an icon
+                }
+                boolean selected = pkg.equals(current);
+                row.setSummary(selected ? "Выбрано для включения" : null);
+                row.setOnPreferenceClickListener(item -> {
+                    setBootSource(pkg);
+                    android.widget.Toast.makeText(context,
+                            "Приложение при включении: " + entry.getValue(),
+                            android.widget.Toast.LENGTH_SHORT).show();
+                    return true;
+                });
+                screen.addPreference(row);
+            }
+        }
+    }
     public static final class About extends Page {
         @Override NativePage section(){return NativePage.ABOUT;}
         @Override void populate(PreferenceScreen screen){
@@ -455,8 +530,6 @@ public final class NativeSections {
             // Live temperatures live here rather than only in the stock About
             // fragment, which is a separate activity the bridge cannot reach.
             info(screen, "projectorsoft_temp_cpu", "Температура CPU", OemCpuTemperature.read(context));
-            info(screen, "projectorsoft_temp_lcd", "Температура матрицы", OemCpuTemperature.readLcd(context));
-            info(screen, "projectorsoft_temp_led", "Температура LED", OemCpuTemperature.readLed(context));
             link(screen, NativePage.HARDWARE, 400);
         }
         @Override public void onResume() {
@@ -466,10 +539,6 @@ public final class NativeSections {
             Context context = requireContext();
             Preference cpu = screen.findPreference("projectorsoft_temp_cpu");
             if (cpu != null) cpu.setSummary(OemCpuTemperature.read(context));
-            Preference lcd = screen.findPreference("projectorsoft_temp_lcd");
-            if (lcd != null) lcd.setSummary(OemCpuTemperature.readLcd(context));
-            Preference led = screen.findPreference("projectorsoft_temp_led");
-            if (led != null) led.setSummary(OemCpuTemperature.readLed(context));
         }
     }
 

@@ -27,7 +27,8 @@ enum NativePage {
     ACCESSORIES("Управление устройствами",BluetoothDevicesSettingsActivity.class,"com.android.tv.settings.accessories.AccessoriesFragment"),
     MEMC("MEMC",MemcSettingsActivity.class,NativeSections.Memc.class.getName()),
     COLOR_TEMPERATURE("Цветовая температура",ColorTemperatureSettingsActivity.class,NativeSections.ColorTemperature.class.getName()),
-    LANGUAGE_INPUT("Язык и ввод",LanguageInputSettingsActivity.class,NativeSections.LanguageInput.class.getName());
+    LANGUAGE_INPUT("Язык и ввод",LanguageInputSettingsActivity.class,NativeSections.LanguageInput.class.getName()),
+    BOOT_APP("Приложение при включении",BootAppPickerSettingsActivity.class,NativeSections.BootApp.class.getName());
 
     static final List<NativePage> ROOT = List.of(NETWORK, BLUETOOTH, SOURCES, PROJECTION,
             PICTURE, SOUND, APPS, SYSTEM, POWER);

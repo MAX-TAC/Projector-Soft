@@ -24,8 +24,6 @@ import java.util.WeakHashMap;
  */
 final class StockAboutTemperatureBridge {
     static final String KEY = "projectorsoft_stock_about_cpu_temperature";
-    static final String KEY_LCD = "projectorsoft_stock_about_lcd_temperature";
-    static final String KEY_LED = "projectorsoft_stock_about_led_temperature";
     private static final String OEM_ABOUT = "com.android.tv.settings.about.AboutFragment";
     private static final String TAG = "TvSettingsPlusMOD";
     private static final Handler MAIN = new Handler(Looper.getMainLooper());
@@ -43,10 +41,6 @@ final class StockAboutTemperatureBridge {
             Preference cpu = screen.findPreference(KEY);
             if (cpu == null) return;
             cpu.setSummary(OemCpuTemperature.read(page.requireContext()));
-            Preference lcd = screen.findPreference(KEY_LCD);
-            if (lcd != null) lcd.setSummary(OemCpuTemperature.readLcd(page.requireContext()));
-            Preference led = screen.findPreference(KEY_LED);
-            if (led != null) led.setSummary(OemCpuTemperature.readLed(page.requireContext()));
             MAIN.postDelayed(this, 2000);
         }
     };
@@ -121,8 +115,6 @@ final class StockAboutTemperatureBridge {
             Preference cpu = screen.findPreference(KEY);
             if (cpu == null) {
                 screen.addPreference(thermalRow(fragment, KEY, "Температура CPU", Integer.MAX_VALUE - 2));
-                screen.addPreference(thermalRow(fragment, KEY_LCD, "Температура матрицы", Integer.MAX_VALUE - 1));
-                screen.addPreference(thermalRow(fragment, KEY_LED, "Температура LED", Integer.MAX_VALUE));
             }
             MAIN.removeCallbacks(POLL);
             current = new WeakReference<>(fragment);
