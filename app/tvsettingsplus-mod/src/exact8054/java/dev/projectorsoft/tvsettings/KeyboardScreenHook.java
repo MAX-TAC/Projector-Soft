@@ -66,6 +66,13 @@ final class KeyboardScreenHook {
                     }
                 }
             }, false);
+            // The fragment is usually already resumed before this callback is
+            // registered, so existing fragments are rewritten immediately too.
+            for (Fragment existing : manager.getFragments()) {
+                if (existing instanceof PreferenceFragmentCompat) {
+                    rewrite((PreferenceFragmentCompat) existing);
+                }
+            }
         } catch (Throwable unavailable) {
             Log.w(TAG, "keyboard fragment hook failed", unavailable);
         }
