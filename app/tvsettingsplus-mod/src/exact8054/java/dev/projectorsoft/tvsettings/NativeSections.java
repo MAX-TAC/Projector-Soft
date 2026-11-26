@@ -200,11 +200,9 @@ public final class NativeSections {
                     context,extras,Preference.class));
             Preference autoplay = extras.findPreference(OemHdmiAutoPlayHook.KEY);
             if (autoplay != null) autoplay.setTitle("Автопереключение HDMI");
-            guarded("hdmi-edid",()->OemHdmiEdidHook.install(
-                    context,extras,Preference.class));
-            Preference edid = extras.findPreference(OemHdmiEdidHook.STATUS_KEY);
-            if (edid != null) edid.setOrder(290);
-            ProjectorExtras.installArc(context, extras, 285);
+            // Working EDID selector instead of the read-only OEM status.
+            ProjectorExtras.installEdid(context, extras, 290);
+            ProjectorExtras.installArc(context, extras, 201);
 
             ProjectorExtras.installSources(context, extras);
         }

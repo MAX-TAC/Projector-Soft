@@ -396,6 +396,46 @@ final class ProjectorExtras {
             return false;
         }
     }
+    // ---------------- HDMI EDID ----------------
+
+    static final String EDID_KEY = "tv_input_hdmi_edid_version";
+    // Index matches the OEM value 0..3 seen in the system settings.
+    private static final String[] EDID_NAMES = {"HDMI 1.4", "HDMI 2.0", "Автоматически", "HDMI 2.1"};
+
+    /**
+     * HDMI compatibility (EDID) selector as a real control.
+     *
+     * The OEM hook only ever rendered a read-only status on the 8054 ("change
+     * unavailable until both HDMI are checked"). The underlying key is a plain
+     * global with four documented values, so it is offered as a list here.
+     */
+    static void installEdid(Context context, PreferenceGroup parent, int order) {
+        if (parent == null) return;
+        ListPreference list = new ListPreference(context);
+        list.setKey("projectorsoft_edid_version");
+        list.setTitle("Совместимость HDMI (EDID)");
+        list.setOrder(order);
+        list.setEntries(EDID_NAMES);
+        String[] values = new String[EDID_NAMES.length];
+        for (int i = 0; i < values.length; i++) values[i] = String.valueOf(i);
+        list.setEntryValues(values);
+        list.setPersistent(false);
+        int current = Settings.Global.getInt(context.getContentResolver(), EDID_KEY, 2);
+        if (current < 0 || current >= EDID_NAMES.length) current = 2;
+        list.setValue(String.valueOf(current));
+        list.setSummary(EDID_NAMES[current]);
+        list.setOnPreferenceChangeListener((pref, value) -> {
+            int index;
+            try { index = Integer.parseInt(String.valueOf(value)); }
+            catch (NumberFormatException bad) { return false; }
+            Settings.Global.putInt(context.getContentResolver(), EDID_KEY, index);
+            int read = Settings.Global.getInt(context.getContentResolver(), EDID_KEY, -1);
+            ((ListPreference) pref).setValue(String.valueOf(read));
+            ((ListPreference) pref).setSummary(EDID_NAMES[Math.max(0, Math.min(EDID_NAMES.length - 1, read))]);
+            return false;
+        });
+        parent.addPreference(list);
+    }
     // ---------------- HDMI ARC ----------------
 
     static final String ARC_ENABLED = "hdmi_arc_control_enabled";
