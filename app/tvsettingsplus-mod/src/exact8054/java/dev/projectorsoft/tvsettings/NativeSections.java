@@ -62,6 +62,19 @@ public final class NativeSections {
             group.addPreference(row);
         }
 
+        /**
+         * One shared transition for every screen opened from this app, so the
+         * panels stop sliding in from different edges.
+         */
+        protected void slideIn() {
+            android.app.Activity host = getActivity();
+            if (host == null) return;
+            try {
+                host.overridePendingTransition(
+                        android.R.anim.slide_in_left, android.R.anim.fade_out);
+            } catch (RuntimeException ignored) { }
+        }
+
         protected void action(PreferenceGroup group,String key,String label,CheckedPreferenceLaunch.Route route){
             Context context=requireContext();
             guarded(key,()->{
@@ -80,10 +93,8 @@ public final class NativeSections {
                 row.setEnabled(available);
                 if (!available) row.setSummary("Недоступно в этой версии прошивки");
                 row.setOnPreferenceClickListener(item->{
-                    if(!CheckedPreferenceLaunch.open(context,route))
-                        android.widget.Toast.makeText(context,"Экран недоступен",android.widget.Toast.LENGTH_SHORT).show();
-                    return true;
-                });
+                    if(CheckedPreferenceLaunch.open(context,route)) slideIn();
+                    else android.widget.Toast.makeText(context,"Экран недоступен",android.widget.Toast.LENGTH_SHORT).show();
                 group.addPreference(row);
             });
         }
@@ -104,6 +115,7 @@ public final class NativeSections {
             row.setOnPreferenceClickListener(item -> {
                 try {
                     context.startActivity(HomeDestination.homeIntent(context));
+                    slideIn();
                 } catch (RuntimeException noHome) {
                     android.widget.Toast.makeText(context,
                             "Не удалось открыть рабочий стол",
@@ -152,6 +164,7 @@ public final class NativeSections {
                 try {
                     requireContext().startActivity(new Intent().setComponent(
                             new ComponentName(OWN, OWN + "." + name)));
+                    slideIn();
                 } catch (RuntimeException unavailable) {
                     android.widget.Toast.makeText(requireContext(), "Экран недоступен",
                             android.widget.Toast.LENGTH_SHORT).show();
@@ -527,16 +540,16 @@ public final class NativeSections {
             stockFragmentOrdered(screen,"about_stock","Об устройстве","about.AboutFragment",10);
             // Device rename already exists inside the genuine AboutFragment.
             // CPU is injected into the bottom of About via its own lifecycle.
-            stockOrdered(screen,"time","Дата и время","system.DateTimeActivity",20);
+            stockFragmentOrdered(screen,"time","Дата и время","system.DateTimeFragment",20);
             link(screen, NativePage.LANGUAGE_INPUT, 30);
-            stockOrdered(screen,"location","Местоположение","system.LocationActivity",40);
-            stockOrdered(screen,"accounts","Учётные записи","accounts.AccountsActivity",50);
-            stockOrdered(screen,"storage","Хранилище","device.StorageResetActivity",60);
+            stockFragmentOrdered(screen,"location","Местоположение","system.LocationFragment",40);
+            stockFragmentOrdered(screen,"accounts","Учётные записи","accounts.AccountsFragment",50);
+            stockFragmentOrdered(screen,"storage","Хранилище","device.StorageSummaryFragment",60);
             // Power moved to the main screen at the owner request.
             // Empty EnterprisePrivacy screen is not relevant on this exact 8054.
-            stockOrdered(screen,"security","Безопасность","system.SecurityActivity",70);
-            stockOrdered(screen,"accessibility","Специальные возможности","oemlink.AccessibilitySettingsActivity",80);
-            stockOrdered(screen,"developer","Для разработчиков","system.development.DevelopmentActivity",90);
+            stockFragmentOrdered(screen,"security","Безопасность","system.SecurityFragment",70);
+            stockFragmentOrdered(screen,"accessibility","Специальные возможности","accessibility.AccessibilityFragment",80);
+            stockFragmentOrdered(screen,"developer","Для разработчиков","system.development.DevelopmentFragment",90);
         }
     }
 
@@ -548,7 +561,7 @@ public final class NativeSections {
     public static final class LanguageInput extends Page {
         @Override NativePage section(){return NativePage.LANGUAGE_INPUT;}
         @Override void populate(PreferenceScreen screen){
-            stock(screen,"language_system","Язык системы","system.LanguageActivity");
+            stockFragmentOrdered(screen,"language_system","Язык системы","system.LanguageFragmentCompat",10);
             // Shows the CURRENT default keyboard and opens its own settings,
             // instead of the factory AOSP keyboard page.
             keyboardRow(screen);
