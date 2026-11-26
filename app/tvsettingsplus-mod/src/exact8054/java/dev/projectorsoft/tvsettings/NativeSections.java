@@ -199,7 +199,7 @@ public final class NativeSections {
             link(group, NativePage.KEYBOARD, 20);
         }
 
-        private void setSystemIcon(Preference row, String key) {
+        protected void setSystemIcon(Preference row, String key) {
             // Reuse the exact 8054 OEM drawables, not an unthemed Android icon.
             String drawable;
             switch (key) {
