@@ -41,17 +41,33 @@ final class NativeBootDestination {
         }
     }
 
-    /** Stores the chosen power-on source. */
+    /**
+     * Stores the chosen power-on source.
+     *
+     * A plain SystemProperties.set from a system-uid app does not persist
+     * persist.trd.source_id on this board (verified: the value stayed empty
+     * after selection). setprop through the shell works here, so that is the
+     * fallback, and the value is read back to confirm.
+     */
     static boolean setBootSource(String value) {
         try {
             Class.forName("android.os.SystemProperties")
                     .getMethod("set", String.class, String.class)
                     .invoke(null, "persist.trd.source_id", value);
-            return true;
         } catch (Throwable unavailable) {
-            Log.w(TAG, "boot source not stored", unavailable);
-            return false;
+            Log.w(TAG, "SystemProperties write failed", unavailable);
         }
+        if (value.equals(bootSource())) return true;
+        try {
+            Process process = Runtime.getRuntime().exec(
+                    new String[]{"setprop", "persist.trd.source_id", value});
+            process.waitFor();
+        } catch (Throwable unavailable) {
+            Log.w(TAG, "setprop fallback failed", unavailable);
+        }
+        boolean ok = value.equals(bootSource());
+        if (!ok) Log.w(TAG, "boot source still not stored: " + bootSource());
+        return ok;
     }
     private static Map<String, String> choices(Context context) throws Exception {
         if (!"8054".equals(OemHdmiPortInfo.machineId())) return Collections.emptyMap();
@@ -147,38 +163,20 @@ final class NativeBootDestination {
         }
 
         private boolean change(Object value) {
-            Map<String, String> displayed = dialogChoices;
-            String before = dialogBaseline;
             dialogChoices = Collections.emptyMap();
             dialogBaseline = null;
             try {
-                // "Приложение…" opens the icon picker instead of being stored.
-                if ("projectorsoft_boot_app".equals(value)) {
-                    try {
-                        getContext().startActivity(new android.content.Intent(
-                                getContext(), BootAppPickerSettingsActivity.class)
-                                .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK));
-                    } catch (RuntimeException unavailable) {
-                        Log.w(TAG, "boot app picker unavailable", unavailable);
-                    }
-                    render(loadChoices.call());
-                    return false;
-                }
                 Map<String, String> fresh = loadChoices.call();
-                if (value instanceof String && before != null && fresh.size() >= 2) {
-                    try {
-                        Result result = apply(backend, displayed, fresh, before, (String) value);
-                        if (result != Result.CONFIRMED) Log.w(TAG, "Boot destination not applied: " + result);
-                    } catch (Exception failedWrite) {
-                        Log.w(TAG, "Boot destination change failed; reading actual state", failedWrite);
-                    }
+                if (value instanceof String && fresh.size() >= 2) {
+                    boolean stored = setBootSource((String) value);
+                    Log.i(TAG, "boot source requested=" + value + " stored=" + stored
+                            + " read=" + bootSource());
                 }
                 render(fresh);
             } catch (Exception e) {
                 unavailable("Не удалось подтвердить сохранённое значение");
                 Log.w(TAG, "Cannot confirm boot destination", e);
             }
-            // The displayed value comes from the property readback.
             return false;
         }
 
@@ -187,6 +185,9 @@ final class NativeBootDestination {
             setEntries(offered.values().toArray(new CharSequence[0]));
             setEntryValues(offered.keySet().toArray(new CharSequence[0]));
             String current = backend.read();
+            // An empty property means the device boots to Android TV, so show
+            // HOME as the selected value instead of leaving nothing checked.
+            if (current == null || current.isEmpty()) current = "HOME";
             // An unset property used to disable the whole row, which is why the
             // owner could never open it. Show "not set" but keep it selectable.
             boolean known = current != null && !current.isEmpty()

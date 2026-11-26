@@ -53,10 +53,23 @@ final class HomeDestination {
         return new java.util.ArrayList<>(found);
     }
 
-    /** Plain HOME intent: the system opens whichever launcher is the user's home. */
-    static Intent homeIntent() {
-        return new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME)
+    /**
+     * Intent that opens the real launcher.
+     *
+     * A component-less HOME intent resolves to our own package
+     * (com.android.tv.settings hosts FallbackHome), which paints a black
+     * screen. The actual third-party launcher is resolved explicitly.
+     */
+    static Intent homeIntent(Context context) {
+        Intent plain = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        try {
+            List<ComponentName> candidates = launchers(context);
+            if (!candidates.isEmpty()) plain.setComponent(candidates.get(0));
+        } catch (RuntimeException ignored) {
+            // fall back to the component-less intent
+        }
+        return plain;
     }
     /** Intent that opens one specific launcher. */
     static Intent intentFor(ComponentName component) {

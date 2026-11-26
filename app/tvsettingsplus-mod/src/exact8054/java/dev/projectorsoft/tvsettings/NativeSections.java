@@ -103,7 +103,7 @@ public final class NativeSections {
             row.setEnabled(true);
             row.setOnPreferenceClickListener(item -> {
                 try {
-                    context.startActivity(HomeDestination.homeIntent());
+                    context.startActivity(HomeDestination.homeIntent(context));
                 } catch (RuntimeException noHome) {
                     android.widget.Toast.makeText(context,
                             "Не удалось открыть рабочий стол",
@@ -205,6 +205,7 @@ public final class NativeSections {
             Preference edid = extras.findPreference(OemHdmiEdidHook.STATUS_KEY);
             if (edid != null) edid.setOrder(290);
             ProjectorExtras.installArc(context, extras, 285);
+
             ProjectorExtras.installSources(context, extras);
         }
 

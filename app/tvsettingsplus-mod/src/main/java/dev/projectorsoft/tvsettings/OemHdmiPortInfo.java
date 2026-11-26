@@ -243,7 +243,11 @@ public final class OemHdmiPortInfo {
         pref.getMethod("setTitle",CharSequence.class).invoke(item,title);
         pref.getMethod("setSummary",CharSequence.class).invoke(item,summary);
         pref.getMethod("setOrder",int.class).invoke(item,order);
-        pref.getMethod("setSelectable",boolean.class).invoke(item,tv!=null);
+        // A port without a live signal must not look selectable: the owner
+        // asked for unconnected inputs to be inactive on the source screen.
+        boolean connected = summary != null && summary.startsWith("Подключен");
+        pref.getMethod("setEnabled",boolean.class).invoke(item,connected);
+        pref.getMethod("setSelectable",boolean.class).invoke(item,connected && tv!=null);
         if(tv!=null) {
             Class<?> listener=Class.forName("androidx.preference.Preference$OnPreferenceClickListener");
             Object callback=Proxy.newProxyInstance(listener.getClassLoader(),new Class<?>[]{listener},
