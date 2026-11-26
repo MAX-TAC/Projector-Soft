@@ -33,33 +33,39 @@ def without_version(lines):
 
 
 def drop_junk_nodes(lines):
-    """Return the tree without the deliberately removed junk activities."""
-    drop = set()
-    for index, line in enumerate(lines):
-        match = re.search(r'android:name\(0x01010003\)="(com\.android\.tv\.settings\.[^"]+)"', line)
-        alias = re.search(r'android:targetActivity\(0x01010202\)="(com\.android\.tv\.settings\.[^"]+)"', line)
-        hit = (match and match.group(1) in JUNK) or (alias and alias.group(1) in JUNK)
-        if not hit:
+    """Return the tree without the deliberately removed junk components."""
+    out = []
+    index = 0
+    total = len(lines)
+    while index < total:
+        line = lines[index]
+        stripped = line.lstrip()
+        indent = len(line) - len(stripped)
+        if stripped.startswith('E: activity ') or stripped.startswith('E: activity-alias '):
+            # A component block runs until the next "E:" line at the same or a
+            # smaller indent.
+            end_index = index + 1
+            while end_index < total:
+                candidate = lines[end_index]
+                candidate_stripped = candidate.lstrip()
+                candidate_indent = len(candidate) - len(candidate_stripped)
+                if candidate_stripped.startswith('E:') and candidate_indent <= indent:
+                    break
+                end_index += 1
+            block = lines[index:end_index]
+            text = '\n'.join(block)
+            named = re.search(r'android:name\(0x01010003\)="(com\.android\.tv\.settings\.[^"]+)"', text)
+            target = re.search(
+                r'android:targetActivity\(0x01010202\)="(com\.android\.tv\.settings\.[^"]+)"', text)
+            junk = ((named and named.group(1) in JUNK)
+                    or (target and target.group(1) in JUNK))
+            if not junk:
+                out.extend(block)
+            index = end_index
             continue
-        indent = len(line) - len(line.lstrip())
-        begin = index
-        # Walk up to the element that owns this attribute: an "E:" line with a
-        # smaller indent than the attribute itself.
-        while begin > 0:
-            previous = lines[begin - 1]
-            previous_indent = len(previous) - len(previous.lstrip())
-            if previous.lstrip().startswith('E:') and previous_indent < indent:
-                break
-            begin -= 1
-        end = index + 1
-        while end < len(lines):
-            current = lines[end]
-            current_indent = len(current) - len(current.lstrip())
-            if current.lstrip().startswith('E:') and current_indent <= indent - 2:
-                break
-            end += 1
-        drop.update(range(begin, end))
-    return [line for index, line in enumerate(lines) if index not in drop]
+        out.append(line)
+        index += 1
+    return out
 
 
 def verify_manifest(stock, module):
