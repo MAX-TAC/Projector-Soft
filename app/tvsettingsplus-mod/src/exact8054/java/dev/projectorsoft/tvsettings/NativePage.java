@@ -29,7 +29,8 @@ enum NativePage {
     COLOR_TEMPERATURE("Цветовая температура",ColorTemperatureSettingsActivity.class,NativeSections.ColorTemperature.class.getName()),
     LANGUAGE_INPUT("Язык и ввод",LanguageInputSettingsActivity.class,NativeSections.LanguageInput.class.getName()),
     BOOT_APP("Приложение при включении",BootAppPickerSettingsActivity.class,NativeSections.BootApp.class.getName()),
-    KEYBOARD("Клавиатура",KeyboardSettingsActivity.class,NativeSections.Keyboard.class.getName());
+    KEYBOARD("Клавиатура",KeyboardSettingsActivity.class,NativeSections.Keyboard.class.getName()),
+    ACCOUNTS("Учётные записи",AccountsSettingsActivity.class,NativeSections.Accounts.class.getName());
 
     static final List<NativePage> ROOT = List.of(NETWORK, BLUETOOTH, SOURCES, PROJECTION,
             PICTURE, SOUND, APPS, SYSTEM, POWER);

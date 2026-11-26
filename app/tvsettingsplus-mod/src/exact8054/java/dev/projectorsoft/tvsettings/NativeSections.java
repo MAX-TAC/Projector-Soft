@@ -506,7 +506,7 @@ public final class NativeSections {
             stockFragmentOrdered(screen,"time","Дата и время","system.DateTimeFragment",20);
             link(screen, NativePage.LANGUAGE_INPUT, 30);
             stockFragmentOrdered(screen,"location","Местоположение","system.LocationFragment",40);
-            stockOrdered(screen,"accounts","Учётные записи","accounts.AccountsActivity",50);
+            link(screen, NativePage.ACCOUNTS, 50);
             stockFragmentOrdered(screen,"storage","Хранилище","device.StorageSummaryFragment",60);
             // Power moved to the main screen at the owner request.
             // Empty EnterprisePrivacy screen is not relevant on this exact 8054.
@@ -570,6 +570,57 @@ public final class NativeSections {
                 return true;
             });
             screen.addPreference(settings);
+        }
+    }
+
+    /**
+     * Accounts as a fragment: the account list plus one way to add a new
+     * account. The stock fragment emptied itself when opened nested, and the
+     * stock activity dimmed the background, so this screen replaces both.
+     */
+    public static final class Accounts extends Page {
+        @Override NativePage section(){return NativePage.ACCOUNTS;}
+        @Override void populate(PreferenceScreen screen){
+            Context context = requireContext();
+            android.accounts.Account[] accounts = new android.accounts.Account[0];
+            try {
+                android.accounts.AccountManager manager =
+                        android.accounts.AccountManager.get(context);
+                if (manager != null) accounts = manager.getAccounts();
+            } catch (Throwable unavailable) {
+                android.util.Log.w("TvSettingsPlusMOD", "accounts unreadable", unavailable);
+            }
+            int order = 10;
+            for (android.accounts.Account account : accounts) {
+                Preference row = new Preference(context);
+                row.setKey("projectorsoft_account_" + order);
+                row.setTitle(account.name);
+                row.setSummary(account.type);
+                row.setOrder(order++);
+                setSystemIcon(row, "accounts");
+                screen.addPreference(row);
+            }
+            if (accounts.length == 0 && screen.getPreferenceCount() == 0) {
+                info(screen, "projectorsoft_accounts_empty", "Аккаунты",
+                        "Нет добавленных аккаунтов");
+            }
+            Preference add = new Preference(context);
+            add.setKey("projectorsoft_account_add");
+            add.setTitle("Добавить учётную запись");
+            add.setOrder(900);
+            setSystemIcon(add, "accounts");
+            add.setOnPreferenceClickListener(item -> {
+                try {
+                    context.startActivity(new Intent(android.provider.Settings.ACTION_ADD_ACCOUNT)
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                    slideIn();
+                } catch (RuntimeException unavailable) {
+                    android.widget.Toast.makeText(context, "Добавление аккаунта недоступно",
+                            android.widget.Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            });
+            screen.addPreference(add);
         }
     }
 
