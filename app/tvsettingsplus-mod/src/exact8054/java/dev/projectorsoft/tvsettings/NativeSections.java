@@ -95,6 +95,8 @@ public final class NativeSections {
                 row.setOnPreferenceClickListener(item->{
                     if(CheckedPreferenceLaunch.open(context,route)) slideIn();
                     else android.widget.Toast.makeText(context,"Экран недоступен",android.widget.Toast.LENGTH_SHORT).show();
+                    return true;
+                });
                 group.addPreference(row);
             });
         }
