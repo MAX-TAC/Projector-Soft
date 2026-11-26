@@ -81,9 +81,6 @@ final class NativeBootDestination {
             ports = declaredPorts();
         }
         result.putAll(ports);
-        // Applications get their own screen with icons, so here only the
-        // entry point to that picker is offered.
-        result.put("projectorsoft_boot_app", "Приложение…");
         return result;
     }
 
