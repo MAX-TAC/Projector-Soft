@@ -561,7 +561,7 @@ public final class NativeSections {
             stockFragmentOrdered(screen,"time","Дата и время","system.DateTimeFragment",20);
             link(screen, NativePage.LANGUAGE_INPUT, 30);
             stockFragmentOrdered(screen,"location","Местоположение","system.LocationFragment",40);
-            stockFragmentOrdered(screen,"accounts","Учётные записи","accounts.AccountsFragment",50);
+            stockOrdered(screen,"accounts","Учётные записи","accounts.AccountsActivity",50);
             stockFragmentOrdered(screen,"storage","Хранилище","device.StorageSummaryFragment",60);
             // Power moved to the main screen at the owner request.
             // Empty EnterprisePrivacy screen is not relevant on this exact 8054.
@@ -579,7 +579,7 @@ public final class NativeSections {
     public static final class LanguageInput extends Page {
         @Override NativePage section(){return NativePage.LANGUAGE_INPUT;}
         @Override void populate(PreferenceScreen screen){
-            stockFragmentOrdered(screen,"language_system","Язык системы","system.LanguageFragmentCompat",10);
+            stockFragmentOrdered(screen,"language_system","Язык системы","system.LanguageFragment",10);
             // Shows the CURRENT default keyboard and opens its own settings,
             // instead of the factory AOSP keyboard page.
             keyboardRow(screen);
