@@ -55,7 +55,7 @@ final class OemCpuTemperature {
     }
 
     /** Ambient/air temperature, or a marker when the sensor is absent. */
-    static String readAmbient() {
+    static String readAmbient(Context context) {
         if (!"8054".equals(OemHdmiPortInfo.machineId())) return "Недоступно";
         Double direct = viaTrd(context, "getTemperatueAMB");
         if (direct != null) return display(direct);
