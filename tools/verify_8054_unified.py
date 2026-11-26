@@ -37,13 +37,26 @@ def drop_junk_nodes(lines):
     drop = set()
     for index, line in enumerate(lines):
         match = re.search(r'android:name\(0x01010003\)="(com\.android\.tv\.settings\.[^"]+)"', line)
-        if not match or match.group(1) not in JUNK:
+        alias = re.search(r'android:targetActivity\(0x01010202\)="(com\.android\.tv\.settings\.[^"]+)"', line)
+        hit = (match and match.group(1) in JUNK) or (alias and alias.group(1) in JUNK)
+        if not hit:
             continue
+        indent = len(line) - len(line.lstrip())
         begin = index
-        while begin > 0 and lines[begin].startswith('        '):
+        # Walk up to the element that owns this attribute: an "E:" line with a
+        # smaller indent than the attribute itself.
+        while begin > 0:
+            previous = lines[begin - 1]
+            previous_indent = len(previous) - len(previous.lstrip())
+            if previous.lstrip().startswith('E:') and previous_indent < indent:
+                break
             begin -= 1
         end = index + 1
-        while end < len(lines) and lines[end].startswith('        '):
+        while end < len(lines):
+            current = lines[end]
+            current_indent = len(current) - len(current.lstrip())
+            if current.lstrip().startswith('E:') and current_indent <= indent - 2:
+                break
             end += 1
         drop.update(range(begin, end))
     return [line for index, line in enumerate(lines) if index not in drop]
