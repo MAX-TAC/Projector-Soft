@@ -96,14 +96,15 @@ final class BtEqualizerPanel {
             row.setTitle(BAND_LABELS[band]);
             row.setOrder(110 + band);
             row.setPersistent(false);
-            // These two calls are what makes the bar respond to D-pad arrows:
-            // a step of 1 and no continuous drag updates.
-            row.setSeekBarIncrement(1);
+            // A 1-mB step made the bar effectively immovable (value looked like
+            // "1345"). Step is now 1 dB and the value is shown in dB.
+            row.setSeekBarIncrement(100);
             row.setUpdatesContinuously(false);
             row.setMin(LEVEL_MIN);
             row.setMax(LEVEL_MAX);
-            row.setShowSeekBarValue(true);
+            row.setShowSeekBarValue(false);
             row.setValue(storedBand(band, 0));
+            row.setSummary(dbLabel(storedBand(band, 0)));
             row.setEnabled(current == CUSTOM);
             final int index = band;
             row.setOnPreferenceChangeListener((pref, value) -> {
@@ -114,6 +115,11 @@ final class BtEqualizerPanel {
                 if (presetRow != null) {
                     presetRow.setValue(String.valueOf(CUSTOM));
                     presetRow.setSummary(PRESET_NAMES[CUSTOM]);
+                }
+                // Repaint the row itself so the bar and summary move immediately.
+                if (pref instanceof SeekBarPreference) {
+                    ((SeekBarPreference) pref).setValue(level);
+                    ((SeekBarPreference) pref).setSummary(dbLabel(level));
                 }
                 applyCustom();
                 return false;
@@ -132,11 +138,14 @@ final class BtEqualizerPanel {
             BandRow row = bandRows[band];
             if (row == null) continue;
             row.setEnabled(editable);
+            int shown;
             if (!editable && curve != null && band < curve.length) {
-                row.setValue(curve[band]);
-            } else if (editable) {
-                row.setValue(storedBand(band, 0));
+                shown = curve[band];
+            } else {
+                shown = storedBand(band, 0);
             }
+            row.setValue(shown);
+            row.setSummary(dbLabel(shown));
             row.refreshBars();
         }
     }
@@ -169,6 +178,11 @@ final class BtEqualizerPanel {
         syncRows(current);
     }
 
+    /** Formats a millibel level as decibels with one decimal. */
+    private static String dbLabel(int milliBel) {
+        return String.format(java.util.Locale.getDefault(), "%+.1f дБ", milliBel / 100f);
+    }
+
     private short[] presetBandsSafe(int preset) {
         if (preset < 0 || preset >= PRESET_BANDS.length) return PRESET_BANDS[0];
         if (PRESET_BANDS[preset] != null) return PRESET_BANDS[preset];
@@ -183,7 +197,13 @@ final class BtEqualizerPanel {
     }
 
     private int storedBand(int band, int fallback) {
-        return Settings.Global.getInt(context.getContentResolver(), KEY_BAND + band, fallback);
+        int raw = Settings.Global.getInt(context.getContentResolver(), KEY_BAND + band, fallback);
+        // Values saved by the old 1-mB step are not multiples of 100; snap them
+        // so the bar sits on a real step instead of showing e.g. 1345.
+        int snapped = Math.round(raw / 100f) * 100;
+        if (snapped < LEVEL_MIN) snapped = LEVEL_MIN;
+        if (snapped > LEVEL_MAX) snapped = LEVEL_MAX;
+        return snapped;
     }
 
     // ---------------- engine ----------------

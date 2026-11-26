@@ -380,8 +380,8 @@ jobs:
           apktool b -p /tmp/tv33/framework /tmp/tv33/decoded -o /tmp/tv33/rebuilt.apk
           python3 tools/compose_brightness_v3_apk.py "$STOCK" /tmp/tv33/rebuilt.apk \
             /tmp/tv33/dex/classes.dex /tmp/tv33/patch_report.json /tmp/tv33/unsigned.apk \
-            --version-code 208 --unified-8054
-          aapt dump badging /tmp/tv33/unsigned.apk | grep "name='com.android.tv.settings' versionCode='208'"
+            --version-code 209 --unified-8054
+          aapt dump badging /tmp/tv33/unsigned.apk | grep "name='com.android.tv.settings' versionCode='209'"
           aapt dump xmltree "$STOCK" AndroidManifest.xml > /tmp/tv33/stock-manifest-tree.txt
           aapt dump xmltree /tmp/tv33/unsigned.apk AndroidManifest.xml > /tmp/tv33/manifest-tree.txt
           python3 tools/verify_8054_unified.py "$STOCK" /tmp/tv33/unsigned.apk \
@@ -404,14 +404,14 @@ jobs:
           test "$ORIGINAL" = "$PLATFORM"
           zipalign -f -p 4 /tmp/tv33/unsigned.apk /tmp/tv33/aligned.apk
           apksigner sign --key /tmp/tv33/keys/platform.pk8 --cert /tmp/tv33/keys/platform.x509.pem \
-            --v1-signing-enabled true --v2-signing-enabled true --v3-signing-enabled true --out /tmp/tv33/TvSettingsPlus-8054-2.8-MAINSETTINGS.apk /tmp/tv33/aligned.apk
-          CANDIDATE=/tmp/tv33/TvSettingsPlus-8054-2.8-MAINSETTINGS.apk
+            --v1-signing-enabled true --v2-signing-enabled true --v3-signing-enabled true --out /tmp/tv33/TvSettingsPlus-8054-2.9-MAINSETTINGS.apk /tmp/tv33/aligned.apk
+          CANDIDATE=/tmp/tv33/TvSettingsPlus-8054-2.9-MAINSETTINGS.apk
           apksigner verify --verbose --print-certs "$CANDIDATE"
           MOD="$(apksigner verify --print-certs "$CANDIDATE" | awk -F ': ' '/Signer #1 certificate SHA-256 digest:/ {print $2}')"
           test -n "$MOD" && test "$MOD" = "$ORIGINAL"
           grep -F 'android:sharedUserId(0x0101000b)="android.uid.system"' /tmp/tv33/manifest-tree.txt
-          aapt dump badging /tmp/tv33/TvSettingsPlus-8054-2.8-MAINSETTINGS.apk | grep "name='com.android.tv.settings' versionCode='208'"
-          sha256sum /tmp/tv33/TvSettingsPlus-8054-2.8-MAINSETTINGS.apk
+          aapt dump badging /tmp/tv33/TvSettingsPlus-8054-2.9-MAINSETTINGS.apk | grep "name='com.android.tv.settings' versionCode='209'"
+          sha256sum /tmp/tv33/TvSettingsPlus-8054-2.9-MAINSETTINGS.apk
       - name: Experimental-only metadata
         if: always()
         run: |
@@ -431,16 +431,16 @@ jobs:
           EOF
           cp tools/diagnose_8054_v40.ps1 /tmp/tv33/report/
           printf '%s\n' "$GITHUB_SHA" > /tmp/tv33/report/source-commit.txt
-          if [ -f /tmp/tv33/TvSettingsPlus-8054-2.8-MAINSETTINGS.apk ]; then
-            (cd /tmp/tv33 && sha256sum TvSettingsPlus-8054-2.8-MAINSETTINGS.apk) > /tmp/tv33/report/SHA256SUMS
+          if [ -f /tmp/tv33/TvSettingsPlus-8054-2.9-MAINSETTINGS.apk ]; then
+            (cd /tmp/tv33 && sha256sum TvSettingsPlus-8054-2.9-MAINSETTINGS.apk) > /tmp/tv33/report/SHA256SUMS
           fi
           cp /tmp/tv33/patch_report.json /tmp/tv33/report/patch_report.json 2>/dev/null || true
       - uses: actions/upload-artifact@v4
         if: success()
         with:
-          name: tvsettingsplus-8054-2.8-mainsettings
+          name: tvsettingsplus-8054-2.9-mainsettings
           path: |
-            /tmp/tv33/TvSettingsPlus-8054-2.8-MAINSETTINGS.apk
+            /tmp/tv33/TvSettingsPlus-8054-2.9-MAINSETTINGS.apk
             /tmp/tv33/report/
           retention-days: 14
           if-no-files-found: warn
