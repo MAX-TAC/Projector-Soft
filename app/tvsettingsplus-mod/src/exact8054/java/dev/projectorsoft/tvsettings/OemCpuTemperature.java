@@ -159,7 +159,15 @@ final class OemCpuTemperature {
     }
 
     /** TRD getters return int/float/Integer/String depending on firmware. */
-    /** Loads HwTrd out of trdmiddle.apk and asks it for the temperature control. */
+    /**
+     * Obtains the TRD temperature interface through its binder.
+     *
+     * TrdSystemService runs in its own process, so the in-process singletons are
+     * empty. The service is registered as "TrdSystemService" and its AIDL stub is
+     * com.trd.framework.k$a (obfuscated names). asInterface(binder) returns the
+     * interface whose getTemperatureCtrl() yields com.trd.framework.g, which has
+     * getTemperatueLCD/LED/AMB returning float.
+     */
     private static Object controllerFromApk(Context context) {
         if (context == null) return null;
         String[] candidates = {
@@ -172,11 +180,21 @@ final class OemCpuTemperature {
                 ClassLoader loader = new dalvik.system.DexClassLoader(
                         path, context.getCodeCacheDir().getAbsolutePath(), null,
                         context.getClassLoader());
-                Class<?> hw = loader.loadClass("com.trd.android.api.HwTrd");
-                Object ctrl = hw.getMethod("getTemperatureCtrl").invoke(null);
+                Object binder = Class.forName("android.os.ServiceManager")
+                        .getMethod("getService", String.class)
+                        .invoke(null, "TrdSystemService");
+                if (!(binder instanceof android.os.IBinder)) {
+                    Log.i(TAG, "TrdSystemService binder unavailable");
+                    continue;
+                }
+                Class<?> stub = loader.loadClass("com.trd.framework.k$a");
+                Object iface = stub.getMethod("asInterface", android.os.IBinder.class)
+                        .invoke(null, binder);
+                if (iface == null) continue;
+                Object ctrl = iface.getClass().getMethod("getTemperatureCtrl").invoke(iface);
                 if (ctrl != null) return ctrl;
             } catch (Throwable error) {
-                Log.i(TAG, "trdmiddle load failed from " + path + ": " + error);
+                Log.i(TAG, "trdmiddle binder route failed: " + error);
             }
         }
         return null;

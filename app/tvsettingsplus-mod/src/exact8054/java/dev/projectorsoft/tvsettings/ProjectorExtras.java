@@ -333,6 +333,13 @@ final class ProjectorExtras {
      * instead of looking like a dead button.
      */
     private static int resetKeystone() {
+        // The OEM applies a reset through KeystoneUtil.resetKeystone(), which
+        // pushes the corners to the display flinger. Writing the properties
+        // alone only takes effect the next time an OEM keystone screen runs,
+        // which is exactly the "resets only after I open the correction
+        // screen" behaviour reported by the owner.
+        boolean nativeReset = resetKeystoneNative();
+        Log.i(TAG, "keystone native reset=" + nativeReset);
         int changed = 0;
         try {
             Class<?> props = Class.forName("android.os.SystemProperties");
@@ -351,6 +358,31 @@ final class ProjectorExtras {
         return changed;
     }
 
+    private static boolean resetKeystoneNative() {
+        String[] candidates = {
+                "/system/priv-app/KeystoneCorrection/KeystoneCorrection.apk",
+                "/system/app/KeystoneCorrection/KeystoneCorrection.apk",
+                "/system/priv-app/TvCorrection/TvCorrection.apk"
+        };
+        for (String path : candidates) {
+            if (!new java.io.File(path).exists()) continue;
+            try {
+                java.io.File cache = android.app.AppGlobals.getInitialApplication()
+                        .getCodeCacheDir();
+                ClassLoader loader = new dalvik.system.DexClassLoader(
+                        path, cache.getAbsolutePath(), null,
+                        ProjectorExtras.class.getClassLoader());
+                Class<?> util = loader.loadClass("com.rjpj.tcorrection.KeystoneUtil");
+                Object instance = util.getMethod("getInstance").invoke(null);
+                if (instance == null) continue;
+                util.getMethod("resetKeystone").invoke(instance);
+                return true;
+            } catch (Throwable error) {
+                Log.w(TAG, "native keystone reset failed via " + path, error);
+            }
+        }
+        return false;
+    }
     private static boolean writeAndVerify(java.lang.reflect.Method set,
                                           java.lang.reflect.Method get,
                                           String key) {
@@ -365,6 +397,34 @@ final class ProjectorExtras {
             Log.w(TAG, "keystone write failed: " + key, error);
             return false;
         }
+    }
+    // ---------------- HDMI ARC ----------------
+
+    static final String ARC_ENABLED = "hdmi_arc_control_enabled";
+
+    /**
+     * HDMI ARC on/off. Verified key on the 8054: Settings.Global
+     * hdmi_arc_control_enabled (currently 1). eARC has no equivalent switch:
+     * only informational g_audio__earc_info_* fields exist, so no eARC toggle
+     * is offered rather than inventing one.
+     */
+    static void installArc(Context context, PreferenceGroup parent, int order) {
+        if (parent == null) return;
+        SwitchPreference arc = new SwitchPreference(context);
+        arc.setKey("projectorsoft_arc_enabled");
+        arc.setTitle("HDMI ARC");
+        arc.setSummary("Возврат звука на ресивер по тому же HDMI-кабелю.");
+        arc.setOrder(order);
+        arc.setPersistent(false);
+        arc.setChecked(Settings.Global.getInt(context.getContentResolver(), ARC_ENABLED, 1) == 1);
+        arc.setOnPreferenceChangeListener((pref, value) -> {
+            boolean on = value instanceof Boolean && (Boolean) value;
+            Settings.Global.putInt(context.getContentResolver(), ARC_ENABLED, on ? 1 : 0);
+            int read = Settings.Global.getInt(context.getContentResolver(), ARC_ENABLED, -1);
+            ((SwitchPreference) pref).setChecked(read == 1);
+            return false;
+        });
+        parent.addPreference(arc);
     }
     // ---------------- HDMI-CEC ----------------
 

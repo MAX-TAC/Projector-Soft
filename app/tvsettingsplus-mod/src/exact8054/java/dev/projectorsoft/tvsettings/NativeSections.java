@@ -165,18 +165,22 @@ public final class NativeSections {
             guarded("hdmi-ports", () -> OemHdmiPortInfo.install(context, inputs, Preference.class));
             if(inputs.getPreferenceCount()==0)info(inputs,"inputs-unavailable","Источники","Нет подтверждённого маршрута");
             guarded("boot-destination",()->NativeBootDestination.install(context,screen));
-            link(screen, NativePage.HDMI_CEC, 200);
-            guarded("hdmi-autoplay",()->OemHdmiAutoPlayHook.install(context,screen,Preference.class));
-            Preference autoplay = screen.findPreference(OemHdmiAutoPlayHook.KEY);
+            // Everything below the boot source is grouped under one heading so
+            // the screen has two clear blocks.
+            PreferenceCategory extras = group(screen, "sources_extras",
+                    "Дополнительные настройки");
+            extras.setOrder(500);
+            link(extras, NativePage.HDMI_CEC, 200);
+            guarded("hdmi-autoplay",()->OemHdmiAutoPlayHook.install(
+                    context,extras,Preference.class));
+            Preference autoplay = extras.findPreference(OemHdmiAutoPlayHook.KEY);
             if (autoplay != null) autoplay.setTitle("Автопереключение HDMI");
-            // The EDID selector has no per-port meaning on 8054 (two ports, no
-            // port argument in the OEM query), so it is only offered on 8052.
-            if (!"8054".equals(OemHdmiPortInfo.machineId())) {
-                guarded("hdmi-edid",()->OemHdmiEdidHook.install(context,screen,Preference.class));
-                Preference edid = screen.findPreference(OemHdmiEdidHook.STATUS_KEY);
-                if (edid != null) edid.setOrder(290);
-            }
-            ProjectorExtras.installSources(context,screen);
+            guarded("hdmi-edid",()->OemHdmiEdidHook.install(
+                    context,extras,Preference.class));
+            Preference edid = extras.findPreference(OemHdmiEdidHook.STATUS_KEY);
+            if (edid != null) edid.setOrder(290);
+            ProjectorExtras.installArc(context, extras, 285);
+            ProjectorExtras.installSources(context, extras);
         }
 
         @Override public void onResume(){
@@ -415,10 +419,7 @@ public final class NativeSections {
             // Device rename already exists inside the genuine AboutFragment.
             // CPU is injected into the bottom of About via its own lifecycle.
             stock(screen,"time","Дата и время","system.DateTimeActivity");
-            stock(screen,"language","Язык и ввод","system.LanguageActivity");
-            // LanguageActivity on TV only offers the language list; keyboard
-            // selection and settings live on their own stock screen.
-            stock(screen,"keyboard","Клавиатура и способы ввода","inputmethod.KeyboardActivity");
+            link(screen, NativePage.LANGUAGE_INPUT, 15);
             stock(screen,"location","Местоположение","system.LocationActivity");
             stock(screen,"accounts","Учётные записи","accounts.AccountsActivity");
             stock(screen,"storage","Хранилище","device.StorageResetActivity");
@@ -430,6 +431,18 @@ public final class NativeSections {
         }
     }
 
+    /**
+     * Language and input: two rows, mirroring a normal Android TV layout.
+     * The stock LanguageActivity is only the language picker, so it is reached
+     * from the first row instead of standing in for the whole screen.
+     */
+    public static final class LanguageInput extends Page {
+        @Override NativePage section(){return NativePage.LANGUAGE_INPUT;}
+        @Override void populate(PreferenceScreen screen){
+            stock(screen,"language_system","Язык системы","system.LanguageActivity");
+            stock(screen,"keyboard_input","Клавиатура и способы ввода","inputmethod.KeyboardActivity");
+        }
+    }
     public static final class About extends Page {
         @Override NativePage section(){return NativePage.ABOUT;}
         @Override void populate(PreferenceScreen screen){

@@ -7,23 +7,24 @@ import android.media.AudioTrack;
 import android.media.audiofx.Equalizer;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
 import androidx.preference.ListPreference;
 import androidx.preference.PreferenceGroup;
-
+import androidx.preference.PreferenceViewHolder;
+import androidx.preference.SeekBarPreference;
 
 /**
  * AudioFlinger-level equalizer that works on every output, including Bluetooth.
  *
- * Why this exists: the OEM five-band panel wrote g_fusion_sound__* keys that
- * configure the MediaTek DSP only; over Bluetooth nothing changed because the
- * BT stream leaves AudioFlinger before that DSP. android.media.audiofx.Equalizer
- * binds to an AudioFlinger session instead, so it applies to whatever output is
- * active. Verified audible on the 8054 with a BT soundbar.
+ * The OEM five-band panel wrote g_fusion_sound__* keys that configure the
+ * MediaTek DSP only; over Bluetooth nothing changed because the BT stream leaves
+ * AudioFlinger before that DSP. android.media.audiofx.Equalizer binds to an
+ * AudioFlinger session instead, so it applies to whatever output is active.
  *
- * UI shape requested by the owner: no on/off switch. One preset list with
- * "Выключен" first plus five presets, and five band sliders that are editable
- * only while "Пользовательский" is selected. In every other preset the sliders
- * display that preset's curve read-only.
+ * UI: no on/off switch. One preset list (Выключен first, five presets, then
+ * Пользовательский) and five real seek-bar rows that respond to D-pad
+ * left/right. The sliders are editable only in the custom preset; otherwise
+ * they display that preset's curve.
  */
 final class BtEqualizerPanel {
     private static final String TAG = "TvSettingsPlusMOD";
@@ -32,45 +33,32 @@ final class BtEqualizerPanel {
     static final String KEY_BAND = "projectorsoft_eq_band_";
     static final String[] BAND_LABELS = {"60 Гц", "230 Гц", "910 Гц", "3,6 кГц", "14 кГц"};
 
-    // Preset order matters: index 0 is "off", the last is the editable one.
     private static final String[] PRESET_NAMES = {
             "Выключен", "Ровный", "Бас", "Высокие", "Голос", "Пользовательский"
     };
     private static final short[][] PRESET_BANDS = {
-            {0, 0, 0, 0, 0},                 // Выключен (also silences the effect)
-            {0, 0, 0, 0, 0},                 // Ровный
-            {1200, 600, 0, 0, 0},            // Бас
-            {0, 0, 0, 600, 1200},            // Высокие
-            {-300, 0, 900, 900, 300},        // Голос
-            null                             // Пользовательский — from stored bands
+            {0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0},
+            {1200, 600, 0, 0, 0},
+            {0, 0, 0, 600, 1200},
+            {-300, 0, 900, 900, 300},
+            null
     };
     private static final int CUSTOM = PRESET_NAMES.length - 1;
-    // 11 steps of 300 mB (~3 dB) from -15 dB to +15 dB.
-    private static final String[] LEVEL_LABELS;
-    private static final String[] LEVEL_VALUES;
-    static {
-        int steps = 11;
-        LEVEL_LABELS = new String[steps];
-        LEVEL_VALUES = new String[steps];
-        for (int i = 0; i < steps; i++) {
-            int mB = -1500 + i * 300;
-            LEVEL_VALUES[i] = String.valueOf(mB);
-            LEVEL_LABELS[i] = String.format(java.util.Locale.getDefault(), "%+.1f дБ", mB / 100f);
-        }
-    }
     private static final int OFF = 0;
+    static final int LEVEL_MIN = -1500;
+    static final int LEVEL_MAX = 1500;
 
     private final Context context;
     private AudioTrack track;
     private Equalizer equalizer;
     private ListPreference presetRow;
-    private final ListPreference[] bandRows = new ListPreference[BAND_LABELS.length];
+    private final BandRow[] bandRows = new BandRow[BAND_LABELS.length];
 
     BtEqualizerPanel(Context context) {
         this.context = context;
     }
 
-    /** Builds the preset list and the five band sliders. */
     void install(PreferenceGroup parent) {
         if (parent == null) return;
 
@@ -103,29 +91,26 @@ final class BtEqualizerPanel {
         parent.addPreference(presetRow);
 
         for (int band = 0; band < BAND_LABELS.length; band++) {
-            ListPreference row = new ListPreference(context);
+            BandRow row = new BandRow(context);
             row.setKey(KEY_BAND + band);
             row.setTitle(BAND_LABELS[band]);
             row.setOrder(110 + band);
             row.setPersistent(false);
-            // A seek bar does not respond to D-pad left/right on Android TV, so the
-            // level is chosen from a plain list and the dialog handles focus.
-            row.setEntries(LEVEL_LABELS);
-            row.setEntryValues(LEVEL_VALUES);
-            row.setValue(String.valueOf(storedBand(band, 0)));
+            // These two calls are what makes the bar respond to D-pad arrows:
+            // a step of 1 and no continuous drag updates.
+            row.setSeekBarIncrement(1);
+            row.setUpdatesContinuously(false);
+            row.setMin(LEVEL_MIN);
+            row.setMax(LEVEL_MAX);
+            row.setShowSeekBarValue(true);
+            row.setValue(storedBand(band, 0));
             row.setEnabled(current == CUSTOM);
             final int index = band;
             row.setOnPreferenceChangeListener((pref, value) -> {
-                int level;
-                try {
-                    level = Integer.parseInt(String.valueOf(value));
-                } catch (NumberFormatException bad) {
-                    return false;
-                }
+                if (!(value instanceof Integer)) return false;
+                int level = (Integer) value;
                 Settings.Global.putInt(context.getContentResolver(), KEY_BAND + index, level);
                 Settings.Global.putInt(context.getContentResolver(), KEY_PRESET, CUSTOM);
-                ((ListPreference) pref).setValue(String.valueOf(level));
-                ((ListPreference) pref).setSummary(levelLabel(level));
                 if (presetRow != null) {
                     presetRow.setValue(String.valueOf(CUSTOM));
                     presetRow.setSummary(PRESET_NAMES[CUSTOM]);
@@ -136,17 +121,30 @@ final class BtEqualizerPanel {
             bandRows[band] = row;
             parent.addPreference(row);
         }
-
-        // Reflect the saved preset on the sliders at first paint.
         syncRows(current);
     }
 
-    /** Called from the page onStart: keep a silent session only when not off. */
+    /** Sliders editable only in the custom preset; elsewhere they mirror it. */
+    private void syncRows(int preset) {
+        boolean editable = preset == CUSTOM;
+        short[] curve = presetBandsSafe(preset);
+        for (int band = 0; band < bandRows.length; band++) {
+            BandRow row = bandRows[band];
+            if (row == null) continue;
+            row.setEnabled(editable);
+            if (!editable && curve != null && band < curve.length) {
+                row.setValue(curve[band]);
+            } else if (editable) {
+                row.setValue(storedBand(band, 0));
+            }
+            row.refreshBars();
+        }
+    }
+
     void start() {
         if (storedPreset() != OFF) ensureSession();
     }
 
-    /** Called from onStop: never keep an audio track alive in the background. */
     void stop() {
         if (equalizer != null) {
             try { equalizer.setEnabled(false); } catch (Throwable ignored) { }
@@ -160,7 +158,6 @@ final class BtEqualizerPanel {
         }
     }
 
-    /** Re-reads stored state so the page never shows a stale preset. */
     void refresh(PreferenceGroup parent) {
         if (parent == null) return;
         int current = storedPreset();
@@ -172,39 +169,11 @@ final class BtEqualizerPanel {
         syncRows(current);
     }
 
-    // ---------------- rows ----------------
-
-    /** Sliders are editable only in the custom preset; elsewhere they mirror it. */
-    private void syncRows(int preset) {
-        boolean editable = preset == CUSTOM;
-        short[] curve = presetBandsSafe(preset);
-        for (int band = 0; band < bandRows.length; band++) {
-            ListPreference row = bandRows[band];
-            if (row == null) continue;
-            row.setEnabled(editable);
-            if (!editable && curve != null && band < curve.length) {
-                int level = curve[band];
-                row.setValue(String.valueOf(level));
-                row.setSummary(levelLabel(level));
-            } else if (editable) {
-                int level = storedBand(band, 0);
-                row.setValue(String.valueOf(level));
-                row.setSummary(levelLabel(level));
-            }
-        }
-    }
-
-    private static String levelLabel(int mB) {
-        return String.format(java.util.Locale.getDefault(), "%+.1f дБ", mB / 100f);
-    }
-
     private short[] presetBandsSafe(int preset) {
         if (preset < 0 || preset >= PRESET_BANDS.length) return PRESET_BANDS[0];
         if (PRESET_BANDS[preset] != null) return PRESET_BANDS[preset];
         short[] custom = new short[BAND_LABELS.length];
-        for (int band = 0; band < custom.length; band++) {
-            custom[band] = (short) storedBand(band, 0);
-        }
+        for (int band = 0; band < custom.length; band++) custom[band] = (short) storedBand(band, 0);
         return custom;
     }
 
@@ -271,10 +240,7 @@ final class BtEqualizerPanel {
             }
             return;
         }
-        if (preset == CUSTOM) {
-            applyCustom();
-            return;
-        }
+        if (preset == CUSTOM) { applyCustom(); return; }
         ensureSession();
         if (equalizer == null) return;
         short[] curve = PRESET_BANDS[preset];
@@ -298,6 +264,19 @@ final class BtEqualizerPanel {
             equalizer.setEnabled(true);
         } catch (Throwable error) {
             Log.w(TAG, "eq custom failed", error);
+        }
+    }
+
+    /** Seek bar that repaints itself after a programmatic value change. */
+    private static final class BandRow extends SeekBarPreference {
+        BandRow(Context context) { super(context); }
+        void refreshBars() { notifyChanged(); }
+        @Override public void onBindViewHolder(PreferenceViewHolder holder) {
+            super.onBindViewHolder(holder);
+            int id = getContext().getResources().getIdentifier(
+                    "seekbar", "id", getContext().getPackageName());
+            View bar = id == 0 ? null : holder.findViewById(id);
+            if (bar != null) bar.setVisibility(View.VISIBLE);
         }
     }
 }

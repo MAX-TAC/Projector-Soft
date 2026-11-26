@@ -139,15 +139,18 @@ final class NativeBootDestination {
             setEntries(offered.values().toArray(new CharSequence[0]));
             setEntryValues(offered.keySet().toArray(new CharSequence[0]));
             String current = backend.read();
-            if (current == null || current.isEmpty()) {
-                unavailable("Источник включения не задан. Изменение недоступно");
-            } else if (!fresh.containsKey(current)) {
-                unavailable("Сохранённый источник не совпадает с доступными вариантами");
-            } else {
+            // An unset property used to disable the whole row, which is why the
+            // owner could never open it. Show "not set" but keep it selectable.
+            boolean known = current != null && !current.isEmpty()
+                    && fresh.containsKey(current);
+            if (known) {
                 setValue(current);
                 setSummary(offered.get(current).replace("%", "%%"));
-                setEnabled(fresh.size() >= 2);
+            } else {
+                setValue(null);
+                setSummary("Не задан · сейчас Android TV");
             }
+            setEnabled(fresh.size() >= 2);
         }
 
         private void unavailable(String reason) {
