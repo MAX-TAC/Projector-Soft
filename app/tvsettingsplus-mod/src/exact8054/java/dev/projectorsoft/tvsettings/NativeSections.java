@@ -195,25 +195,41 @@ public final class NativeSections {
          */
         protected void keyboardRow(PreferenceGroup group) {
             Context context = requireContext();
-            android.view.inputmethod.InputMethodManager imm =
-                    (android.view.inputmethod.InputMethodManager)
-                    context.getSystemService(Context.INPUT_METHOD_SERVICE);
-            android.view.inputmethod.InputMethodInfo info =
-                    imm == null ? null : imm.getCurrentInputMethodInfo();
+            // getCurrentInputMethodInfo() is a hidden method missing from this
+            // framework, so the default IME id comes from Settings.Secure and
+            // the matching InputMethodInfo from the public list.
             String label = "Клавиатура";
             android.content.Intent target = null;
-            if (info != null) {
-                try {
-                    CharSequence name = context.getPackageManager()
-                            .getApplicationLabel(context.getPackageManager()
-                            .getApplicationInfo(info.getPackageName(), 0));
-                    if (name != null && name.length() > 0) label = name.toString();
-                } catch (Throwable ignored) { }
-                String settings = info.getSettingsActivity();
-                if (settings != null && !settings.isEmpty()) {
-                    target = new android.content.Intent(android.content.Intent.ACTION_MAIN)
-                            .setComponent(new ComponentName(info.getPackageName(), settings));
+            try {
+                String defaultId = android.provider.Settings.Secure.getString(
+                        context.getContentResolver(),
+                        android.provider.Settings.Secure.DEFAULT_INPUT_METHOD);
+                android.view.inputmethod.InputMethodManager imm =
+                        (android.view.inputmethod.InputMethodManager)
+                        context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                java.util.List<android.view.inputmethod.InputMethodInfo> all =
+                        imm == null ? null : imm.getInputMethodList();
+                android.view.inputmethod.InputMethodInfo info = null;
+                if (all != null && defaultId != null) {
+                    for (android.view.inputmethod.InputMethodInfo candidate : all) {
+                        if (defaultId.equals(candidate.getId())) { info = candidate; break; }
+                    }
                 }
+                if (info != null) {
+                    try {
+                        CharSequence name = context.getPackageManager()
+                                .getApplicationLabel(context.getPackageManager()
+                                .getApplicationInfo(info.getPackageName(), 0));
+                        if (name != null && name.length() > 0) label = name.toString();
+                    } catch (Throwable ignored) { }
+                    String settings = info.getSettingsActivity();
+                    if (settings != null && !settings.isEmpty()) {
+                        target = new android.content.Intent(android.content.Intent.ACTION_MAIN)
+                                .setComponent(new ComponentName(info.getPackageName(), settings));
+                    }
+                }
+            } catch (Throwable unavailable) {
+                android.util.Log.w("TvSettingsPlusMOD", "keyboard info unavailable", unavailable);
             }
             Preference row = new Preference(context);
             row.setKey("projectorsoft_keyboard_current");
