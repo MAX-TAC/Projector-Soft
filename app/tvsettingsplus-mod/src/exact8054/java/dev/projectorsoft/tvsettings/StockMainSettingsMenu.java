@@ -31,6 +31,7 @@ public final class StockMainSettingsMenu {
         if (screen == null) return;
         NativeOverlayWindow.apply(fragment.getActivity());
         StockAboutTemperatureBridge.install(fragment.getActivity());
+        KeyboardScreenHook.install(fragment.getActivity());
         PreferenceCategory added = null;
         try {
             Preference header = screen.findPreference("general_settings");
