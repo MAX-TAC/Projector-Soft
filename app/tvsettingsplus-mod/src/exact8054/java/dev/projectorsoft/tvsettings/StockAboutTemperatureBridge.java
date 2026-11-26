@@ -44,9 +44,9 @@ final class StockAboutTemperatureBridge {
             if (cpu == null) return;
             cpu.setSummary(OemCpuTemperature.read(page.requireContext()));
             Preference lcd = screen.findPreference(KEY_LCD);
-            if (lcd != null) lcd.setSummary(OemCpuTemperature.readLcd());
+            if (lcd != null) lcd.setSummary(OemCpuTemperature.readLcd(page.requireContext()));
             Preference led = screen.findPreference(KEY_LED);
-            if (led != null) led.setSummary(OemCpuTemperature.readLed());
+            if (led != null) led.setSummary(OemCpuTemperature.readLed(page.requireContext()));
             MAIN.postDelayed(this, 2000);
         }
     };

@@ -35,18 +35,18 @@ final class OemCpuTemperature {
     }
 
     /** LCD panel temperature, or a marker when the sensor is absent. */
-    static String readLcd() {
+    static String readLcd(Context context) {
         if (!"8054".equals(OemHdmiPortInfo.machineId())) return "Недоступно";
-        Double direct = viaTrd("getTemperatueLCD");
+        Double direct = viaTrd(context, "getTemperatueLCD");
         if (direct != null) return display(direct);
         Double zone = fromZone("lcd", "panel", "lvds", "display");
         return zone != null ? display(zone) : "Датчик панели недоступен";
     }
 
     /** LED light-source temperature, or a marker when the sensor is absent. */
-    static String readLed() {
+    static String readLed(Context context) {
         if (!"8054".equals(OemHdmiPortInfo.machineId())) return "Недоступно";
-        Double direct = viaTrd("getTemperatueLED");
+        Double direct = viaTrd(context, "getTemperatueLED");
         if (direct != null) return display(direct);
         Double zone = fromZone("led", "light", "lamp", "laser");
         return zone != null ? display(zone) : "Датчик LED недоступен";
@@ -55,7 +55,7 @@ final class OemCpuTemperature {
     /** Ambient/air temperature, or a marker when the sensor is absent. */
     static String readAmbient() {
         if (!"8054".equals(OemHdmiPortInfo.machineId())) return "Недоступно";
-        Double direct = viaTrd("getTemperatueAMB");
+        Double direct = viaTrd(context, "getTemperatueAMB");
         if (direct != null) return display(direct);
         Double zone = fromZone("amb", "ambient", "env");
         return zone != null ? display(zone) : "Датчик воздуха недоступен";
@@ -94,8 +94,8 @@ final class OemCpuTemperature {
      * HwTrd may expose the controller statically or per instance, so both are
      * attempted; a failure on one shape must not poison the other.
      */
-    private static Double viaTrd(String getter) {
-        Object controller = temperatureController();
+    private static Double viaTrd(Context context, String getter) {
+        Object controller = temperatureController(context);
         if (controller == null) return null;
         try {
             Object value = controller.getClass().getMethod(getter).invoke(controller);
@@ -106,7 +106,12 @@ final class OemCpuTemperature {
         }
     }
 
-    private static Object temperatureController() {
+    private static Object temperatureController(Context context) {
+        // The TRD API lives inside /vendor/priv-app/trdmiddle/trdmiddle.apk, not
+        // on the boot classpath, so a plain Class.forName cannot see it. Load it
+        // through its own dex first.
+        Object loaded = controllerFromApk(context);
+        if (loaded != null) return loaded;
         // 1) Static accessor on HwTrd (the documented shape).
         try {
             Class<?> hw = Class.forName("com.trd.android.api.HwTrd");
@@ -151,6 +156,28 @@ final class OemCpuTemperature {
     }
 
     /** TRD getters return int/float/Integer/String depending on firmware. */
+    /** Loads HwTrd out of trdmiddle.apk and asks it for the temperature control. */
+    private static Object controllerFromApk(Context context) {
+        if (context == null) return null;
+        String[] candidates = {
+                "/vendor/priv-app/trdmiddle/trdmiddle.apk",
+                "/system/priv-app/trdmiddle/trdmiddle.apk"
+        };
+        for (String path : candidates) {
+            if (!new java.io.File(path).exists()) continue;
+            try {
+                ClassLoader loader = new dalvik.system.DexClassLoader(
+                        path, context.getCodeCacheDir().getAbsolutePath(), null,
+                        context.getClassLoader());
+                Class<?> hw = loader.loadClass("com.trd.android.api.HwTrd");
+                Object ctrl = hw.getMethod("getTemperatureCtrl").invoke(null);
+                if (ctrl != null) return ctrl;
+            } catch (Throwable error) {
+                Log.d(TAG, "trdmiddle not loadable from " + path, error);
+            }
+        }
+        return null;
+    }
     private static Double asTemperature(Object value) {
         if (value == null) return null;
         double numeric;
