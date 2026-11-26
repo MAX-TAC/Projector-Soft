@@ -28,7 +28,16 @@ public final class Projection8054Policy {
     }
 
     static boolean canDisableMovement(String screen, String obstacle, String vertical) {
-        return "0".equals(screen) && "0".equals(obstacle) && "0".equals(vertical);
+        // An unreadable property must not read as a conflict: that left the
+        // switch permanently disabled on the 8054 where these getters can
+        // return an empty string. Only an explicit non-zero blocks it.
+        return clear(screen) && clear(obstacle) && clear(vertical);
+    }
+
+    private static boolean clear(String value) {
+        if (value == null) return true;
+        String text = value.trim();
+        return text.isEmpty() || "0".equals(text) || "0.0".equals(text);
     }
 
     static boolean mayUseOemToggle(String machine, boolean system, boolean enabled,

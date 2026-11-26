@@ -29,7 +29,7 @@ enum NativePage {
     COLOR_TEMPERATURE("Цветовая температура",ColorTemperatureSettingsActivity.class,NativeSections.ColorTemperature.class.getName());
 
     static final List<NativePage> ROOT = List.of(NETWORK, BLUETOOTH, SOURCES, PROJECTION,
-            PICTURE, SOUND, APPS, SYSTEM);
+            PICTURE, SOUND, APPS, SYSTEM, POWER);
 
     final String title;
     final Class<? extends Activity> activity;

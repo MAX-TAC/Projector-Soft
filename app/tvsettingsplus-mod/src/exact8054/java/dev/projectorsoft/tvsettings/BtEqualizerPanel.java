@@ -9,7 +9,7 @@ import android.provider.Settings;
 import android.util.Log;
 import androidx.preference.ListPreference;
 import androidx.preference.PreferenceGroup;
-import androidx.preference.SeekBarPreference;
+
 
 /**
  * AudioFlinger-level equalizer that works on every output, including Bluetooth.
@@ -45,13 +45,26 @@ final class BtEqualizerPanel {
             null                             // Пользовательский — from stored bands
     };
     private static final int CUSTOM = PRESET_NAMES.length - 1;
+    // 11 steps of 300 mB (~3 dB) from -15 dB to +15 dB.
+    private static final String[] LEVEL_LABELS;
+    private static final String[] LEVEL_VALUES;
+    static {
+        int steps = 11;
+        LEVEL_LABELS = new String[steps];
+        LEVEL_VALUES = new String[steps];
+        for (int i = 0; i < steps; i++) {
+            int mB = -1500 + i * 300;
+            LEVEL_VALUES[i] = String.valueOf(mB);
+            LEVEL_LABELS[i] = String.format(java.util.Locale.getDefault(), "%+.1f дБ", mB / 100f);
+        }
+    }
     private static final int OFF = 0;
 
     private final Context context;
     private AudioTrack track;
     private Equalizer equalizer;
     private ListPreference presetRow;
-    private final SeekBarPreference[] bandRows = new SeekBarPreference[BAND_LABELS.length];
+    private final ListPreference[] bandRows = new ListPreference[BAND_LABELS.length];
 
     BtEqualizerPanel(Context context) {
         this.context = context;
@@ -89,25 +102,30 @@ final class BtEqualizerPanel {
         });
         parent.addPreference(presetRow);
 
-        int defaultLevel = 0;
         for (int band = 0; band < BAND_LABELS.length; band++) {
-            SeekBarPreference row = new SeekBarPreference(context);
+            ListPreference row = new ListPreference(context);
             row.setKey(KEY_BAND + band);
             row.setTitle(BAND_LABELS[band]);
             row.setOrder(110 + band);
             row.setPersistent(false);
-            row.setMin(-1500);
-            row.setMax(1500);
-            row.setShowSeekBarValue(true);
-            row.setValue(storedBand(band, defaultLevel));
+            // A seek bar does not respond to D-pad left/right on Android TV, so the
+            // level is chosen from a plain list and the dialog handles focus.
+            row.setEntries(LEVEL_LABELS);
+            row.setEntryValues(LEVEL_VALUES);
+            row.setValue(String.valueOf(storedBand(band, 0)));
             row.setEnabled(current == CUSTOM);
             final int index = band;
             row.setOnPreferenceChangeListener((pref, value) -> {
-                if (!(value instanceof Integer)) return false;
-                int level = (Integer) value;
+                int level;
+                try {
+                    level = Integer.parseInt(String.valueOf(value));
+                } catch (NumberFormatException bad) {
+                    return false;
+                }
                 Settings.Global.putInt(context.getContentResolver(), KEY_BAND + index, level);
-                // Moving a slider only makes sense in the custom preset.
                 Settings.Global.putInt(context.getContentResolver(), KEY_PRESET, CUSTOM);
+                ((ListPreference) pref).setValue(String.valueOf(level));
+                ((ListPreference) pref).setSummary(levelLabel(level));
                 if (presetRow != null) {
                     presetRow.setValue(String.valueOf(CUSTOM));
                     presetRow.setSummary(PRESET_NAMES[CUSTOM]);
@@ -161,13 +179,23 @@ final class BtEqualizerPanel {
         boolean editable = preset == CUSTOM;
         short[] curve = presetBandsSafe(preset);
         for (int band = 0; band < bandRows.length; band++) {
-            SeekBarPreference row = bandRows[band];
+            ListPreference row = bandRows[band];
             if (row == null) continue;
             row.setEnabled(editable);
             if (!editable && curve != null && band < curve.length) {
-                row.setValue(curve[band]);
+                int level = curve[band];
+                row.setValue(String.valueOf(level));
+                row.setSummary(levelLabel(level));
+            } else if (editable) {
+                int level = storedBand(band, 0);
+                row.setValue(String.valueOf(level));
+                row.setSummary(levelLabel(level));
             }
         }
+    }
+
+    private static String levelLabel(int mB) {
+        return String.format(java.util.Locale.getDefault(), "%+.1f дБ", mB / 100f);
     }
 
     private short[] presetBandsSafe(int preset) {

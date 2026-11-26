@@ -152,6 +152,11 @@ public final class StockMainSettingsMenu {
                     line(canvas, 3, 9, 7, 9, 12, 5, 12, 19, 7, 15, 3, 15, 3, 9);
                     canvas.drawArc(10, 5, 22, 19, -47, 94, false, paint);
                     break;
+                case POWER:
+                    // Power glyph: open circle with a vertical bar.
+                    canvas.drawArc(5, 6, 19, 20, -60, 300, false, paint);
+                    line(canvas, 12, 3, 12, 11);
+                    break;
                 default:
                     break;
             }

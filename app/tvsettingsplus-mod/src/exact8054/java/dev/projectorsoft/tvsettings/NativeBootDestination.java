@@ -22,9 +22,34 @@ final class NativeBootDestination {
         if (!"8054".equals(OemHdmiPortInfo.machineId())) return Collections.emptyMap();
         Map<String, String> result = new LinkedHashMap<>();
         result.put("HOME", "Android TV");
-        result.putAll(OemHdmiPortInfo.bootPorts(context));
+        Map<String, String> ports = OemHdmiPortInfo.bootPorts(context);
+        if (ports.isEmpty()) {
+            // The OEM Build fields are not always populated, and the owner
+            // asked to pick a boot source even with nothing plugged in, so
+            // fall back to the declared port list from the system property.
+            ports = declaredPorts();
+        }
+        result.putAll(ports);
         for (Map.Entry<String, String> entry : new TreeMap<>(OemPowerOnAppHook.candidates(context)).entrySet())
             result.putIfAbsent(entry.getKey(), "Приложение · " + entry.getValue());
+        return result;
+    }
+
+    /** Reads ro.rjpj.hdmi.ports ("HW6:HDMI1,HW7:HDMI2") into id->label. */
+    private static Map<String, String> declaredPorts() {
+        Map<String, String> result = new LinkedHashMap<>();
+        try {
+            String raw = (String) Class.forName("android.os.SystemProperties")
+                    .getMethod("get", String.class, String.class)
+                    .invoke(null, "ro.rjpj.hdmi.ports", "");
+            if (raw != null) for (String part : raw.split(",")) {
+                String[] pair = part.trim().split(":");
+                if (pair.length == 2 && !pair[0].isEmpty())
+                    result.put(pair[0], pair[1]);
+            }
+        } catch (Throwable error) {
+            Log.w(TAG, "declared HDMI ports unreadable", error);
+        }
         return result;
     }
 

@@ -38,6 +38,7 @@ final class OemCpuTemperature {
     static String readLcd(Context context) {
         if (!"8054".equals(OemHdmiPortInfo.machineId())) return "Недоступно";
         Double direct = viaTrd(context, "getTemperatueLCD");
+        Log.i(TAG, "LCD via TRD=" + direct);
         if (direct != null) return display(direct);
         Double zone = fromZone("lcd", "panel", "lvds", "display");
         return zone != null ? display(zone) : "Датчик панели недоступен";
@@ -47,6 +48,7 @@ final class OemCpuTemperature {
     static String readLed(Context context) {
         if (!"8054".equals(OemHdmiPortInfo.machineId())) return "Недоступно";
         Double direct = viaTrd(context, "getTemperatueLED");
+        Log.i(TAG, "LED via TRD=" + direct);
         if (direct != null) return display(direct);
         Double zone = fromZone("led", "light", "lamp", "laser");
         return zone != null ? display(zone) : "Датчик LED недоступен";
@@ -101,7 +103,7 @@ final class OemCpuTemperature {
             Object value = controller.getClass().getMethod(getter).invoke(controller);
             return asTemperature(value);
         } catch (Throwable error) {
-            Log.d(TAG, "TRD " + getter + " unavailable", error);
+            Log.i(TAG, "TRD " + getter + " unavailable: " + error);
             return null;
         }
     }
@@ -112,6 +114,7 @@ final class OemCpuTemperature {
         // through its own dex first.
         Object loaded = controllerFromApk(context);
         if (loaded != null) return loaded;
+        Log.i(TAG, "TRD temperature controller not found via APK");
         // 1) Static accessor on HwTrd (the documented shape).
         try {
             Class<?> hw = Class.forName("com.trd.android.api.HwTrd");
@@ -173,7 +176,7 @@ final class OemCpuTemperature {
                 Object ctrl = hw.getMethod("getTemperatureCtrl").invoke(null);
                 if (ctrl != null) return ctrl;
             } catch (Throwable error) {
-                Log.d(TAG, "trdmiddle not loadable from " + path, error);
+                Log.i(TAG, "trdmiddle load failed from " + path + ": " + error);
             }
         }
         return null;

@@ -345,11 +345,12 @@ public final class NativeSections {
             // NativeAudioOutputReadout used to add a second, read-only
             // "Устройство вывода звука" row above the real dropdown. Removed.
             link(screen, NativePage.EQUALIZER, 200);
-            ProjectorExtras.installOutputChoice(context, screen);
+            // Audio output switching and speaker duplication were removed:
+            // setPreferredDevicesForStrategy returns false on this board, so the
+            // controls only reported failure to the user.
             guarded("sound-processing", () -> OemInlinePreferencesHook.populateSoundProcessing(
                     context, screen, Preference.class));
             OemAdvancedSoundRoutes.install(context, screen, Preference.class);
-            ProjectorExtras.installSound(context, screen);
             // SPDIF delay already lives on the OEM digital-output screen; do not
             // expose a second editor for the same setting on the Sound root.
             if (OemKeyToneHook.install(context, screen, Preference.class)) {
@@ -415,10 +416,13 @@ public final class NativeSections {
             // CPU is injected into the bottom of About via its own lifecycle.
             stock(screen,"time","Дата и время","system.DateTimeActivity");
             stock(screen,"language","Язык и ввод","system.LanguageActivity");
+            // LanguageActivity on TV only offers the language list; keyboard
+            // selection and settings live on their own stock screen.
+            stock(screen,"keyboard","Клавиатура и способы ввода","inputmethod.KeyboardActivity");
             stock(screen,"location","Местоположение","system.LocationActivity");
             stock(screen,"accounts","Учётные записи","accounts.AccountsActivity");
             stock(screen,"storage","Хранилище","device.StorageResetActivity");
-            link(screen, NativePage.POWER, 20);
+            // Power moved to the main screen at the owner request.
             // Empty EnterprisePrivacy screen is not relevant on this exact 8054.
             stock(screen,"security","Безопасность","system.SecurityActivity");
             stock(screen,"accessibility","Специальные возможности","oemlink.AccessibilitySettingsActivity");
@@ -435,7 +439,24 @@ public final class NativeSections {
             info(screen,"kernel","Ядро",java.lang.System.getProperty("os.version","Нет данных"));
             String machine = OemHdmiPortInfo.machineId();
             info(screen,"hardware","Аппаратная ревизия",machine.isEmpty()?"Нет данных":machine);
+            // Live temperatures live here rather than only in the stock About
+            // fragment, which is a separate activity the bridge cannot reach.
+            info(screen, "projectorsoft_temp_cpu", "Температура CPU", OemCpuTemperature.read(context));
+            info(screen, "projectorsoft_temp_lcd", "Температура матрицы", OemCpuTemperature.readLcd(context));
+            info(screen, "projectorsoft_temp_led", "Температура LED", OemCpuTemperature.readLed(context));
             link(screen, NativePage.HARDWARE, 400);
+        }
+        @Override public void onResume() {
+            super.onResume();
+            PreferenceScreen screen = getPreferenceScreen();
+            if (screen == null) return;
+            Context context = requireContext();
+            Preference cpu = screen.findPreference("projectorsoft_temp_cpu");
+            if (cpu != null) cpu.setSummary(OemCpuTemperature.read(context));
+            Preference lcd = screen.findPreference("projectorsoft_temp_lcd");
+            if (lcd != null) lcd.setSummary(OemCpuTemperature.readLcd(context));
+            Preference led = screen.findPreference("projectorsoft_temp_led");
+            if (led != null) led.setSummary(OemCpuTemperature.readLed(context));
         }
     }
 
@@ -452,7 +473,9 @@ public final class NativeSections {
             Context context = requireContext();
             OemAcPowerBootHook.install(context,screen,Preference.class);
             OemStockUserSettings.installSwitchOffTimer(context,screen,Preference.class);
-            OemScreenTimeoutSafetyHook.installStatus(context,screen,Preference.class);
+            // "Сон экрана и заставка" removed at the owner request: the screen
+            // policy already forces screen-never-off, and this row only
+            // restated it. The safety hook still runs at boot elsewhere.
         }
     }
 
