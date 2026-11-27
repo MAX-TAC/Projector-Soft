@@ -31,7 +31,6 @@ public final class NativeBluetoothPage extends AccessoriesFragment {
     static final String ADD = "add_accessory";
     static final String WARNING = "Отключение Bluetooth может разорвать соединение с пультом управления "
             + "и подключёнными аудиоустройствами. Продолжить?";
-    private static final String BLOCKED = "Способ управления без Bluetooth не подтверждён";
     private static final String TAG = "TvSettingsPlusMOD";
 
     private final Handler handler = new Handler(Looper.getMainLooper());
@@ -39,9 +38,11 @@ public final class NativeBluetoothPage extends AccessoriesFragment {
     private SwitchPreference toggle;
     private boolean registered;
     private boolean enabling;
+    private boolean disabling;
     private final Runnable enableTimeout = () -> {
         enabling = false;
-        refreshToggle("Включение Bluetooth не подтверждено");
+        disabling = false;
+        refreshToggle("Изменение Bluetooth не подтверждено");
     };
     private final BroadcastReceiver changes = new BroadcastReceiver() {
         @Override public void onReceive(Context context, Intent intent) {
@@ -110,6 +111,7 @@ public final class NativeBluetoothPage extends AccessoriesFragment {
         }
         handler.removeCallbacks(enableTimeout);
         enabling = false;
+        disabling = false;
         super.onStop();
     }
 
@@ -145,9 +147,20 @@ public final class NativeBluetoothPage extends AccessoriesFragment {
             if (adapter == null || !mayChange(requireContext())) {
                 refreshToggle("Изменение Bluetooth недоступно");
             } else if (!enable && adapter.getState() == BluetoothAdapter.STATE_ON) {
-                new AlertDialog.Builder(requireContext())
-                        .setMessage(WARNING + "\n\n" + BLOCKED + ".")
-                        .setNeutralButton(android.R.string.ok, null).show();
+                AlertDialog dialog = new AlertDialog.Builder(requireContext())
+                        .setTitle("Отключить Bluetooth?")
+                        .setMessage(WARNING)
+                        .setView(independentControl())
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .setPositiveButton("Отключить", (item, which) -> disableNow())
+                        .create();
+                dialog.setOnShowListener(item -> {
+                    android.widget.CheckBox checkbox = dialog.findViewById(android.R.id.checkbox);
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                    checkbox.setOnCheckedChangeListener((button, checked) ->
+                            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(checked));
+                });
+                dialog.show();
                 refreshToggle(null);
             } else if (enable && adapter.getState() == BluetoothAdapter.STATE_OFF) {
                 enabling = adapter.enable();
@@ -160,6 +173,31 @@ public final class NativeBluetoothPage extends AccessoriesFragment {
         }
     }
 
+    private android.widget.CheckBox independentControl() {
+        android.widget.CheckBox checkbox = new android.widget.CheckBox(requireContext());
+        checkbox.setId(android.R.id.checkbox);
+        checkbox.setText("Есть проверенный ИК-пульт или USB-клавиатура для повторного включения Bluetooth");
+        return checkbox;
+    }
+
+    @SuppressWarnings("deprecation")
+    private void disableNow() {
+        try {
+            BluetoothAdapter adapter = adapter();
+            if (adapter == null || !mayChange(requireContext())
+                    || adapter.getState() != BluetoothAdapter.STATE_ON) {
+                refreshToggle("Состояние Bluetooth изменилось");
+                return;
+            }
+            disabling = adapter.disable();
+            if (disabling) handler.postDelayed(enableTimeout, 15000);
+            refreshToggle(disabling ? null : "Не удалось отключить Bluetooth");
+        } catch (RuntimeException refused) {
+            refreshToggle("Не удалось отключить Bluetooth");
+            Log.w(TAG, "Bluetooth disable refused", refused);
+        }
+    }
+
     private void refreshToggle(String failure) {
         if (toggle == null || !isAdded()) return;
         try {
@@ -169,13 +207,17 @@ public final class NativeBluetoothPage extends AccessoriesFragment {
                 enabling = false;
                 handler.removeCallbacks(enableTimeout);
             }
+            if (state == BluetoothAdapter.STATE_OFF && disabling) {
+                disabling = false;
+                handler.removeCallbacks(enableTimeout);
+            }
             toggle.setChecked(state == BluetoothAdapter.STATE_ON || state == BluetoothAdapter.STATE_TURNING_OFF);
-            toggle.setEnabled(!enabling && mayChange(requireContext())
+            toggle.setEnabled(!enabling && !disabling && mayChange(requireContext())
                     && (state == BluetoothAdapter.STATE_ON || state == BluetoothAdapter.STATE_OFF));
             String summary;
             if (state == BluetoothAdapter.STATE_TURNING_ON || enabling) summary = "Включается…";
-            else if (state == BluetoothAdapter.STATE_TURNING_OFF) summary = "Выключается…";
-            else if (state == BluetoothAdapter.STATE_ON) summary = BLOCKED;
+            else if (state == BluetoothAdapter.STATE_TURNING_OFF || disabling) summary = "Выключается…";
+            else if (state == BluetoothAdapter.STATE_ON) summary = "Включён";
             else if (state == BluetoothAdapter.STATE_OFF) summary = "Выключен";
             else summary = "Состояние Bluetooth недоступно";
             toggle.setSummary(failure == null ? summary : failure);

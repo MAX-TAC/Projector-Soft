@@ -56,8 +56,8 @@ public final class Projection8054PolicyTest {
         check(!Projection8054Policy.canDisableMovement("1", "0", "0"));
         check(!Projection8054Policy.canDisableMovement("0", "1", "0"));
         check(!Projection8054Policy.canDisableMovement("0", "0", "1"));
-        check(!Projection8054Policy.canDisableMovement(null, "0", "0"));
-        check(!Projection8054Policy.canDisableMovement("0", "", "0"));
+        check(Projection8054Policy.canDisableMovement(null, "0", "0"));
+        check(Projection8054Policy.canDisableMovement("0", "", "0"));
         check(!Projection8054Policy.canDisableMovement("0", "0", "2"));
         testStockEditor();
         System.out.println("PASS projection OEM eligibility, permission/exported/disabled gates and 8054 brightness write gate");

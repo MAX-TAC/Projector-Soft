@@ -164,13 +164,17 @@ jobs:
           for test in KuSourceRecoveryActivationPolicyTest KuSourceRecoveryPolicyTest OemEarcPolicyTest; do
             java -cp /tmp/tv33/policy-tests "dev.projectorsoft.tvsettings.$test"
           done
-      - name: Verify movement correction blocks unknown dependencies
+      - name: Verify preserved movement compatibility and complete reset outcomes
         run: |
           mkdir -p /tmp/tv33/projection-policy-test
           javac -d /tmp/tv33/projection-policy-test \
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/Projection8054Policy.java \
             app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/Projection8054PolicyTest.java
           java -cp /tmp/tv33/projection-policy-test dev.projectorsoft.tvsettings.Projection8054PolicyTest
+          javac -d /tmp/tv33/projection-policy-test \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/KeystoneResetState.java \
+            app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/KeystoneResetStateTest.java
+          java -cp /tmp/tv33/projection-policy-test dev.projectorsoft.tvsettings.KeystoneResetStateTest
       - name: Test 8054 EDID port gate on JVM
         run: |
           set -euo pipefail
@@ -387,8 +391,8 @@ jobs:
           apktool b -p /tmp/tv33/framework /tmp/tv33/decoded -o /tmp/tv33/rebuilt.apk
           python3 tools/compose_brightness_v3_apk.py "$STOCK" /tmp/tv33/rebuilt.apk \
             /tmp/tv33/dex/classes.dex /tmp/tv33/patch_report.json /tmp/tv33/unsigned.apk \
-            --version-code 232 --unified-8054
-          aapt dump badging /tmp/tv33/unsigned.apk | grep "name='com.android.tv.settings' versionCode='232'"
+            --version-code 233 --unified-8054
+          aapt dump badging /tmp/tv33/unsigned.apk | grep "name='com.android.tv.settings' versionCode='233'"
           aapt dump xmltree "$STOCK" AndroidManifest.xml > /tmp/tv33/stock-manifest-tree.txt
           aapt dump xmltree /tmp/tv33/unsigned.apk AndroidManifest.xml > /tmp/tv33/manifest-tree.txt
           python3 tools/verify_8054_unified.py "$STOCK" /tmp/tv33/unsigned.apk \
@@ -411,14 +415,14 @@ jobs:
           test "$ORIGINAL" = "$PLATFORM"
           zipalign -f -p 4 /tmp/tv33/unsigned.apk /tmp/tv33/aligned.apk
           apksigner sign --key /tmp/tv33/keys/platform.pk8 --cert /tmp/tv33/keys/platform.x509.pem \
-            --v1-signing-enabled true --v2-signing-enabled true --v3-signing-enabled true --out /tmp/tv33/TvSettingsPlus-8054-2.32-MAINSETTINGS.apk /tmp/tv33/aligned.apk
-          CANDIDATE=/tmp/tv33/TvSettingsPlus-8054-2.32-MAINSETTINGS.apk
+            --v1-signing-enabled true --v2-signing-enabled true --v3-signing-enabled true --out /tmp/tv33/TvSettingsPlus-8054-2.33-MAINSETTINGS.apk /tmp/tv33/aligned.apk
+          CANDIDATE=/tmp/tv33/TvSettingsPlus-8054-2.33-MAINSETTINGS.apk
           apksigner verify --verbose --print-certs "$CANDIDATE"
           MOD="$(apksigner verify --print-certs "$CANDIDATE" | awk -F ': ' '/Signer #1 certificate SHA-256 digest:/ {print $2}')"
           test -n "$MOD" && test "$MOD" = "$ORIGINAL"
           grep -F 'android:sharedUserId(0x0101000b)="android.uid.system"' /tmp/tv33/manifest-tree.txt
-          aapt dump badging /tmp/tv33/TvSettingsPlus-8054-2.32-MAINSETTINGS.apk | grep "name='com.android.tv.settings' versionCode='232'"
-          sha256sum /tmp/tv33/TvSettingsPlus-8054-2.32-MAINSETTINGS.apk
+          aapt dump badging /tmp/tv33/TvSettingsPlus-8054-2.33-MAINSETTINGS.apk | grep "name='com.android.tv.settings' versionCode='233'"
+          sha256sum /tmp/tv33/TvSettingsPlus-8054-2.33-MAINSETTINGS.apk
       - name: Experimental-only metadata
         if: always()
         run: |
@@ -427,9 +431,9 @@ jobs:
           cat /tmp/tv33/report/stock-input-routes.txt
           cat > /tmp/tv33/report/README.txt <<'EOF'
           WARNING: EXPERIMENTAL. Not tested on actual projector; DO NOT install as production.
-          TvSettingsPlus 8054 EXACT-BUILD platform-signature-matched 2.32.
+          TvSettingsPlus 8054 EXACT-BUILD platform-signature-matched 2.33.
           Static verification only. Code and CI links are in the integration audit for this commit.
-          Package com.android.tv.settings, versionCode 232, original 8054 signing certificate.
+          Package com.android.tv.settings, versionCode 233, original 8054 signing certificate.
           PIC18 reads only an existing stock panel cache. No new hardware settings on startup.
           MOD navigation does not apply the inactivity policy. Dormant recovery components are disabled.
           Stock MainSettings hosts the redesigned root. Only classes13.dex changes, with reported MainSettings and stock Bluetooth row routing.
@@ -438,19 +442,19 @@ jobs:
           EOF
           cp docs/8054_POST_V228_FIXES.md docs/8054_CEC_DEVICE_TEST_230.md docs/8054_VIDEO_CONTROLS_231.md /tmp/tv33/report/
           printf '%s\n' "$GITHUB_SHA" > /tmp/tv33/report/source-commit.txt
-          if [ -f /tmp/tv33/TvSettingsPlus-8054-2.32-MAINSETTINGS.apk ]; then
-            (cd /tmp/tv33 && sha256sum TvSettingsPlus-8054-2.32-MAINSETTINGS.apk) > /tmp/tv33/report/SHA256SUMS
+          if [ -f /tmp/tv33/TvSettingsPlus-8054-2.33-MAINSETTINGS.apk ]; then
+            (cd /tmp/tv33 && sha256sum TvSettingsPlus-8054-2.33-MAINSETTINGS.apk) > /tmp/tv33/report/SHA256SUMS
           fi
           cp /tmp/tv33/patch_report.json /tmp/tv33/report/patch_report.json 2>/dev/null || true
-      - name: Run AndroidX regressions before publishing 2.32
+      - name: Run AndroidX regressions before publishing 2.33
         if: github.ref_name == 'mod/v41-bt-eq-gamemode'
         run: gradle -p app/tvsettingsplus-mod/ui-tests testDebugUnitTest --no-daemon --console=plain
       - uses: actions/upload-artifact@v4
         if: success()
         with:
-          name: tvsettingsplus-8054-2.32-mainsettings
+          name: tvsettingsplus-8054-2.33-mainsettings
           path: |
-            /tmp/tv33/TvSettingsPlus-8054-2.32-MAINSETTINGS.apk
+            /tmp/tv33/TvSettingsPlus-8054-2.33-MAINSETTINGS.apk
             /tmp/tv33/report/
           retention-days: 14
           if-no-files-found: warn

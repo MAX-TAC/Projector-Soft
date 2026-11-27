@@ -345,12 +345,20 @@ public class UnifiedMenuUiTest {
         assertNull(shadowOf(two).getNextStartedActivity());
     }
 
-    @Test public void projectionDoesNotDisplayAnInertResetAction() {
+    @Test public void projectionRetainsTheWorkingResetAndRequestsConfirmation() {
         ProjectionSettingsActivity activity =
                 Robolectric.buildActivity(ProjectionSettingsActivity.class).setup().get();
         NativeSections.Projection page = (NativeSections.Projection)
                 activity.getSupportFragmentManager().findFragmentById(android.R.id.content);
         assertNull(page.findPreference("geometry_reset_unavailable"));
+        Preference reset = page.findPreference("projectorsoft_keystone_reset_all");
+        assertNotNull(reset);
+        assertTrue(reset.isSelectable());
+        assertTrue(reset.getOnPreferenceClickListener().onPreferenceClick(reset));
+        android.app.AlertDialog dialog = org.robolectric.shadows.ShadowAlertDialog.getLatestAlertDialog();
+        assertNotNull(dialog);
+        assertTrue(shadowOf(dialog).getMessage().toString().contains("Автокоррекция"));
+        dialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE).performClick();
         assertNotNull(page.findPreference("projectorsoft_font_scale"));
     }
 
@@ -415,7 +423,7 @@ public class UnifiedMenuUiTest {
         assertEquals(3, screen.getPreferenceCount());
     }
 
-    @Test public void bluetoothRendersAdapterTransitionAndBlocksUnconfirmedOffWithWarning() {
+    @Test public void bluetoothRequiresConfirmationAndAnIndependentControlBeforeOff() {
         android.app.Application app = org.robolectric.RuntimeEnvironment.getApplication();
         app.getApplicationInfo().flags |= android.content.pm.ApplicationInfo.FLAG_SYSTEM;
         shadowOf(app).grantPermissions(android.Manifest.permission.BLUETOOTH_CONNECT);
@@ -442,6 +450,13 @@ public class UnifiedMenuUiTest {
         assertTrue(shadowOf(dialog).getMessage().toString().contains(NativeBluetoothPage.WARNING));
         assertTrue(toggle.isChecked());
         assertEquals(android.bluetooth.BluetoothAdapter.STATE_ON, adapter.getState());
+        assertFalse(dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).isEnabled());
+        android.widget.CheckBox checkbox = dialog.findViewById(android.R.id.checkbox);
+        assertNotNull(checkbox);
+        checkbox.performClick();
+        assertTrue(dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).isEnabled());
+        dialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE).performClick();
+        assertEquals(android.bluetooth.BluetoothAdapter.STATE_ON, adapter.getState());
     }
 
     @Test public void sourcesUsesRealHomeResolverAndHasNoDuplicatePortStatus() throws Exception {
@@ -459,6 +474,7 @@ public class UnifiedMenuUiTest {
         resolve.isDefault = true;
         shadow.addResolveInfoForIntent(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME), resolve);
         assertEquals(launcher, HomeDestination.resolve(context).getComponent());
+        assertEquals(launcher, HomeDestination.homeIntent(context).getComponent());
         assertNull(HomeDestination.select(null, java.util.Set.of(launcher,
                 new ComponentName("other.home","other.home.Activity"))));
 

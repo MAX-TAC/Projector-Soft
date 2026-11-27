@@ -32,10 +32,12 @@ public final class OemHdmiAutoPlayHook {
         return Class.forName("android.os.SystemProperties");
     }
 
-    private static String getProperty() throws Exception {
+    static String getProperty() throws Exception {
         Class<?> cls=propertyClass();
-        return (String)cls.getMethod("get",String.class,String.class)
-                .invoke(null,PROPERTY,"");
+        // Exact 8054 SourceSubMenuController.initData uses getInt(key, 0).
+        int value = (Integer) cls.getMethod("getInt", String.class, int.class)
+                .invoke(null, PROPERTY, 0);
+        return value == 1 ? "1" : "0";
     }
 
     private static void updateProperty(boolean enable) throws Exception {

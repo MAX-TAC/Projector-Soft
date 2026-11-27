@@ -28,14 +28,14 @@ public final class Projection8054Policy {
     }
 
     static boolean canDisableMovement(String screen, String obstacle, String vertical) {
-        // The OEM callback can affect dependent modes. Require known values.
+        // Retain 2.28's unset-property handling pending the OEM default investigation.
         return clear(screen) && clear(obstacle) && clear(vertical);
     }
 
     private static boolean clear(String value) {
-        if (value == null) return false;
+        if (value == null) return true;
         String text = value.trim();
-        return "0".equals(text) || "0.0".equals(text);
+        return text.isEmpty() || "0".equals(text) || "0.0".equals(text);
     }
 
     static boolean mayUseOemToggle(String machine, boolean system, boolean enabled,

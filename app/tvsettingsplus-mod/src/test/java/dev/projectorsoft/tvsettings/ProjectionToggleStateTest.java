@@ -125,8 +125,9 @@ public final class ProjectionToggleStateTest {
         check(state.change(false) == STALE, "external edit invalidates the snapshot");
         check(state.change(false) == OEM_REQUIRED, "active dependent blocks disable");
         movement.obstacle = "";
-        check(state.change(false) == OEM_REQUIRED, "unknown dependent blocks disable");
-        check(movement.writes == 2, "no side effects from a rejected movement edit");
+        check(state.change(false) == CONFIRMED, "2.28 unset-dependent compatibility");
+        check(movement.writes == 3, "one explicit write with an unset dependent");
+        check(state.change(true) == CONFIRMED, "restore movement before partial-change test");
         movement.obstacle = "0";
         movement.changeDependencies = true;
         check(state.change(false) == FAILED && Boolean.FALSE.equals(state.value()),

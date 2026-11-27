@@ -61,15 +61,13 @@ final class HomeDestination {
      * screen. The actual third-party launcher is resolved explicitly.
      */
     static Intent homeIntent(Context context) {
-        Intent plain = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         try {
-            List<ComponentName> candidates = launchers(context);
-            if (!candidates.isEmpty()) plain.setComponent(candidates.get(0));
-        } catch (RuntimeException ignored) {
-            // fall back to the component-less intent
+            Intent resolved = resolve(context);
+            if (resolved != null) return resolved;
+        } catch (PackageManager.NameNotFoundException unavailable) {
+            throw new IllegalStateException("HOME handler disappeared", unavailable);
         }
-        return plain;
+        throw new IllegalStateException("No unambiguous HOME handler");
     }
     /** Intent that opens one specific launcher. */
     static Intent intentFor(ComponentName component) {

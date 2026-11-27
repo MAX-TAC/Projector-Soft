@@ -40,6 +40,12 @@ public final class NativeSections {
             OemInlinePreferencesHook.bind(this,view);
         }
 
+        @Override public void onResume() {
+            super.onResume();
+            if (getPreferenceScreen() != null)
+                ProjectorExtras.refresh(requireContext(), getPreferenceScreen());
+        }
+
         @Override public void onDestroyView(){
             OemInlinePreferencesHook.bind(this,null);
             super.onDestroyView();
@@ -277,7 +283,7 @@ public final class NativeSections {
             Preference autoplay = extras.findPreference(OemHdmiAutoPlayHook.KEY);
             if (autoplay != null) autoplay.setTitle("Автопереключение HDMI");
             // Working EDID selector instead of the read-only OEM status.
-            OemHdmiEdidHook.install(context, extras, Preference.class);
+            ProjectorExtras.installEdid(context, extras, 290);
 
             ProjectorExtras.installSources(context, extras);
         }
@@ -333,6 +339,7 @@ public final class NativeSections {
             Preference movement = geometry.findPreference("projectorsoft_keystone_move");
             if (movement != null) movement.setOrder(200);
             OemProjectionPanel.installEditors(context, geometry, Preference.class);
+            ProjectorExtras.installKeystoneReset(context, geometry);
             if (geometry.getPreferenceCount() == 0) screen.removePreference(geometry);
             // Font scaling is a display/projection preference, not a system-security setting.
             OemFontScaleHook.install(context, screen, Preference.class);
@@ -600,28 +607,6 @@ public final class NativeSections {
         @Override NativePage section(){return NativePage.ACCOUNTS;}
         @Override void populate(PreferenceScreen screen){
             Context context = requireContext();
-            android.accounts.Account[] accounts = new android.accounts.Account[0];
-            try {
-                android.accounts.AccountManager manager =
-                        android.accounts.AccountManager.get(context);
-                if (manager != null) accounts = manager.getAccounts();
-            } catch (Throwable unavailable) {
-                android.util.Log.w("TvSettingsPlusMOD", "accounts unreadable", unavailable);
-            }
-            int order = 10;
-            for (android.accounts.Account account : accounts) {
-                Preference row = new Preference(context);
-                row.setKey("projectorsoft_account_" + order);
-                row.setTitle(account.name);
-                row.setSummary(account.type);
-                row.setOrder(order++);
-                setSystemIcon(row, "accounts");
-                screen.addPreference(row);
-            }
-            if (accounts.length == 0 && screen.getPreferenceCount() == 0) {
-                info(screen, "projectorsoft_accounts_empty", "Аккаунты",
-                        "Нет добавленных аккаунтов");
-            }
             Preference add = new Preference(context);
             add.setKey("projectorsoft_account_add");
             add.setTitle("Добавить учётную запись");
@@ -644,6 +629,57 @@ public final class NativeSections {
                 return true;
             });
             screen.addPreference(add);
+            refreshAccounts();
+        }
+
+        @Override public void onResume() {
+            super.onResume();
+            refreshAccounts();
+        }
+
+        private void refreshAccounts() {
+            PreferenceScreen screen = getPreferenceScreen();
+            if (screen == null) return;
+            java.util.Set<String> retained = new java.util.HashSet<>();
+            retained.add("projectorsoft_account_add");
+            try {
+                android.accounts.Account[] accounts =
+                        android.accounts.AccountManager.get(requireContext()).getAccounts();
+                int order = 10;
+                for (android.accounts.Account account : accounts) {
+                    String key = "projectorsoft_account_" + account.type + "/" + account.name;
+                    retained.add(key);
+                    Preference row = screen.findPreference(key);
+                    if (row == null) {
+                        row = new Preference(requireContext());
+                        row.setKey(key);
+                        row.setSelectable(false);
+                        setSystemIcon(row, "accounts");
+                        screen.addPreference(row);
+                    }
+                    row.setTitle(account.name);
+                    row.setSummary(account.type);
+                    row.setOrder(order++);
+                }
+                if (accounts.length == 0) {
+                    retained.add("projectorsoft_accounts_empty");
+                    if (screen.findPreference("projectorsoft_accounts_empty") == null)
+                        info(screen, "projectorsoft_accounts_empty", "Аккаунты", "Нет добавленных аккаунтов");
+                }
+            } catch (RuntimeException unavailable) {
+                android.util.Log.w("TvSettingsPlusMOD", "Accounts unreadable", unavailable);
+                for (int i = 0; i < screen.getPreferenceCount(); i++) {
+                    String key = screen.getPreference(i).getKey();
+                    if (!"projectorsoft_accounts_empty".equals(key)) retained.add(key);
+                }
+                retained.add("projectorsoft_accounts_error");
+                if (screen.findPreference("projectorsoft_accounts_error") == null)
+                    info(screen, "projectorsoft_accounts_error", "Аккаунты", "Не удалось прочитать учётные записи");
+            }
+            for (int i = screen.getPreferenceCount() - 1; i >= 0; i--) {
+                Preference row = screen.getPreference(i);
+                if (!retained.contains(row.getKey())) screen.removePreference(row);
+            }
         }
     }
 
