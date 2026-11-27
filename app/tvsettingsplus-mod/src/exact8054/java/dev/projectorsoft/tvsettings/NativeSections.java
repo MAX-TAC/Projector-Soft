@@ -381,7 +381,7 @@ public final class NativeSections {
                     "projectorsoft_picture_group_color", "Цвет и баланс белого");
             color.setOrder(1);
             PreferenceCategory video = group(screen,
-                    "projectorsoft_picture_group_video", "Параметры видеосигнала");
+                    "projectorsoft_picture_group_video", "Видеопоток (без изменения интерфейса)");
             video.setOrder(2);
 
             move(screen, processing, "projectorsoft_picture_read_picture_list_hdr");

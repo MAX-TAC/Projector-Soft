@@ -371,7 +371,10 @@ public class UnifiedMenuUiTest {
             Preference row = fragment.findPreference("projectorsoft_picture_read_" + key);
             assertNotNull(row);
             assertFalse(row.isEnabled());
-            assertNull(row.getOnPreferenceChangeListener());
+            if ("picture_color_temperature".equals(key))
+                assertNotNull(row.getOnPreferenceChangeListener());
+            else
+                assertNull(row.getOnPreferenceChangeListener());
         }
         assertNull(fragment.findPreference("projectorsoft_picture_read_picture_brightness"));
         assertNull(Settings.Global.getString(colors.getContentResolver(), "picture_red_gain"));
@@ -594,7 +597,7 @@ public class UnifiedMenuUiTest {
         assertNotNull(video);
         assertEquals("Обработка изображения", processing.getTitle());
         assertEquals("Цвет и баланс белого", color.getTitle());
-        assertEquals("Параметры видеосигнала", video.getTitle());
+        assertEquals("Видеопоток (без изменения интерфейса)", video.getTitle());
         assertSame(processing, screen.getPreference(0));
         assertSame(color, screen.getPreference(1));
         assertSame(video, screen.getPreference(2));
@@ -614,7 +617,7 @@ public class UnifiedMenuUiTest {
         assertNotNull(screen.findPreference("projectorsoft_picture_read_picture_saturation"));
     }
 
-    @Test public void pictureViewerUsesOemLabelsAndStaysReadOnly() {
+    @Test public void pictureControlsUseOemLabelsAndKeepGammaInUserMode() {
         PictureSettingsActivity activity = Robolectric.buildActivity(PictureSettingsActivity.class).setup().get();
         NativeSections.Picture picture = (NativeSections.Picture)
                 activity.getSupportFragmentManager().findFragmentById(android.R.id.content);
@@ -626,6 +629,7 @@ public class UnifiedMenuUiTest {
         Settings.Global.putString(resolver, "picture_mode", "7");
         Settings.Global.putString(resolver, "picture_list_hdr", "1");
         Settings.Global.putString(resolver, "picture_gamma", "2");
+        Settings.Global.putString(resolver, "picture_color_temperature", "0");
         assertEquals(Integer.valueOf(7), PicturePanelState.read(key -> Settings.Global.getString(resolver, key)).get("picture_mode"));
         PreferenceScreen screen = picture.getPreferenceManager().createPreferenceScreen(activity);
         org.robolectric.shadows.ShadowSystemProperties.override("ro.rjpj.machine.id", "8054");
@@ -633,19 +637,21 @@ public class UnifiedMenuUiTest {
                 NativePicturePanel.Page.PICTURE, key ->
                 "picture_mode".equals(key)
                         ? new String[][]{{"Профиль OEM", "Пользовательский"}, {"7", "0"}}
-                        : new String[][]{{"Вариант OEM", "Другой вариант"}, {"2", "3"}});
+                        : new String[][]{{"Вариант OEM", "Другой вариант"}, {"2", "3"}},
+                () -> "AndroidVideo");
         androidx.preference.ListPreference profile = screen.findPreference("projectorsoft_picture_read_picture_mode");
         androidx.preference.ListPreference gamma = screen.findPreference("projectorsoft_picture_read_picture_gamma");
         SwitchPreference hdr = screen.findPreference("projectorsoft_picture_read_picture_list_hdr");
-        assertFalse(profile.isEnabled());
+        assertTrue(profile.isEnabled());
         // The factory preset owns its gamma: disabled even if its value is readable.
         assertFalse(gamma.isEnabled());
-        assertNull(gamma.getOnPreferenceChangeListener());
+        assertFalse(gamma.callChangeListener("3"));
+        assertEquals("2", Settings.Global.getString(resolver, "picture_gamma"));
         assertEquals("2", Settings.Global.getString(resolver, "picture_gamma"));
         assertEquals("Профиль OEM", profile.getEntry());
         assertEquals("Вариант OEM", gamma.getEntry());
         assertTrue(hdr.isChecked());
-        assertFalse(hdr.isEnabled());
+        assertTrue(hdr.isEnabled());
         Preference memcOnPicture = screen.findPreference(
                 "projectorsoft_picture_read_tv_picture_advance_video_mjc_effect");
         Preference hue = screen.findPreference("projectorsoft_picture_read_picture_hue");
@@ -660,8 +666,9 @@ public class UnifiedMenuUiTest {
 
         Settings.Global.putString(resolver, "picture_mode", "0");
         editor.refresh();
-        assertFalse(gamma.isEnabled());
-        assertEquals("2", Settings.Global.getString(resolver, "picture_gamma"));
+        assertTrue(gamma.isEnabled());
+        assertFalse(gamma.callChangeListener("3"));
+        assertEquals(3, Settings.Global.getInt(resolver, "picture_gamma", -1));
         MemcSettingsActivity activityMemc = Robolectric.buildActivity(MemcSettingsActivity.class).setup().get();
         NativeSections.Memc memc = (NativeSections.Memc)
                 activityMemc.getSupportFragmentManager().findFragmentById(android.R.id.content);

@@ -35,6 +35,40 @@ public final class OemPictureState {
     public static boolean write(Context context,String key,int value) {
         return transaction(context).write(key,value);
     }
+
+    static boolean writeForCurrentInput(Context context, String key, int value, String expected,
+                                        java.util.function.Supplier<String> activeContext) {
+        if (expected == null) return false;
+        SharedPreferences store = context.getSharedPreferences(
+                "projectorsoft_picture_context_originals", Context.MODE_PRIVATE);
+        String prefix = expected + "|key=";
+        PictureStateTransaction transaction = new PictureStateTransaction(
+                new PictureStateTransaction.Backend() {
+                    @Override public String read(String key) { return readStored(context, key); }
+                    @Override public boolean write(String key, String value) {
+                        return Settings.Global.putString(context.getContentResolver(), key, value);
+                    }
+                    @Override public String verifiedContext() { return activeContext.get(); }
+                },
+                new PictureStateTransaction.Journal() {
+                    @Override public Map<String, String> entries() {
+                        Map<String, String> result = new java.util.LinkedHashMap<>();
+                        for (Map.Entry<String, ?> entry : store.getAll().entrySet()) {
+                            if (entry.getKey().startsWith(prefix) && entry.getValue() instanceof String)
+                                result.put(entry.getKey().substring(prefix.length()), (String) entry.getValue());
+                        }
+                        return result;
+                    }
+                    @Override public boolean save(String key, String value) {
+                        return store.edit().putString(prefix + key, value).commit();
+                    }
+                    @Override public boolean remove(String key) {
+                        return store.edit().remove(prefix + key).commit();
+                    }
+                });
+        return transaction.write(key, value, expected);
+    }
+
     public static boolean restore(Context context) {return transaction(context).restore();}
     public static void install(Context context,Object category,Class<?> pref) throws Exception {
         Object item=pref.getConstructor(Context.class).newInstance(context);

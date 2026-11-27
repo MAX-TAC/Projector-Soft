@@ -8,7 +8,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import static org.junit.Assert.*;
 
-/** A lower preview is valid only while the observed PQ snapshot stays unchanged. */
+/** Real v41 UI policy: contrast echo must not close the dialog; profile changes must. */
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk=33)
 public final class NativePicturePanelEditTest {
@@ -22,30 +22,48 @@ public final class NativePicturePanelEditTest {
         return values;
     }
 
-    @Test public void changedContrastClosesThePreview() {
+    @Test public void expectedContrastProviderEchoKeepsBottomEditor() {
         Map<String,Integer> before=start(), after=start();
         after.put("picture_contrast", 51);
-        assertFalse(NativePicturePanel.stableSnapshot(before, after));
+        assertTrue(NativePicturePanel.otherKeysUnchanged(before, after, "picture_contrast"));
     }
 
-    @Test public void changedBrightnessInvalidatesThePreview() {
+    @Test public void changingBrightnessDuringContrastEditInvalidatesSession() {
         Map<String,Integer> before=start(), after=start();
         after.put("picture_brightness", 49);
-        assertFalse(NativePicturePanel.stableSnapshot(before, after));
+        assertFalse(NativePicturePanel.otherKeysUnchanged(before, after, "picture_contrast"));
     }
 
-    @Test public void changedModeHdrOrTemperatureInvalidatesThePreview() {
+    @Test public void changedModeHdrOrTemperatureStopsEdit() {
         for (String key : new String[]{PicturePanelState.MODE, PicturePanelState.TEMPERATURE,
                 PicturePanelState.HDR}) {
             Map<String,Integer> changed=start();
             changed.put(key,changed.get(key)+1);
-            assertFalse(key,NativePicturePanel.stableSnapshot(start(),changed));
+            assertFalse(key,NativePicturePanel.otherKeysUnchanged(start(),changed,"picture_contrast"));
         }
     }
 
+    @Test public void sameProfileOnAnotherInputIsNotTheSameTarget() {
+        String androidVideo = PictureEditContext.identify("AndroidVideo", start());
+        String hdmiOne = PictureEditContext.identify("HDMI1", start());
+        assertNotNull(androidVideo);
+        assertNotEquals(androidVideo, hdmiOne);
+        assertFalse(PictureEditContext.stable(androidVideo, hdmiOne, 50, 50));
+        assertFalse(PictureEditContext.stable(androidVideo, androidVideo, 50, 49));
+        assertNull(PictureEditContext.identify("unknown", start()));
+    }
+
+    @Test public void aChangedProviderValueAloneDoesNotConfirmApplication() {
+        String source = PictureEditContext.identify("AndroidVideo", start());
+        assertFalse(PictureEditContext.applied(source, source, 51, 51, 50));
+        assertFalse(PictureEditContext.applied(source, source, 51, 51, null));
+        assertFalse(PictureEditContext.applied(source, null, 51, 51, 51));
+        assertTrue(PictureEditContext.applied(source, source, 51, 51, 51));
+    }
+
     @Test public void missingReadbackCannotPretendToBeStable() {
-        assertFalse(NativePicturePanel.stableSnapshot(start(),null));
-        assertFalse(NativePicturePanel.stableSnapshot(start(),Map.of()));
-        assertTrue(NativePicturePanel.stableSnapshot(start(),start()));
+        assertFalse(NativePicturePanel.otherKeysUnchanged(start(),null,"picture_contrast"));
+        assertFalse(NativePicturePanel.otherKeysUnchanged(start(),Map.of(),"picture_contrast"));
+        assertFalse(NativePicturePanel.otherKeysUnchanged(start(),start(),null));
     }
 }

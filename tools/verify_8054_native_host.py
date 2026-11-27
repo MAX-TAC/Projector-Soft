@@ -58,4 +58,10 @@ for signature in ('CompatibleApis;->setHdmiCecControlEnabled(Z)V',
                   'MtkTvCecAnBase;->setEarcEnable(Z)I'):
     if signature not in handler:
         raise ValueError('Missing stock HDMI callback: ' + signature)
-print('PASS exact native stock host, preview, HDMI callbacks and theme prerequisites')
+source = stock('com/mediatek/twoworlds/tv/MtkTvInputSource')
+source_base = stock('com/mediatek/twoworlds/tv/MtkTvInputSourceBase')
+if 'getInstance()Lcom/mediatek/twoworlds/tv/MtkTvInputSource;' not in source:
+    raise ValueError('Missing OEM input manager')
+if '.method public getCurrentInputSourceName()Ljava/lang/String;' not in source_base:
+    raise ValueError('Missing OEM active input reader')
+print('PASS exact stock host, HDMI callbacks, active video input reader and theme prerequisites')
