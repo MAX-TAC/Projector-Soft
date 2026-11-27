@@ -440,7 +440,7 @@ jobs:
           This candidate does not replace the pinned 9f8fc64 recovery/installation kit.
           Installation and rollback readiness require the owner's separately authorized read-only preflight.
           EOF
-          cp docs/8054_POST_V228_FIXES.md docs/8054_CEC_DEVICE_TEST_230.md docs/8054_VIDEO_CONTROLS_231.md /tmp/tv33/report/
+          cp docs/8054_POST_V228_FIXES.md docs/8054_CEC_DEVICE_TEST_230.md docs/8054_VIDEO_CONTROLS_231.md docs/8054_OPEN_QUESTIONS_233.md docs/8054_FUNCTIONAL_REPAIRS_233.md /tmp/tv33/report/
           printf '%s\n' "$GITHUB_SHA" > /tmp/tv33/report/source-commit.txt
           if [ -f /tmp/tv33/TvSettingsPlus-8054-2.33-MAINSETTINGS.apk ]; then
             (cd /tmp/tv33 && sha256sum TvSettingsPlus-8054-2.33-MAINSETTINGS.apk) > /tmp/tv33/report/SHA256SUMS

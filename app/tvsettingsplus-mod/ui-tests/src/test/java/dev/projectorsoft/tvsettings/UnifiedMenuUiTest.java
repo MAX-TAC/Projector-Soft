@@ -462,6 +462,7 @@ public class UnifiedMenuUiTest {
         android.widget.CheckBox confirmedControl = dialog.findViewById(android.R.id.checkbox);
         confirmedControl.performClick();
         dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).performClick();
+        shadowOf(Looper.getMainLooper()).idle();
         assertTrue(adapter.getState() == android.bluetooth.BluetoothAdapter.STATE_OFF
                 || adapter.getState() == android.bluetooth.BluetoothAdapter.STATE_TURNING_OFF);
     }
