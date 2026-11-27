@@ -82,18 +82,14 @@ public class UnifiedMenuUiTest {
         assertNull(screen.findPreference("privacy"));
         assertNull(screen.findPreference("projectorsoft_font_scale"));
         assertNull(screen.findPreference("projectorsoft_cpu_live"));
-        for (String key : new String[]{"about_stock","time","language",
-                "location","accounts","storage","security",
+        for (String key : new String[]{"about_stock","time","projectorsoft_page_LANGUAGE_INPUT",
+                "location","projectorsoft_page_ACCOUNTS","storage","security",
                 "accessibility","developer"}) {
             Preference item = screen.findPreference(key);
             assertNotNull("Missing System row: " + key, item);
             assertNotNull("Missing stock icon: " + key, item.getIcon());
         }
-        Preference power = screen.findPreference("projectorsoft_page_POWER");
-        assertNotNull(power);
-        assertEquals(NativePage.POWER.fragment, power.getFragment());
-        assertNull(power.getOnPreferenceClickListener());
-        assertNotNull("Power icon is required", power.getIcon());
+        assertNull(screen.findPreference("projectorsoft_page_POWER"));
     }
 
     @Test public void settingsKeyInsideSectionTargetsOriginalMainSettings() {
@@ -110,7 +106,7 @@ public class UnifiedMenuUiTest {
         assertNotNull(fragment.getView());
         assertNotNull(fragment.getListView().getAdapter());
         PreferenceScreen screen=fragment.getPreferenceScreen();
-        String[] titles={"Wi-Fi и сеть","Bluetooth","Источники","Проекция","Изображение","Звук","Приложения","Настройки системы"};
+        String[] titles={"Wi-Fi и сеть","Bluetooth","Источники","Проекция","Изображение","Звук","Приложения","Настройки системы","Питание"};
         assertEquals(titles.length,screen.getPreferenceCount());
         for(int i=0;i<titles.length;i++){
             Preference row=screen.getPreference(i);
@@ -545,7 +541,11 @@ public class UnifiedMenuUiTest {
 
         Backend restarted = new Backend();
         BtEqualizerPanel.Session fresh = new BtEqualizerPanel.Session(() -> restarted);
-        assertTrue(fresh.apply(BtEqualizerPanel.CUSTOM, saved));
+        android.content.Context context = org.robolectric.RuntimeEnvironment.getApplication();
+        Settings.Global.putInt(context.getContentResolver(), BtEqualizerPanel.KEY_PRESET, BtEqualizerPanel.CUSTOM);
+        for (int i = 0; i < saved.length; i++)
+            Settings.Global.putInt(context.getContentResolver(), BtEqualizerPanel.KEY_BAND + i, saved[i]);
+        assertTrue(BtEqualizerPanel.restoreSaved(context, fresh));
         assertArrayEquals(backend.levels, restarted.levels);
         restarted.refuseLevel = true;
         assertFalse(fresh.apply(2, new int[]{0, 0, 0, 0, 0}));

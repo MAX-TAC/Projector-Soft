@@ -50,10 +50,7 @@ final class BtEqualizerPanel {
         Session(Factory factory) { this.factory = factory; }
 
         boolean apply(int preset, int[] requested) {
-            if (preset == OFF) {
-                close();
-                return true;
-            }
+            if (preset == OFF) return close();
             if (preset < OFF || preset > CUSTOM || requested == null || requested.length != BANDS)
                 return false;
             try {
@@ -94,7 +91,7 @@ final class BtEqualizerPanel {
             catch (RuntimeException | LinkageError unavailable) { return false; }
         }
 
-        private void close() {
+        private boolean close() {
             Effect previous = effect;
             effect = null;
             levels = null;
@@ -103,13 +100,16 @@ final class BtEqualizerPanel {
                 try { previous.release(); }
                 catch (RuntimeException | LinkageError unavailable) {
                     Log.w(TAG, "Equalizer release failed", unavailable);
+                    return false;
                 }
             }
+            return true;
         }
     }
 
     private static final class OutputMix implements Effect {
         private final Equalizer equalizer = new Equalizer(0, 0);
+        private boolean enabledHere;
 
         @Override public int bandCount() { return equalizer.getNumberOfBands(); }
         @Override public int min() { return equalizer.getBandLevelRange()[0]; }
@@ -117,11 +117,14 @@ final class BtEqualizerPanel {
         @Override public int frequency(int band) { return equalizer.getCenterFreq((short) band); }
         @Override public boolean controlled() { return equalizer.hasControl(); }
         @Override public boolean enabled() { return equalizer.getEnabled(); }
-        @Override public boolean enable() { return equalizer.setEnabled(true) == AudioEffect.SUCCESS; }
+        @Override public boolean enable() {
+            enabledHere = equalizer.setEnabled(true) == AudioEffect.SUCCESS;
+            return enabledHere;
+        }
         @Override public void setLevel(int band, int level) { equalizer.setBandLevel((short) band, (short) level); }
         @Override public int level(int band) { return equalizer.getBandLevel((short) band); }
         @Override public void release() {
-            try { if (equalizer.hasControl()) equalizer.setEnabled(false); }
+            try { if (enabledHere && equalizer.hasControl()) equalizer.setEnabled(false); }
             finally { equalizer.release(); }
         }
     }
@@ -135,8 +138,12 @@ final class BtEqualizerPanel {
 
     static void restore(Context context) {
         if (!"8054".equals(OemHdmiPortInfo.machineId())) return;
+        restoreSaved(context, SESSION);
+    }
+
+    static boolean restoreSaved(Context context, Session session) {
         int saved = storedPreset(context);
-        SESSION.apply(saved, curve(context, saved));
+        return session.apply(saved, curve(context, saved));
     }
 
     void start() { restore(context); }
