@@ -210,7 +210,8 @@ public final class NativeSections {
         }
 
         protected void keyboardRow(PreferenceGroup group) {
-            link(group, NativePage.KEYBOARD, 20);
+            // Stock keyboard screen, as the owner requested.
+            stock(group, "keyboard_input", "Клавиатура", "inputmethod.KeyboardActivity");
         }
 
         protected void setSystemIcon(Preference row, String key) {
