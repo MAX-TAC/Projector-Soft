@@ -161,7 +161,8 @@ final class ProjectorExtras {
             catch (NumberFormatException bad) { return false; }
             if (index < 0 || index >= EDID_NAMES.length) return false;
             try {
-                String before = Settings.Global.getString(context.getContentResolver(), EDID_KEY);
+                int actual = Settings.Global.getInt(context.getContentResolver(), EDID_KEY, -1);
+                String before = actual >= 0 && actual < EDID_NAMES.length ? String.valueOf(actual) : null;
                 if (!java.util.Objects.equals(list.getValue(), before)) {
                     feedback(context, "Значение изменилось. Выберите режим ещё раз.");
                 } else if (!Settings.Global.putInt(context.getContentResolver(), EDID_KEY, index)

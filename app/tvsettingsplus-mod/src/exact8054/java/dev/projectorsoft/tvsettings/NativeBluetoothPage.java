@@ -154,13 +154,11 @@ public final class NativeBluetoothPage extends AccessoriesFragment {
                         .setNegativeButton(android.R.string.cancel, null)
                         .setPositiveButton("Отключить", (item, which) -> disableNow())
                         .create();
-                dialog.setOnShowListener(item -> {
-                    android.widget.CheckBox checkbox = dialog.findViewById(android.R.id.checkbox);
-                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
-                    checkbox.setOnCheckedChangeListener((button, checked) ->
-                            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(checked));
-                });
                 dialog.show();
+                android.widget.CheckBox checkbox = dialog.findViewById(android.R.id.checkbox);
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                checkbox.setOnCheckedChangeListener((button, checked) ->
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(checked));
                 refreshToggle(null);
             } else if (enable && adapter.getState() == BluetoothAdapter.STATE_OFF) {
                 enabling = adapter.enable();
