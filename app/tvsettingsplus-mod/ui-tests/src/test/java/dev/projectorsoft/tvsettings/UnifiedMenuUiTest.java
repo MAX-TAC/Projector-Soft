@@ -345,6 +345,15 @@ public class UnifiedMenuUiTest {
         assertNull(shadowOf(two).getNextStartedActivity());
     }
 
+    @Test public void projectionDoesNotDisplayAnInertResetAction() {
+        ProjectionSettingsActivity activity =
+                Robolectric.buildActivity(ProjectionSettingsActivity.class).setup().get();
+        NativeSections.Projection page = (NativeSections.Projection)
+                activity.getSupportFragmentManager().findFragmentById(android.R.id.content);
+        assertNull(page.findPreference("geometry_reset_unavailable"));
+        assertNotNull(page.findPreference("projectorsoft_font_scale"));
+    }
+
     @Test public void fontScaleSummaryRendersLiteralPercent() {
         ProjectionSettingsActivity activity = Robolectric.buildActivity(ProjectionSettingsActivity.class).setup().get();
         NativeSections.Projection page = (NativeSections.Projection)

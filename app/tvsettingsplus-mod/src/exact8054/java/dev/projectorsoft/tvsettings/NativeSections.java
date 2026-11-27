@@ -333,8 +333,6 @@ public final class NativeSections {
             Preference movement = geometry.findPreference("projectorsoft_keystone_move");
             if (movement != null) movement.setOrder(200);
             OemProjectionPanel.installEditors(context, geometry, Preference.class);
-            info(geometry, "geometry_reset_unavailable", "Сброс коррекции",
-                    "Используйте сброс в штатном редакторе соответствующей регулировки");
             if (geometry.getPreferenceCount() == 0) screen.removePreference(geometry);
             // Font scaling is a display/projection preference, not a system-security setting.
             OemFontScaleHook.install(context, screen, Preference.class);
