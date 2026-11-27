@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - audit/8054-tvsettingsplus-20261117
+      - mod/v41-bt-eq-gamemode
     paths:
       - '.github/workflows/audit-8054-source-safety.yml'
       - 'app/tvsettingsplus-mod/src/main/java/**'
@@ -146,6 +147,10 @@ jobs:
             app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/StandardAndroidNavigationPolicy.java \
             app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/StandardAndroidNavigationPolicyTest.java
           java -cp /tmp/picture-state-tests dev.projectorsoft.tvsettings.StandardAndroidNavigationPolicyTest
+          javac -d /tmp/picture-state-tests \
+            app/tvsettingsplus-mod/src/main/java/dev/projectorsoft/tvsettings/KeystoneResetState.java \
+            app/tvsettingsplus-mod/src/test/java/dev/projectorsoft/tvsettings/KeystoneResetStateTest.java
+          java -cp /tmp/picture-state-tests dev.projectorsoft.tvsettings.KeystoneResetStateTest
       - name: Test production picture and brightness adapters against isolated Android fakes
         run: |
           mkdir -p /tmp/picture-adapter-tests

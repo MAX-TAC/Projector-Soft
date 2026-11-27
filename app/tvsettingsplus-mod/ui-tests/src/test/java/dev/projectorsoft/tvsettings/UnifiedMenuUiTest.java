@@ -457,6 +457,13 @@ public class UnifiedMenuUiTest {
         assertTrue(dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).isEnabled());
         dialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE).performClick();
         assertEquals(android.bluetooth.BluetoothAdapter.STATE_ON, adapter.getState());
+        assertFalse(toggle.callChangeListener(false));
+        dialog = org.robolectric.shadows.ShadowAlertDialog.getLatestAlertDialog();
+        android.widget.CheckBox confirmedControl = dialog.findViewById(android.R.id.checkbox);
+        confirmedControl.performClick();
+        dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).performClick();
+        assertTrue(adapter.getState() == android.bluetooth.BluetoothAdapter.STATE_OFF
+                || adapter.getState() == android.bluetooth.BluetoothAdapter.STATE_TURNING_OFF);
     }
 
     @Test public void sourcesUsesRealHomeResolverAndHasNoDuplicatePortStatus() throws Exception {
