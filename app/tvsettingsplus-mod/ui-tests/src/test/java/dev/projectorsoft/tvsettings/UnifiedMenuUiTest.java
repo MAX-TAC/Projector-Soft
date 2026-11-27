@@ -126,7 +126,8 @@ public class UnifiedMenuUiTest {
             LeanbackPreferenceFragmentCompat fragment=(LeanbackPreferenceFragmentCompat)
                     activity.getSupportFragmentManager().findFragmentById(android.R.id.content);
             assertEquals(page.fragment,fragment.getClass().getName());
-            assertEquals(page.title,fragment.getPreferenceScreen().getTitle().toString());
+            String title = page == NativePage.HDMI_CEC ? "Входы" : page.title;
+            assertEquals(title,fragment.getPreferenceScreen().getTitle().toString());
             assertNotNull(fragment.getListView().getAdapter());
             assertFalse(fragment.getArguments().containsKey("volumeUuid"));
             assertNull(shadowOf(activity).getNextStartedActivity());
@@ -282,9 +283,7 @@ public class UnifiedMenuUiTest {
 
     @Test public void nativeCecWidgetUsesFreshStateWithFalseListenerReturn(){
         HdmiCecSettingsActivity activity=Robolectric.buildActivity(HdmiCecSettingsActivity.class).setup().get();
-        NativeSections.Cec fragment=(NativeSections.Cec)
-                activity.getSupportFragmentManager().findFragmentById(android.R.id.content);
-        PreferenceScreen screen=fragment.getPreferenceScreen();
+        PreferenceScreen screen = new PreferenceManager(activity).createPreferenceScreen(activity);
         class Device implements CecAutoOff8054.Backend {
             int cec=1, setting, writes;
             @Override public CecAutoOff8054.State read(){return CecAutoOff8054.State.decode(cec,setting);}
@@ -455,7 +454,16 @@ public class UnifiedMenuUiTest {
         NativeSections.Sources page = (NativeSections.Sources)
                 activity.getSupportFragmentManager().findFragmentById(android.R.id.content);
         assertNotNull(page.findPreference("home"));
-        assertNotNull(page.findPreference("projectorsoft_page_HDMI_CEC"));
+        Preference cec = page.findPreference("projectorsoft_page_HDMI_CEC");
+        assertNotNull(cec);
+        assertEquals("com.android.tv.settings.partnercustomizer.inputs.InputsFragment", cec.getFragment());
+        HdmiCecSettingsActivity entry = Robolectric.buildActivity(HdmiCecSettingsActivity.class).setup().get();
+        androidx.preference.PreferenceFragmentCompat stockCec = (androidx.preference.PreferenceFragmentCompat)
+                entry.getSupportFragmentManager().findFragmentById(android.R.id.content);
+        assertEquals(cec.getFragment(), stockCec.getClass().getName());
+        assertTrue(stockCec.findPreference("hdmi_control") instanceof SwitchPreference);
+        assertTrue(stockCec.findPreference("tv_auto_on") instanceof SwitchPreference);
+        assertTrue(stockCec.findPreference("device_auto_off") instanceof SwitchPreference);
         assertNull(page.findPreference("input_status"));
         assertNull(page.findPreference("projectorsoft_page_HDMI1_INFO"));
         assertNull(page.findPreference("projectorsoft_page_HDMI2_INFO"));

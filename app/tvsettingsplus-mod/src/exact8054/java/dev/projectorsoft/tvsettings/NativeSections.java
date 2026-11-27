@@ -318,18 +318,6 @@ public final class NativeSections {
         @Override String hardware() { return "HW7"; }
     }
 
-    public static final class Cec extends Page {
-        @Override NativePage section(){return NativePage.HDMI_CEC;}
-        @Override void populate(PreferenceScreen screen){
-            guarded("hdmi-cec",()->OemCecAutoOff8054.install(requireContext(),screen,Preference.class));
-        }
-        @Override public void onResume(){
-            super.onResume();
-            guarded("cec-resume",()->OemCecAutoOff8054.refresh(requireContext(),
-                    findPreference(OemCecAutoOff8054.CEC_KEY),findPreference(OemCecAutoOff8054.OFF_KEY)));
-        }
-    }
-
     public static final class Projection extends Page {
         @Override NativePage section(){return NativePage.PROJECTION;}
         @Override void populate(PreferenceScreen screen){

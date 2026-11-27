@@ -49,4 +49,13 @@ for name, invariants in required.items():
         raise ValueError('Stock host cannot be subclassed: '+name)
 stock(prefix+'connectivity/NetworkFragment')
 stock(prefix+'device/apps/AppsFragment')
-print('PASS exact native stock host, preview, activity and theme prerequisites')
+inputs = stock(prefix+'partnercustomizer/inputs/InputsFragment')
+handler_start = inputs.index('.method public onPreferenceTreeClick(Landroidx/preference/Preference;)Z')
+handler = inputs[handler_start:inputs.index('.end method', handler_start)]
+for signature in ('CompatibleApis;->setHdmiCecControlEnabled(Z)V',
+                  'CompatibleApis;->setHdmiCecAutoWakeupEnabled(Z)V',
+                  'CompatibleApis;->setHdmiCecAutoDeviceOffEnabled(Z)V',
+                  'MtkTvCecAnBase;->setEarcEnable(Z)I'):
+    if signature not in handler:
+        raise ValueError('Missing stock HDMI callback: ' + signature)
+print('PASS exact native stock host, preview, HDMI callbacks and theme prerequisites')
