@@ -8,7 +8,6 @@ sys.path.insert(0,str(Path(__file__).resolve().parent))
 from patch_axml_compat_aliases import patch_manifest
 from patch_axml_version import change_version_code
 from patch_8054_unified_manifest import patch_unified
-from strip_8054_junk_activities import strip as strip_junk
 rx=re.compile(r"classes\d*\.dex$")
 SIG=(".RSA",".DSA",".EC",".SF",".MF")
 def main():
@@ -36,7 +35,6 @@ def main():
    if modified != expected or a.projector_entry or a.version_code < 38:
     raise ValueError("Integrated menu requires only the checked classes13 DEX change")
    manifest=patch_unified(src.read("AndroidManifest.xml"),a.version_code)
-   manifest,_junk_removed=strip_junk(manifest)
    actions=[]
   else:
    manifest,actions=patch_manifest(src.read("AndroidManifest.xml"),projector_entry=a.projector_entry)

@@ -43,7 +43,7 @@ public class UnifiedMenuUiTest {
         assertNull(active.getTitle());
         assertNotNull(fragment.getListView().getAdapter());
         String[] expected = {"Wi-Fi и сеть", "Bluetooth", "Источники", "Проекция",
-                "Изображение", "Звук", "Приложения", "Настройки системы"};
+                "Изображение", "Звук", "Приложения", "Настройки системы", "Питание"};
         assertEquals(expected.length, active.getPreferenceCount());
         assertEquals(expected.length + 1, fragment.getListView().getAdapter().getItemCount());
         for (int i = 0; i < expected.length; i++) {
@@ -317,14 +317,14 @@ public class UnifiedMenuUiTest {
         Preference equalizer = screen.findPreference("projectorsoft_page_EQUALIZER");
         Preference delay = screen.findPreference("projectorsoft_page_DELAY");
         assertEquals(NativePage.EQUALIZER.fragment, equalizer.getFragment());
-        assertNull(delay);
+        assertEquals(NativePage.DELAY.fragment, delay.getFragment());
         // Stock SPDIF Activity is absent in an isolated Robolectric fixture.
         Preference spdif = screen.findPreference("projectorsoft_audio_output");
         if (spdif != null) assertEquals("Цифровой выход (SPDIF)", spdif.getTitle());
         assertNull(screen.findPreference("projectorsoft_media_volume"));
         assertNull(screen.findPreference("sound_mute"));
         assertNull(screen.findPreference("projectorsoft_sound_mode"));
-        assertNotNull(screen.findPreference(NativeAudioOutputReadout.KEY));
+        assertNull(screen.findPreference(NativeAudioOutputReadout.KEY));
 
         EqualizerSettingsActivity eq = Robolectric.buildActivity(EqualizerSettingsActivity.class).setup().get();
         NativeSections.Equalizer eqPage = (NativeSections.Equalizer)
@@ -376,10 +376,7 @@ public class UnifiedMenuUiTest {
             Preference row = fragment.findPreference("projectorsoft_picture_read_" + key);
             assertNotNull(row);
             assertFalse(row.isEnabled());
-            if ("picture_color_temperature".equals(key))
-                assertNotNull(row.getOnPreferenceChangeListener());
-            else
-                assertNull(row.getOnPreferenceChangeListener());
+            assertNull(row.getOnPreferenceChangeListener());
         }
         assertNull(fragment.findPreference("projectorsoft_picture_read_picture_brightness"));
         assertNull(Settings.Global.getString(colors.getContentResolver(), "picture_red_gain"));
@@ -513,93 +510,51 @@ public class UnifiedMenuUiTest {
         assertEquals(2, property.writes);
     }
 
-    @Test public void equalizerKeepsBassTrebleAndFiveRowsAndOnlyWritesStableUserValues() {
-        android.content.Context context = org.robolectric.RuntimeEnvironment.getApplication();
-        PreferenceScreen screen = new PreferenceManager(context).createPreferenceScreen(context);
-        class Device implements NativeEqualizerPanel.Backend {
-            String stored = "4", applied = "4";
-            Integer band = 0, appliedBand = 0;
-            String output = "speakers";
-            boolean missing;
-            int writes;
+    @Test public void equalizerReappliesStoredCurveOnFreshSessionAndReleasesOnOff() {
+        class Backend implements BtEqualizerPanel.Effect {
+            final int[] levels = new int[5];
+            int writes, releases;
+            boolean enabled, refuseLevel, control = true;
 
-            @Override public NativeEqualizerPanel.Snapshot read() {
-                java.util.List<NativeEqualizerPanel.Band> bands = new java.util.ArrayList<>();
-                for (int i = 0; i < NativeEqualizerPanel.KEYS.length; i++)
-                    bands.add(new NativeEqualizerPanel.Band(true,
-                            i == NativeEqualizerPanel.KEYS.length - 1 && missing ? null : band,
-                            appliedBand, 0, 100));
-                return new NativeEqualizerPanel.Snapshot(stored, applied, java.util.List.of(output), bands);
-            }
-
-            @Override public boolean write(String key, int value) {
+            @Override public int bandCount() { return levels.length; }
+            @Override public int min() { return -1000; }
+            @Override public int max() { return 1000; }
+            @Override public int frequency(int band) { return 60000 * (band + 1); }
+            @Override public boolean controlled() { return control; }
+            @Override public boolean enabled() { return enabled; }
+            @Override public boolean enable() { return enabled = true; }
+            @Override public void setLevel(int band, int level) {
                 writes++;
-                if (key.equals(NativeEqualizerPanel.MODE)) stored = String.valueOf(value);
-                else band = value;
-                return true;
+                if (!refuseLevel) levels[band] = level;
             }
+            @Override public int level(int band) { return levels[band]; }
+            @Override public void release() { releases++; enabled = false; }
         }
-        Device device = new Device();
-        java.util.concurrent.atomic.AtomicBoolean speakerRoute =
-                new java.util.concurrent.atomic.AtomicBoolean(true);
-        NativeEqualizerPanel panel = new NativeEqualizerPanel(context, screen, device,
-                speakerRoute::get);
-        panel.start();
-        shadowOf(Looper.getMainLooper()).idleFor(java.time.Duration.ofSeconds(2));
-        androidx.preference.ListPreference mode = screen.findPreference("projectorsoft_sound_mode");
-        String firstKey = "projectorsoft_eq_" + NativeEqualizerPanel.KEYS[0];
-        String lastKey = "projectorsoft_eq_"
-                + NativeEqualizerPanel.KEYS[NativeEqualizerPanel.KEYS.length - 1];
-        androidx.preference.SeekBarPreference first = screen.findPreference(firstKey);
-        Preference last = screen.findPreference(lastKey);
-        assertEquals(NativeEqualizerPanel.KEYS.length + 1, screen.getPreferenceCount());
-        assertNotNull(screen.findPreference("projectorsoft_eq_sound_treble"));
-        assertTrue(mode.isEnabled());
-        assertFalse(first.isEnabled());
-        assertEquals(0, first.getValue());
-        assertFalse(first.callChangeListener(4));
-        assertEquals(0, device.writes);
+        Backend backend = new Backend();
+        BtEqualizerPanel.Session session = new BtEqualizerPanel.Session(() -> backend);
+        int[] saved = {1200, 600, 0, 0, -200};
+        assertTrue(session.apply(BtEqualizerPanel.CUSTOM, saved));
+        assertTrue(session.active(BtEqualizerPanel.CUSTOM));
+        assertArrayEquals(new int[]{1000, 600, 0, 0, -200}, backend.levels);
+        assertEquals(5, backend.writes);
+        assertTrue(session.apply(BtEqualizerPanel.CUSTOM, saved));
+        assertEquals(5, backend.writes);
+        assertTrue(session.apply(BtEqualizerPanel.OFF, null));
+        assertEquals(1, backend.releases);
+        assertFalse(session.active(BtEqualizerPanel.CUSTOM));
 
-        assertFalse(mode.callChangeListener("0"));
-        assertFalse(first.isEnabled());
-        shadowOf(Looper.getMainLooper()).idleFor(java.time.Duration.ofMillis(400));
-        assertFalse(first.isEnabled());
-        device.applied = "0";
-        device.band = device.appliedBand = 20;
-        device.missing = true;
-        shadowOf(Looper.getMainLooper()).idleFor(java.time.Duration.ofSeconds(2));
-        assertSame(first, screen.findPreference(firstKey));
-        assertSame(last, screen.findPreference(lastKey));
-        assertEquals("0", mode.getValue());
-        assertTrue(first.isEnabled());
-        assertEquals(20, first.getValue());
-        assertFalse(last.isEnabled());
-        assertEquals("Значение недоступно", last.getSummary());
+        Backend restarted = new Backend();
+        BtEqualizerPanel.Session fresh = new BtEqualizerPanel.Session(() -> restarted);
+        assertTrue(fresh.apply(BtEqualizerPanel.CUSTOM, saved));
+        assertArrayEquals(backend.levels, restarted.levels);
+        restarted.refuseLevel = true;
+        assertFalse(fresh.apply(2, new int[]{0, 0, 0, 0, 0}));
+        assertFalse(fresh.active(2));
+        assertEquals(1, restarted.releases);
 
-        assertFalse(first.callChangeListener(25));
-        assertEquals(2, device.writes);
-        assertTrue(first.isEnabled());
-        device.appliedBand = 25;
-        shadowOf(Looper.getMainLooper()).idleFor(java.time.Duration.ofSeconds(2));
-        assertTrue(first.isEnabled());
-        assertEquals(25, first.getValue());
-
-        assertFalse(first.callChangeListener(26));
-        assertEquals(3, device.writes);
-        device.output = "bluetooth";
-        speakerRoute.set(false);
-        device.appliedBand = 26;
-        shadowOf(Looper.getMainLooper()).idleFor(java.time.Duration.ofSeconds(2));
-        assertEquals(26, first.getValue());
-        assertEquals("Звуковой профиль или выход изменился. Применение не подтверждено",
-                org.robolectric.shadows.ShadowToast.getTextOfLatestToast());
-
-        device.stored = device.applied = "4";
-        assertFalse(first.callChangeListener(27));
-        assertEquals(3, device.writes);
-        assertNull(screen.findPreference("projectorsoft_sound_refresh"));
-        assertNull(screen.findPreference("projectorsoft_sound_original"));
-        panel.stop();
+        BtEqualizerPanel.Session unavailable = new BtEqualizerPanel.Session(() -> null);
+        assertFalse(unavailable.apply(2, saved));
+        assertFalse(unavailable.active(2));
     }
 
     @Test public void pictureAndRgbEditorsUseTheSameCompactBottomDialogGeometry() {
@@ -631,11 +586,11 @@ public class UnifiedMenuUiTest {
         assertNotNull(video);
         assertEquals("Обработка изображения", processing.getTitle());
         assertEquals("Цвет и баланс белого", color.getTitle());
-        assertEquals("Параметры видеотракта", video.getTitle());
+        assertEquals("Параметры видеосигнала", video.getTitle());
         assertSame(processing, screen.getPreference(0));
         assertSame(color, screen.getPreference(1));
         assertSame(video, screen.getPreference(2));
-        assertEquals(2, processing.getPreferenceCount());
+        assertEquals(4, processing.getPreferenceCount());
         assertEquals("projectorsoft_picture_read_picture_list_hdr",
                 processing.getPreference(0).getKey());
         assertEquals("projectorsoft_picture_read_tv_picture_advance_video_mjc_effect",
@@ -645,7 +600,7 @@ public class UnifiedMenuUiTest {
                 color.getPreference(0).getKey());
         assertEquals("projectorsoft_picture_read_picture_mode",
                 video.getPreference(0).getKey());
-        assertNotNull(video.findPreference("projectorsoft_picture_video_pipeline_info"));
+        assertNull(video.findPreference("projectorsoft_picture_video_pipeline_info"));
         assertNotNull(video.findPreference("projectorsoft_picture_read_picture_gamma"));
         assertNotNull(screen.findPreference("projectorsoft_picture_read_picture_contrast"));
         assertNotNull(screen.findPreference("projectorsoft_picture_read_picture_saturation"));
@@ -674,21 +629,15 @@ public class UnifiedMenuUiTest {
         androidx.preference.ListPreference profile = screen.findPreference("projectorsoft_picture_read_picture_mode");
         androidx.preference.ListPreference gamma = screen.findPreference("projectorsoft_picture_read_picture_gamma");
         SwitchPreference hdr = screen.findPreference("projectorsoft_picture_read_picture_list_hdr");
-        assertTrue(profile.isEnabled());
+        assertFalse(profile.isEnabled());
         // The factory preset owns its gamma: disabled even if its value is readable.
         assertFalse(gamma.isEnabled());
-        assertTrue(gamma.getSummary().toString().contains("Пользовательский"));
-        assertFalse(gamma.callChangeListener("3")); // bypass disabled UI on purpose
+        assertNull(gamma.getOnPreferenceChangeListener());
         assertEquals("2", Settings.Global.getString(resolver, "picture_gamma"));
         assertEquals("Профиль OEM", profile.getEntry());
         assertEquals("Вариант OEM", gamma.getEntry());
         assertTrue(hdr.isChecked());
-        assertTrue(hdr.isEnabled());
-        Preference scope = screen.findPreference("projectorsoft_picture_video_pipeline_info");
-        assertNotNull(scope);
-        assertFalse(scope.isSelectable());
-        assertTrue(scope.getSummary().toString().contains("интерфейс Android"));
-        assertTrue(profile.getOrder() < scope.getOrder());
+        assertFalse(hdr.isEnabled());
         Preference memcOnPicture = screen.findPreference(
                 "projectorsoft_picture_read_tv_picture_advance_video_mjc_effect");
         Preference hue = screen.findPreference("projectorsoft_picture_read_picture_hue");
@@ -701,15 +650,10 @@ public class UnifiedMenuUiTest {
         assertEquals("7", Settings.Global.getString(resolver, "picture_mode"));
         assertEquals("2", Settings.Global.getString(resolver, "picture_gamma"));
 
-        // Switching to the verified User mode makes Gamma editable again,
-        // without changing its factory-preset value behind the owner's back.
         Settings.Global.putString(resolver, "picture_mode", "0");
         editor.refresh();
-        assertTrue(gamma.isEnabled());
-        assertFalse(gamma.callChangeListener("3")); // listener handles explicit write
-        // Implementation writes through putInt; Robolectric's typed shadow does
-        // not guarantee getString() reflects values written via putInt().
-        assertEquals(3, Settings.Global.getInt(resolver, "picture_gamma", -1));
+        assertFalse(gamma.isEnabled());
+        assertEquals("2", Settings.Global.getString(resolver, "picture_gamma"));
         MemcSettingsActivity activityMemc = Robolectric.buildActivity(MemcSettingsActivity.class).setup().get();
         NativeSections.Memc memc = (NativeSections.Memc)
                 activityMemc.getSupportFragmentManager().findFragmentById(android.R.id.content);

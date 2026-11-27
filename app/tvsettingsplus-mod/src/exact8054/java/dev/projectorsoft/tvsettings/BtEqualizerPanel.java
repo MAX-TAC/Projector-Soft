@@ -1,312 +1,260 @@
 package dev.projectorsoft.tvsettings;
 
 import android.content.Context;
-import android.media.AudioAttributes;
-import android.media.AudioFormat;
-import android.media.AudioTrack;
+import android.media.audiofx.AudioEffect;
 import android.media.audiofx.Equalizer;
 import android.provider.Settings;
 import android.util.Log;
-import android.view.View;
+import android.widget.Toast;
 import androidx.preference.ListPreference;
 import androidx.preference.PreferenceGroup;
-import androidx.preference.PreferenceViewHolder;
 import androidx.preference.SeekBarPreference;
 
-/**
- * AudioFlinger-level equalizer that works on every output, including Bluetooth.
- *
- * The OEM five-band panel wrote g_fusion_sound__* keys that configure the
- * MediaTek DSP only; over Bluetooth nothing changed because the BT stream leaves
- * AudioFlinger before that DSP. android.media.audiofx.Equalizer binds to an
- * AudioFlinger session instead, so it applies to whatever output is active.
- *
- * UI: no on/off switch. One preset list (Выключен first, five presets, then
- * Пользовательский) and five real seek-bar rows that respond to D-pad
- * left/right. The sliders are editable only in the custom preset; otherwise
- * they display that preset's curve.
- */
+/** Keeps the saved preset and the confirmed Android output-mix state separate. */
 final class BtEqualizerPanel {
     private static final String TAG = "TvSettingsPlusMOD";
-
     static final String KEY_PRESET = "projectorsoft_eq_preset";
     static final String KEY_BAND = "projectorsoft_eq_band_";
-    static final String[] BAND_LABELS = {"60 Гц", "230 Гц", "910 Гц", "3,6 кГц", "14 кГц"};
-
-    private static final String[] PRESET_NAMES = {
-            "Выключен", "Ровный", "Бас", "Высокие", "Голос", "Пользовательский"
+    private static final String[] NAMES = {
+        "Выключен", "Ровный", "Бас", "Высокие", "Голос", "Пользовательский"
     };
-    private static final short[][] PRESET_BANDS = {
-            {0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0},
-            {1200, 600, 0, 0, 0},
-            {0, 0, 0, 600, 1200},
-            {-300, 0, 900, 900, 300},
-            null
+    static final int OFF = 0;
+    static final int CUSTOM = NAMES.length - 1;
+    static final int BANDS = 5;
+    private static final int[][] CURVES = {
+        {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {1200, 600, 0, 0, 0},
+        {0, 0, 0, 600, 1200}, {-300, 0, 900, 900, 300}
     };
-    private static final int CUSTOM = PRESET_NAMES.length - 1;
-    private static final int OFF = 0;
-    static final int LEVEL_MIN = -1500;
-    static final int LEVEL_MAX = 1500;
 
-    private static AudioTrack track;
-    private static Equalizer equalizer;
-    private final Context context;
-    private ListPreference presetRow;
-    private final BandRow[] bandRows = new BandRow[BAND_LABELS.length];
-
-    BtEqualizerPanel(Context context) {
-        this.context = context;
+    interface Effect {
+        int bandCount();
+        int min();
+        int max();
+        int frequency(int band);
+        boolean controlled();
+        boolean enabled();
+        boolean enable();
+        void setLevel(int band, int level);
+        int level(int band);
+        void release();
     }
 
-    void install(PreferenceGroup parent) {
-        if (parent == null) return;
+    interface Factory { Effect open(); }
 
+    static final class Session {
+        private final Factory factory;
+        private Effect effect;
+        private int applied = OFF;
+        private int[] levels;
+
+        Session(Factory factory) { this.factory = factory; }
+
+        boolean apply(int preset, int[] requested) {
+            if (preset == OFF) {
+                close();
+                return true;
+            }
+            if (preset < OFF || preset > CUSTOM || requested == null || requested.length != BANDS)
+                return false;
+            try {
+                if (effect == null) effect = factory.open();
+                if (effect == null || !effect.controlled() || effect.bandCount() != BANDS
+                        || effect.min() >= effect.max()) {
+                    close();
+                    return false;
+                }
+                int[] wanted = requested.clone();
+                for (int i = 0; i < BANDS; i++)
+                    wanted[i] = Math.max(effect.min(), Math.min(effect.max(), wanted[i]));
+                if (matches(preset, wanted)) return true;
+                for (int i = 0; i < BANDS; i++) effect.setLevel(i, wanted[i]);
+                if (!effect.enable()) {
+                    close();
+                    return false;
+                }
+                applied = preset;
+                levels = wanted;
+                if (matches(preset, wanted)) return true;
+            } catch (RuntimeException | LinkageError unavailable) {
+                Log.w(TAG, "Output-mix equalizer unavailable", unavailable);
+            }
+            close();
+            return false;
+        }
+
+        private boolean matches(int preset, int[] wanted) {
+            if (applied != preset || !effect.controlled() || !effect.enabled()) return false;
+            for (int i = 0; i < BANDS; i++)
+                if (effect.level(i) != wanted[i]) return false;
+            return true;
+        }
+
+        boolean active(int preset) {
+            try { return effect != null && levels != null && matches(preset, levels); }
+            catch (RuntimeException | LinkageError unavailable) { return false; }
+        }
+
+        private void close() {
+            Effect previous = effect;
+            effect = null;
+            levels = null;
+            applied = OFF;
+            if (previous != null) {
+                try { previous.release(); }
+                catch (RuntimeException | LinkageError unavailable) {
+                    Log.w(TAG, "Equalizer release failed", unavailable);
+                }
+            }
+        }
+    }
+
+    private static final class OutputMix implements Effect {
+        private final Equalizer equalizer = new Equalizer(0, 0);
+
+        @Override public int bandCount() { return equalizer.getNumberOfBands(); }
+        @Override public int min() { return equalizer.getBandLevelRange()[0]; }
+        @Override public int max() { return equalizer.getBandLevelRange()[1]; }
+        @Override public int frequency(int band) { return equalizer.getCenterFreq((short) band); }
+        @Override public boolean controlled() { return equalizer.hasControl(); }
+        @Override public boolean enabled() { return equalizer.getEnabled(); }
+        @Override public boolean enable() { return equalizer.setEnabled(true) == AudioEffect.SUCCESS; }
+        @Override public void setLevel(int band, int level) { equalizer.setBandLevel((short) band, (short) level); }
+        @Override public int level(int band) { return equalizer.getBandLevel((short) band); }
+        @Override public void release() {
+            try { if (equalizer.hasControl()) equalizer.setEnabled(false); }
+            finally { equalizer.release(); }
+        }
+    }
+
+    private static final Session SESSION = new Session(OutputMix::new);
+    private final Context context;
+    private final SeekBarPreference[] rows = new SeekBarPreference[BANDS];
+    private ListPreference presetRow;
+
+    BtEqualizerPanel(Context context) { this.context = context; }
+
+    static void restore(Context context) {
+        if (!"8054".equals(OemHdmiPortInfo.machineId())) return;
+        int saved = storedPreset(context);
+        SESSION.apply(saved, curve(context, saved));
+    }
+
+    void start() { restore(context); }
+
+    void install(PreferenceGroup parent) {
         presetRow = new ListPreference(context);
         presetRow.setKey(KEY_PRESET);
         presetRow.setTitle("Пресет");
         presetRow.setOrder(100);
-        presetRow.setEntries(PRESET_NAMES);
-        String[] values = new String[PRESET_NAMES.length];
+        presetRow.setEntries(NAMES);
+        String[] values = new String[NAMES.length];
         for (int i = 0; i < values.length; i++) values[i] = String.valueOf(i);
         presetRow.setEntryValues(values);
         presetRow.setPersistent(false);
-        int current = storedPreset();
-        presetRow.setValue(String.valueOf(current));
-        presetRow.setSummary(PRESET_NAMES[current]);
-        presetRow.setOnPreferenceChangeListener((pref, value) -> {
-            int index;
-            try {
-                index = Integer.parseInt(String.valueOf(value));
-            } catch (NumberFormatException bad) {
-                return false;
-            }
-            Settings.Global.putInt(context.getContentResolver(), KEY_PRESET, index);
-            ((ListPreference) pref).setValue(String.valueOf(index));
-            ((ListPreference) pref).setSummary(PRESET_NAMES[index]);
-            applyPreset(index);
-            syncRows(index);
-            return false;
-        });
+        presetRow.setOnPreferenceChangeListener((pref, value) -> changePreset(value));
         parent.addPreference(presetRow);
 
-        for (int band = 0; band < BAND_LABELS.length; band++) {
-            BandRow row = new BandRow(context);
+        for (int i = 0; i < rows.length; i++) {
+            final int band = i;
+            SeekBarPreference row = new SeekBarPreference(context);
             row.setKey(KEY_BAND + band);
-            row.setTitle(BAND_LABELS[band]);
             row.setOrder(110 + band);
             row.setPersistent(false);
-            // A 1-mB step made the bar effectively immovable (value looked like
-            // "1345"). Step is now 1 dB and the value is shown in dB.
             row.setSeekBarIncrement(100);
             row.setUpdatesContinuously(false);
-            row.setMin(LEVEL_MIN);
-            row.setMax(LEVEL_MAX);
-            row.setShowSeekBarValue(false);
-            row.setValue(storedBand(band, 0));
-            row.setSummary(dbLabel(storedBand(band, 0)));
-            row.setEnabled(current == CUSTOM);
-            final int index = band;
-            row.setOnPreferenceChangeListener((pref, value) -> {
-                if (!(value instanceof Integer)) return false;
-                int level = (Integer) value;
-                Settings.Global.putInt(context.getContentResolver(), KEY_BAND + index, level);
-                Settings.Global.putInt(context.getContentResolver(), KEY_PRESET, CUSTOM);
-                if (presetRow != null) {
-                    presetRow.setValue(String.valueOf(CUSTOM));
-                    presetRow.setSummary(PRESET_NAMES[CUSTOM]);
-                }
-                // Repaint the row itself so the bar and summary move immediately.
-                if (pref instanceof SeekBarPreference) {
-                    ((SeekBarPreference) pref).setValue(level);
-                    ((SeekBarPreference) pref).setSummary(dbLabel(level));
-                }
-                applyCustom();
-                return false;
-            });
-            bandRows[band] = row;
+            row.setOnPreferenceChangeListener((pref, value) -> changeBand(band, value));
+            rows[i] = row;
             parent.addPreference(row);
         }
-        syncRows(current);
+        refresh();
     }
 
-    /** Sliders editable only in the custom preset; elsewhere they mirror it. */
-    private void syncRows(int preset) {
-        boolean editable = preset == CUSTOM;
-        short[] curve = presetBandsSafe(preset);
-        for (int band = 0; band < bandRows.length; band++) {
-            BandRow row = bandRows[band];
-            if (row == null) continue;
-            row.setEnabled(editable);
-            int shown;
-            if (!editable && curve != null && band < curve.length) {
-                shown = curve[band];
-            } else {
-                shown = storedBand(band, 0);
-            }
-            row.setValue(shown);
-            row.setSummary(dbLabel(shown));
-            row.refreshBars();
-        }
+    private boolean changePreset(Object value) {
+        int requested;
+        try { requested = Integer.parseInt(String.valueOf(value)); }
+        catch (NumberFormatException invalid) { return false; }
+        if (requested < OFF || requested > CUSTOM || !"8054".equals(OemHdmiPortInfo.machineId()))
+            return false;
+        commit(KEY_PRESET, requested, requested, curve(context, requested));
+        return false;
     }
 
-    void start() {
-        if (storedPreset() != OFF) ensureSession();
-    }
-
-    void stop() {
-        if (equalizer != null) {
-            try { equalizer.setEnabled(false); } catch (Throwable ignored) { }
-            try { equalizer.release(); } catch (Throwable ignored) { }
-            equalizer = null;
-        }
-        if (track != null) {
-            try { track.stop(); } catch (Throwable ignored) { }
-            try { track.release(); } catch (Throwable ignored) { }
-            track = null;
-        }
-    }
-
-    void refresh(PreferenceGroup parent) {
-        if (parent == null) return;
-        int current = storedPreset();
-        ListPreference list = parent.findPreference(KEY_PRESET);
-        if (list != null) {
-            list.setValue(String.valueOf(current));
-            list.setSummary(PRESET_NAMES[current]);
-        }
-        syncRows(current);
-    }
-
-    /** Formats a millibel level as decibels with one decimal. */
-    private static String dbLabel(int milliBel) {
-        return String.format(java.util.Locale.getDefault(), "%+.1f дБ", milliBel / 100f);
-    }
-
-    private short[] presetBandsSafe(int preset) {
-        if (preset < 0 || preset >= PRESET_BANDS.length) return PRESET_BANDS[0];
-        if (PRESET_BANDS[preset] != null) return PRESET_BANDS[preset];
-        short[] custom = new short[BAND_LABELS.length];
-        for (int band = 0; band < custom.length; band++) custom[band] = (short) storedBand(band, 0);
-        return custom;
-    }
-
-    private int storedPreset() {
-        int value = Settings.Global.getInt(context.getContentResolver(), KEY_PRESET, OFF);
-        return (value < 0 || value >= PRESET_NAMES.length) ? OFF : value;
-    }
-
-    private int storedBand(int band, int fallback) {
-        int raw = Settings.Global.getInt(context.getContentResolver(), KEY_BAND + band, fallback);
-        // Values saved by the old 1-mB step are not multiples of 100; snap them
-        // so the bar sits on a real step instead of showing e.g. 1345.
-        int snapped = Math.round(raw / 100f) * 100;
-        if (snapped < LEVEL_MIN) snapped = LEVEL_MIN;
-        if (snapped > LEVEL_MAX) snapped = LEVEL_MAX;
-        return snapped;
-    }
-
-    // ---------------- engine ----------------
-
-    private synchronized void ensureSession() {
-        if (equalizer != null) return;
-        // Session 0 attaches the effect to the global output mix, so it acts on
-        // whatever plays on the device. The previous version bound the effect
-        // to a private silent AudioTrack, which is why nothing was audible.
+    private boolean changeBand(int band, Object value) {
+        if (!(value instanceof Integer) || storedPreset(context) != CUSTOM || !SESSION.active(CUSTOM))
+            return false;
+        int desired = (Integer) value;
         try {
-            equalizer = new Equalizer(0, 0);
-            Log.i(TAG, "eq global session bands=" + equalizer.getNumberOfBands());
-            return;
-        } catch (Throwable global) {
-            Log.w(TAG, "global eq session unavailable, falling back", global);
+            if (desired < SESSION.effect.min() || desired > SESSION.effect.max()) return false;
+        } catch (RuntimeException | LinkageError unavailable) {
+            refresh();
+            return false;
         }
+        int[] curve = curve(context, CUSTOM);
+        curve[band] = desired;
+        commit(KEY_BAND + band, desired, CUSTOM, curve);
+        return false;
+    }
+
+    private void commit(String key, int value, int preset, int[] requested) {
+        boolean applied = SESSION.apply(preset, requested);
+        boolean saved = applied && write(key, value);
+        if (!saved) {
+            if (applied) restore(context);
+            Toast.makeText(context, "Применение эквалайзера не подтверждено", Toast.LENGTH_SHORT).show();
+        }
+        refresh();
+    }
+
+    private boolean write(String key, int value) {
         try {
-            int rate = 48000;
-            int buffer = AudioTrack.getMinBufferSize(rate,
-                    AudioFormat.CHANNEL_OUT_STEREO, AudioFormat.ENCODING_PCM_16BIT);
-            if (buffer <= 0) buffer = 4096;
-            AudioTrack created = new AudioTrack.Builder()
-                    .setAudioAttributes(new AudioAttributes.Builder()
-                            .setUsage(AudioAttributes.USAGE_MEDIA)
-                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                            .build())
-                    .setAudioFormat(new AudioFormat.Builder()
-                            .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
-                            .setSampleRate(rate)
-                            .setChannelMask(AudioFormat.CHANNEL_OUT_STEREO)
-                            .build())
-                    .setBufferSizeInBytes(buffer * 4)
-                    .setTransferMode(AudioTrack.MODE_STREAM)
-                    .build();
-            created.play();
-            track = created;
-            final AudioTrack reference = created;
-            Thread pump = new Thread(() -> {
-                short[] silence = new short[2048];
-                while (true) {
-                    AudioTrack current = track;
-                    if (current == null || current != reference) break;
-                    if (current.getPlayState() != AudioTrack.PLAYSTATE_PLAYING) break;
-                    current.write(silence, 0, silence.length);
-                }
-            });
-            pump.setDaemon(true);
-            pump.start();
-            Thread.sleep(300);
-            equalizer = new Equalizer(0, created.getAudioSessionId());
-            Log.i(TAG, "eq session ready bands=" + equalizer.getNumberOfBands());
-        } catch (Throwable error) {
-            Log.w(TAG, "eq session failed", error);
-            stop();
+            return Settings.Global.putInt(context.getContentResolver(), key, value)
+                    && Settings.Global.getInt(context.getContentResolver(), key, Integer.MIN_VALUE) == value;
+        } catch (RuntimeException unavailable) {
+            Log.w(TAG, "Cannot save equalizer settings", unavailable);
+            return false;
         }
     }
 
-    private void applyPreset(int preset) {
-        if (preset == OFF) {
-            if (equalizer != null) {
-                try { equalizer.setEnabled(false); } catch (Throwable error) {
-                    Log.w(TAG, "eq disable failed", error);
-                }
+    void refresh() {
+        int saved = storedPreset(context);
+        boolean active = SESSION.active(saved);
+        presetRow.setValue(String.valueOf(saved));
+        presetRow.setSummary(NAMES[saved] + (saved != OFF && !active ? " · применение не подтверждено" : ""));
+        presetRow.setEnabled("8054".equals(OemHdmiPortInfo.machineId()));
+        for (int i = 0; i < rows.length; i++) {
+            SeekBarPreference row = rows[i];
+            row.setEnabled(false);
+            row.setVisible(active);
+            if (!active) continue;
+            try {
+                row.setTitle(String.format(java.util.Locale.getDefault(), "%,d Гц",
+                        SESSION.effect.frequency(i) / 1000));
+                row.setMin(SESSION.effect.min());
+                row.setMax(SESSION.effect.max());
+                row.setValue(SESSION.levels[i]);
+                row.setSummary(String.format(java.util.Locale.getDefault(), "%+.1f дБ",
+                        SESSION.levels[i] / 100f));
+                row.setEnabled(saved == CUSTOM);
+            } catch (RuntimeException | LinkageError unavailable) {
+                row.setVisible(false);
             }
-            return;
-        }
-        if (preset == CUSTOM) { applyCustom(); return; }
-        ensureSession();
-        if (equalizer == null) return;
-        short[] curve = PRESET_BANDS[preset];
-        try {
-            for (short band = 0; band < equalizer.getNumberOfBands() && band < curve.length; band++) {
-                equalizer.setBandLevel(band, curve[band]);
-            }
-            equalizer.setEnabled(true);
-        } catch (Throwable error) {
-            Log.w(TAG, "eq preset failed", error);
         }
     }
 
-    private void applyCustom() {
-        ensureSession();
-        if (equalizer == null) return;
-        try {
-            for (short band = 0; band < equalizer.getNumberOfBands() && band < BAND_LABELS.length; band++) {
-                equalizer.setBandLevel(band, (short) storedBand(band, 0));
-            }
-            equalizer.setEnabled(true);
-        } catch (Throwable error) {
-            Log.w(TAG, "eq custom failed", error);
-        }
+    private static int storedPreset(Context context) {
+        int value = read(context, KEY_PRESET, OFF);
+        return value < OFF || value > CUSTOM ? OFF : value;
     }
 
-    /** Seek bar that repaints itself after a programmatic value change. */
-    private static final class BandRow extends SeekBarPreference {
-        BandRow(Context context) { super(context); }
-        void refreshBars() { notifyChanged(); }
-        @Override public void onBindViewHolder(PreferenceViewHolder holder) {
-            super.onBindViewHolder(holder);
-            int id = getContext().getResources().getIdentifier(
-                    "seekbar", "id", getContext().getPackageName());
-            View bar = id == 0 ? null : holder.findViewById(id);
-            if (bar != null) bar.setVisibility(View.VISIBLE);
-        }
+    private static int[] curve(Context context, int preset) {
+        if (preset != CUSTOM) return CURVES[preset];
+        int[] values = new int[BANDS];
+        for (int i = 0; i < BANDS; i++) values[i] = read(context, KEY_BAND + i, 0);
+        return values;
+    }
+
+    private static int read(Context context, String key, int fallback) {
+        try { return Settings.Global.getInt(context.getContentResolver(), key, fallback); }
+        catch (RuntimeException unreadable) { return fallback; }
     }
 }

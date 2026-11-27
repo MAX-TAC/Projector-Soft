@@ -42,7 +42,7 @@ public final class OemHdmiPortInfo {
             boolean added=false;
             for(int i=0;i<ports.size();i++) {
                 Hdmi8054Policy.Port port=ports.get(i);
-                Object row=entry(context,category,pref,port.hardware,port.label,status(tv,port),271+i,tv,count,metadata);
+                Object row=entry(context,category,pref,port,271+i,tv,count,metadata);
                 added |= row != null;
             }
             return added;
@@ -92,23 +92,35 @@ public final class OemHdmiPortInfo {
         return Hdmi8054Policy.ports(machineId(),count,metadata,ids);
     }
 
-    private static String status(TvInputManager tv,Hdmi8054Policy.Port port) {
-        if(tv==null) return "Служба TV Input недоступна";
-        if(port.inputId==null) return "Вход недоступен или неоднозначен";
-        try {
-            switch(tv.getInputState(port.inputId)) {
-                case TvInputManager.INPUT_STATE_CONNECTED: return "Подключен";
-                case TvInputManager.INPUT_STATE_CONNECTED_STANDBY:
-                    // On MTK 8054 this state is returned for BOTH empty ports:
-                    // it must NOT be displayed as evidence of a plugged-in cable.
-                    return "Нет сигнала";
-                case TvInputManager.INPUT_STATE_DISCONNECTED: return "Нет подключения";
-                default: break;
-            }
-        } catch(RuntimeException ex) {
-            Log.w("TvSettingsPlusMOD","HDMI input state unavailable",ex);
+    private static final int UNAVAILABLE = -1;
+
+    private static int inputState(TvInputManager tv, Hdmi8054Policy.Port port) {
+        if (tv == null || port == null || port.inputId == null) return UNAVAILABLE;
+        try { return tv.getInputState(port.inputId); }
+        catch (RuntimeException unavailable) {
+            Log.w("TvSettingsPlusMOD", "HDMI input state unavailable", unavailable);
+            return UNAVAILABLE;
         }
-        return "Состояние недоступно";
+    }
+
+    private static String status(TvInputManager tv, Hdmi8054Policy.Port port) {
+        return status(inputState(tv, port));
+    }
+
+    private static String status(int state) {
+        switch (state) {
+            case TvInputManager.INPUT_STATE_CONNECTED: return "Подключен";
+            case TvInputManager.INPUT_STATE_CONNECTED_STANDBY: return "Активный сигнал не подтверждён";
+            case TvInputManager.INPUT_STATE_DISCONNECTED: return "Нет подключения";
+            default: return "Состояние входа недоступно";
+        }
+    }
+
+    private static void renderPort(Object row, Class<?> pref, int state) throws Exception {
+        pref.getMethod("setSummary", CharSequence.class).invoke(row, status(state));
+        boolean connected = state == TvInputManager.INPUT_STATE_CONNECTED;
+        pref.getMethod("setEnabled", boolean.class).invoke(row, connected);
+        pref.getMethod("setSelectable", boolean.class).invoke(row, connected);
     }
 
     private static Intent liveTvIntent(Context context,Hdmi8054Policy.Port port) {
@@ -221,11 +233,11 @@ public final class OemHdmiPortInfo {
         }
         @Override void refresh(){
             try {
-                Map<String,String> statuses=new HashMap<>();
-                for(Hdmi8054Policy.Port port:ports(tv,count,metadata))statuses.put(port.hardware,status(tv,port));
+                Map<String,Integer> states=new HashMap<>();
+                for(Hdmi8054Policy.Port port:ports(tv,count,metadata))states.put(port.hardware,inputState(tv,port));
                 for(String hardware:new String[]{"HW6","HW7"}) {
                     Object row=find.invoke(fragment,"projectorsoft_hdmi_info_"+hardware);
-                    if(row!=null)summary.invoke(row,statuses.getOrDefault(hardware,"Вход недоступен"));
+                    if(row!=null)renderPort(row, summary.getDeclaringClass(), states.getOrDefault(hardware,UNAVAILABLE));
                 }
                 Object edid=find.invoke(fragment,OemHdmiEdidHook.STATUS_KEY);
                 if(edid!=null)summary.invoke(edid,OemHdmiEdidHook.storedSummary(context));
@@ -236,18 +248,14 @@ public final class OemHdmiPortInfo {
         }
     }
 
-    private static Object entry(Context context,Object group,Class<?> pref,String key,String title,String summary,
+    private static Object entry(Context context,Object group,Class<?> pref,Hdmi8054Policy.Port initial,
                                  int order,TvInputManager tv,int count,String metadata) throws Exception {
+        String key = initial.hardware;
         Object item=pref.getConstructor(Context.class).newInstance(context);
         pref.getMethod("setKey",String.class).invoke(item,"projectorsoft_hdmi_info_"+key);
-        pref.getMethod("setTitle",CharSequence.class).invoke(item,title);
-        pref.getMethod("setSummary",CharSequence.class).invoke(item,summary);
+        pref.getMethod("setTitle",CharSequence.class).invoke(item,initial.label);
         pref.getMethod("setOrder",int.class).invoke(item,order);
-        // A port without a live signal must not look selectable: the owner
-        // asked for unconnected inputs to be inactive on the source screen.
-        boolean connected = summary != null && summary.startsWith("Подключен");
-        pref.getMethod("setEnabled",boolean.class).invoke(item,connected);
-        pref.getMethod("setSelectable",boolean.class).invoke(item,connected && tv!=null);
+        renderPort(item, pref, inputState(tv, initial));
         if(tv!=null) {
             Class<?> listener=Class.forName("androidx.preference.Preference$OnPreferenceClickListener");
             Object callback=Proxy.newProxyInstance(listener.getClassLoader(),new Class<?>[]{listener},
@@ -257,7 +265,7 @@ public final class OemHdmiPortInfo {
                             String failure="Вход недоступен или неоднозначен";
                             try {
                                 for(Hdmi8054Policy.Port port:ports(tv,count,metadata)) {
-                                    if(!key.equals(port.hardware) || port.inputId==null)continue;
+                                    if(!key.equals(port.hardware) || inputState(tv,port) != TvInputManager.INPUT_STATE_CONNECTED)continue;
                                     failure="Штатный экран HDMI недоступен";
                                     Intent target=liveTvIntent(context,port);
                                     if(target!=null){

@@ -6,7 +6,6 @@ import zipfile
 from pathlib import Path
 
 from patch_8054_unified_manifest import ACTIVITIES, DISABLED, PREFIX
-from strip_8054_junk_activities import JUNK
 
 
 def dex_classes(dex):
@@ -30,42 +29,6 @@ def dex_classes(dex):
 
 def without_version(lines):
     return [line for line in lines if 'A: android:versionCode(' not in line]
-
-
-def drop_junk_nodes(lines):
-    """Return the tree without the deliberately removed junk components."""
-    out = []
-    index = 0
-    total = len(lines)
-    while index < total:
-        line = lines[index]
-        stripped = line.lstrip()
-        indent = len(line) - len(stripped)
-        if stripped.startswith('E: activity ') or stripped.startswith('E: activity-alias '):
-            # A component block runs until the next "E:" line at the same or a
-            # smaller indent.
-            end_index = index + 1
-            while end_index < total:
-                candidate = lines[end_index]
-                candidate_stripped = candidate.lstrip()
-                candidate_indent = len(candidate) - len(candidate_stripped)
-                if candidate_stripped.startswith('E:') and candidate_indent <= indent:
-                    break
-                end_index += 1
-            block = lines[index:end_index]
-            text = '\n'.join(block)
-            named = re.search(r'android:name\(0x01010003\)="(com\.android\.tv\.settings\.[^"]+)"', text)
-            target = re.search(
-                r'android:targetActivity\(0x01010202\)="(com\.android\.tv\.settings\.[^"]+)"', text)
-            junk = ((named and named.group(1) in JUNK)
-                    or (target and target.group(1) in JUNK))
-            if not junk:
-                out.extend(block)
-            index = end_index
-            continue
-        out.append(line)
-        index += 1
-    return out
 
 
 def verify_manifest(stock, module):
@@ -113,7 +76,7 @@ def verify_manifest(stock, module):
         if item not in alias_node:
             raise ValueError('MOD launcher alias missing ' + item)
     del lines[alias_start:alias_end]
-    if without_version(lines) != without_version(drop_junk_nodes(stock_lines)):
+    if without_version(lines) != without_version(stock_lines):
         raise ValueError('Original manifest entries or filters changed')
     main = next(i for i, line in enumerate(stock_lines)
                 if 'android:name(0x01010003)="com.android.tv.settings.MainSettings"' in line)

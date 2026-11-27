@@ -99,9 +99,7 @@ final class OemCecAutoOff8054 {
                 });
             pref.getMethod("setOnPreferenceChangeListener",listener).invoke(autoOff,callback);
             Method add=group.getClass().getMethod("addPreference",pref);
-            // Drop the read-only "HDMI-CEC" status row: ProjectorExtras now
-            // provides a real on/off switch, so a disabled informational copy
-            // only confuses the screen.
+            add.invoke(group,cec);
             boolean switchAdded=Boolean.TRUE.equals(add.invoke(group,autoOff));
             return switchAdded;
         } catch (Exception e) {

@@ -277,8 +277,7 @@ public final class NativeSections {
             Preference autoplay = extras.findPreference(OemHdmiAutoPlayHook.KEY);
             if (autoplay != null) autoplay.setTitle("Автопереключение HDMI");
             // Working EDID selector instead of the read-only OEM status.
-            ProjectorExtras.installEdid(context, extras, 290);
-            ProjectorExtras.installArc(context, extras, 201);
+            OemHdmiEdidHook.install(context, extras, Preference.class);
 
             ProjectorExtras.installSources(context, extras);
         }
@@ -322,7 +321,6 @@ public final class NativeSections {
     public static final class Cec extends Page {
         @Override NativePage section(){return NativePage.HDMI_CEC;}
         @Override void populate(PreferenceScreen screen){
-            ProjectorExtras.installCec(requireContext(), screen);
             guarded("hdmi-cec",()->OemCecAutoOff8054.install(requireContext(),screen,Preference.class));
         }
         @Override public void onResume(){
@@ -347,7 +345,8 @@ public final class NativeSections {
             Preference movement = geometry.findPreference("projectorsoft_keystone_move");
             if (movement != null) movement.setOrder(200);
             OemProjectionPanel.installEditors(context, geometry, Preference.class);
-            ProjectorExtras.installKeystoneReset(context, geometry);
+            info(geometry, "geometry_reset_unavailable", "Сброс коррекции",
+                    "Используйте сброс в штатном редакторе соответствующей регулировки");
             if (geometry.getPreferenceCount() == 0) screen.removePreference(geometry);
             // Font scaling is a display/projection preference, not a system-security setting.
             OemFontScaleHook.install(context, screen, Preference.class);
@@ -394,7 +393,7 @@ public final class NativeSections {
                     "projectorsoft_picture_group_color", "Цвет и баланс белого");
             color.setOrder(1);
             PreferenceCategory video = group(screen,
-                    "projectorsoft_picture_group_video", "Видеопоток (не влияет на Android)");
+                    "projectorsoft_picture_group_video", "Параметры видеосигнала");
             video.setOrder(2);
 
             move(screen, processing, "projectorsoft_picture_read_picture_list_hdr");
@@ -449,22 +448,17 @@ public final class NativeSections {
             // NativeAudioOutputReadout used to add a second, read-only
             // "Устройство вывода звука" row above the real dropdown. Removed.
             link(screen, NativePage.EQUALIZER, 200);
+            link(screen, NativePage.DELAY, 230);
             // Audio output switching and speaker duplication were removed:
             // setPreferredDevicesForStrategy returns false on this board, so the
             // controls only reported failure to the user.
             guarded("sound-processing", () -> OemInlinePreferencesHook.populateSoundProcessing(
                     context, screen, Preference.class));
             OemAdvancedSoundRoutes.install(context, screen, Preference.class);
-            // SPDIF delay already lives on the OEM digital-output screen; do not
-            // expose a second editor for the same setting on the Sound root.
             if (OemKeyToneHook.install(context, screen, Preference.class)) {
                 Preference tone = screen.findPreference("projectorsoft_key_tone");
                 if (tone != null) tone.setOrder(500);
             }
-        }
-        @Override public void onResume() {
-            super.onResume();
-            ProjectorExtras.refresh(getPreferenceScreen(), requireContext());
         }
         @Override public void onStop() {
             NativeMediaRoutePicker.cancelOnStop();
@@ -489,7 +483,7 @@ public final class NativeSections {
         @Override public void onResume() {
             super.onResume();
             if (btPanel != null && getPreferenceScreen() != null)
-                btPanel.refresh(getPreferenceScreen());
+                btPanel.refresh();
         }
         @Override public void onStop() {
             // The equalizer is a process-wide effect. Releasing it here made
@@ -541,8 +535,6 @@ public final class NativeSections {
         @Override NativePage section(){return NativePage.LANGUAGE_INPUT;}
         @Override void populate(PreferenceScreen screen){
             stockFragmentOrdered(screen,"language_system","Язык системы","system.LanguageFragment",10);
-            // Shows the CURRENT default keyboard and opens its own settings,
-            // instead of the factory AOSP keyboard page.
             keyboardRow(screen);
         }
     }
@@ -673,7 +665,6 @@ public final class NativeSections {
         @Override NativePage section(){return NativePage.BOOT_APP;}
         @Override void populate(PreferenceScreen screen){
             Context context = requireContext();
-            String current = NativeBootDestination.bootSource();
             java.util.Map<String, String> apps;
             try {
                 apps = new java.util.TreeMap<>(OemPowerOnAppHook.candidates(context));
@@ -701,15 +692,7 @@ public final class NativeSections {
                 } catch (android.content.pm.PackageManager.NameNotFoundException noIcon) {
                     // leave the row without an icon
                 }
-                boolean selected = pkg.equals(current);
-                row.setSummary(selected ? "Выбрано для включения" : null);
-                row.setOnPreferenceClickListener(item -> {
-                    NativeBootDestination.setBootSource(pkg);
-                    android.widget.Toast.makeText(context,
-                            "Приложение при включении: " + entry.getValue(),
-                            android.widget.Toast.LENGTH_SHORT).show();
-                    return true;
-                });
+                row.setSelectable(false);
                 screen.addPreference(row);
             }
         }
@@ -751,9 +734,6 @@ public final class NativeSections {
             Context context = requireContext();
             OemAcPowerBootHook.install(context,screen,Preference.class);
             OemStockUserSettings.installSwitchOffTimer(context,screen,Preference.class);
-            // "Сон экрана и заставка" removed at the owner request: the screen
-            // policy already forces screen-never-off, and this row only
-            // restated it. The safety hook still runs at boot elsewhere.
         }
     }
 

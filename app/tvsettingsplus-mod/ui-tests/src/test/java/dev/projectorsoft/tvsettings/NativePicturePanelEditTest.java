@@ -8,7 +8,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import static org.junit.Assert.*;
 
-/** Real v41 UI policy: contrast echo must not close the dialog; profile changes must. */
+/** A lower preview is valid only while the observed PQ snapshot stays unchanged. */
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk=33)
 public final class NativePicturePanelEditTest {
@@ -22,30 +22,30 @@ public final class NativePicturePanelEditTest {
         return values;
     }
 
-    @Test public void expectedContrastProviderEchoKeepsBottomEditor() {
+    @Test public void changedContrastClosesThePreview() {
         Map<String,Integer> before=start(), after=start();
         after.put("picture_contrast", 51);
-        assertTrue(NativePicturePanel.otherKeysUnchanged(before, after, "picture_contrast"));
+        assertFalse(NativePicturePanel.stableSnapshot(before, after));
     }
 
-    @Test public void changingBrightnessDuringContrastEditInvalidatesSession() {
+    @Test public void changedBrightnessInvalidatesThePreview() {
         Map<String,Integer> before=start(), after=start();
         after.put("picture_brightness", 49);
-        assertFalse(NativePicturePanel.otherKeysUnchanged(before, after, "picture_contrast"));
+        assertFalse(NativePicturePanel.stableSnapshot(before, after));
     }
 
-    @Test public void changedModeHdrOrTemperatureStopsEdit() {
+    @Test public void changedModeHdrOrTemperatureInvalidatesThePreview() {
         for (String key : new String[]{PicturePanelState.MODE, PicturePanelState.TEMPERATURE,
                 PicturePanelState.HDR}) {
             Map<String,Integer> changed=start();
             changed.put(key,changed.get(key)+1);
-            assertFalse(key,NativePicturePanel.otherKeysUnchanged(start(),changed,"picture_contrast"));
+            assertFalse(key,NativePicturePanel.stableSnapshot(start(),changed));
         }
     }
 
     @Test public void missingReadbackCannotPretendToBeStable() {
-        assertFalse(NativePicturePanel.otherKeysUnchanged(start(),null,"picture_contrast"));
-        assertFalse(NativePicturePanel.otherKeysUnchanged(start(),Map.of(),"picture_contrast"));
-        assertFalse(NativePicturePanel.otherKeysUnchanged(start(),start(),null));
+        assertFalse(NativePicturePanel.stableSnapshot(start(),null));
+        assertFalse(NativePicturePanel.stableSnapshot(start(),Map.of()));
+        assertTrue(NativePicturePanel.stableSnapshot(start(),start()));
     }
 }
